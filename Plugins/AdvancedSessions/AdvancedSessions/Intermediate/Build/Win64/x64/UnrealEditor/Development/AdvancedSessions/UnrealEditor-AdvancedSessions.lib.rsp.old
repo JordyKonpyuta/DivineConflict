@@ -1,0 +1,14 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-AdvancedSessions.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\Users\djeuj\OneDrive\Documents\Unreal Projects\DivineConflict\Intermediate\Build\Win64\x64\DivineConflictEditor\Development\Engine\SharedPCH.Engine.Cpp20.h.obj"
+"C:\Users\djeuj\OneDrive\Documents\Unreal Projects\DivineConflict\Plugins\AdvancedSessions\AdvancedSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSessions\Module.AdvancedSessions.1.cpp.obj"
+"C:\Users\djeuj\OneDrive\Documents\Unreal Projects\DivineConflict\Plugins\AdvancedSessions\AdvancedSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSessions\Module.AdvancedSessions.2.cpp.obj"
+"C:\Users\djeuj\OneDrive\Documents\Unreal Projects\DivineConflict\Plugins\AdvancedSessions\AdvancedSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSessions\Module.AdvancedSessions.3.cpp.obj"
+"C:\Users\djeuj\OneDrive\Documents\Unreal Projects\DivineConflict\Plugins\AdvancedSessions\AdvancedSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSessions\Default.rc2.res"
+/OUT:"C:\Users\djeuj\OneDrive\Documents\Unreal Projects\DivineConflict\Plugins\AdvancedSessions\AdvancedSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSessions\UnrealEditor-AdvancedSessions.lib"
