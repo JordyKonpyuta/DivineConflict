@@ -3,3 +3,12 @@
 
 #include "CustomPlayerController.h"
 
+bool ACustomPlayerController::GetIsHell()
+{
+	return IsHell;
+}
+
+void ACustomPlayerController::SetIsHell(bool h)
+{
+	IsHell = h;
+}

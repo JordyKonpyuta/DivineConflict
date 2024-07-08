@@ -56,25 +56,59 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// Getter for units stats
+	UFUNCTION(BlueprintCallable)
 	int GetAttack();
+
+	UFUNCTION(BlueprintCallable)
 	int GetDefense();
+
+	UFUNCTION(BlueprintCallable)
 	int GetCurrentHealth();
+
+	UFUNCTION(BlueprintCallable)
 	int GetMaxHealth();
+
+	UFUNCTION(BlueprintCallable)
 	int GetMovementCost();
+
+	UFUNCTION(BlueprintCallable)
 	int GetAttackCost();
+
+	UFUNCTION(BlueprintCallable)
 	int GetSpellCost();
+
+	UFUNCTION(BlueprintCallable)
 	bool GetIsSelected();
+
+	UFUNCTION(BlueprintCallable)
 	bool GetIsHell();
 
 	// Setter for units stats
+	UFUNCTION(BlueprintCallable)
 	void SetAttack(int a);
+
+	UFUNCTION(BlueprintCallable)
 	void SetDefense(int d);
+
+	UFUNCTION(BlueprintCallable)
 	void SetCurrentHealth(int ch);
+
+	UFUNCTION(BlueprintCallable)
 	void SetMaxHealth(int mh);
+
+	UFUNCTION(BlueprintCallable)
 	void SetMovementCost(int mc);
+
+	UFUNCTION(BlueprintCallable)
 	void SetAttackCost(int ac);
+
+	UFUNCTION(BlueprintCallable)
 	void SetSpellCost(int sc);
+
+	UFUNCTION(BlueprintCallable)
 	void SetIsSelected(bool s);
+
+	UFUNCTION(BlueprintCallable)
 	void SetIsHell(bool h);
 
 };

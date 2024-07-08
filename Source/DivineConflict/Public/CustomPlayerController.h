@@ -13,5 +13,17 @@ UCLASS()
 class DIVINECONFLICT_API ACustomPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
+protected:
+
+	UPROPERTY()
+	bool IsHell = false;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	bool GetIsHell();
+
+	UFUNCTION(BlueprintCallable)
+	void SetIsHell(bool h);
 	
 };
