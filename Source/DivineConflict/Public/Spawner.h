@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Spawner.generated.h"
 
+
 UCLASS()
 class DIVINECONFLICT_API ASpawner : public AActor
 {
