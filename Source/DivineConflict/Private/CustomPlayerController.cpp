@@ -12,3 +12,13 @@ void ACustomPlayerController::SetIsHell(bool h)
 {
 	IsHell = h;
 }
+
+bool ACustomPlayerController::GetIsInActiveTurn()
+{
+	return IsInActiveTurn;
+}
+
+void ACustomPlayerController::SetIsInActiveTurn(bool a)
+{
+	IsInActiveTurn = a;
+}

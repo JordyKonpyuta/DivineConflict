@@ -19,11 +19,20 @@ protected:
 	UPROPERTY()
 	bool IsHell = false;
 
+	UPROPERTY()
+	bool IsInActiveTurn = false;
+
 public:
 	UFUNCTION(BlueprintCallable)
 	bool GetIsHell();
 
 	UFUNCTION(BlueprintCallable)
 	void SetIsHell(bool h);
+
+	UFUNCTION(BlueprintCallable)
+	bool GetIsInActiveTurn();
+
+	UFUNCTION(BlueprintCallable)
+	void SetIsInActiveTurn(bool a);
 	
 };
