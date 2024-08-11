@@ -22,6 +22,9 @@ protected:
 	UPROPERTY()
 	bool IsInActiveTurn = false;
 
+	UPROPERTY()
+	bool IsReady = false;
+
 public:
 	UFUNCTION(BlueprintCallable)
 	bool GetIsHell();
@@ -34,5 +37,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetIsInActiveTurn(bool a);
+
+	UFUNCTION(BlueprintCallable)
+	bool GetIsReady();
+
+	UFUNCTION(BlueprintCallable)
+	void SetIsReady(bool r);
 	
 };

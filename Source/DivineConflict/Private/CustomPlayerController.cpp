@@ -22,3 +22,13 @@ void ACustomPlayerController::SetIsInActiveTurn(bool a)
 {
 	IsInActiveTurn = a;
 }
+
+bool ACustomPlayerController::GetIsReady()
+{
+	return IsReady;
+}
+
+void ACustomPlayerController::SetIsReady(bool r)
+{
+	IsReady = r;
+}
