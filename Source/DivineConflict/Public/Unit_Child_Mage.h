@@ -13,5 +13,8 @@ UCLASS()
 class DIVINECONFLICT_API AUnit_Child_Mage : public AUnit
 {
 	GENERATED_BODY()
+
+protected:
+	virtual void BeginPlay() override;
 	
 };

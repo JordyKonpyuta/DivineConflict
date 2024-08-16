@@ -19,36 +19,54 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(Blueprintable)
+	TArray<FString> Names = {"Raoul", "Dimitri", "Roger", "Geraud", "Remi", "Ben", "Marvin", "Titouan", "Guillaume", "Timothee", "Maxime", "Julien"};
+
+	UPROPERTY(Blueprintable)
+	TArray<AUnit*> Units = {};
+
+	UPROPERTY()
+	UTexture2D* UnitIcon;
+	
 	// Units stats
 	UPROPERTY()
-	int Attack;
+	int Attack = 0;
 	
 	UPROPERTY()
-	int Defense;
+	int Defense = 0;
 	
 	UPROPERTY()
-	int CurrentHealth;
+	int CurrentHealth = 0;
 	
 	UPROPERTY()
-	int MaxHealth;
+	int MaxHealth = 0;
 	
 	UPROPERTY()
-	int MovementCost;
+	int MovementCost = 0;
 	
 	UPROPERTY()
-	int AttackCost;
+	int AttackCost = 0;
 	
 	UPROPERTY()
-	int SpellCost;
+	int SpellCost = 0;
 
 	UPROPERTY()
 	bool IsSelected = false;
 
 	UPROPERTY()
 	bool IsHell = false;
-	
 
-public:	
+	UPROPERTY()
+	int TotalDamagesInflicted = 0;
+
+	UPROPERTY()
+	FString Name = "";
+
+	UPROPERTY()
+	int PM = 0;
+
+public:
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -83,6 +101,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool GetIsHell();
 
+	UFUNCTION(BlueprintCallable)
+	int GetTotalDamageInflicted();
+
+	UFUNCTION(BlueprintCallable)
+	FString GetName();
+
+	UFUNCTION(BlueprintCallable)
+	int GetPM();
+
+	UFUNCTION(BlueprintCallable)
+	UTexture2D* GetUnitIcon();
+
 	// Setter for units stats
 	UFUNCTION(BlueprintCallable)
 	void SetAttack(int a);
@@ -110,5 +140,17 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetIsHell(bool h);
+
+	UFUNCTION(BlueprintCallable)
+	void SetTotalDamageInflicted(int tdi);
+
+	UFUNCTION(BlueprintCallable)
+	void SetName(FString n);
+
+	UFUNCTION(BlueprintCallable)
+	void SetPM(int p);
+
+	UFUNCTION(BlueprintCallable)
+	void SetUnitIcon(UTexture2D* i);
 
 };

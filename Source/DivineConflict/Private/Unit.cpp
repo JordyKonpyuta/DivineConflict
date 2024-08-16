@@ -122,3 +122,43 @@ void AUnit::SetIsHell(bool h)
 	IsHell = h;
 }
 
+int AUnit::GetTotalDamageInflicted()
+{
+	return TotalDamagesInflicted;
+}
+
+FString AUnit::GetName()
+{
+	return Name;
+}
+
+int AUnit::GetPM()
+{
+	return PM;
+}
+
+UTexture2D* AUnit::GetUnitIcon()
+{
+	return UnitIcon;
+}
+
+void AUnit::SetTotalDamageInflicted(int tdi)
+{
+	TotalDamagesInflicted = tdi;
+}
+
+void AUnit::SetName(FString n)
+{
+	Name = n;
+}
+
+void AUnit::SetPM(int p)
+{
+	PM = p;
+}
+
+void AUnit::SetUnitIcon(UTexture2D* i)
+{
+	UnitIcon = i;
+}
+

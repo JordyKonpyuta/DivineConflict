@@ -26,6 +26,7 @@ protected:
 	bool IsReady = false;
 
 public:
+	
 	UFUNCTION(BlueprintCallable)
 	bool GetIsHell();
 

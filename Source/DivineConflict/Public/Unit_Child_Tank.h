@@ -13,5 +13,7 @@ UCLASS()
 class DIVINECONFLICT_API AUnit_Child_Tank : public AUnit
 {
 	GENERATED_BODY()
-	
+
+protected:
+	virtual void BeginPlay() override;
 };
