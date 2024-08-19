@@ -18,6 +18,13 @@ void AUnit::BeginPlay()
 	
 }
 
+void AUnit::NotifyActorOnClicked(FKey ButtonPressed)
+{
+	Super::NotifyActorOnClicked(ButtonPressed);
+	SetIsSelected(true);
+	DisplayWidget();
+}
+
 // Called every frame
 void AUnit::Tick(float DeltaTime)
 {
@@ -160,5 +167,9 @@ void AUnit::SetPM(int p)
 void AUnit::SetUnitIcon(UTexture2D* i)
 {
 	UnitIcon = i;
+}
+
+void AUnit::DisplayWidget_Implementation()
+{
 }
 

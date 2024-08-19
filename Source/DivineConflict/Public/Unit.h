@@ -19,6 +19,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void NotifyActorOnClicked(FKey ButtonPressed) override;
+
 	UPROPERTY(Blueprintable)
 	TArray<FString> Names = {"Raoul", "Dimitri", "Roger", "Geraud", "Remi", "Ben", "Marvin", "Titouan", "Guillaume", "Timothee", "Maxime", "Julien"};
 
@@ -152,5 +154,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetUnitIcon(UTexture2D* i);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void DisplayWidget();
 
 };
