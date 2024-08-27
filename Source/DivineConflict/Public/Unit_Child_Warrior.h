@@ -13,7 +13,11 @@ UCLASS()
 class DIVINECONFLICT_API AUnit_Child_Warrior : public AUnit
 {
 	GENERATED_BODY()
-
+	
+protected:
 	virtual void BeginPlay() override;
+
+public:
+	AUnit_Child_Warrior();
 	
 };

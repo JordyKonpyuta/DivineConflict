@@ -3,7 +3,6 @@
 
 #include "Unit_Child_Leader.h"
 
-
 void AUnit_Child_Leader::BeginPlay()
 {
 	Super::BeginPlay();
@@ -15,4 +14,25 @@ void AUnit_Child_Leader::BeginPlay()
 	SetPM(3);
 
 	SetName(Names[FMath::RandRange(0, Names.Num()-1)]);
+}
+
+AUnit_Child_Leader::AUnit_Child_Leader()
+{
+	if (IsHell)
+	{
+		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("Texture2D'Content/Blueprints/Widget/Assets/Images/Hell/UnitIcons/T_Icon_Leader_Hell.T_Icon_Leader_Hell'"));
+		if (IconTexObject.Object != NULL)
+		{
+			UnitIcon = IconTexObject.Object;
+		}
+	}
+	else
+	{
+		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("Texture2D'Content/Blueprints/Widget/Assets/Images/Paradise/UnitIcons/T_Icon_Leader_Paradise.T_Icon_Leader_Paradise'"));
+		if (IconTexObject.Object != NULL)
+		{
+			UnitIcon = IconTexObject.Object;
+		}
+	}
+	
 }

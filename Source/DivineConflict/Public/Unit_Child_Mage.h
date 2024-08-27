@@ -16,5 +16,8 @@ class DIVINECONFLICT_API AUnit_Child_Mage : public AUnit
 
 protected:
 	virtual void BeginPlay() override;
+
+public:
+	AUnit_Child_Mage();
 	
 };
