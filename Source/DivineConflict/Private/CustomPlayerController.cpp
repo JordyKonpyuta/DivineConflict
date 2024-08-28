@@ -2,6 +2,18 @@
 
 
 #include "CustomPlayerController.h"
+#include "CameraPlayer.h"
+
+
+void ACustomPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	CameraPlayerRef = Cast<ACameraPlayer>(GetPawn());
+
+	CameraPlayerRef->setCustomePlayerController(this);
+	
+}
 
 bool ACustomPlayerController::GetIsHell()
 {

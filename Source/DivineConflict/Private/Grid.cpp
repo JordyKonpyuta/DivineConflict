@@ -5,6 +5,7 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+
 // Sets default values
 AGrid::AGrid()
 {
@@ -42,10 +43,11 @@ FVector3d AGrid::TraceHitGround(FVector Location)
 		ETraceTypeQuery::TraceTypeQuery1, false, TArray<AActor*>(), EDrawDebugTrace::ForDuration, HitOut, true);
 	if (HitOut.bBlockingHit)
 	{
+		if(HitOut.GetActor() != nullptr)
 			UE_LOG(LogTemp, Warning, TEXT("Hit : %s"), *HitOut.GetActor()->GetName());
-			HitOut.bBlockingHit ? DrawDebugPoint(GetWorld(), HitOut.ImpactPoint, 10, FColor::Green, false,
-			1, 0) : DrawDebugPoint(GetWorld(), Location + FVector(0, 0, -1000), 10, FColor::Red, false, 1, 0);
-			return HitOut.ImpactPoint;
+		HitOut.bBlockingHit ? DrawDebugPoint(GetWorld(), HitOut.ImpactPoint, 10, FColor::Green, false,
+		1, 0) : DrawDebugPoint(GetWorld(), Location + FVector(0, 0, -1000), 10, FColor::Red, false, 1, 0);
+		return HitOut.ImpactPoint;
 	}
 		return FVector(0, 0, 0);
 }
@@ -65,6 +67,13 @@ void AGrid::SpawnGrid()
 			FVector3d HitLocation = TraceHitGround(FVector(X * 100, Y * 100, 0));
 			if (HitLocation != FVector(0, 0, 0))
 			{
+				FIntVector2 TileIndex = FIntVector2(X, Y);
+				FDC_TileData TileData = FDC_TileData(TileIndex, E_DC_TileTypp::Normal, FTransform3d(FVector(X * 100, Y * 100, HitLocation.Z)),
+					std::vector<E_DC_TileState>(), nullptr, nullptr);
+
+				
+				GridData.Add(TileIndex, TileData);
+				
 				GridMesh->AddInstance(FTransform(FVector(X * 100, Y * 100, HitLocation.Z)), true);
 			}
 			Y++;
@@ -80,5 +89,6 @@ void AGrid::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	
+	
 }
-
