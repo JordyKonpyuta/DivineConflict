@@ -19,35 +19,16 @@ class DIVINECONFLICT_API ACustomPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivateAccess = "true"))
 	AGrid* Grid;
 	
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivate = "true"))
 	ACameraPlayer* CameraPlayerRef;
 	
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
 	UInputMappingContext* InputMappingContext;
 
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	UInputAction* AIZoom;
-
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	UInputAction* AIMove;
-
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	UInputAction* AIRotate;
-
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	UInputAction* AIFreeCam;
-
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	UInputAction* AIInteraction;
-
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	UInputAction* AIRemovePath;
-
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	UInputAction* AIEndTurn;
+	
 	
 	
 protected:
@@ -62,6 +43,10 @@ protected:
 	bool IsReady = false;
 	
 	virtual void BeginPlay() override;
+
+	virtual void  SetupInputComponent() override;
+
+	void Move(/*const FInputActionValue& Value*/);
 
 public:
 	
