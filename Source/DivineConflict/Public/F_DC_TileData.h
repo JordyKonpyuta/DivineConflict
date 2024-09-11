@@ -41,13 +41,13 @@ struct DIVINECONFLICT_API FDC_TileData
 	GENERATED_BODY()
 public:
 	FDC_TileData();
-	FDC_TileData(FIntVector2 tilePosition, E_DC_TileTypp tileType, FTransform3d tileTransform,
+	FDC_TileData(FVector2D tilePosition, E_DC_TileTypp tileType, FTransform3d tileTransform,
 	             std::vector<E_DC_TileState> tileState, AUnit* unitOnTile, ASpawner* spawnerOnTile);
 	
 	
 	~FDC_TileData();
 
-	FIntVector2 TilePosition;
+	FVector2D TilePosition;
 	E_DC_TileTypp TileType;
 	FTransform3d TileTransform;
 	std::vector<E_DC_TileState> TileState;

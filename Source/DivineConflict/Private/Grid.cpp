@@ -2,6 +2,8 @@
 
 
 #include "Grid.h"
+
+#include "GridPath.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -14,7 +16,7 @@ AGrid::AGrid()
 
     GridMesh = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Grid Mesh"));
 	RootComponent = GridMesh;
-
+	
 	GridMesh->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/AssetImport/Square/SM_Grid_SquareFlat.SM_Grid_SquareFlat'")).Object);
 	if (GridMesh->GetStaticMesh() == nullptr)
 	{
@@ -25,6 +27,16 @@ AGrid::AGrid()
 		UE_LOG(LogTemp, Warning, TEXT("Static Mesh found"));
 	}
 
+	GridPath = CreateDefaultSubobject<UGridPath>(TEXT("Grid Path"));
+	if(GridPath != nullptr)
+	{
+		GridPath->Grid = this;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Grid Path not found"));
+	}
+	
 	SpawnGrid();
 	
 }
@@ -67,7 +79,7 @@ void AGrid::SpawnGrid()
 			FVector3d HitLocation = TraceHitGround(FVector(X * 100, Y * 100, 0));
 			if (HitLocation != FVector(0, 0, 0))
 			{
-				FIntVector2 TileIndex = FIntVector2(X, Y);
+				FVector2d TileIndex = FVector2d(X, Y);
 				FDC_TileData TileData = FDC_TileData(TileIndex, E_DC_TileTypp::Normal, FTransform3d(FVector(X * 100, Y * 100, HitLocation.Z)),
 					std::vector<E_DC_TileState>(), nullptr, nullptr);
 
@@ -84,6 +96,16 @@ void AGrid::SpawnGrid()
 	
 }
 
+void AGrid::TestPathfinding()
+{
+	TArray<FVector2d> Path = GridPath->FindPath(FVector2d(0, 0), FVector2d(9, 9), false,20 ,false);
+
+	for(FVector2d Index : Path)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Path : %s"), *Index.ToString());
+	}
+}
+
 // Called every frame
 void AGrid::Tick(float DeltaTime)
 {
@@ -91,4 +113,23 @@ void AGrid::Tick(float DeltaTime)
 
 	
 	
+}
+
+bool AGrid::IsTileWalkable(FVector2D Index)
+{
+	return IsTileTypeWalkable(GridData.Find(Index)->TileType);
+	
+}
+
+bool AGrid::IsTileTypeWalkable(E_DC_TileTypp Type)
+{
+	TArray<E_DC_TileTypp> WalkableTypes = { E_DC_TileTypp::None, E_DC_TileTypp::Obstacle, E_DC_TileTypp::Gate };
+
+	return !WalkableTypes.Contains(Type);
+	
+}
+
+TMap<FVector2D, FDC_TileData> AGrid::GetGridData()
+{
+	return GridData;
 }
