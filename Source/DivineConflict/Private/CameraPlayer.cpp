@@ -39,7 +39,7 @@ void ACameraPlayer::BeginPlay()
 	Super::BeginPlay();
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Camera Player Begin Play"));
 	CameraBoom->AttachToComponent(CameraRoot, FAttachmentTransformRules::KeepRelativeTransform);
-	CameraBoom->SetRelativeRotation( FRotator(60, 0, 0));
+	CameraBoom->SetRelativeRotation( FRotator(-60, 0, 0));
 	
 	
 	
@@ -81,7 +81,10 @@ void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 		FVector3d MoveDirection = FVector3d(0, 0, 0);
 		if (abs(Input.X)  >= abs(Input.Y) )
 		{
-			 MoveDirection = CameraBoom->GetForwardVector() * (Input.X*100);
+			MoveDirection = UKismetMathLibrary::GetForwardVector(UKismetMathLibrary::MakeRotator(0,0,GetActorRotation().Yaw)) * (Input.X*100);
+			
+			
+			 //MoveDirection = CameraBoom->GetForwardVector() * (Input.X*100);
 		}
 		else
 		{
@@ -101,20 +104,14 @@ void ACameraPlayer::RotateCamera(const FInputActionValue& Value)
 
 	if(abs(Input) > 0.6)
 	{
-		//print signofFloat Input
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, TEXT("Sign of Input: ") + FString::SanitizeFloat(UKismetMathLibrary::SignOfFloat(Input)*90));
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Blue, TEXT("Yaw: ") + FString::SanitizeFloat(CameraBoom->GetComponentRotation().Yaw));
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, TEXT("Yaw + Sign of Input: ") + FString::SanitizeFloat(UKismetMathLibrary::SignOfFloat(Input)*90 + CameraBoom->GetComponentRotation().Yaw));
+		
 		
 		SnapRotation = FRotator( CameraBoom->GetComponentRotation().Pitch,CameraBoom->GetComponentRotation().Yaw + UKismetMathLibrary::SignOfFloat(Input) * -90 , 0);
 
-		//print SnapRotation
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Snap Rotation: ") + SnapRotation.ToString());
+		
 		
 		
 		CameraBoom->SetRelativeRotation(SnapRotation);
-
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Blue, TEXT("Yaw: ") + FString::SanitizeFloat(CameraBoom->GetComponentRotation().Yaw));
 
 		//CameraBoom->AddLocalRotation(FRotator(0, Input*90, 0));
 		
