@@ -3,9 +3,11 @@
 
 #include "Grid.h"
 
+#include "GridInfo.h"
 #include "GridPath.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 // Sets default values
@@ -36,9 +38,26 @@ AGrid::AGrid()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Grid Path not found"));
 	}
+	GridInfo = CreateDefaultSubobject<UGridInfo>(TEXT("Grid Info"));
+	if(GridInfo != nullptr)
+	{
+		GridInfo->SetGrid(this);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Grid Info not found"));
+	}
+
 	
 	SpawnGrid();
 	
+}
+
+bool AGrid::Interact_Implementation(ACustomPlayerController* PlayerController)
+{
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Interact grid"));
+	return IInteractInterface::Interact_Implementation(PlayerController);
 }
 
 // Called when the game starts or when spawned
@@ -106,6 +125,11 @@ void AGrid::TestPathfinding()
 	}
 }
 
+FVector AGrid::SnapVectorToVector(FVector InVector, const FVector InSnapTo)
+{
+	return FVector(UKismetMathLibrary::GridSnap_Float(InVector.X, InSnapTo.X), UKismetMathLibrary::GridSnap_Float(InVector.Y, InSnapTo.Y), UKismetMathLibrary::GridSnap_Float(InVector.Z, InSnapTo.Z));
+}
+
 // Called every frame
 void AGrid::Tick(float DeltaTime)
 {
@@ -132,4 +156,20 @@ bool AGrid::IsTileTypeWalkable(E_DC_TileTypp Type)
 TMap<FVector2D, FDC_TileData> AGrid::GetGridData()
 {
 	return GridData;
+}
+
+FVector2d AGrid::ConvertLocationToIndex(FVector Location)
+{
+	
+	FVector testlocation = SnapVectorToVector(Location, TileSize);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Location: %s"), *testlocation.ToString()));
+	
+	FVector TempLoc = (SnapVectorToVector(Location, TileSize))/TileSize;
+
+	return FVector2d(TempLoc.X, TempLoc.Y);
+}
+
+FVector3d AGrid::ConvertIndexToLocation(FVector2d Index)
+{
+	return GridData.Find(Index)->TileTransform.GetLocation();
 }

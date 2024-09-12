@@ -2,6 +2,8 @@
 
 
 #include "Spawner.h"
+#include "Grid.h"
+#include "GridInfo.h"
 
 // Sets default values
 ASpawner::ASpawner()
@@ -9,12 +11,22 @@ ASpawner::ASpawner()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	SpawnerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Spawner Mesh"));
+	SetRootComponent(SpawnerMesh);
+	
+
 }
 
 // Called when the game starts or when spawned
 void ASpawner::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if(Grid != nullptr)
+	{
+		Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Spawner on tile %s and this position is %s"), *GetName(), *GridPosition.ToString()));
+	}
 	
 }
 
@@ -23,5 +35,15 @@ void ASpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ASpawner::SetGridPosition(FVector2D Position)
+{
+	GridPosition = Position;
+}
+
+FVector2D ASpawner::GetGridPosition()
+{
+	return GridPosition;
 }
 

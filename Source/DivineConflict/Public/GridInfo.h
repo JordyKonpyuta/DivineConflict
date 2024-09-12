@@ -6,23 +6,56 @@
 #include "Components/ActorComponent.h"
 #include "GridInfo.generated.h"
 
+class AGrid;
+class AUnit;
+class ASpawner;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DIVINECONFLICT_API UGridInfo : public UActorComponent
 {
 	GENERATED_BODY()
 
+	
+
 public:	
 	// Sets default values for this component's properties
 	UGridInfo();
+
+	UFUNCTION( Category = "GridElement",CallInEditor)
+	void AddUnitInGrid(FVector2D GridPosition, AUnit* Unit);
+
+	UFUNCTION( Category = "GridElement",CallInEditor)
+	void setUnitIndexOnGrid(FVector2D GridPosition, AUnit *Unit);
+
+	UFUNCTION( Category = "GridElement",CallInEditor)
+	void RemoveUnitInGrid(AUnit* Unit);
+
+	UFUNCTION(	Category = "GridElement",CallInEditor)
+	void addSpawnUnitOnGrid(FVector2D GridPosition, ASpawner* Spawner);
+
+	UFUNCTION( Category = "GridElement",CallInEditor)
+	void SetSpawnUnitOnGrid(FVector2D GridPosition, ASpawner* Spawner);
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
+	AGrid* Grid;
+
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
+	TArray<AUnit*> UnitsCombat;
+
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
+	TArray<ASpawner*> SpawnersGrid;
+
+	
+	
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	//sets the grid reference
+	void SetGrid(AGrid* GridRef);
 		
 };

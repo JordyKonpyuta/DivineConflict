@@ -4,16 +4,29 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "InteractInterface.h"
 #include "Unit.generated.h"
 
+class AGrid;
+class UStaticMeshComponent;;
+
+
 UCLASS()
-class DIVINECONFLICT_API AUnit : public APawn
+class DIVINECONFLICT_API AUnit : public APawn , public IInteractInterface
 {
 	GENERATED_BODY()
+
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Unit", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* UnitMesh;
 
 public:
 	// Sets default values for this pawn's properties
 	AUnit();
+
+	virtual bool Interact_Implementation(ACustomPlayerController* PlayerController) override;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly ,Category = "Unit")
+	AGrid* Grid;
 
 protected:
 	// Called when the game starts or when spawned
@@ -67,6 +80,9 @@ protected:
 	UPROPERTY()
 	int PM = 0;
 
+	UPROPERTY()
+	FVector2D IndexPosition = FVector2D(0, 0);
+
 public:
 	
 	// Called every frame
@@ -74,6 +90,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	
 
 	// Getter for units stats
 	UFUNCTION(BlueprintCallable)
@@ -114,6 +132,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	UTexture2D* GetUnitIcon();
+
+	UFUNCTION(BlueprintCallable)
+	FVector2D GetIndexPosition();
 
 	// Setter for units stats
 	UFUNCTION(BlueprintCallable)
@@ -158,4 +179,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void DisplayWidget();
 
+	UFUNCTION(BlueprintCallable)
+	void SetIndexPosition(FVector2D ip);
+	
 };

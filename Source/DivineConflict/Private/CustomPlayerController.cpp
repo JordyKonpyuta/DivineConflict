@@ -6,6 +6,9 @@
 #include "EnhancedInputSubsystems.h"
 #include "Engine\LocalPlayer.h"
 #include "CameraPlayer.h"
+#include "Kismet/GameplayStatics.h"
+#include "Grid.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 void ACustomPlayerController::BeginPlay()
@@ -16,6 +19,18 @@ void ACustomPlayerController::BeginPlay()
 
 	CameraPlayerRef->setCustomePlayerController(this);
 
+	//get the grid
+	AActor* FoundActors;
+	FoundActors = UGameplayStatics::GetActorOfClass(GetWorld(), AGrid::StaticClass());
+	if (FoundActors != nullptr)
+	{
+		Grid = Cast<AGrid>(FoundActors);
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No Grid Found"));
+	}
+
 	
 
 	
@@ -23,7 +38,7 @@ void ACustomPlayerController::BeginPlay()
 
 void ACustomPlayerController::SetupInputComponent()
 {
-	//super::SetupInputComponent();
+	Super::SetupInputComponent();
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(this))
 	{
@@ -32,16 +47,18 @@ void ACustomPlayerController::SetupInputComponent()
 			Subsystem->AddMappingContext(InputMappingContext, 0);
 		}
 	}
+}
+void ACustomPlayerController::ControllerInteration()
+{
+	FVector2d PlayerPositionInGrid = FVector2d(-999, -999);
+	if(Grid != nullptr)
+	{
+		PlayerPositionInGrid = Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation());
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("PlayerPositionInGrid: %s"), *PlayerPositionInGrid.ToString()));
+		IInteractInterface::Execute_Interact(Grid, this);
+		
+	}
 	
-		/*
-		//EnhancedInputComponent->BindAction(AIZoom, ETriggerEvent::Triggered, CameraPlayerRef, &ACameraPlayer::ZoomCamera);
-		
-		EnhancedInputComponent->BindAction(AIMove, ETriggerEvent::Triggered, CameraPlayerRef, &ACameraPlayer::MoveCamera);
-		
-		EnhancedInputComponent->BindAction(AIRotate, ETriggerEvent::Triggered, CameraPlayerRef, &ACameraPlayer::RotateCamera);
-		
-		//EnhancedInputComponent->BindAction(AIFreeCam, ETriggerEvent::Triggered, CameraPlayerRef, &ACameraPlayer::FreeCam);
-		*/
 	
 }
 

@@ -2,6 +2,9 @@
 
 
 #include "Unit.h"
+#include "Grid.h"
+#include "GridInfo.h"
+
 
 // Sets default values
 AUnit::AUnit()
@@ -9,12 +12,28 @@ AUnit::AUnit()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	UnitMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Unit Mesh"));
+	SetRootComponent(UnitMesh);
+	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/tank_ange_pose.tank_ange_pose'")).Object);
+	
+	
+}
+
+bool AUnit::Interact_Implementation(ACustomPlayerController* PlayerController)
+{
+	return IInteractInterface::Interact_Implementation(PlayerController);
 }
 
 // Called when the game starts or when spawned
 void AUnit::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if(Grid != nullptr)
+	{
+		Grid->GridInfo->AddUnitInGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Unit on tile %s and this position is %s"), *GetName(), *IndexPosition.ToString()));
+	}
 	
 }
 
@@ -149,6 +168,11 @@ UTexture2D* AUnit::GetUnitIcon()
 	return UnitIcon;
 }
 
+FVector2d AUnit::GetIndexPosition()
+{
+	return IndexPosition;
+}
+
 void AUnit::SetTotalDamageInflicted(int tdi)
 {
 	TotalDamagesInflicted = tdi;
@@ -167,6 +191,11 @@ void AUnit::SetPM(int p)
 void AUnit::SetUnitIcon(UTexture2D* i)
 {
 	UnitIcon = i;
+}
+
+void AUnit::SetIndexPosition(FVector2D ip)
+{
+	IndexPosition = ip;
 }
 
 void AUnit::DisplayWidget_Implementation()

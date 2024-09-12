@@ -5,16 +5,18 @@
 #include "CoreMinimal.h"
 #include "F_DC_TileData.h"
 #include "GameFramework/Actor.h"
+#include "InteractInterface.h"
 #include "Grid.generated.h"
 
 
 
 class Ainstancedstaticmesh;
 class UGridPath;
+class UGridInfo;
 
 
 UCLASS()
-class DIVINECONFLICT_API AGrid : public AActor
+class DIVINECONFLICT_API AGrid : public AActor , public IInteractInterface
 {
 	GENERATED_BODY()
 
@@ -27,8 +29,15 @@ public:
 	// Sets default values for this actor's properties
 	AGrid();
 
-	UPROPERTY(EditAnywhere, Category = "GridElement")
+	
+	
+	UPROPERTY(EditAnywhere , Category = "GridElement")
 	UGridPath* GridPath = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "GridElement")
+	UGridInfo* GridInfo = nullptr;
+
+	virtual bool Interact_Implementation(ACustomPlayerController* PlayerController) override;
 	
 	
 protected:
@@ -47,6 +56,7 @@ protected:
 	UFUNCTION( Category = "GridElement", BlueprintCallable,CallInEditor)
 	void TestPathfinding();
 
+	FVector SnapVectorToVector(FVector InVector, const FVector InSnapTo);
 
 public:	
 	// Called every frame
@@ -55,12 +65,19 @@ public:
 	UPROPERTY(Blueprintable, EditAnywhere, Category = "GridElement")
 	FVector2D GridSize = FVector2D(10, 10);
 
+	UPROPERTY(Blueprintable, EditAnywhere, Category = "GridElement")
+	FVector TileSize = FVector(100, 100, 100);
+
 	UFUNCTION( Category = "GridElement", BlueprintCallable)
 	bool IsTileWalkable(FVector2D Index);
 
 	bool IsTileTypeWalkable(E_DC_TileTypp Type);
 
 	TMap <FVector2D, FDC_TileData> GetGridData();
+
+	FVector2d ConvertLocationToIndex(FVector Location);
+
+	FVector3d ConvertIndexToLocation(FVector2d Index);
 	
 
 };

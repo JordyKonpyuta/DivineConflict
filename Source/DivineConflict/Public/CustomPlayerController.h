@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "InteractInterface.h"
 #include "CustomPlayerController.generated.h"
 
 
@@ -15,7 +16,7 @@ class UInputAction;
  * 
  */
 UCLASS()
-class DIVINECONFLICT_API ACustomPlayerController : public APlayerController
+class DIVINECONFLICT_API ACustomPlayerController : public APlayerController , public IInteractInterface
 {
 	GENERATED_BODY()
 public:
@@ -46,6 +47,9 @@ protected:
 
 	virtual void  SetupInputComponent() override;
 
+	
+	
+
 	void Move(/*const FInputActionValue& Value*/);
 
 public:
@@ -67,5 +71,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetIsReady(bool r);
+
+	void ControllerInteration();
 	
 };
