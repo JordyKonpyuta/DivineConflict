@@ -16,16 +16,16 @@ struct FPathData
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PathData")
-	FVector2D Index = FVector2D(-999, -999);
+	UPROPERTY(EditAnywhere, Category = "PathData")
+	FIntVector2 Index = FIntVector2(-999, -999);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PathData")
 	int costEntrerToTile = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PathData")
 	int MinCostToTarget = 9999999;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PathData")
 	int CostFormStart = 9999999;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PathData")
-	FVector2D PreviewsIndex = FVector2D(-999, -999);
+	UPROPERTY(EditAnywhere,  Category = "PathData")
+	FIntVector2 PreviewsIndex = FIntVector2(-999, -999);
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -47,24 +47,24 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	FVector2D StartPoint = FVector2D(-999	,-999);
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	FVector2D EndPoint = FVector2D(-999, -999);
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	TArray<FVector2D> Path;
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	TArray<FVector2D> DiscoverTileIndex;
+	UPROPERTY( VisibleAnywhere, Category = "Grid", meta = (AllowPrivate = "true"))
+	FIntVector2 StartPoint = FIntVector2(-999	,-999);
+	UPROPERTY( VisibleAnywhere,  Category = "Grid", meta = (AllowPrivate = "true"))
+	FIntVector2 EndPoint = FIntVector2(-999, -999);
+	UPROPERTY( VisibleAnywhere, Category = "Grid", meta = (AllowPrivate = "true"))
+	TArray<FIntVector2> Path;
+	UPROPERTY( VisibleAnywhere,  Category = "Grid", meta = (AllowPrivate = "true"))
+	TArray<FIntVector2> DiscoverTileIndex;
 	UPROPERTY(	VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
 	TArray<int> DiscoverTileSortingCost;
-	UPROPERTY(	VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	TArray<FVector2D> AnalyseTileIndex;
+	UPROPERTY(	VisibleAnywhere,  Category = "Grid", meta = (AllowPrivate = "true"))
+	TArray<FIntVector2> AnalyseTileIndex;
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
 	TArray<FPathData> CurrentsNeighbors;
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
 	FPathData CurrentDiscoverTile;
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	TMap<FVector2D, FPathData> PathData;
+	UPROPERTY( VisibleAnywhere,  Category = "Grid", meta = (AllowPrivate = "true"))
+	TMap<FIntVector2, FPathData> PathData;
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
 	FPathData CurrentNeighbors;
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
@@ -76,15 +76,15 @@ protected:
 	bool bIsEscalation = false;
 	
 	
-	TArray<FVector2D> FindTileNeighbors(FVector2D Index);
-	bool IsInputDataValid(FVector2D Start, FVector2D End);
+	TArray<FIntVector2> FindTileNeighbors(FIntVector2 Index);
+	bool IsInputDataValid(FIntVector2 Start, FIntVector2 End);
 	void DiscoverTile(FPathData TilePath);
-	int MinimulCostBetweenTwoTile(FVector2D Index1, FVector2D Index2);
+	int MinimulCostBetweenTwoTile(FIntVector2 Index1, FIntVector2 Index2);
 	bool AnalyseNextDiscoverTile();
-	TArray<FVector2D> GeneratePath();
+	TArray<FIntVector2> GeneratePath();
 	FPathData PullCheapestTileOutOfDiscoverList();
 	bool DiscoverNextNeighbors();
-	TArray<FPathData> GetValidTileNeighbors(FVector2D Index);
+	TArray<FPathData> GetValidTileNeighbors(FIntVector2 Index);
 	void InserTileDiscoverList(FPathData TilePath);
 	void ClearGeneratedPath();
 	bool IsValidHeigh(FDC_TileData IndextestData, FDC_TileData CurrentIndexData);
@@ -94,8 +94,8 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UFUNCTION( BlueprintCallable)
-	TArray<FVector2D> FindPath(FVector2D Start, FVector2D End , bool IsReachable, int PathLenght, bool IsEscalation);
+	UFUNCTION()
+	TArray<FIntVector2> FindPath(FIntVector2 Start, FIntVector2 End , bool IsReachable, int PathLenght, bool IsEscalation);
 
 	
 		

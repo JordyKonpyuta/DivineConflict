@@ -35,22 +35,27 @@ enum class DIVINECONFLICT_API E_DC_TileState
 
 
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct DIVINECONFLICT_API FDC_TileData
 {
 	GENERATED_BODY()
 public:
 	FDC_TileData();
-	FDC_TileData(FVector2D tilePosition, E_DC_TileTypp tileType, FTransform3d tileTransform,
-	             std::vector<E_DC_TileState> tileState, AUnit* unitOnTile, ASpawner* spawnerOnTile);
+	FDC_TileData(FIntVector2 tilePosition, E_DC_TileTypp tileType, FTransform3d tileTransform,
+	             TArray<E_DC_TileState> tileState, AUnit* unitOnTile, ASpawner* spawnerOnTile);
 	
 	
 	~FDC_TileData();
-
-	FVector2D TilePosition;
+	UPROPERTY( EditAnywhere, Category = "GridElement")
+	FIntVector2 TilePosition;
+	
 	E_DC_TileTypp TileType;
+	UPROPERTY( EditAnywhere, Category = "GridElement")
 	FTransform3d TileTransform;
-	std::vector<E_DC_TileState> TileState;
+	
+	TArray<E_DC_TileState> TileState;
+	UPROPERTY( EditAnywhere, Category = "GridElement")
 	AUnit* UnitOnTile = nullptr;
+	UPROPERTY( EditAnywhere, Category = "GridElement")
 	ASpawner* SpawnerOnTile = nullptr;
 };

@@ -9,7 +9,7 @@
 
 class AGrid;
 class UStaticMeshComponent;;
-
+class ACustomPlayerController;
 
 UCLASS()
 class DIVINECONFLICT_API AUnit : public APawn , public IInteractInterface
@@ -27,6 +27,9 @@ public:
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly ,Category = "Unit")
 	AGrid* Grid;
+
+	UFUNCTION()
+	void interaction(ACustomPlayerController *PlayerController);
 
 protected:
 	// Called when the game starts or when spawned
@@ -81,7 +84,7 @@ protected:
 	int PM = 0;
 
 	UPROPERTY()
-	FVector2D IndexPosition = FVector2D(0, 0);
+	FIntVector2 IndexPosition = FIntVector2(0, 0);
 
 public:
 	
@@ -133,8 +136,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UTexture2D* GetUnitIcon();
 
-	UFUNCTION(BlueprintCallable)
-	FVector2D GetIndexPosition();
+	UFUNCTION()
+	FIntVector2 GetIndexPosition();
 
 	// Setter for units stats
 	UFUNCTION(BlueprintCallable)
@@ -179,7 +182,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void DisplayWidget();
 
-	UFUNCTION(BlueprintCallable)
-	void SetIndexPosition(FVector2D ip);
+	UFUNCTION()
+	void SetIndexPosition(FIntVector2 ip);
 	
 };

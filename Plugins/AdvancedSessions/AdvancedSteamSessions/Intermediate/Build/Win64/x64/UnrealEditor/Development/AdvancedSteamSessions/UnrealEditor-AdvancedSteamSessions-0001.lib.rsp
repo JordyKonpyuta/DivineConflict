@@ -6,7 +6,13 @@
 /NAME:"UnrealEditor-AdvancedSteamSessions-0001.dll"
 /IGNORE:4221
 /NODEFAULTLIB
-"C:\Users\djeuj\OneDrive\Documents\Unreal Projects\DivineConflict\Intermediate\Build\Win64\x64\DivineConflictEditor\Development\Engine\SharedPCH.Engine.Cpp20.h.obj"
-"C:\Users\djeuj\OneDrive\Documents\Unreal Projects\DivineConflict\Plugins\AdvancedSessions\AdvancedSteamSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSteamSessions\Module.AdvancedSteamSessions.cpp.obj"
-"C:\Users\djeuj\OneDrive\Documents\Unreal Projects\DivineConflict\Plugins\AdvancedSessions\AdvancedSteamSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSteamSessions\Default.rc2.res"
-/OUT:"C:\Users\djeuj\OneDrive\Documents\Unreal Projects\DivineConflict\Plugins\AdvancedSessions\AdvancedSteamSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSteamSessions\UnrealEditor-AdvancedSteamSessions-0001.lib"
+"F:\GitHub\DivineConflict\Intermediate\Build\Win64\x64\DivineConflictEditor\Development\Engine\SharedPCH.Engine.Cpp20.h.obj"
+"F:\GitHub\DivineConflict\Plugins\AdvancedSessions\AdvancedSteamSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSteamSessions\Module.AdvancedSteamSessions.cpp.obj"
+"F:\GitHub\DivineConflict\Plugins\AdvancedSessions\AdvancedSteamSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSteamSessions\SteamNotificationsSubsystem.gen.cpp.obj"
+"F:\GitHub\DivineConflict\Plugins\AdvancedSessions\AdvancedSteamSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSteamSessions\SteamRequestGroupOfficersCallbackProxy.gen.cpp.obj"
+"F:\GitHub\DivineConflict\Plugins\AdvancedSessions\AdvancedSteamSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSteamSessions\AdvancedSteamWorkshopLibrary.gen.cpp.obj"
+"F:\GitHub\DivineConflict\Plugins\AdvancedSessions\AdvancedSteamSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSteamSessions\AdvancedSteamFriendsLibrary.gen.cpp.obj"
+"F:\GitHub\DivineConflict\Plugins\AdvancedSessions\AdvancedSteamSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSteamSessions\AdvancedSteamSessions.init.gen.cpp.obj"
+"F:\GitHub\DivineConflict\Plugins\AdvancedSessions\AdvancedSteamSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSteamSessions\SteamWSRequestUGCDetailsCallbackProxy.gen.cpp.obj"
+"F:\GitHub\DivineConflict\Plugins\AdvancedSessions\AdvancedSteamSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSteamSessions\Default.rc2.res"
+/OUT:"F:\GitHub\DivineConflict\Plugins\AdvancedSessions\AdvancedSteamSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSteamSessions\UnrealEditor-AdvancedSteamSessions-0001.lib"

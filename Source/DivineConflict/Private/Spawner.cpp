@@ -25,7 +25,7 @@ void ASpawner::BeginPlay()
 	if(Grid != nullptr)
 	{
 		Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Spawner on tile %s and this position is %s"), *GetName(), *GridPosition.ToString()));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Spawner on tile %s and this position is %d %d"), *GetName(), GridPosition.X, GridPosition.Y));
 	}
 	
 }
@@ -37,12 +37,12 @@ void ASpawner::Tick(float DeltaTime)
 
 }
 
-void ASpawner::SetGridPosition(FVector2D Position)
+void ASpawner::SetGridPosition(FIntVector2 Position)
 {
 	GridPosition = Position;
 }
 
-FVector2D ASpawner::GetGridPosition()
+FIntVector2 ASpawner::GetGridPosition()
 {
 	return GridPosition;
 }

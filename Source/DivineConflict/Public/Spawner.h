@@ -27,7 +27,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY()
-	FVector2D GridPosition;
+	FIntVector2 GridPosition = FIntVector2(0, 0);
 
 public:	
 	// Called every frame
@@ -36,10 +36,10 @@ public:
 	UPROPERTY()
 	bool IsHell = false;
 
-	UFUNCTION(BlueprintCallable)
-	void SetGridPosition(FVector2D Position);
+	UFUNCTION()
+	void SetGridPosition(FIntVector2 Position);
 
-	UFUNCTION(BlueprintCallable)
-	FVector2D GetGridPosition();
+	UFUNCTION()
+	FIntVector2 GetGridPosition();
 
 };

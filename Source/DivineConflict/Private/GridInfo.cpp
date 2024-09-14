@@ -17,39 +17,55 @@ UGridInfo::UGridInfo()
 	// ...
 }
 
-void UGridInfo::AddUnitInGrid(FVector2D GridPosition, AUnit* Unit)
+void UGridInfo::AddUnitInGrid(FIntVector2 GridPosition, AUnit* Unit)
 {
 	UnitsCombat.Add(Unit);
 	setUnitIndexOnGrid(GridPosition, Unit);
 }
 
-void UGridInfo::setUnitIndexOnGrid(FVector2D GridPosition, AUnit* Unit)
+void UGridInfo::setUnitIndexOnGrid(FIntVector2 GridPosition, AUnit* Unit)
 {
+	if(Grid == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("Grid is null"));
+		return;
+	}
+	TMap<FIntVector2,FDC_TileData> GridRef = Grid->GetGridData();
+	
 	if(GridPosition != Unit->GetIndexPosition())
 	{
-		FDC_TileData* PerviousIndex = Grid->GetGridData().Find(Unit->GetIndexPosition());
+		FDC_TileData* PerviousIndex = GridRef.Find(Unit->GetIndexPosition());
 
 		if(PerviousIndex != nullptr)
 		{
 			if(PerviousIndex->UnitOnTile == Unit)
 			{
-				Grid->GetGridData().Add(PerviousIndex->TilePosition, FDC_TileData(PerviousIndex->TilePosition, PerviousIndex->TileType, PerviousIndex->TileTransform, PerviousIndex->TileState, nullptr, PerviousIndex->SpawnerOnTile));
+				GridRef.Add(PerviousIndex->TilePosition, FDC_TileData(PerviousIndex->TilePosition, PerviousIndex->TileType, PerviousIndex->TileTransform, PerviousIndex->TileState, nullptr, PerviousIndex->SpawnerOnTile));
+				Grid->SetGridData(GridRef);
 			}
 		}
 		Unit->SetIndexPosition(GridPosition);
-		if(Unit->GetIndexPosition() != FVector2d(-999,-999))
+
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Unit Position : " + FString::FromInt(Unit->GetIndexPosition().X) + " " + FString::FromInt(Unit->GetIndexPosition().Y)));
+		if(Unit->GetIndexPosition() != FIntVector2(-999,-999))
 		{
-			FDC_TileData* NewIndex = Grid->GetGridData().Find(Unit->GetIndexPosition());
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Grid Position : "  + FString::FromInt(GridPosition.X) + " " + FString::FromInt(GridPosition.Y)));
+			FDC_TileData* NewIndex = GridRef.Find(GridPosition);
+			GEngine->AddOnScreenDebugMessage(-1 , 5.f, FColor::Green, TEXT("Tile Location : " + NewIndex->TileTransform.GetLocation().ToString()));
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Tile Position : " + FString::FromInt(NewIndex->TilePosition.X) + " " + FString::FromInt(NewIndex->TilePosition.Y)));
 			if(NewIndex != nullptr)
 			{
-				Grid->GetGridData().Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, Unit, NewIndex->SpawnerOnTile));
+				TMap<FIntVector2,FDC_TileData> GridTemp = Grid->GetGridData();
+				GridTemp.Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, Unit, NewIndex->SpawnerOnTile));
+				Grid->SetGridData(GridTemp);
+				
+				
 			}
 			NewIndex = Grid->GetGridData().Find(Unit->GetIndexPosition());
 			//print NewIndex
 			if(NewIndex != nullptr)
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red,
-					FString::Printf(TEXT("Unit on tile %s and this position is %s"), *NewIndex->UnitOnTile->GetName(), *NewIndex->TilePosition.ToString()));
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit added to grid"));
 			}
 		}
 	}
@@ -58,18 +74,22 @@ void UGridInfo::setUnitIndexOnGrid(FVector2D GridPosition, AUnit* Unit)
 void UGridInfo::RemoveUnitInGrid(AUnit* Unit)
 {
 	UnitsCombat.Remove(Unit);
-	setUnitIndexOnGrid(FVector2d(-999,-999), Unit);
+	setUnitIndexOnGrid(FIntVector2(-999,-999), Unit);
 }
 
-void UGridInfo::addSpawnUnitOnGrid(FVector2D GridPosition, ASpawner* Spawner)
+void UGridInfo::addSpawnUnitOnGrid(FIntVector2 GridPosition, ASpawner* Spawner)
 {
 	SpawnersGrid.Add(Spawner);
 	SetSpawnUnitOnGrid(GridPosition, Spawner);
 	
 }
 
-void UGridInfo::SetSpawnUnitOnGrid(FVector2D GridPosition, ASpawner* Spawner)
+void UGridInfo::SetSpawnUnitOnGrid(FIntVector2 GridPosition, ASpawner* Spawner)
 {
+	if(Grid == nullptr)
+	{
+		return;
+	}
 
 	if(GridPosition != Spawner->GetGridPosition())
 	{
@@ -83,7 +103,7 @@ void UGridInfo::SetSpawnUnitOnGrid(FVector2D GridPosition, ASpawner* Spawner)
 			}
 		}
 		Spawner->SetGridPosition(GridPosition);
-		if(Spawner->GetGridPosition() != FVector2d(-999,-999))
+		if(Spawner->GetGridPosition() != FIntVector2(-999,-999))
 		{
 			FDC_TileData* NewIndex = Grid->GetGridData().Find(Spawner->GetGridPosition());
 			if(NewIndex != nullptr)

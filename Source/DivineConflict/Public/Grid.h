@@ -37,7 +37,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "GridElement")
 	UGridInfo* GridInfo = nullptr;
 
-	virtual bool Interact_Implementation(ACustomPlayerController* PlayerController) override;
+	
 	
 	
 protected:
@@ -46,7 +46,11 @@ protected:
 
 	
 	UPROPERTY(EditAnywhere, Category = "GridElement", meta = (AllowPrivate))
-	TMap <FVector2D, FDC_TileData> GridData;
+	TMap <FIntVector2, FDC_TileData> GridData;
+
+	UPROPERTY( EditAnywhere, Category = "GridElement")
+	FDC_TileData test = FDC_TileData(FIntVector2(0, 0), E_DC_TileTypp::Normal, FTransform3d(FVector(0, 0, 0)), TArray<E_DC_TileState>(), nullptr, nullptr);
+
 	
 	FVector3d TraceHitGround(FVector Location);
 
@@ -63,21 +67,24 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(Blueprintable, EditAnywhere, Category = "GridElement")
-	FVector2D GridSize = FVector2D(10, 10);
+	FIntVector2 GridSize = FIntVector2(10, 10);
 
 	UPROPERTY(Blueprintable, EditAnywhere, Category = "GridElement")
 	FVector TileSize = FVector(100, 100, 100);
 
-	UFUNCTION( Category = "GridElement", BlueprintCallable)
-	bool IsTileWalkable(FVector2D Index);
+	UFUNCTION( Category = "GridElement")
+	bool IsTileWalkable(FIntVector2 Index);
 
 	bool IsTileTypeWalkable(E_DC_TileTypp Type);
 
-	TMap <FVector2D, FDC_TileData> GetGridData();
+	TMap <FIntVector2, FDC_TileData> GetGridData();
 
-	FVector2d ConvertLocationToIndex(FVector Location);
+	
+	void SetGridData(TMap <FIntVector2, FDC_TileData> Data);
 
-	FVector3d ConvertIndexToLocation(FVector2d Index);
+	FIntVector2 ConvertLocationToIndex(FVector Location);
+
+	FVector3d ConvertIndexToLocation(FIntVector2 Index);
 	
 
 };

@@ -43,6 +43,7 @@ void ACameraPlayer::BeginPlay()
 	
 	
 	
+	
 }
 
 // Called every frame

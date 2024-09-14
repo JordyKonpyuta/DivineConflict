@@ -21,7 +21,11 @@ AUnit::AUnit()
 
 bool AUnit::Interact_Implementation(ACustomPlayerController* PlayerController)
 {
-	return IInteractInterface::Interact_Implementation(PlayerController);
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Interact unit"));
+
+	
+	return true;
 }
 
 // Called when the game starts or when spawned
@@ -31,8 +35,10 @@ void AUnit::BeginPlay()
 
 	if(Grid != nullptr)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Index Unit : " + FString::FromInt(Grid->ConvertLocationToIndex(GetActorLocation()).X) + " " + FString::FromInt(Grid->ConvertLocationToIndex(GetActorLocation()).Y)));
 		Grid->GridInfo->AddUnitInGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Unit on tile %s and this position is %s"), *GetName(), *IndexPosition.ToString()));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit added to grid"));
+		
 	}
 	
 }
@@ -168,7 +174,7 @@ UTexture2D* AUnit::GetUnitIcon()
 	return UnitIcon;
 }
 
-FVector2d AUnit::GetIndexPosition()
+FIntVector2 AUnit::GetIndexPosition()
 {
 	return IndexPosition;
 }
@@ -193,7 +199,7 @@ void AUnit::SetUnitIcon(UTexture2D* i)
 	UnitIcon = i;
 }
 
-void AUnit::SetIndexPosition(FVector2D ip)
+void AUnit::SetIndexPosition(FIntVector2 ip)
 {
 	IndexPosition = ip;
 }

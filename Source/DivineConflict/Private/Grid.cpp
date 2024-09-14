@@ -53,12 +53,7 @@ AGrid::AGrid()
 	
 }
 
-bool AGrid::Interact_Implementation(ACustomPlayerController* PlayerController)
-{
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Interact grid"));
-	return IInteractInterface::Interact_Implementation(PlayerController);
-}
 
 // Called when the game starts or when spawned
 void AGrid::BeginPlay()
@@ -98,14 +93,16 @@ void AGrid::SpawnGrid()
 			FVector3d HitLocation = TraceHitGround(FVector(X * 100, Y * 100, 0));
 			if (HitLocation != FVector(0, 0, 0))
 			{
-				FVector2d TileIndex = FVector2d(X, Y);
+				FIntVector2 TileIndex = FIntVector2(X, Y);
 				FDC_TileData TileData = FDC_TileData(TileIndex, E_DC_TileTypp::Normal, FTransform3d(FVector(X * 100, Y * 100, HitLocation.Z)),
-					std::vector<E_DC_TileState>(), nullptr, nullptr);
+					TArray<E_DC_TileState>(), nullptr, nullptr);
 
-				
+				UE_LOG( LogTemp, Warning, TEXT("TileIndex: %d %d "),TileIndex.X , TileIndex.Y);
 				GridData.Add(TileIndex, TileData);
-				
+				UE_LOG( LogTemp, Warning, TEXT("Tile : %d %d "),GridData.Find(TileIndex)->TilePosition.X , GridData.Find(TileIndex)->TilePosition.Y);
 				GridMesh->AddInstance(FTransform(FVector(X * 100, Y * 100, HitLocation.Z)), true);
+
+		
 			}
 			Y++;
 		}
@@ -117,11 +114,11 @@ void AGrid::SpawnGrid()
 
 void AGrid::TestPathfinding()
 {
-	TArray<FVector2d> Path = GridPath->FindPath(FVector2d(0, 0), FVector2d(9, 9), false,20 ,false);
+	TArray<FIntVector2> Path = GridPath->FindPath(FIntVector2(0, 0), FIntVector2(9, 9), false,20 ,false);
 
-	for(FVector2d Index : Path)
+	for(FIntVector2 Index : Path)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Path : %s"), *Index.ToString());
+		UE_LOG(LogTemp, Warning, TEXT("Path : %d %d"), Index.X, Index.Y);
 	}
 }
 
@@ -139,7 +136,7 @@ void AGrid::Tick(float DeltaTime)
 	
 }
 
-bool AGrid::IsTileWalkable(FVector2D Index)
+bool AGrid::IsTileWalkable(FIntVector2 Index)
 {
 	return IsTileTypeWalkable(GridData.Find(Index)->TileType);
 	
@@ -153,12 +150,17 @@ bool AGrid::IsTileTypeWalkable(E_DC_TileTypp Type)
 	
 }
 
-TMap<FVector2D, FDC_TileData> AGrid::GetGridData()
+TMap<FIntVector2, FDC_TileData> AGrid::GetGridData()
 {
 	return GridData;
 }
 
-FVector2d AGrid::ConvertLocationToIndex(FVector Location)
+void AGrid::SetGridData(TMap<FIntVector2, FDC_TileData> Data)
+{
+	GridData = Data;
+}
+
+FIntVector2 AGrid::ConvertLocationToIndex(FVector Location)
 {
 	
 	FVector testlocation = SnapVectorToVector(Location, TileSize);
@@ -166,10 +168,10 @@ FVector2d AGrid::ConvertLocationToIndex(FVector Location)
 	
 	FVector TempLoc = (SnapVectorToVector(Location, TileSize))/TileSize;
 
-	return FVector2d(TempLoc.X, TempLoc.Y);
+	return FIntVector2(TempLoc.X, TempLoc.Y);
 }
 
-FVector3d AGrid::ConvertIndexToLocation(FVector2d Index)
+FVector3d AGrid::ConvertIndexToLocation(FIntVector2 Index)
 {
 	return GridData.Find(Index)->TileTransform.GetLocation();
 }

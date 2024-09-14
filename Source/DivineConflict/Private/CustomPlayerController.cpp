@@ -8,6 +8,7 @@
 #include "CameraPlayer.h"
 #include "Kismet/GameplayStatics.h"
 #include "Grid.h"
+#include "Unit.h"
 #include "Kismet/KismetMathLibrary.h"
 
 
@@ -50,14 +51,22 @@ void ACustomPlayerController::SetupInputComponent()
 }
 void ACustomPlayerController::ControllerInteration()
 {
-	FVector2d PlayerPositionInGrid = FVector2d(-999, -999);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Interact Controller"));
 	if(Grid != nullptr)
 	{
-		PlayerPositionInGrid = Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation());
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("PlayerPositionInGrid: %s"), *PlayerPositionInGrid.ToString()));
-		IInteractInterface::Execute_Interact(Grid, this);
 		
-	}
+		FIntVector2 PlayerPositionInGrid = Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation());
+		if(Grid->GetGridData().Find(PlayerPositionInGrid) != nullptr)
+		{
+			
+			if(Grid->GetGridData().Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
+			{
+				IInteractInterface::Execute_Interact(Grid->GetGridData().Find(PlayerPositionInGrid)->UnitOnTile, this);
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit Found"));
+			}
+
+		}
+	}	
 	
 	
 }
