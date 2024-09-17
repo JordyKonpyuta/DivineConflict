@@ -1,11 +1,11 @@
-"F:\GitHub\DivineConflict\Plugins\AdvancedSessions\AdvancedSessions\Intermediate\Build\Win64\UnrealEditor\Inc\AdvancedSessions\UHT\CreateSessionCallbackProxyAdvanced.gen.cpp"
-/FI"F:\GitHub\DivineConflict\Intermediate\Build\Win64\x64\DivineConflictEditor\Development\Engine\SharedPCH.Engine.Cpp20.h"
-/FI"F:\GitHub\DivineConflict\Plugins\AdvancedSessions\AdvancedSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSessions\Definitions.AdvancedSessions.h"
-/Yu"F:\GitHub\DivineConflict\Intermediate\Build\Win64\x64\DivineConflictEditor\Development\Engine\SharedPCH.Engine.Cpp20.h"
-/Fp"F:\GitHub\DivineConflict\Intermediate\Build\Win64\x64\DivineConflictEditor\Development\Engine\SharedPCH.Engine.Cpp20.h.pch"
-/Fo"F:\GitHub\DivineConflict\Plugins\AdvancedSessions\AdvancedSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSessions\CreateSessionCallbackProxyAdvanced.gen.cpp.obj"
-/sourceDependencies "F:\GitHub\DivineConflict\Plugins\AdvancedSessions\AdvancedSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSessions\CreateSessionCallbackProxyAdvanced.gen.cpp.dep.json"
-@"F:\GitHub\DivineConflict\Plugins\AdvancedSessions\AdvancedSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSessions\AdvancedSessions.Shared.rsp"
+"E:\GitHub\DivineConflict\Plugins\AdvancedSessions\AdvancedSessions\Intermediate\Build\Win64\UnrealEditor\Inc\AdvancedSessions\UHT\CreateSessionCallbackProxyAdvanced.gen.cpp"
+/FI"E:\GitHub\DivineConflict\Intermediate\Build\Win64\x64\DivineConflictEditor\Development\UnrealEd\SharedPCH.UnrealEd.Project.NoValFmtStr.ValApi.Cpp20.InclOrderUnreal5_3.h"
+/FI"E:\GitHub\DivineConflict\Plugins\AdvancedSessions\AdvancedSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSessions\Definitions.AdvancedSessions.h"
+/Yu"E:\GitHub\DivineConflict\Intermediate\Build\Win64\x64\DivineConflictEditor\Development\UnrealEd\SharedPCH.UnrealEd.Project.NoValFmtStr.ValApi.Cpp20.InclOrderUnreal5_3.h"
+/Fp"E:\GitHub\DivineConflict\Intermediate\Build\Win64\x64\DivineConflictEditor\Development\UnrealEd\SharedPCH.UnrealEd.Project.NoValFmtStr.ValApi.Cpp20.InclOrderUnreal5_3.h.pch"
+/Fo"E:\GitHub\DivineConflict\Plugins\AdvancedSessions\AdvancedSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSessions\CreateSessionCallbackProxyAdvanced.gen.cpp.obj"
+/sourceDependencies "E:\GitHub\DivineConflict\Plugins\AdvancedSessions\AdvancedSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSessions\CreateSessionCallbackProxyAdvanced.gen.cpp.dep.json"
+@"E:\GitHub\DivineConflict\Plugins\AdvancedSessions\AdvancedSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\AdvancedSessions\AdvancedSessions.Shared.rsp"
 /Zc:inline
 /nologo
 /Oi
@@ -24,6 +24,7 @@
 /D_WINDLL
 /D_DISABLE_EXTENDED_ALIGNED_STORAGE
 /Ob2
+/d2ExtendedWarningInfo
 /Ox
 /Ot
 /GF

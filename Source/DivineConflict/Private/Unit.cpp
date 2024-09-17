@@ -28,6 +28,11 @@ bool AUnit::Interact_Implementation(ACustomPlayerController* PlayerController)
 	return true;
 }
 
+
+void AUnit::interaction(ACustomPlayerController* PlayerController)
+{
+}
+
 // Called when the game starts or when spawned
 void AUnit::BeginPlay()
 {

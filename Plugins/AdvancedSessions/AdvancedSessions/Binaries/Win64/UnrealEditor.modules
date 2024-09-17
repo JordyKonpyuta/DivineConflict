@@ -1,7 +1,7 @@
 {
-	"BuildId": "27405482",
+	"BuildId": "33043543",
 	"Modules": 
 	{
-		"AdvancedSessions": "UnrealEditor-AdvancedSessions-0001.dll"
+		"AdvancedSessions": "UnrealEditor-AdvancedSessions.dll"
 	}
 }

@@ -1,11 +1,11 @@
 {
     "Version": "1.2",
     "Data": {
-        "Source": "f:\\github\\divineconflict\\plugins\\advancedsessions\\advancedsteamsessions\\intermediate\\build\\win64\\unrealeditor\\inc\\advancedsteamsessions\\uht\\advancedsteamsessions.init.gen.cpp",
+        "Source": "e:\\github\\divineconflict\\plugins\\advancedsessions\\advancedsteamsessions\\intermediate\\build\\win64\\unrealeditor\\inc\\advancedsteamsessions\\uht\\advancedsteamsessions.init.gen.cpp",
         "ProvidedModule": "",
-        "PCH": "f:\\github\\divineconflict\\intermediate\\build\\win64\\x64\\divineconflicteditor\\development\\engine\\sharedpch.engine.cpp20.h.pch",
+        "PCH": "e:\\github\\divineconflict\\intermediate\\build\\win64\\x64\\divineconflicteditor\\development\\unrealed\\sharedpch.unrealed.project.novalfmtstr.valapi.cpp20.inclorderunreal5_3.h.pch",
         "Includes": [
-            "f:\\github\\divineconflict\\plugins\\advancedsessions\\advancedsteamsessions\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\advancedsteamsessions\\definitions.advancedsteamsessions.h"
+            "e:\\github\\divineconflict\\plugins\\advancedsessions\\advancedsteamsessions\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\advancedsteamsessions\\definitions.advancedsteamsessions.h"
         ],
         "ImportedModules": [],
         "ImportedHeaderUnits": []
