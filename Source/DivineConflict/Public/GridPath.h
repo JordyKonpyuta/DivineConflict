@@ -17,7 +17,7 @@ struct FPathData
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, Category = "PathData")
-	FIntVector2 Index = FIntVector2(-999, -999);
+	FIntPoint Index = FIntPoint(-999, -999);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PathData")
 	int costEntrerToTile = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PathData")
@@ -25,7 +25,7 @@ struct FPathData
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PathData")
 	int CostFormStart = 9999999;
 	UPROPERTY(EditAnywhere,  Category = "PathData")
-	FIntVector2 PreviewsIndex = FIntVector2(-999, -999);
+	FIntPoint PreviewsIndex = FIntPoint(-999, -999);
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -48,23 +48,23 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY( VisibleAnywhere, Category = "Grid", meta = (AllowPrivate = "true"))
-	FIntVector2 StartPoint = FIntVector2(-999	,-999);
+	FIntPoint StartPoint = FIntPoint(-999	,-999);
 	UPROPERTY( VisibleAnywhere,  Category = "Grid", meta = (AllowPrivate = "true"))
-	FIntVector2 EndPoint = FIntVector2(-999, -999);
+	FIntPoint EndPoint = FIntPoint(-999, -999);
 	UPROPERTY( VisibleAnywhere, Category = "Grid", meta = (AllowPrivate = "true"))
-	TArray<FIntVector2> Path;
+	TArray<FIntPoint> Path;
 	UPROPERTY( VisibleAnywhere,  Category = "Grid", meta = (AllowPrivate = "true"))
-	TArray<FIntVector2> DiscoverTileIndex;
+	TArray<FIntPoint> DiscoverTileIndex;
 	UPROPERTY(	VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
 	TArray<int> DiscoverTileSortingCost;
 	UPROPERTY(	VisibleAnywhere,  Category = "Grid", meta = (AllowPrivate = "true"))
-	TArray<FIntVector2> AnalyseTileIndex;
+	TArray<FIntPoint> AnalyseTileIndex;
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
 	TArray<FPathData> CurrentsNeighbors;
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
 	FPathData CurrentDiscoverTile;
 	UPROPERTY( VisibleAnywhere,  Category = "Grid", meta = (AllowPrivate = "true"))
-	TMap<FIntVector2, FPathData> PathData;
+	TMap<FIntPoint, FPathData> PathData;
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
 	FPathData CurrentNeighbors;
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
@@ -76,15 +76,15 @@ protected:
 	bool bIsEscalation = false;
 	
 	
-	TArray<FIntVector2> FindTileNeighbors(FIntVector2 Index);
-	bool IsInputDataValid(FIntVector2 Start, FIntVector2 End);
+	TArray<FIntPoint> FindTileNeighbors(FIntPoint Index);
+	bool IsInputDataValid(FIntPoint Start, FIntPoint End);
 	void DiscoverTile(FPathData TilePath);
-	int MinimulCostBetweenTwoTile(FIntVector2 Index1, FIntVector2 Index2);
+	int MinimulCostBetweenTwoTile(FIntPoint Index1, FIntPoint Index2);
 	bool AnalyseNextDiscoverTile();
-	TArray<FIntVector2> GeneratePath();
+	TArray<FIntPoint> GeneratePath();
 	FPathData PullCheapestTileOutOfDiscoverList();
 	bool DiscoverNextNeighbors();
-	TArray<FPathData> GetValidTileNeighbors(FIntVector2 Index);
+	TArray<FPathData> GetValidTileNeighbors(FIntPoint Index);
 	void InserTileDiscoverList(FPathData TilePath);
 	void ClearGeneratedPath();
 	bool IsValidHeigh(FDC_TileData IndextestData, FDC_TileData CurrentIndexData);
@@ -95,7 +95,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION()
-	TArray<FIntVector2> FindPath(FIntVector2 Start, FIntVector2 End , bool IsReachable, int PathLenght, bool IsEscalation);
+	TArray<FIntPoint> FindPath(FIntPoint Start, FIntPoint End , bool IsReachable, int PathLenght, bool IsEscalation);
 
 	
 		

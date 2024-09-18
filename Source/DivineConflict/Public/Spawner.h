@@ -27,7 +27,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY()
-	FIntVector2 GridPosition = FIntVector2(0, 0);
+	FIntPoint GridPosition = FIntPoint(0, 0);
 
 public:	
 	// Called every frame
@@ -37,9 +37,9 @@ public:
 	bool IsHell = false;
 
 	UFUNCTION()
-	void SetGridPosition(FIntVector2 Position);
+	void SetGridPosition(FIntPoint Position);
 
 	UFUNCTION()
-	FIntVector2 GetGridPosition();
+	FIntPoint GetGridPosition();
 
 };

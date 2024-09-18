@@ -41,13 +41,13 @@ struct DIVINECONFLICT_API FDC_TileData
 	GENERATED_BODY()
 public:
 	FDC_TileData();
-	FDC_TileData(FIntVector2 tilePosition, E_DC_TileTypp tileType, FTransform3d tileTransform,
+	FDC_TileData(FIntPoint tilePosition, E_DC_TileTypp tileType, FTransform3d tileTransform,
 	             TArray<E_DC_TileState> tileState, AUnit* unitOnTile, ASpawner* spawnerOnTile);
 	
 	
 	~FDC_TileData();
 	UPROPERTY( EditAnywhere, Category = "GridElement")
-	FIntVector2 TilePosition;
+	FIntPoint TilePosition;
 	
 	E_DC_TileTypp TileType;
 	UPROPERTY( EditAnywhere, Category = "GridElement")

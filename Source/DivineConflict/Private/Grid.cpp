@@ -93,7 +93,7 @@ void AGrid::SpawnGrid()
 			FVector3d HitLocation = TraceHitGround(FVector(X * 100, Y * 100, 0));
 			if (HitLocation != FVector(0, 0, 0))
 			{
-				FIntVector2 TileIndex = FIntVector2(X, Y);
+				FIntPoint TileIndex = FIntPoint(X, Y);
 				FDC_TileData TileData = FDC_TileData(TileIndex, E_DC_TileTypp::Normal, FTransform3d(FVector(X * 100, Y * 100, HitLocation.Z)),
 					TArray<E_DC_TileState>(), nullptr, nullptr);
 
@@ -114,9 +114,9 @@ void AGrid::SpawnGrid()
 
 void AGrid::TestPathfinding()
 {
-	TArray<FIntVector2> Path = GridPath->FindPath(FIntVector2(0, 0), FIntVector2(9, 9), false,20 ,false);
+	TArray<FIntPoint> Path = GridPath->FindPath(FIntPoint	(0, 0), FIntPoint(9, 9), false,20 ,false);
 
-	for(FIntVector2 Index : Path)
+	for(FIntPoint Index : Path)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Path : %d %d"), Index.X, Index.Y);
 	}
@@ -136,7 +136,7 @@ void AGrid::Tick(float DeltaTime)
 	
 }
 
-bool AGrid::IsTileWalkable(FIntVector2 Index)
+bool AGrid::IsTileWalkable(FIntPoint Index)
 {
 	return IsTileTypeWalkable(GridData.Find(Index)->TileType);
 	
@@ -150,17 +150,17 @@ bool AGrid::IsTileTypeWalkable(E_DC_TileTypp Type)
 	
 }
 
-TMap<FIntVector2, FDC_TileData> AGrid::GetGridData()
+TMap<FIntPoint, FDC_TileData> AGrid::GetGridData()
 {
 	return GridData;
 }
 
-void AGrid::SetGridData(TMap<FIntVector2, FDC_TileData> Data)
+void AGrid::SetGridData(TMap<FIntPoint, FDC_TileData> Data)
 {
 	GridData = Data;
 }
 
-FIntVector2 AGrid::ConvertLocationToIndex(FVector Location)
+FIntPoint AGrid::ConvertLocationToIndex(FVector Location)
 {
 	
 	FVector testlocation = SnapVectorToVector(Location, TileSize);
@@ -168,10 +168,10 @@ FIntVector2 AGrid::ConvertLocationToIndex(FVector Location)
 	
 	FVector TempLoc = (SnapVectorToVector(Location, TileSize))/TileSize;
 
-	return FIntVector2(TempLoc.X, TempLoc.Y);
+	return FIntPoint(TempLoc.X, TempLoc.Y);
 }
 
-FVector3d AGrid::ConvertIndexToLocation(FIntVector2 Index)
+FVector3d AGrid::ConvertIndexToLocation(FIntPoint Index)
 {
 	return GridData.Find(Index)->TileTransform.GetLocation();
 }

@@ -55,14 +55,24 @@ void ACustomPlayerController::ControllerInteration()
 	if(Grid != nullptr)
 	{
 		
-		FIntVector2 PlayerPositionInGrid = Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation());
+		FIntPoint PlayerPositionInGrid = Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation());
 		if(Grid->GetGridData().Find(PlayerPositionInGrid) != nullptr)
 		{
 			
 			if(Grid->GetGridData().Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
 			{
-				IInteractInterface::Execute_Interact(Grid->GetGridData().Find(PlayerPositionInGrid)->UnitOnTile, this);
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit Found"));
+				if(CameraPlayerRef->IsMovingUnit)
+				{
+					CameraPlayerRef->IsMovingUnit = false;
+					Grid->GetGridData().Find(PlayerPositionInGrid)->UnitOnTile->Move();
+					
+				}
+				else
+				{
+					IInteractInterface::Execute_Interact(Grid->GetGridData().Find(PlayerPositionInGrid)->UnitOnTile, this);
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit Found"));
+				}
+				
 			}
 
 		}

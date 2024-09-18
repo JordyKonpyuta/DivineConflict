@@ -37,12 +37,12 @@ void ASpawner::Tick(float DeltaTime)
 
 }
 
-void ASpawner::SetGridPosition(FIntVector2 Position)
+void ASpawner::SetGridPosition(FIntPoint Position)
 {
 	GridPosition = Position;
 }
 
-FIntVector2 ASpawner::GetGridPosition()
+FIntPoint ASpawner::GetGridPosition()
 {
 	return GridPosition;
 }

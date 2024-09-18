@@ -22,19 +22,19 @@ public:
 	UGridInfo();
 
 	UFUNCTION( Category = "GridElement",CallInEditor)
-	void AddUnitInGrid(FIntVector2 GridPosition, AUnit* Unit);
+	void AddUnitInGrid(FIntPoint GridPosition, AUnit* Unit);
 
 	UFUNCTION( Category = "GridElement",CallInEditor)
-	void setUnitIndexOnGrid(FIntVector2 GridPosition, AUnit *Unit);
+	void setUnitIndexOnGrid(FIntPoint GridPosition, AUnit *Unit);
 
 	UFUNCTION( Category = "GridElement",CallInEditor)
 	void RemoveUnitInGrid(AUnit* Unit);
 
 	UFUNCTION(	Category = "GridElement",CallInEditor)
-	void addSpawnUnitOnGrid(FIntVector2 GridPosition, ASpawner* Spawner);
+	void addSpawnUnitOnGrid(FIntPoint GridPosition, ASpawner* Spawner);
 
 	UFUNCTION( Category = "GridElement",CallInEditor)
-	void SetSpawnUnitOnGrid(FIntVector2 GridPosition, ASpawner* Spawner);
+	void SetSpawnUnitOnGrid(FIntPoint GridPosition, ASpawner* Spawner);
 
 protected:
 	// Called when the game starts

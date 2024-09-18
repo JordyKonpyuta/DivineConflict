@@ -17,20 +17,20 @@ UGridInfo::UGridInfo()
 	// ...
 }
 
-void UGridInfo::AddUnitInGrid(FIntVector2 GridPosition, AUnit* Unit)
+void UGridInfo::AddUnitInGrid(FIntPoint GridPosition, AUnit* Unit)
 {
 	UnitsCombat.Add(Unit);
 	setUnitIndexOnGrid(GridPosition, Unit);
 }
 
-void UGridInfo::setUnitIndexOnGrid(FIntVector2 GridPosition, AUnit* Unit)
+void UGridInfo::setUnitIndexOnGrid(FIntPoint GridPosition, AUnit* Unit)
 {
 	if(Grid == nullptr)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("Grid is null"));
 		return;
 	}
-	TMap<FIntVector2,FDC_TileData> GridRef = Grid->GetGridData();
+	TMap<FIntPoint,FDC_TileData> GridRef = Grid->GetGridData();
 	
 	if(GridPosition != Unit->GetIndexPosition())
 	{
@@ -47,7 +47,7 @@ void UGridInfo::setUnitIndexOnGrid(FIntVector2 GridPosition, AUnit* Unit)
 		Unit->SetIndexPosition(GridPosition);
 
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Unit Position : " + FString::FromInt(Unit->GetIndexPosition().X) + " " + FString::FromInt(Unit->GetIndexPosition().Y)));
-		if(Unit->GetIndexPosition() != FIntVector2(-999,-999))
+		if(Unit->GetIndexPosition() != FIntPoint(-999,-999))
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Grid Position : "  + FString::FromInt(GridPosition.X) + " " + FString::FromInt(GridPosition.Y)));
 			FDC_TileData* NewIndex = GridRef.Find(GridPosition);
@@ -55,7 +55,7 @@ void UGridInfo::setUnitIndexOnGrid(FIntVector2 GridPosition, AUnit* Unit)
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Tile Position : " + FString::FromInt(NewIndex->TilePosition.X) + " " + FString::FromInt(NewIndex->TilePosition.Y)));
 			if(NewIndex != nullptr)
 			{
-				TMap<FIntVector2,FDC_TileData> GridTemp = Grid->GetGridData();
+				TMap<FIntPoint,FDC_TileData> GridTemp = Grid->GetGridData();
 				GridTemp.Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, Unit, NewIndex->SpawnerOnTile));
 				Grid->SetGridData(GridTemp);
 				
@@ -74,17 +74,17 @@ void UGridInfo::setUnitIndexOnGrid(FIntVector2 GridPosition, AUnit* Unit)
 void UGridInfo::RemoveUnitInGrid(AUnit* Unit)
 {
 	UnitsCombat.Remove(Unit);
-	setUnitIndexOnGrid(FIntVector2(-999,-999), Unit);
+	setUnitIndexOnGrid(FIntPoint(-999,-999), Unit);
 }
 
-void UGridInfo::addSpawnUnitOnGrid(FIntVector2 GridPosition, ASpawner* Spawner)
+void UGridInfo::addSpawnUnitOnGrid(FIntPoint GridPosition, ASpawner* Spawner)
 {
 	SpawnersGrid.Add(Spawner);
 	SetSpawnUnitOnGrid(GridPosition, Spawner);
 	
 }
 
-void UGridInfo::SetSpawnUnitOnGrid(FIntVector2 GridPosition, ASpawner* Spawner)
+void UGridInfo::SetSpawnUnitOnGrid(FIntPoint GridPosition, ASpawner* Spawner)
 {
 	if(Grid == nullptr)
 	{
@@ -103,7 +103,7 @@ void UGridInfo::SetSpawnUnitOnGrid(FIntVector2 GridPosition, ASpawner* Spawner)
 			}
 		}
 		Spawner->SetGridPosition(GridPosition);
-		if(Spawner->GetGridPosition() != FIntVector2(-999,-999))
+		if(Spawner->GetGridPosition() != FIntPoint(-999,-999))
 		{
 			FDC_TileData* NewIndex = Grid->GetGridData().Find(Spawner->GetGridPosition());
 			if(NewIndex != nullptr)

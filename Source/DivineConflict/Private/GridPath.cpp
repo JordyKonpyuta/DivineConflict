@@ -27,17 +27,17 @@ void UGridPath::BeginPlay()
 }
 
 
-TArray<FIntVector2> UGridPath::FindTileNeighbors(FIntVector2 Index)
+TArray<FIntPoint> UGridPath::FindTileNeighbors(FIntPoint Index)
 {
-	TArray<FIntVector2> Neighbors;
-	Neighbors.Add(FIntVector2(Index.X + 1, Index.Y));
-	Neighbors.Add(FIntVector2(Index.X - 1, Index.Y));
-	Neighbors.Add(FIntVector2(Index.X, Index.Y + 1));
-	Neighbors.Add(FIntVector2(Index.X, Index.Y - 1));
+	TArray<FIntPoint> Neighbors;
+	Neighbors.Add(FIntPoint(Index.X + 1, Index.Y));
+	Neighbors.Add(FIntPoint(Index.X - 1, Index.Y));
+	Neighbors.Add(FIntPoint(Index.X, Index.Y + 1));
+	Neighbors.Add(FIntPoint(Index.X, Index.Y - 1));
 	return Neighbors;
 }
 
-bool UGridPath::IsInputDataValid(FIntVector2 Start, FIntVector2 End)
+bool UGridPath::IsInputDataValid(FIntPoint Start, FIntPoint End)
 {
 	if(Start == End)
 	{
@@ -72,7 +72,7 @@ void UGridPath::DiscoverTile(FPathData TilePath)
 	InserTileDiscoverList(TilePath);
 }
 
-int UGridPath::MinimulCostBetweenTwoTile(FIntVector2 Index1, FIntVector2 Index2)
+int UGridPath::MinimulCostBetweenTwoTile(FIntPoint Index1, FIntPoint Index2)
 {
 	return FMath::Abs(Index1.X - Index2.X) + FMath::Abs(Index1.Y - Index2.Y);
 }
@@ -95,14 +95,14 @@ bool UGridPath::AnalyseNextDiscoverTile()
 	return false;
 }
 
-TArray<FIntVector2> UGridPath::GeneratePath()
+TArray<FIntPoint> UGridPath::GeneratePath()
 {
-	return TArray<FIntVector2>();
+	return TArray<FIntPoint>();
 }
 
 FPathData UGridPath::PullCheapestTileOutOfDiscoverList()
 {
-	FIntVector2 Index = DiscoverTileIndex[0];
+	FIntPoint Index = DiscoverTileIndex[0];
 	DiscoverTileIndex.RemoveAt(0);
 	DiscoverTileSortingCost.RemoveAt(0);
 
@@ -143,7 +143,7 @@ bool UGridPath::DiscoverNextNeighbors()
 	return false;
 }
 
-TArray<FPathData> UGridPath::GetValidTileNeighbors(FIntVector2 Index)
+TArray<FPathData> UGridPath::GetValidTileNeighbors(FIntPoint Index)
 {
 	//initialize the neighbors
 	TArray<FPathData> Ret;
@@ -152,10 +152,10 @@ TArray<FPathData> UGridPath::GetValidTileNeighbors(FIntVector2 Index)
 	FDC_TileData TileData = Grid->GetGridData()[Index];
 	
 	//get the neighbors of the index
-	TArray<FIntVector2> Neighbors = FindTileNeighbors(Index);
+	TArray<FIntPoint> Neighbors = FindTileNeighbors(Index);
 
 	//for each neighbor
-	for(FIntVector2 Neighbor : Neighbors)
+	for(FIntPoint Neighbor : Neighbors)
 	{
 		//get the Grid data for the neighbor
 		FDC_TileData NeighborTileData = Grid->GetGridData()[Neighbor];
@@ -239,7 +239,7 @@ void UGridPath::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	// ...
 }
 
-TArray<FIntVector2> UGridPath::FindPath(FIntVector2 Start, FIntVector2 End, bool IsReachable, int PathLenght,
+TArray<FIntPoint> UGridPath::FindPath(FIntPoint Start, FIntPoint End, bool IsReachable, int PathLenght,
 	bool IsEscalation)
 {
 	//initialize the path
@@ -254,7 +254,7 @@ TArray<FIntVector2> UGridPath::FindPath(FIntVector2 Start, FIntVector2 End, bool
 	//check if the input data is valid
 	if (!IsInputDataValid(Start, End))
 	{
-		return TArray<FIntVector2>();
+		return TArray<FIntPoint>();
 	}
 
 	//discover the start tile
@@ -270,7 +270,7 @@ TArray<FIntVector2> UGridPath::FindPath(FIntVector2 Start, FIntVector2 End, bool
 			
 
 	}
-	return  TArray<FIntVector2>();
+	return  TArray<FIntPoint>();
 	
 	
 	

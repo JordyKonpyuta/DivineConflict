@@ -89,4 +89,10 @@ public:
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Variable", meta = (AllowPrivate = "true"))
 	FRotator SnapRotation;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Variable", meta = (AllowPrivate = "true"))
+	TArray<FIntPoint> Path;
+
+	UPROPERTY(VisibleAnywhere , BlueprintReadWrite, Category = "Variable", meta = (AllowPrivate = "true"))
+	bool IsMovingUnit = false;
+
 };

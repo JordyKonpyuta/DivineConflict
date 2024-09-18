@@ -8,8 +8,17 @@
 #include "Unit.generated.h"
 
 class AGrid;
-class UStaticMeshComponent;;
+class UStaticMeshComponent;
 class ACustomPlayerController;
+
+USTRUCT()
+struct FPathMove
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FVector2D IndexPosition;
+};
 
 UCLASS()
 class DIVINECONFLICT_API AUnit : public APawn , public IInteractInterface
@@ -18,6 +27,7 @@ class DIVINECONFLICT_API AUnit : public APawn , public IInteractInterface
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Unit", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* UnitMesh;
+
 
 public:
 	// Sets default values for this pawn's properties
@@ -34,6 +44,9 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY()
+	ACustomPlayerController* PlayerControllerRef;
 
 	virtual void NotifyActorOnClicked(FKey ButtonPressed) override;
 
@@ -84,7 +97,10 @@ protected:
 	int PM = 0;
 
 	UPROPERTY()
-	FIntVector2 IndexPosition = FIntVector2(0, 0);
+	FIntPoint IndexPosition = FIntPoint(0, 0);
+
+	UPROPERTY()
+	TArray<FIntPoint> Path;
 
 public:
 	
@@ -93,6 +109,10 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION( BlueprintCallable)
+	void Move( );
+	
 
 	
 
@@ -137,7 +157,7 @@ public:
 	UTexture2D* GetUnitIcon();
 
 	UFUNCTION()
-	FIntVector2 GetIndexPosition();
+	FIntPoint GetIndexPosition();
 
 	// Setter for units stats
 	UFUNCTION(BlueprintCallable)
@@ -183,6 +203,6 @@ public:
 	void DisplayWidget();
 
 	UFUNCTION()
-	void SetIndexPosition(FIntVector2 ip);
+	void SetIndexPosition(FIntPoint ip);
 	
 };

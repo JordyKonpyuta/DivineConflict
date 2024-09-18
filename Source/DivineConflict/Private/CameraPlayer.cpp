@@ -5,6 +5,7 @@
 #include "CustomPlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
+#include "Grid.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -89,15 +90,18 @@ void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 		if (abs(Input.X)  >= abs(Input.Y) )
 		{
 			MoveDirection = UKismetMathLibrary::GetForwardVector(UKismetMathLibrary::MakeRotator(0,0,GetActorRotation().Yaw)) * (Input.X*100);
-			
-			
-			 //MoveDirection = CameraBoom->GetForwardVector() * (Input.X*100);
 		}
 		else
 		{
 			 MoveDirection = CameraBoom->GetRightVector() * (Input.Y*100);
 		}
 		this->SetActorLocation(this->GetActorLocation() + MoveDirection);
+		if (IsMovingUnit)
+		{
+			Path.Add(FIntPoint(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()).X, CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()).Y));
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Path : ") + FString::FromInt(Path.Num()));
+		}
+		
 
 	}
 	

@@ -14,7 +14,7 @@ FDC_TileData::FDC_TileData()
 	SpawnerOnTile = nullptr;
 }
 
-FDC_TileData::FDC_TileData(FIntVector2 tilePosition, E_DC_TileTypp tileType, FTransform3d tileTransform,
+FDC_TileData::FDC_TileData(FIntPoint tilePosition, E_DC_TileTypp tileType, FTransform3d tileTransform,
 	TArray<E_DC_TileState> tileState, AUnit* unitOnTile, ASpawner* spawnerOnTile)
 {
 	this->TilePosition.X = tilePosition.X;

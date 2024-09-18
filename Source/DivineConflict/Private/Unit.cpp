@@ -2,8 +2,12 @@
 
 
 #include "Unit.h"
+
+#include "CameraPlayer.h"
+#include "CustomPlayerController.h"
 #include "Grid.h"
 #include "GridInfo.h"
+#include "Blueprint/UserWidget.h"
 
 
 // Sets default values
@@ -17,12 +21,16 @@ AUnit::AUnit()
 	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/tank_ange_pose.tank_ange_pose'")).Object);
 	
 	
+	
 }
 
 bool AUnit::Interact_Implementation(ACustomPlayerController* PlayerController)
 {
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Interact unit"));
+	PlayerControllerRef = PlayerController;
+	PlayerControllerRef->CameraPlayerRef->IsMovingUnit = true;
+	DisplayWidget();
 
 	
 	return true;
@@ -67,6 +75,26 @@ void AUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AUnit::Move()
+{
+	if(PlayerControllerRef != nullptr)
+	{
+		Path.Empty();
+		for(FIntPoint Index : PlayerControllerRef->CameraPlayerRef->Path)
+		{
+			Path.Add(FIntPoint(Index.X, Index.Y));
+		}
+	}
+	if (Path.Num()!=-1)
+	{
+		for(FIntPoint index : Path)
+		{
+			FVector location = Grid->ConvertIndexToLocation(index);
+			SetActorLocation(location);
+		}
+	}
 }
 
 int AUnit::GetAttack()
@@ -179,7 +207,7 @@ UTexture2D* AUnit::GetUnitIcon()
 	return UnitIcon;
 }
 
-FIntVector2 AUnit::GetIndexPosition()
+FIntPoint AUnit::GetIndexPosition()
 {
 	return IndexPosition;
 }
@@ -204,12 +232,13 @@ void AUnit::SetUnitIcon(UTexture2D* i)
 	UnitIcon = i;
 }
 
-void AUnit::SetIndexPosition(FIntVector2 ip)
+void AUnit::SetIndexPosition(FIntPoint ip)
 {
 	IndexPosition = ip;
 }
 
 void AUnit::DisplayWidget_Implementation()
 {
+
 }
 
