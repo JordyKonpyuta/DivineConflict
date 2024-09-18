@@ -22,8 +22,6 @@ void ACustomPlayerController::BeginPlay()
 
 	CameraPlayerRef->SetCustomPlayerController(this);
 
-	setGrid();
-
 	
 	// Send Controller to Instance
 	if(ACustomGameState* GameState = Cast<ACustomGameState>(GetWorld()->GetGameState()))

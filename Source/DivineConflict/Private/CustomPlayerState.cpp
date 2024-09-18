@@ -3,6 +3,8 @@
 
 #include "CustomPlayerState.h"
 
+#include <set>
+
 
 int ACustomPlayerState::GetActionPoints()
 {
@@ -17,6 +19,67 @@ int ACustomPlayerState::GetMaxActionPoints()
 bool ACustomPlayerState::IsCentralBuildingOurs()
 {
 	return GotCentralBuilding;
+}
+
+int ACustomPlayerState::GetWoodPoints()
+{
+	return WoodPoints;
+}
+
+int ACustomPlayerState::GetStonePoints()
+{
+	return StonePoints;
+}
+
+int ACustomPlayerState::GetGoldPoints()
+{
+	return GoldPoints;
+}
+
+int ACustomPlayerState::GetUnits()
+{
+	return CurrentUnitCount;
+}
+
+void ACustomPlayerState::ChangeWoodPoints(int WoodChange, bool Add)
+{
+	if(Add == true)
+	{
+		WoodPoints += WoodChange;
+	}
+	else
+	{
+		WoodPoints -= WoodChange;
+	}
+}
+
+void ACustomPlayerState::ChangeStonePoints(int StoneChange, bool Add)
+{
+	if(Add == true)
+	{
+		StonePoints += StoneChange;
+	}
+	else
+	{
+		StonePoints -= StoneChange;
+	}
+}
+
+void ACustomPlayerState::ChangeGoldPoints(int GoldChange, bool Add)
+{
+	if(Add == true)
+	{
+		GoldPoints += GoldChange;
+	}
+	else
+	{
+		GoldPoints -= GoldChange;
+	}
+}
+
+void ACustomPlayerState::SetUnits(int UnitNumber)
+{
+	CurrentUnitCount = UnitNumber;
 }
 
 void ACustomPlayerState::RefreshActionPoints()
