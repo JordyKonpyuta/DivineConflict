@@ -73,7 +73,7 @@ public:
 	// Called to bind functionality to input
 	
 
-	void SetCustomPlayerController(ACustomPlayerController* cpc);
+	void SetCustomPlayerController(ACustomPlayerController* Cpc);
 
 	void MoveCamera( const FInputActionValue& Value);
 

@@ -79,7 +79,7 @@ void ACameraPlayer::Interaction()
 
 void ACameraPlayer::SetCustomPlayerController(ACustomPlayerController* Cpc)
 {
-	CustomPlayerController = Cpc;
+		CustomPlayerController = Cpc;
 }
 
 void ACameraPlayer::MoveCamera( const FInputActionValue& Value)

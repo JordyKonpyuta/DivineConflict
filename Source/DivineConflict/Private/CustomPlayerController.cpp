@@ -18,17 +18,18 @@ void ACustomPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CameraPlayerRef = Cast<ACameraPlayer>(GetPawn());
+	if(!HasAuthority())
+	{
+		CameraPlayerRef = Cast<ACameraPlayer>(GetPawn());
 
-	CameraPlayerRef->SetCustomPlayerController(this);
-
+		CameraPlayerRef->SetCustomPlayerController(this);
+	}
 	
 	// Send Controller to Instance
 	if(ACustomGameState* GameState = Cast<ACustomGameState>(GetWorld()->GetGameState()))
 	{
 		GameState->PlayerControllers.Add(this);
 	}
-
 
 	
 
