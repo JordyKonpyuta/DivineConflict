@@ -8,6 +8,7 @@
 #include "Grid.h"
 #include "GridInfo.h"
 #include "Blueprint/UserWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -19,7 +20,7 @@ AUnit::AUnit()
 	UnitMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Unit Mesh"));
 	SetRootComponent(UnitMesh);
 	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/tank_ange_pose.tank_ange_pose'")).Object);
-	
+
 	
 	
 }
@@ -30,7 +31,8 @@ bool AUnit::Interact_Implementation(ACustomPlayerController* PlayerController)
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Interact unit"));
 	PlayerControllerRef = PlayerController;
 	PlayerControllerRef->CameraPlayerRef->IsMovingUnit = true;
-	DisplayWidget();
+	//DisplayWidget();
+	
 
 	
 	return true;
@@ -49,11 +51,42 @@ void AUnit::BeginPlay()
 	if(Grid != nullptr)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Index Unit : " + FString::FromInt(Grid->ConvertLocationToIndex(GetActorLocation()).X) + " " + FString::FromInt(Grid->ConvertLocationToIndex(GetActorLocation()).Y)));
+		if (Grid->GridInfo == nullptr)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("GridInfo is null"));
+			return;
+		}
+
 		Grid->GridInfo->AddUnitInGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit added to grid"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Unit added to grid"));
 		
 	}
+	else 
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("Grid is null"));
+		SetGrid();
+    }
 	
+}
+
+void AUnit::SetGrid()
+{
+	//get the grid
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Set Grid"));
+	AActor* FoundActors = UGameplayStatics::GetActorOfClass(GetWorld(), AGrid::StaticClass());
+	if (FoundActors != nullptr)
+	{
+		Grid = Cast<AGrid>(FoundActors);
+		Grid->GridInfo->AddUnitInGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No Grid Found"));
+		//delay 0.2s and try again
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AUnit::SetGrid, 0.2f, false);
+		
+	}
 }
 
 void AUnit::NotifyActorOnClicked(FKey ButtonPressed)
@@ -94,6 +127,7 @@ void AUnit::Move()
 			FVector location = Grid->ConvertIndexToLocation(index);
 			SetActorLocation(location);
 		}
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit moved"));
 	}
 }
 

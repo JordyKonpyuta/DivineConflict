@@ -12,6 +12,7 @@ class AGrid;
 class ACustomGameState;
 class UInputMappingContext;
 class UInputAction;
+class AUnit;
 /**
  * 
  */
@@ -32,6 +33,8 @@ public:
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
 	ACustomGameState* GameStateRef;
 
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
+	AUnit* UnitRef = nullptr;
 	
 	
 	
@@ -49,6 +52,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void  SetupInputComponent() override;
+
+	void setGrid();
 
 	
 	

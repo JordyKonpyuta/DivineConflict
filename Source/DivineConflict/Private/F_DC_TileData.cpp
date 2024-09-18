@@ -7,15 +7,15 @@ FDC_TileData::FDC_TileData()
 {
 	TilePosition.X = 0;
 	TilePosition.Y = 0;
-	TileType = E_DC_TileTypp::None;
+	TileType = EDC_TileType::None;
 	TileTransform = FTransform3d();
-	TileState = TArray<E_DC_TileState>();
+	TileState = TArray<EDC_TileState>();
 	UnitOnTile = nullptr;
 	SpawnerOnTile = nullptr;
 }
 
-FDC_TileData::FDC_TileData(FIntPoint tilePosition, E_DC_TileTypp tileType, FTransform3d tileTransform,
-	TArray<E_DC_TileState> tileState, AUnit* unitOnTile, ASpawner* spawnerOnTile)
+FDC_TileData::FDC_TileData(FIntPoint tilePosition, EDC_TileType tileType, FTransform3d tileTransform,
+	TArray<EDC_TileState> tileState, AUnit* unitOnTile, ASpawner* spawnerOnTile)
 {
 	this->TilePosition.X = tilePosition.X;
 	this->TilePosition.Y = tilePosition.Y;

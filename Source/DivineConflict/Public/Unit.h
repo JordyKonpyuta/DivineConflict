@@ -48,6 +48,8 @@ protected:
 	UPROPERTY()
 	ACustomPlayerController* PlayerControllerRef;
 
+	void SetGrid();
+
 	virtual void NotifyActorOnClicked(FKey ButtonPressed) override;
 
 	UPROPERTY(Blueprintable)
@@ -97,7 +99,7 @@ protected:
 	int PM = 0;
 
 	UPROPERTY()
-	FIntPoint IndexPosition = FIntPoint(0, 0);
+	FIntPoint IndexPosition = FIntPoint(-999, -999);
 
 	UPROPERTY()
 	TArray<FIntPoint> Path;

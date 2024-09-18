@@ -13,24 +13,35 @@
 class AUnit;
 class ASpawner;
 
-enum class DIVINECONFLICT_API E_DC_TileTypp
+
+
+
+UENUM(BlueprintType)
+enum class EDC_TileType : uint8
 {
-	None,
-	Normal,
-	Obstacle,
-	Gate,
-	Tower,
-	Walkable,
+	None UMETA(DisplayName = "None"),
+	Normal UMETA(DisplayName = "Normal"),
+	Obstacle UMETA(DisplayName = "Obstacle"),
+	Gate UMETA(DisplayName = "Gate"),
+	Tower UMETA(DisplayName = "Tower"),
+	Walkable UMETA(DisplayName = "Walkable"),
 };
 
-enum class DIVINECONFLICT_API E_DC_TileState
+
+
+UENUM(BlueprintType)
+enum class EDC_TileState : uint8
 {
-	None,
-	Hovered,
-	Selected,
-	Reachable,
-	Pathfinding,
-	Attacked
+
+	None UMETA(DisplayName = "None"),
+	Hovered UMETA(DisplayName = "Hovered"),
+	Selected UMETA(DisplayName = "Selected"),
+	Reachable UMETA(DisplayName = "Reachable"),
+	Pathfinding	UMETA(DisplayName = "Pathfinding"),
+	Attacked UMETA(DisplayName = "Attacked"),
+
+
+
 };
 
 
@@ -41,21 +52,27 @@ struct DIVINECONFLICT_API FDC_TileData
 	GENERATED_BODY()
 public:
 	FDC_TileData();
-	FDC_TileData(FIntPoint tilePosition, E_DC_TileTypp tileType, FTransform3d tileTransform,
-	             TArray<E_DC_TileState> tileState, AUnit* unitOnTile, ASpawner* spawnerOnTile);
+	FDC_TileData(FIntPoint tilePosition, EDC_TileType tileType, FTransform3d tileTransform,
+	             TArray<EDC_TileState> tileState, AUnit* unitOnTile, ASpawner* spawnerOnTile);
 	
 	
 	~FDC_TileData();
+	
 	UPROPERTY( EditAnywhere, Category = "GridElement")
 	FIntPoint TilePosition;
 	
-	E_DC_TileTypp TileType;
+	UPROPERTY(EditAnywhere, Category = "GridElement")
+	EDC_TileType TileType;
+	
 	UPROPERTY( EditAnywhere, Category = "GridElement")
 	FTransform3d TileTransform;
+
+	UPROPERTY( EditAnywhere, Category = "GridElement")
+	TArray<EDC_TileState> TileState;
 	
-	TArray<E_DC_TileState> TileState;
 	UPROPERTY( EditAnywhere, Category = "GridElement")
 	AUnit* UnitOnTile = nullptr;
+	
 	UPROPERTY( EditAnywhere, Category = "GridElement")
 	ASpawner* SpawnerOnTile = nullptr;
 };

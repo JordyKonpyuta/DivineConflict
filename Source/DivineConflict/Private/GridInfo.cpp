@@ -27,21 +27,21 @@ void UGridInfo::setUnitIndexOnGrid(FIntPoint GridPosition, AUnit* Unit)
 {
 	if(Grid == nullptr)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("Grid is null"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Grid is null"));
 		return;
 	}
-	TMap<FIntPoint,FDC_TileData> GridRef = Grid->GetGridData();
+	TMap<FIntPoint,FDC_TileData>* GridDataRef = Grid->GetGridData();
 	
 	if(GridPosition != Unit->GetIndexPosition())
 	{
-		FDC_TileData* PerviousIndex = GridRef.Find(Unit->GetIndexPosition());
+		FDC_TileData* PerviousIndex = GridDataRef->Find(Unit->GetIndexPosition());
 
 		if(PerviousIndex != nullptr)
 		{
 			if(PerviousIndex->UnitOnTile == Unit)
 			{
-				GridRef.Add(PerviousIndex->TilePosition, FDC_TileData(PerviousIndex->TilePosition, PerviousIndex->TileType, PerviousIndex->TileTransform, PerviousIndex->TileState, nullptr, PerviousIndex->SpawnerOnTile));
-				Grid->SetGridData(GridRef);
+				GridDataRef->Add(PerviousIndex->TilePosition, FDC_TileData(PerviousIndex->TilePosition, PerviousIndex->TileType, PerviousIndex->TileTransform, PerviousIndex->TileState, nullptr, PerviousIndex->SpawnerOnTile));
+
 			}
 		}
 		Unit->SetIndexPosition(GridPosition);
@@ -49,23 +49,16 @@ void UGridInfo::setUnitIndexOnGrid(FIntPoint GridPosition, AUnit* Unit)
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Unit Position : " + FString::FromInt(Unit->GetIndexPosition().X) + " " + FString::FromInt(Unit->GetIndexPosition().Y)));
 		if(Unit->GetIndexPosition() != FIntPoint(-999,-999))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Grid Position : "  + FString::FromInt(GridPosition.X) + " " + FString::FromInt(GridPosition.Y)));
-			FDC_TileData* NewIndex = GridRef.Find(GridPosition);
-			GEngine->AddOnScreenDebugMessage(-1 , 5.f, FColor::Green, TEXT("Tile Location : " + NewIndex->TileTransform.GetLocation().ToString()));
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Tile Position : " + FString::FromInt(NewIndex->TilePosition.X) + " " + FString::FromInt(NewIndex->TilePosition.Y)));
-			if(NewIndex != nullptr)
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Grid Position : " + FString::FromInt(GridPosition.X) + " " + FString::FromInt(GridPosition.Y)));
+
+			if(GridDataRef->Find(FIntPoint(0,0)) != nullptr)
 			{
-				TMap<FIntPoint,FDC_TileData> GridTemp = Grid->GetGridData();
-				GridTemp.Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, Unit, NewIndex->SpawnerOnTile));
-				Grid->SetGridData(GridTemp);
-				
-				
+				GridDataRef->Add(GridDataRef->Find(GridPosition)->TilePosition, FDC_TileData(GridDataRef->Find(GridPosition)->TilePosition, GridDataRef->Find(GridPosition)->TileType,
+					GridDataRef->Find(GridPosition)->TileTransform, GridDataRef->Find(GridPosition)->TileState, Unit, GridDataRef->Find(GridPosition)->SpawnerOnTile));
 			}
-			NewIndex = Grid->GetGridData().Find(Unit->GetIndexPosition());
-			//print NewIndex
-			if(NewIndex != nullptr)
+			else
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit added to grid"));
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Grid Position is null"));
 			}
 		}
 	}
@@ -93,22 +86,22 @@ void UGridInfo::SetSpawnUnitOnGrid(FIntPoint GridPosition, ASpawner* Spawner)
 
 	if(GridPosition != Spawner->GetGridPosition())
 	{
-		FDC_TileData* PerviousIndex = Grid->GetGridData().Find(Spawner->GetGridPosition());
+		FDC_TileData* PerviousIndex = Grid->GetGridData()->Find(Spawner->GetGridPosition());
 
 		if(PerviousIndex != nullptr)
 		{
 			if(PerviousIndex->SpawnerOnTile == Spawner)
 			{
-				Grid->GetGridData().Add(PerviousIndex->TilePosition, FDC_TileData(PerviousIndex->TilePosition, PerviousIndex->TileType, PerviousIndex->TileTransform, PerviousIndex->TileState, PerviousIndex->UnitOnTile, nullptr));
+				Grid->GetGridData()->Add(PerviousIndex->TilePosition, FDC_TileData(PerviousIndex->TilePosition, PerviousIndex->TileType, PerviousIndex->TileTransform, PerviousIndex->TileState, PerviousIndex->UnitOnTile, nullptr));
 			}
 		}
 		Spawner->SetGridPosition(GridPosition);
 		if(Spawner->GetGridPosition() != FIntPoint(-999,-999))
 		{
-			FDC_TileData* NewIndex = Grid->GetGridData().Find(Spawner->GetGridPosition());
+			FDC_TileData* NewIndex = Grid->GetGridData()->Find(Spawner->GetGridPosition());
 			if(NewIndex != nullptr)
 			{
-				Grid->GetGridData().Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, Spawner));
+				Grid->GetGridData()->Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, Spawner));
 			}
 			
 		}

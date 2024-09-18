@@ -6,6 +6,8 @@
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "Grid.h"
+#include "GridPath.h"
+#include "Unit.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -95,11 +97,28 @@ void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 		{
 			 MoveDirection = CameraBoom->GetRightVector() * (Input.Y*100);
 		}
-		this->SetActorLocation(this->GetActorLocation() + MoveDirection);
+		
 		if (IsMovingUnit)
 		{
-			Path.Add(FIntPoint(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()).X, CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()).Y));
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Path : ") + FString::FromInt(Path.Num()));
+			if (Path.Num()< CustomPlayerController->UnitRef->GetPM())
+				if (CustomPlayerController->Grid->GridPath->IsValidHeigh(CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(MoveDirection)),
+					CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()))))
+					if (CustomPlayerController->Grid->IsTileWalkable(CustomPlayerController->Grid->ConvertLocationToIndex(MoveDirection)))
+					{
+				
+						Path.AddUnique(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()));
+
+						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Path : ") + FString::FromInt(Path.Num()));
+				
+						this->SetActorLocation(this->GetActorLocation() + MoveDirection);
+				
+					}
+			
+			
+		}
+		else
+		{
+			this->SetActorLocation(this->GetActorLocation() + MoveDirection);
 		}
 		
 

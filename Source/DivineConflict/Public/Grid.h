@@ -49,7 +49,7 @@ protected:
 	TMap <FIntPoint, FDC_TileData> GridData;
 
 	UPROPERTY( EditAnywhere, Category = "GridElement")
-	FDC_TileData test = FDC_TileData(FIntPoint(0, 0), E_DC_TileTypp::Normal, FTransform3d(FVector(0, 0, 0)), TArray<E_DC_TileState>(), nullptr, nullptr);
+	FDC_TileData test = FDC_TileData(FIntPoint(0, 0), EDC_TileType::None, FTransform3d(FVector(0, 0, 0)), TArray<EDC_TileState>(), nullptr, nullptr);
 
 	
 	FVector3d TraceHitGround(FVector Location);
@@ -75,14 +75,14 @@ public:
 	UFUNCTION( Category = "GridElement")
 	bool IsTileWalkable(FIntPoint Index);
 
-	bool IsTileTypeWalkable(E_DC_TileTypp Type);
+	bool IsTileTypeWalkable(EDC_TileType Type);
 
-	TMap <FIntPoint, FDC_TileData> GetGridData();
+	TMap <FIntPoint, FDC_TileData>* GetGridData();
 
 	
 	void SetGridData(TMap <FIntPoint, FDC_TileData> Data);
 
-	FIntPoint ConvertLocationToIndex(FVector Location);
+	FIntPoint ConvertLocationToIndex(FVector3d Location);
 
 	FVector3d ConvertIndexToLocation(FIntPoint Index);
 	

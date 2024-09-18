@@ -87,13 +87,15 @@ protected:
 	TArray<FPathData> GetValidTileNeighbors(FIntPoint Index);
 	void InserTileDiscoverList(FPathData TilePath);
 	void ClearGeneratedPath();
-	bool IsValidHeigh(FDC_TileData IndextestData, FDC_TileData CurrentIndexData);
+	
 	
 
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	bool IsValidHeigh(FDC_TileData* IndextestData, FDC_TileData* CurrentIndexData);
+	
 	UFUNCTION()
 	TArray<FIntPoint> FindPath(FIntPoint Start, FIntPoint End , bool IsReachable, int PathLenght, bool IsEscalation);
 

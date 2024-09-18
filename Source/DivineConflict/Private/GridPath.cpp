@@ -149,7 +149,7 @@ TArray<FPathData> UGridPath::GetValidTileNeighbors(FIntPoint Index)
 	TArray<FPathData> Ret;
 	
 	//get the Grid data for the index
-	FDC_TileData TileData = Grid->GetGridData()[Index];
+	FDC_TileData* TileData = Grid->GetGridData()->Find(Index);
 	
 	//get the neighbors of the index
 	TArray<FIntPoint> Neighbors = FindTileNeighbors(Index);
@@ -158,16 +158,16 @@ TArray<FPathData> UGridPath::GetValidTileNeighbors(FIntPoint Index)
 	for(FIntPoint Neighbor : Neighbors)
 	{
 		//get the Grid data for the neighbor
-		FDC_TileData NeighborTileData = Grid->GetGridData()[Neighbor];
+		FDC_TileData* NeighborTileData = Grid->GetGridData()->Find(Index);
 		
 		//check if the neighbor is walkable
-		if(!Grid->IsTileTypeWalkable(NeighborTileData.TileType))
+		if(!Grid->IsTileTypeWalkable(NeighborTileData->TileType))
 		{
 			continue;
 		}
 		if (IsValidHeigh(NeighborTileData, TileData))
 		{
-			Ret.Add(FPathData(NeighborTileData.TilePosition,1,99999,99999));
+			Ret.Add(FPathData(NeighborTileData->TilePosition,1,99999,99999));
 		}
 	}
 
@@ -224,10 +224,10 @@ void UGridPath::ClearGeneratedPath()
 	Path.Empty();
 }
 
-bool UGridPath::IsValidHeigh(FDC_TileData IndextestData, FDC_TileData CurrentIndexData)
+bool UGridPath::IsValidHeigh(FDC_TileData* IndextestData, FDC_TileData* CurrentIndexData)
 {
 	
-	return FMath::Abs(IndextestData.TileTransform.GetLocation().Z - CurrentIndexData.TileTransform.GetLocation().Z) <= (100/1.75);
+	return FMath::Abs(IndextestData->TileTransform.GetLocation().Z - CurrentIndexData->TileTransform.GetLocation().Z) <= (100/1.75);
 
 }
 

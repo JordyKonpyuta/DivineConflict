@@ -22,17 +22,8 @@ void ACustomPlayerController::BeginPlay()
 
 	CameraPlayerRef->setCustomePlayerController(this);
 
-	//get the grid
-	AActor* FoundActors;
-	FoundActors = UGameplayStatics::GetActorOfClass(GetWorld(), AGrid::StaticClass());
-	if (FoundActors != nullptr)
-	{
-		Grid = Cast<AGrid>(FoundActors);
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No Grid Found"));
-	}
+	setGrid();
+
 	
 	// Send Controller to Instance
 	if(ACustomGameState* GameState = Cast<ACustomGameState>(GetWorld()->GetGameState()))
@@ -58,29 +49,49 @@ void ACustomPlayerController::SetupInputComponent()
 		}
 	}
 }
+
+void ACustomPlayerController::setGrid()
+{
+	//get the grid
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Set Grid"));
+	AActor* FoundActors = UGameplayStatics::GetActorOfClass(GetWorld(), AGrid::StaticClass());
+	if (FoundActors != nullptr)
+	{
+		Grid = Cast<AGrid>(FoundActors);
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No Grid Found"));
+		//delay 0.2s and try again
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACustomPlayerController::setGrid, 0.2f, false);
+		
+	}
+}
+
 void ACustomPlayerController::ControllerInteration()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Interact Controller"));
 	if(Grid != nullptr)
 	{
+		if(UnitRef != nullptr)
+        {
+            CameraPlayerRef->IsMovingUnit = false;
+			UnitRef->SetIsSelected(false);
+			UnitRef->Move();
+			UnitRef = nullptr;
+        }
 		
 		FIntPoint PlayerPositionInGrid = Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation());
-		if(Grid->GetGridData().Find(PlayerPositionInGrid) != nullptr)
+		if(Grid->GetGridData()->Find(PlayerPositionInGrid) != nullptr)
 		{
-			
-			if(Grid->GetGridData().Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
+			if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
 			{
-				if(CameraPlayerRef->IsMovingUnit)
-				{
-					CameraPlayerRef->IsMovingUnit = false;
-					Grid->GetGridData().Find(PlayerPositionInGrid)->UnitOnTile->Move();
-					
-				}
-				else
-				{
-					IInteractInterface::Execute_Interact(Grid->GetGridData().Find(PlayerPositionInGrid)->UnitOnTile, this);
-					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit Found"));
-				}
+
+				UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile;
+				IInteractInterface::Execute_Interact(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile, this);
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit Found"));
+				
 				
 			}
 

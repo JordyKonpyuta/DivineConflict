@@ -82,7 +82,7 @@ FVector3d AGrid::TraceHitGround(FVector Location)
 
 void AGrid::SpawnGrid()
 {
-	
+
 	int X = 0;
 	int Y = 0;
 	GridMesh->ClearInstances();
@@ -94,8 +94,8 @@ void AGrid::SpawnGrid()
 			if (HitLocation != FVector(0, 0, 0))
 			{
 				FIntPoint TileIndex = FIntPoint(X, Y);
-				FDC_TileData TileData = FDC_TileData(TileIndex, E_DC_TileTypp::Normal, FTransform3d(FVector(X * 100, Y * 100, HitLocation.Z)),
-					TArray<E_DC_TileState>(), nullptr, nullptr);
+				FDC_TileData TileData = FDC_TileData(TileIndex, EDC_TileType::Normal, FTransform3d(FVector(X * 100, Y * 100, HitLocation.Z)),
+					TArray<EDC_TileState>(), nullptr, nullptr);
 
 				UE_LOG( LogTemp, Warning, TEXT("TileIndex: %d %d "),TileIndex.X , TileIndex.Y);
 				GridData.Add(TileIndex, TileData);
@@ -142,17 +142,17 @@ bool AGrid::IsTileWalkable(FIntPoint Index)
 	
 }
 
-bool AGrid::IsTileTypeWalkable(E_DC_TileTypp Type)
+bool AGrid::IsTileTypeWalkable(EDC_TileType Type)
 {
-	TArray<E_DC_TileTypp> WalkableTypes = { E_DC_TileTypp::None, E_DC_TileTypp::Obstacle, E_DC_TileTypp::Gate };
+	TArray<EDC_TileType> WalkableTypes = { EDC_TileType::None, EDC_TileType::Obstacle, EDC_TileType::Gate };
 
 	return !WalkableTypes.Contains(Type);
 	
 }
 
-TMap<FIntPoint, FDC_TileData> AGrid::GetGridData()
+TMap<FIntPoint, FDC_TileData>* AGrid::GetGridData()
 {
-	return GridData;
+	return &GridData;
 }
 
 void AGrid::SetGridData(TMap<FIntPoint, FDC_TileData> Data)
@@ -160,7 +160,7 @@ void AGrid::SetGridData(TMap<FIntPoint, FDC_TileData> Data)
 	GridData = Data;
 }
 
-FIntPoint AGrid::ConvertLocationToIndex(FVector Location)
+FIntPoint AGrid::ConvertLocationToIndex(FVector3d Location)
 {
 	
 	FVector testlocation = SnapVectorToVector(Location, TileSize);
