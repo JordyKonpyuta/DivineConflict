@@ -77,7 +77,7 @@ void ACameraPlayer::Interaction()
 }
 
 
-void ACameraPlayer::setCustomePlayerController(ACustomPlayerController* cpc)
+void ACameraPlayer::SetCustomPlayerController(ACustomPlayerController* cpc)
 {
 	CustomPlayerController = cpc;
 }

@@ -20,7 +20,7 @@ void ACustomPlayerController::BeginPlay()
 
 	CameraPlayerRef = Cast<ACameraPlayer>(GetPawn());
 
-	CameraPlayerRef->setCustomePlayerController(this);
+	CameraPlayerRef->SetCustomPlayerController(this);
 
 	setGrid();
 
@@ -117,9 +117,9 @@ bool ACustomPlayerController::GetIsHell()
 	return IsHell;
 }
 
-void ACustomPlayerController::SetIsHell(bool h)
+void ACustomPlayerController::SetIsHell(bool bH)
 {
-	IsHell = h;
+	IsHell = bH;
 }
 
 bool ACustomPlayerController::GetIsInActiveTurn()
@@ -127,9 +127,9 @@ bool ACustomPlayerController::GetIsInActiveTurn()
 	return IsInActiveTurn;
 }
 
-void ACustomPlayerController::SetIsInActiveTurn(bool a)
+void ACustomPlayerController::SetIsInActiveTurn(bool bA)
 {
-	IsInActiveTurn = a;
+	IsInActiveTurn = bA;
 }
 
 bool ACustomPlayerController::GetIsReady()
@@ -137,7 +137,7 @@ bool ACustomPlayerController::GetIsReady()
 	return IsReady;
 }
 
-void ACustomPlayerController::SetIsReady(bool r)
+void ACustomPlayerController::SetIsReady(bool bR)
 {
-	IsReady = r;
+	IsReady = bR;
 }

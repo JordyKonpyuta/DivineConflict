@@ -66,19 +66,19 @@ public:
 	bool GetIsHell();
 
 	UFUNCTION(BlueprintCallable)
-	void SetIsHell(bool h);
+	void SetIsHell(bool bH);
 
 	UFUNCTION(BlueprintCallable)
 	bool GetIsInActiveTurn();
 
 	UFUNCTION(BlueprintCallable)
-	void SetIsInActiveTurn(bool a);
+	void SetIsInActiveTurn(bool bA);
 
 	UFUNCTION(BlueprintCallable)
 	bool GetIsReady();
 
 	UFUNCTION(BlueprintCallable)
-	void SetIsReady(bool r);
+	void SetIsReady(bool bR);
 	
 	void ControllerInteration();
 	
