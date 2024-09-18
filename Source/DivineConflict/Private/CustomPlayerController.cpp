@@ -4,12 +4,14 @@
 #include "CustomPlayerController.h"
 
 #include "EnhancedInputSubsystems.h"
+#include "CustomGameInstance.h"
 #include "Engine\LocalPlayer.h"
 #include "CameraPlayer.h"
 #include "Kismet/GameplayStatics.h"
 #include "Grid.h"
 #include "Unit.h"
 #include "Kismet/KismetMathLibrary.h"
+
 
 
 void ACustomPlayerController::BeginPlay()
@@ -31,6 +33,13 @@ void ACustomPlayerController::BeginPlay()
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No Grid Found"));
 	}
+	
+	// Send Controller to Instance
+	if(UCustomGameInstance* GameInstance = Cast<UCustomGameInstance>(GetWorld()->GetGameInstance()))
+	{
+		GameInstance->PlayerControllers.Add(this);
+	}
+
 
 	
 

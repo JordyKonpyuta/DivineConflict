@@ -7,11 +7,11 @@
 #include "InteractInterface.h"
 #include "CustomPlayerController.generated.h"
 
-
 class ACameraPlayer;
 class AGrid;
 class UInputMappingContext;
 class UInputAction;
+class UCustomGameInstance;
 /**
  * 
  */
@@ -28,6 +28,9 @@ public:
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
 	UInputMappingContext* InputMappingContext;
+
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
+	UCustomGameInstance* GameInstanceRef;
 
 	
 	
@@ -71,7 +74,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetIsReady(bool r);
-
+	
 	void ControllerInteration();
 	
 };
