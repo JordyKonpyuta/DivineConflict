@@ -6,7 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "CustomGameMode.generated.h"
 
-class UCustomGameInstance;
+class ACustomGameState;
 
 /**
  * 
@@ -19,7 +19,7 @@ class DIVINECONFLICT_API ACustomGameMode : public AGameModeBase
 /* UPROPERTIES */
 public:
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivateAccess = "true"))
-	UCustomGameInstance* GameInstance;
+	ACustomGameState* ThisGameState;
 	
 private:
 	virtual void BeginPlay() override;

@@ -4,7 +4,7 @@
 #include "CustomPlayerController.h"
 
 #include "EnhancedInputSubsystems.h"
-#include "CustomGameInstance.h"
+#include "CustomGameState.h"
 #include "Engine\LocalPlayer.h"
 #include "CameraPlayer.h"
 #include "Kismet/GameplayStatics.h"
@@ -35,9 +35,9 @@ void ACustomPlayerController::BeginPlay()
 	}
 	
 	// Send Controller to Instance
-	if(UCustomGameInstance* GameInstance = Cast<UCustomGameInstance>(GetWorld()->GetGameInstance()))
+	if(ACustomGameState* GameState = Cast<ACustomGameState>(GetWorld()->GetGameState()))
 	{
-		GameInstance->PlayerControllers.Add(this);
+		GameState->PlayerControllers.Add(this);
 	}
 
 

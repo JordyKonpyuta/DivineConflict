@@ -2,7 +2,7 @@
 
 
 #include "CustomGameMode.h"
-#include "CustomGameInstance.h"
+#include "CustomGameState.h"
 #include "CustomPlayerController.h"
 #include "GameFramework/GameSession.h"
 
@@ -11,12 +11,12 @@ void ACustomGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GameInstance = Cast<UCustomGameInstance>(GetWorld()->GetGameInstance());
+	GameState = Cast<ACustomGameState>(GetWorld()->GetGameState());
 }
 
 void ACustomGameMode::SwitchPlayerTurn()
 {
-	for (ACustomPlayerController* CurrentController : GameInstance->PlayerControllers)
+	for (ACustomPlayerController* CurrentController : ThisGameState->PlayerControllers)
 	{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Turn Switched"));
 

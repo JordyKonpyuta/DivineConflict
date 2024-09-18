@@ -6,8 +6,6 @@
 #include "Engine/GameInstance.h"
 #include "CustomGameInstance.generated.h"
 
-class ACustomPlayerController;
-
 /**
  * 
  */
@@ -18,8 +16,7 @@ class DIVINECONFLICT_API UCustomGameInstance : public UGameInstance
 
 /* UPROPERTIES */
 public:
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PlayerControllers", meta = (AllowPrivateAccess = "true"))
-	TArray<ACustomPlayerController*> PlayerControllers;
+	
 
 private:
 

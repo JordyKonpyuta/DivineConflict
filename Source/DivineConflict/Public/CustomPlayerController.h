@@ -9,9 +9,9 @@
 
 class ACameraPlayer;
 class AGrid;
+class ACustomGameState;
 class UInputMappingContext;
 class UInputAction;
-class UCustomGameInstance;
 /**
  * 
  */
@@ -30,7 +30,7 @@ public:
 	UInputMappingContext* InputMappingContext;
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
-	UCustomGameInstance* GameInstanceRef;
+	ACustomGameState* GameStateRef;
 
 	
 	
