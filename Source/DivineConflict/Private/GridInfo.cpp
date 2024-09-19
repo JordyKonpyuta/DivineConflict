@@ -37,7 +37,6 @@ void UGridInfo::setUnitIndexOnGrid(FIntPoint GridPosition, AUnit* Unit)
 		return;
 	}
 	TMap<FIntPoint,FDC_TileData>* GridDataRef = Grid->GetGridData();
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Grid Nombre info: " + FString::FromInt(Grid->GridData.Num()) ));
 	if(GridPosition != Unit->GetIndexPosition())
 	{
 		FDC_TileData* PerviousIndex = GridDataRef->Find(Unit->GetIndexPosition());
@@ -52,10 +51,8 @@ void UGridInfo::setUnitIndexOnGrid(FIntPoint GridPosition, AUnit* Unit)
 		}
 		Unit->SetIndexPosition(GridPosition);
 
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Unit Position : " + FString::FromInt(Unit->GetIndexPosition().X) + " " + FString::FromInt(Unit->GetIndexPosition().Y)));
 		if(Unit->GetIndexPosition() != FIntPoint(-999,-999))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Grid Position : " + FString::FromInt(GridPosition.X) + " " + FString::FromInt(GridPosition.Y)));
 
 			if(GridDataRef->Find(FIntPoint(0,0)) != nullptr)
 			{
@@ -64,7 +61,6 @@ void UGridInfo::setUnitIndexOnGrid(FIntPoint GridPosition, AUnit* Unit)
 			}
 			else
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Grid Position is null"));
 			}
 		}
 	}

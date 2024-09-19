@@ -29,6 +29,8 @@ void ACustomPlayerController::BeginPlay()
 	{
 		GameState->PlayerControllers.Add(this);
 	}
+
+	setGrid();
 }
 
 void ACustomPlayerController::SetupInputComponent()

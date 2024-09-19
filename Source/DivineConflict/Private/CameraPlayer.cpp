@@ -74,6 +74,8 @@ void ACameraPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 void ACameraPlayer::Interaction()
 {
 	CustomPlayerController->ControllerInteration();
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Tile Index : ") + FString::FromInt(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()).X) + " " + FString::FromInt(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()).Y));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Tile Location : " + CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()))->TileTransform.GetLocation().ToString()));
 }
 
 
@@ -107,20 +109,13 @@ void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 			
 			if (Path.Num()< CustomPlayerController->UnitRef->GetPM())
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Path : ") + FString::FromInt(Path.Num()));
-
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("X : ") + FString::FromInt(CustomPlayerController->Grid->ConvertLocationToIndex(MoveDirection).X));
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Y : ") + FString::FromInt(CustomPlayerController->Grid->ConvertLocationToIndex(MoveDirection).Y));
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Path : ") + FString::FromInt(CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(MoveDirection))->TileTransform.GetLocation().Z));
-				
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Path : ") + FString::FromInt(CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()))->TileTransform.GetLocation().Z));
-				if (CustomPlayerController->Grid->GridPath->IsValidHeigh(CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(MoveDirection)),
+				if (CustomPlayerController->Grid->GridPath->IsValidHeigh(CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(this->GetActorLocation() + MoveDirection)),
 					CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()))))
 				{
 					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Path : ") + FString::FromInt(Path.Num()+1));
 				
 					
-					if (CustomPlayerController->Grid->IsTileWalkable(CustomPlayerController->Grid->ConvertLocationToIndex(MoveDirection)))
+					if (CustomPlayerController->Grid->IsTileWalkable(CustomPlayerController->Grid->ConvertLocationToIndex(this->GetActorLocation() + MoveDirection)))
 					{
 						
 						Path.AddUnique(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()));

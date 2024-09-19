@@ -50,15 +50,12 @@ void AUnit::BeginPlay()
 
 	if(Grid != nullptr)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Index Unit : " + FString::FromInt(Grid->ConvertLocationToIndex(GetActorLocation()).X) + " " + FString::FromInt(Grid->ConvertLocationToIndex(GetActorLocation()).Y)));
 		if (Grid->GridInfo == nullptr)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("GridInfo is null"));
 			return;
 		}
 
 		Grid->GridInfo->AddUnitInGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Unit added to grid"));
 		
 	}
 	else 

@@ -201,12 +201,8 @@ void AGrid::SetGridData(TMap<FIntPoint, FDC_TileData> Data)
 
 FIntPoint AGrid::ConvertLocationToIndex(FVector3d Location)
 {
-	
-	FVector testlocation = SnapVectorToVector(Location, TileSize);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Location: %s"), *testlocation.ToString()));
-	
-	FVector TempLoc = (SnapVectorToVector(Location, TileSize))/TileSize;
 
+	FVector3d TempLoc = (SnapVectorToVector(Location, TileSize))/TileSize;
 	return FIntPoint(TempLoc.X, TempLoc.Y);
 }
 
