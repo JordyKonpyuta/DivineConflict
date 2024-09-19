@@ -5,9 +5,11 @@
 
 #include "GridInfo.h"
 #include "GridPath.h"
+#include "GridVisual.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
+
 
 
 // Sets default values
@@ -28,6 +30,8 @@ AGrid::AGrid()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Static Mesh found"));
 	}
+
+	GridMesh->NumCustomDataFloats = 4;
 	
 	int X = 0;
 	int Y = 0;
@@ -77,6 +81,15 @@ AGrid::AGrid()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Grid Info not found"));
 	}
+	GridVisual = CreateDefaultSubobject<UGridVisual>("Grid Visual");
+	if(GridVisual != nullptr)
+	{
+		GridVisual->SetGrid(this);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Grid Utilities not found"));
+	}
 
 	
 
@@ -121,6 +134,7 @@ void AGrid::SpawnGrid()
 	int Y = 0;
 	GridMesh->ClearInstances();
 	GridData.Empty();
+	InstanceArray.Empty();
 	while (X < GridSize.X)
 	{
 		while (Y < GridSize.Y)
@@ -209,4 +223,29 @@ FIntPoint AGrid::ConvertLocationToIndex(FVector3d Location)
 FVector3d AGrid::ConvertIndexToLocation(FIntPoint Index)
 {
 	return GridData.Find(Index)->TileTransform.GetLocation();
+}
+
+void AGrid::RemoveInstance(FIntPoint Index)
+{
+	if (InstanceArray.Contains(Index))
+	{
+		GridMesh->RemoveInstance(InstanceArray.Find(Index));
+		InstanceArray.Remove(Index);
+	}
+}
+
+int AGrid::AddInstance(FIntPoint Index, FTransform3d Transform)
+{
+	GridMesh->AddInstance(Transform,true);
+
+	return InstanceArray.Add(Index);
+	
+}
+
+void AGrid::UpdateColor(int I, FLinearColor InColor, float	Alpha)
+{
+	GridMesh->SetCustomDataValue(I, 0, InColor.R);
+	GridMesh->SetCustomDataValue(I, 1, InColor.G);
+	GridMesh->SetCustomDataValue(I, 2, InColor.B);
+	GridMesh->SetCustomDataValue(I, 3, Alpha);
 }

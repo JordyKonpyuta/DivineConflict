@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GridUtilities.generated.h"
 
+
 /**
  * 
  */
@@ -13,5 +14,7 @@ UCLASS()
 class DIVINECONFLICT_API UGridUtilities : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
+
+	
 	
 };

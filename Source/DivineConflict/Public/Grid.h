@@ -13,6 +13,7 @@
 class Ainstancedstaticmesh;
 class UGridPath;
 class UGridInfo;
+class UGridVisual;
 
 
 UCLASS()
@@ -37,6 +38,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "GridElement")
 	UGridInfo* GridInfo = nullptr;
 
+	UGridVisual * GridVisual = nullptr;
 	
 	
 	
@@ -48,7 +50,7 @@ protected:
 	
 
 	UPROPERTY( EditAnywhere, Category = "GridElement")
-	FDC_TileData test = FDC_TileData(FIntPoint(0, 0), EDC_TileType::None, FTransform3d(FVector(0, 0, 0)), TArray<EDC_TileState>(), nullptr, nullptr);
+	TArray<FIntPoint> InstanceArray;
 
 	
 	FVector3d TraceHitGround(FVector Location);
@@ -61,6 +63,8 @@ protected:
 	void TestPathfinding();
 
 	FVector SnapVectorToVector(FVector InVector, const FVector InSnapTo);
+
+	
 
 public:	
 	// Called every frame
@@ -88,6 +92,12 @@ public:
 	FIntPoint ConvertLocationToIndex(FVector3d Location);
 
 	FVector3d ConvertIndexToLocation(FIntPoint Index);
+
+	void RemoveInstance(FIntPoint Index);
+
+	int AddInstance(FIntPoint Index, FTransform3d Transform);
+
+	void UpdateColor(int I, FLinearColor InColor, float	Alpha);
 	
 
 };
