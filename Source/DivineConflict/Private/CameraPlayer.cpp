@@ -71,12 +71,14 @@ void ACameraPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 }
 
+
+
+
 void ACameraPlayer::Interaction()
 {
-	CustomPlayerController->ControllerInteration();
+	CustomPlayerController->ControllerInteraction();
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Tile Index : ") + FString::FromInt(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()).X) + " " + FString::FromInt(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()).Y));
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Tile Location : " + CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()))->TileTransform.GetLocation().ToString()));
-}
+	}
 
 
 void ACameraPlayer::SetCustomPlayerController(ACustomPlayerController* Cpc)

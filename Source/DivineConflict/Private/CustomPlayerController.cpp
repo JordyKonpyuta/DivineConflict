@@ -65,7 +65,7 @@ void ACustomPlayerController::setGrid()
 	}
 }
 
-void ACustomPlayerController::ControllerInteration()
+void ACustomPlayerController::ControllerInteraction()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Interact Controller"));
 	if(Grid != nullptr)
@@ -92,6 +92,10 @@ void ACustomPlayerController::ControllerInteration()
 				
 			}
 
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, TEXT("NO UNITS HAHA L BOZO"));
 		}
 	}	
 	

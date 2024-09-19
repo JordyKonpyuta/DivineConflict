@@ -66,16 +66,6 @@ void ABuilding::SwitchOwner(ACustomPlayerState* NewOwner)
 		break;
 	}
 	
-	switch (PlayerOwner) {
-	case EPlayer::P_Hell:
-		break;
-	case EPlayer::P_Heaven:
-		break;
-	case EPlayer::P_Neutral:
-		break;
-	default:
-		break;
-	}
 	OwnerPlayerState = NewOwner;
 }
 

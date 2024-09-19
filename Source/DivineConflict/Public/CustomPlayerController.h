@@ -89,6 +89,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetIsDead(bool bD);
 	
-	void ControllerInteration();
+	void ControllerInteraction();
 	
 };
