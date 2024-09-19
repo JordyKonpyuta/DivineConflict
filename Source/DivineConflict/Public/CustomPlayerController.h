@@ -48,6 +48,9 @@ protected:
 
 	UPROPERTY()
 	bool IsReady = false;
+
+	UPROPERTY()
+	bool IsDead = false;
 	
 	virtual void BeginPlay() override;
 
@@ -79,6 +82,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetIsReady(bool bR);
+
+	UFUNCTION(BlueprintCallable)
+	bool GetIsDead();
+
+	UFUNCTION(BlueprintCallable)
+	void SetIsDead(bool bD);
 	
 	void ControllerInteration();
 	

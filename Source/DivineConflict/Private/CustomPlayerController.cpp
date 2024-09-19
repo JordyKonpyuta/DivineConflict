@@ -138,3 +138,13 @@ void ACustomPlayerController::SetIsReady(bool bR)
 {
 	IsReady = bR;
 }
+
+bool ACustomPlayerController::GetIsDead()
+{
+	return IsDead;
+}
+
+void ACustomPlayerController::SetIsDead(bool bD)
+{
+	IsDead = bD;
+}
