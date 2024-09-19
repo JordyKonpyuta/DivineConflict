@@ -18,7 +18,7 @@ AGrid::AGrid()
 
     GridMesh = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("Grid Mesh"));
 	RootComponent = GridMesh;
-	
+
 	GridMesh->SetStaticMesh(ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/AssetImport/Square/SM_Grid_SquareFlat.SM_Grid_SquareFlat'")).Object);
 	if (GridMesh->GetStaticMesh() == nullptr)
 	{
@@ -28,7 +28,37 @@ AGrid::AGrid()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Static Mesh found"));
 	}
+	
+	int X = 0;
+	int Y = 0;
+	GridMesh->ClearInstances();
+	GridData.Empty();
+	while (X < GridSize.X)
+	{
+		while (Y < GridSize.Y)
+		{
+			FVector3d HitLocation = TraceHitGround(FVector(X * 100, Y * 100, 0));
+			if (HitLocation != FVector(0, 0, 0))
+			{
+				FIntPoint TileIndex = FIntPoint(X, Y);
+				FDC_TileData TileData = FDC_TileData(TileIndex, EDC_TileType::Normal, FTransform3d(FVector(X * 100, Y * 100, HitLocation.Z)),
+					TArray<EDC_TileState>(), nullptr, nullptr);
 
+				UE_LOG( LogTemp, Warning, TEXT("TileIndex: %d %d "),TileIndex.X , TileIndex.Y);
+				GridData.Add(TileIndex, TileData);
+				UE_LOG( LogTemp, Warning, TEXT("Tile : %d %d "),GridData.Find(TileIndex)->TilePosition.X , GridData.Find(TileIndex)->TilePosition.Y);
+				GridMesh->AddInstance(FTransform(FVector(X * 100, Y * 100, HitLocation.Z)), true);
+
+		
+			}
+			Y++;
+		}
+		Y = 0;
+		X++;
+	}
+
+	
+	
 	GridPath = CreateDefaultSubobject<UGridPath>(TEXT("Grid Path"));
 	if(GridPath != nullptr)
 	{
@@ -49,7 +79,7 @@ AGrid::AGrid()
 	}
 
 	
-	SpawnGrid();
+
 	
 }
 
@@ -59,6 +89,10 @@ AGrid::AGrid()
 void AGrid::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//print le numbre de grid data
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Grid Data Num : %d"), GridData.Num()));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Get Grid Data Num : %d"), GetGridData()->Num()));
 	
 }
 
@@ -86,6 +120,7 @@ void AGrid::SpawnGrid()
 	int X = 0;
 	int Y = 0;
 	GridMesh->ClearInstances();
+	GridData.Empty();
 	while (X < GridSize.X)
 	{
 		while (Y < GridSize.Y)
@@ -109,8 +144,12 @@ void AGrid::SpawnGrid()
 		Y = 0;
 		X++;
 	}
+
+	GridInfo->SetGrid(this);
+	GridPath->SetGrid(this);
 	
 }
+
 
 void AGrid::TestPathfinding()
 {

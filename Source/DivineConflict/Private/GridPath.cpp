@@ -224,9 +224,14 @@ void UGridPath::ClearGeneratedPath()
 	Path.Empty();
 }
 
+void UGridPath::SetGrid(AGrid* GridRef)
+{
+	Grid = GridRef;
+}
+
 bool UGridPath::IsValidHeigh(FDC_TileData* IndextestData, FDC_TileData* CurrentIndexData)
 {
-	
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Heigh :") + FString::Printf(TEXT("%f - %f = %f"), IndextestData->TileTransform.GetLocation().Z, CurrentIndexData->TileTransform.GetLocation().Z , IndextestData->TileTransform.GetLocation().Z - CurrentIndexData->TileTransform.GetLocation().Z));
 	return FMath::Abs(IndextestData->TileTransform.GetLocation().Z - CurrentIndexData->TileTransform.GetLocation().Z) <= (100/1.75);
 
 }

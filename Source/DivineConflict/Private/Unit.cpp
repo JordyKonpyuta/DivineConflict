@@ -115,10 +115,7 @@ void AUnit::Move()
 	if(PlayerControllerRef != nullptr)
 	{
 		Path.Empty();
-		for(FIntPoint Index : PlayerControllerRef->CameraPlayerRef->Path)
-		{
-			Path.Add(FIntPoint(Index.X, Index.Y));
-		}
+		Path = PlayerControllerRef->CameraPlayerRef->Path;
 	}
 	if (Path.Num()!=-1)
 	{
@@ -128,6 +125,8 @@ void AUnit::Move()
 			SetActorLocation(location);
 		}
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit moved"));
+		
+		Grid->GridInfo->setUnitIndexOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()),this);
 	}
 }
 

@@ -11,15 +11,6 @@ class AGrid;
 class UStaticMeshComponent;
 class ACustomPlayerController;
 
-USTRUCT()
-struct FPathMove
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	FVector2D IndexPosition;
-};
-
 UCLASS()
 class DIVINECONFLICT_API AUnit : public APawn , public IInteractInterface
 {
@@ -96,7 +87,7 @@ protected:
 	FString Name = "";
 
 	UPROPERTY()
-	int PM = 0;
+	int PM = 99;
 
 	UPROPERTY()
 	FIntPoint IndexPosition = FIntPoint(-999, -999);

@@ -92,6 +92,7 @@ void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 		if (abs(Input.X)  >= abs(Input.Y) )
 		{
 			MoveDirection = UKismetMathLibrary::GetForwardVector(UKismetMathLibrary::MakeRotator(0,0,GetActorRotation().Yaw)) * (Input.X*100);
+
 		}
 		else
 		{
@@ -100,20 +101,36 @@ void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 		
 		if (IsMovingUnit)
 		{
+			//print IsMovingUnit
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("IsMovingUnit"));
+			
+			
 			if (Path.Num()< CustomPlayerController->UnitRef->GetPM())
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Path : ") + FString::FromInt(Path.Num()));
+
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("X : ") + FString::FromInt(CustomPlayerController->Grid->ConvertLocationToIndex(MoveDirection).X));
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Y : ") + FString::FromInt(CustomPlayerController->Grid->ConvertLocationToIndex(MoveDirection).Y));
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Path : ") + FString::FromInt(CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(MoveDirection))->TileTransform.GetLocation().Z));
+				
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Path : ") + FString::FromInt(CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()))->TileTransform.GetLocation().Z));
 				if (CustomPlayerController->Grid->GridPath->IsValidHeigh(CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(MoveDirection)),
 					CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()))))
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Path : ") + FString::FromInt(Path.Num()+1));
+				
+					
 					if (CustomPlayerController->Grid->IsTileWalkable(CustomPlayerController->Grid->ConvertLocationToIndex(MoveDirection)))
 					{
-				
+						
 						Path.AddUnique(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()));
 
-						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Path : ") + FString::FromInt(Path.Num()));
+						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Path : ") + FString::FromInt(Path.Num()+2));
 				
 						this->SetActorLocation(this->GetActorLocation() + MoveDirection);
-				
 					}
-			
+				}
+			}
 			
 		}
 		else

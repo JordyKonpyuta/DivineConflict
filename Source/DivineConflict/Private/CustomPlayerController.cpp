@@ -83,6 +83,7 @@ void ACustomPlayerController::ControllerInteration()
 			{
 
 				UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile;
+				CameraPlayerRef->SetCustomPlayerController(this);
 				IInteractInterface::Execute_Interact(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile, this);
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit Found"));
 				

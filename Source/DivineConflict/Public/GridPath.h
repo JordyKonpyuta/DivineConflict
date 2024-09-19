@@ -99,6 +99,7 @@ public:
 	UFUNCTION()
 	TArray<FIntPoint> FindPath(FIntPoint Start, FIntPoint End , bool IsReachable, int PathLenght, bool IsEscalation);
 
+	void SetGrid(AGrid* GridRef);
 	
 		
 };

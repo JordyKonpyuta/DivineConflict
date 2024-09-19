@@ -14,6 +14,12 @@ UGridInfo::UGridInfo()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+
+
+		
+
+
+
 	// ...
 }
 
@@ -31,7 +37,7 @@ void UGridInfo::setUnitIndexOnGrid(FIntPoint GridPosition, AUnit* Unit)
 		return;
 	}
 	TMap<FIntPoint,FDC_TileData>* GridDataRef = Grid->GetGridData();
-	
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Grid Nombre info: " + FString::FromInt(Grid->GridData.Num()) ));
 	if(GridPosition != Unit->GetIndexPosition())
 	{
 		FDC_TileData* PerviousIndex = GridDataRef->Find(Unit->GetIndexPosition());
@@ -131,5 +137,6 @@ void UGridInfo::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 void UGridInfo::SetGrid(AGrid* GridRef)
 {
 	Grid = GridRef;
+	UE_LOG( LogTemp, Warning, TEXT("Grid Data : %d "),Grid->GridData.Num());
 }
 

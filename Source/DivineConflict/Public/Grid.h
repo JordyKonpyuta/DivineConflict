@@ -45,8 +45,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	
-	UPROPERTY(EditAnywhere, Category = "GridElement", meta = (AllowPrivate))
-	TMap <FIntPoint, FDC_TileData> GridData;
+	
 
 	UPROPERTY( EditAnywhere, Category = "GridElement")
 	FDC_TileData test = FDC_TileData(FIntPoint(0, 0), EDC_TileType::None, FTransform3d(FVector(0, 0, 0)), TArray<EDC_TileState>(), nullptr, nullptr);
@@ -57,6 +56,7 @@ protected:
 	UFUNCTION(Category = "GridElement", BlueprintCallable,CallInEditor)
 	void SpawnGrid();
 
+	
 	UFUNCTION( Category = "GridElement", BlueprintCallable,CallInEditor)
 	void TestPathfinding();
 
@@ -65,6 +65,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UPROPERTY(EditAnywhere, Category = "GridElement", meta = (AllowPrivate))
+	TMap <FIntPoint, FDC_TileData> GridData;
 
 	UPROPERTY(Blueprintable, EditAnywhere, Category = "GridElement")
 	FIntPoint GridSize = FIntPoint(10, 10);
