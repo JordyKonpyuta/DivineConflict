@@ -2,7 +2,6 @@
 
 
 #include "CustomPlayerController.h"
-
 #include "EnhancedInputSubsystems.h"
 #include "CustomGameState.h"
 #include "Engine\LocalPlayer.h"
@@ -17,11 +16,11 @@
 void ACustomPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if(!HasAuthority())
+	
+	CameraPlayerRef = Cast<ACameraPlayer>(GetPawn());
+	
+	if(CameraPlayerRef != nullptr)
 	{
-		CameraPlayerRef = Cast<ACameraPlayer>(GetPawn());
-
 		CameraPlayerRef->SetCustomPlayerController(this);
 	}
 	
@@ -30,10 +29,6 @@ void ACustomPlayerController::BeginPlay()
 	{
 		GameState->PlayerControllers.Add(this);
 	}
-
-	
-
-	
 }
 
 void ACustomPlayerController::SetupInputComponent()
