@@ -3,8 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CustomPlayerController.h"
 #include "GameFramework/Actor.h"
 #include "Base.generated.h"
+
+class APlayerController;
+class ACustomPlayerState;
 
 UCLASS()
 class DIVINECONFLICT_API ABase : public AActor
@@ -21,21 +25,70 @@ protected:
 
 	// Stats
 	UPROPERTY()
-	int Health;
+	int Health = 200;
 
 	UPROPERTY()
-	int Attack;
+	int Attack = 10;
+
+	UPROPERTY()
+	bool IsHell = false;
+
+	UPROPERTY()
+	int GoldCostUpgrade = 20;
+
+	UPROPERTY()
+	int StoneCostUpgrade = 20;
+
+	UPROPERTY()
+	int WoodCostUpgrade = 20;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mesh")
+	class UStaticMeshComponent* StaticMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
+	ACustomPlayerState* PlayerStateRef;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Controller")
+	ACustomPlayerController* PlayerControllerRef;
+
 	// Getter
+	UFUNCTION(BlueprintCallable)
 	int GetHealth();
+	UFUNCTION(BlueprintCallable)
 	int GetAttack();
+	UFUNCTION(BlueprintCallable)
+	bool GetIsHell();
+	UFUNCTION(BlueprintCallable)
+	int GetGoldCostUpgrade();
+	UFUNCTION(BlueprintCallable)
+	int GetStoneCostUpgrade();
+	UFUNCTION(BlueprintCallable)
+	int GetWoodCostUpgrade();
 
 	// Setter
+	UFUNCTION(BlueprintCallable)
 	void SetHealth(int h);
+	UFUNCTION(BlueprintCallable)
 	void SetAttack(int a);
+	UFUNCTION(BlueprintCallable)
+	void SetIsHell(bool bH);
+	UFUNCTION(BlueprintCallable)
+	void SetCostsUpgrade(int g, int s, int w);
+
+	UFUNCTION(BlueprintCallable)
+	void CheckIfDead();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnDeath();
+
+	UFUNCTION(BlueprintCallable)
+	void TakeDamage(int Damage);
+
+	UFUNCTION(BlueprintCallable)
+	void Upgrade();
 
 };

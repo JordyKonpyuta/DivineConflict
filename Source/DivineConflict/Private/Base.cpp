@@ -3,6 +3,10 @@
 
 #include "Base.h"
 
+#include "CustomPlayerController.h"
+#include "CustomPlayerState.h"
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values
 ABase::ABase()
 {
@@ -15,7 +19,15 @@ ABase::ABase()
 void ABase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	TArray<AActor*> FoundActor;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(),ACustomPlayerController::StaticClass(),FoundActor);
+	for(AActor* Actor : FoundActor)
+	{
+		PlayerControllerRef = Cast<ACustomPlayerController>(Actor);
+	}
+
+	PlayerStateRef = PlayerControllerRef->GetPlayerState<ACustomPlayerState>();
 }
 
 // Called every frame
@@ -35,6 +47,26 @@ int ABase::GetAttack()
 	return Attack;
 }
 
+bool ABase::GetIsHell()
+{
+	return IsHell;
+}
+
+int ABase::GetGoldCostUpgrade()
+{
+	return GoldCostUpgrade;
+}
+
+int ABase::GetStoneCostUpgrade()
+{
+	return StoneCostUpgrade;
+}
+
+int ABase::GetWoodCostUpgrade()
+{
+	return WoodCostUpgrade;
+}
+
 void ABase::SetHealth(int h)
 {
 	Health = h;
@@ -43,5 +75,57 @@ void ABase::SetHealth(int h)
 void ABase::SetAttack(int a)
 {
 	Attack = a;
+}
+
+void ABase::SetIsHell(bool bH)
+{
+	IsHell = bH;
+}
+
+void ABase::SetCostsUpgrade(int g, int s, int w)
+{
+	GoldCostUpgrade = g;
+	StoneCostUpgrade = s;
+	WoodCostUpgrade = w;
+}
+
+// IF DEAD, END GAME
+void ABase::CheckIfDead()
+{
+	if (Health <= 0)
+	{
+		Health = 0;
+		if (PlayerControllerRef->GetIsHell() == IsHell)
+		{
+			PlayerControllerRef->SetIsDead(true);
+			OnDeath();
+			
+		}
+	}
+}
+
+// TAKE DAMAGE
+void ABase::TakeDamage(int Damage)
+{
+	Health -= Damage;
+	CheckIfDead();
+}
+
+// UPGRADE
+void ABase::Upgrade()
+{
+	if (PlayerStateRef->GetWoodPoints() >= WoodCostUpgrade && PlayerStateRef->GetStonePoints() >= StoneCostUpgrade && PlayerStateRef->GetGoldPoints() >= GoldCostUpgrade)
+	{
+		if (PlayerStateRef->MaxUnitCount < 15)
+		{
+			PlayerStateRef->MaxUnitCount += 5;
+			SetCostsUpgrade(GoldCostUpgrade += 10, StoneCostUpgrade += 10, WoodCostUpgrade += 10);
+		}
+	}
+}
+
+// FUNCTION FOR UI
+void ABase::OnDeath_Implementation()
+{
 }
 

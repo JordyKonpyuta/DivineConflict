@@ -35,7 +35,9 @@ public:
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
 	AUnit* UnitRef = nullptr;
-	
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
+	TArray<AUnit*> Units;
 	
 	
 protected:
