@@ -82,6 +82,13 @@ void ACustomPlayerState::SetUnits(int UnitNumber)
 	CurrentUnitCount = UnitNumber;
 }
 
+void ACustomPlayerState::NewTurnBegin()
+{
+	ChangeWoodPoints(0 + (WoodBuildingOwned * 15), true);
+	ChangeStonePoints(0 + (StoneBuildingOwned * 15), true);
+	ChangeGoldPoints(0 + (GoldBuildingOwned * 15), true);
+}
+
 void ACustomPlayerState::RefreshActionPoints()
 {
 	ActionPoints = MaxActionPoints;

@@ -33,6 +33,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ressources")
 	int GoldPoints = 0;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RessourceGathering")
+	int WoodBuildingOwned = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RessourceGathering")
+	int StoneBuildingOwned = 0;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RessourceGathering")
+	int GoldBuildingOwned = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Units")
 	int CurrentUnitCount = 0;
@@ -40,7 +49,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Units")
 	int MaxUnitCount = 10;
 
-	
 private:
 
 
@@ -82,7 +90,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Units")
 	void SetUnits(int UnitNumber);
 
-
+	UFUNCTION(BlueprintCallable, Category = "Turn")
+	void NewTurnBegin();
 	
 private:
 
