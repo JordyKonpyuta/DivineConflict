@@ -24,7 +24,7 @@ void ASpawner::BeginPlay()
 
 	if(Grid != nullptr)
 	{
-		Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+		
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Spawner on tile %s and this position is %d %d"), *GetName(), GridPosition.X, GridPosition.Y));
 	}
 	

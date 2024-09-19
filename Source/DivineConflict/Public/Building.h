@@ -8,6 +8,8 @@
 #include "GameFramework/Actor.h"
 #include "Building.generated.h"
 
+class AGrid;
+
 UCLASS()
 
 class DIVINECONFLICT_API ABuilding : public AActor
@@ -27,6 +29,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Player")
 	ACustomPlayerState* OwnerPlayerState;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player")
+	AGrid* Grid;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -36,10 +41,18 @@ protected:
 
 	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitType")
 	EUnitType UnitProduced;
+
+	UPROPERTY()
+	FIntPoint GridPosition = FIntPoint(0, 0);
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	FIntPoint GetGridPosition();
+
+	void SetGridPosition(FIntPoint GridPosition);
+	
 protected:
 	UFUNCTION(BlueprintCallable, Category = "UnitType")
 	void SpawnUnit();

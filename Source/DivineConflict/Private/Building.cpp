@@ -3,6 +3,8 @@
 
 #include "Building.h"
 
+#include "Grid.h"
+#include "GridInfo.h"
 
 // Sets default values
 ABuilding::ABuilding()
@@ -34,6 +36,46 @@ void ABuilding::BeginPlay()
 		break;
 	default:
 		break;
+	}
+
+	if (Grid)
+	{
+		// Create Building Data
+		
+		if(BuildingList == EBuildingList::B_AP)
+		{
+			// Grid : Building
+			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(100, -100, 0)), this);
+			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(100, 0, 0)), this);
+			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(100, 100, 0)), this);
+			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(0, 100, 0)), this);
+			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(0, -100, 0)), this);
+			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-100, -100, 0)), this);
+			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-100, 0, 0)), this);
+			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-100, 100, 0)), this);
+		}
+		else
+		{
+			// Grid : Building
+			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(25, 25, 0)), this);
+			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(25, -25, 0)), this);
+			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-25, 25, 0)), this);
+			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-25, -25, 0)), this);
+
+			// Grid : Spawners
+			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(75, 25, 0)), this);
+			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(75, -25, 0)), this);
+			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(25, 75, 0)), this);
+			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(25, -75, 0)), this);
+			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-25, 75, 0)), this);
+			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-25, -75, 0)), this);
+			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-75, 25, 0)), this);
+			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-75, -25, 0)), this);
+		}
+
+		// Access Grid Data :
+		// Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(25, 25, 0))).
 	}
 }
 
@@ -74,5 +116,15 @@ void ABuilding::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+FIntPoint ABuilding::GetGridPosition()
+{
+	return GridPosition;
+}
+
+void ABuilding::SetGridPosition(FIntPoint GridP)
+{
+	GridPosition = GridP;
 }
 

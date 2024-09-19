@@ -2,6 +2,8 @@
 
 
 #include "GridInfo.h"
+
+#include "Building.h"
 #include "Grid.h"
 #include "Spawner.h"
 #include "F_DC_TileData.h"
@@ -72,14 +74,14 @@ void UGridInfo::RemoveUnitInGrid(AUnit* Unit)
 	setUnitIndexOnGrid(FIntPoint(-999,-999), Unit);
 }
 
-void UGridInfo::addSpawnUnitOnGrid(FIntPoint GridPosition, ASpawner* Spawner)
+void UGridInfo::addSpawnUnitOnGrid(FIntPoint GridPosition, ABuilding* Spawner)
 {
 	SpawnersGrid.Add(Spawner);
 	SetSpawnUnitOnGrid(GridPosition, Spawner);
 	
 }
 
-void UGridInfo::SetSpawnUnitOnGrid(FIntPoint GridPosition, ASpawner* Spawner)
+void UGridInfo::SetSpawnUnitOnGrid(FIntPoint GridPosition, ABuilding* Spawner)
 {
 	if(Grid == nullptr)
 	{

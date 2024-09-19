@@ -15,7 +15,7 @@ FDC_TileData::FDC_TileData()
 }
 
 FDC_TileData::FDC_TileData(FIntPoint tilePosition, EDC_TileType tileType, FTransform3d tileTransform,
-	TArray<EDC_TileState> tileState, AUnit* unitOnTile, ASpawner* spawnerOnTile)
+	TArray<EDC_TileState> tileState, AUnit* unitOnTile, ABuilding* spawnerOnTile)
 {
 	this->TilePosition.X = tilePosition.X;
 	this->TilePosition.Y = tilePosition.Y;

@@ -68,7 +68,6 @@ void ACameraPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		EnhancedInputComponent->BindAction(AIZoom, ETriggerEvent::Triggered, this, &ACameraPlayer::ZoomCamera);
 		EnhancedInputComponent->BindAction(AIInteraction,ETriggerEvent::Started, this, &ACameraPlayer::Interaction);
 	}
-
 }
 
 
@@ -77,8 +76,12 @@ void ACameraPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 void ACameraPlayer::Interaction()
 {
 	CustomPlayerController->ControllerInteraction();
+
+	// A supprimer, fait crash le jeu quand on clique dans le vide.
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Tile Index : ") + FString::FromInt(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()).X) + " " + FString::FromInt(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()).Y));
-	}
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Tile Location : " + CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()))->TileTransform.GetLocation().ToString()));
+
+}
 
 
 void ACameraPlayer::SetCustomPlayerController(ACustomPlayerController* Cpc)

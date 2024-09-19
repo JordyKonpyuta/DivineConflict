@@ -79,27 +79,22 @@ void ACustomPlayerController::ControllerInteraction()
         }
 		
 		FIntPoint PlayerPositionInGrid = Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation());
+		
 		if(Grid->GetGridData()->Find(PlayerPositionInGrid) != nullptr)
 		{
 			if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
 			{
-
 				UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile;
 				CameraPlayerRef->SetCustomPlayerController(this);
 				IInteractInterface::Execute_Interact(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile, this);
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit Found"));
-				
+			}
+			else if(Grid->GetGridData()->Find(PlayerPositionInGrid))
+			{
 				
 			}
-
-		}
-		else
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, TEXT("NO UNITS HAHA L BOZO"));
 		}
 	}	
-	
-	
 }
 
 void ACustomPlayerController::Move(/*const FInputActionValue& Value*/)
@@ -107,9 +102,6 @@ void ACustomPlayerController::Move(/*const FInputActionValue& Value*/)
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Move"));
 
 	UE_LOG(LogTemp, Warning, TEXT("Move"));
-
-	
-	
 }
 
 
