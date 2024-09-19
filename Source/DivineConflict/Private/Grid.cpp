@@ -37,6 +37,7 @@ AGrid::AGrid()
 	int Y = 0;
 	GridMesh->ClearInstances();
 	GridData.Empty();
+	InstanceArray.Empty();
 	while (X < GridSize.X)
 	{
 		while (Y < GridSize.Y)
@@ -50,8 +51,7 @@ AGrid::AGrid()
 
 				UE_LOG( LogTemp, Warning, TEXT("TileIndex: %d %d "),TileIndex.X , TileIndex.Y);
 				GridData.Add(TileIndex, TileData);
-				UE_LOG( LogTemp, Warning, TEXT("Tile : %d %d "),GridData.Find(TileIndex)->TilePosition.X , GridData.Find(TileIndex)->TilePosition.Y);
-				GridMesh->AddInstance(FTransform(FVector(X * 100, Y * 100, HitLocation.Z)), true);
+				AddInstance(FIntPoint(X, Y), FTransform3d(FVector(X * 100, Y * 100, HitLocation.Z)));
 
 		
 			}
@@ -148,8 +148,7 @@ void AGrid::SpawnGrid()
 
 				UE_LOG( LogTemp, Warning, TEXT("TileIndex: %d %d "),TileIndex.X , TileIndex.Y);
 				GridData.Add(TileIndex, TileData);
-				UE_LOG( LogTemp, Warning, TEXT("Tile : %d %d "),GridData.Find(TileIndex)->TilePosition.X , GridData.Find(TileIndex)->TilePosition.Y);
-				GridMesh->AddInstance(FTransform(FVector(X * 100, Y * 100, HitLocation.Z)), true);
+	            AddInstance(FIntPoint(X, Y), FTransform3d(FVector(X * 100, Y * 100, HitLocation.Z)));
 
 		
 			}
@@ -161,6 +160,7 @@ void AGrid::SpawnGrid()
 
 	GridInfo->SetGrid(this);
 	GridPath->SetGrid(this);
+	GridVisual->SetGrid(this);
 	
 }
 
@@ -227,9 +227,11 @@ FVector3d AGrid::ConvertIndexToLocation(FIntPoint Index)
 
 void AGrid::RemoveInstance(FIntPoint Index)
 {
+
 	if (InstanceArray.Contains(Index))
 	{
 		GridMesh->RemoveInstance(InstanceArray.Find(Index));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Instance Removed : %d"), InstanceArray.Find(Index)));
 		InstanceArray.Remove(Index);
 	}
 }

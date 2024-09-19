@@ -38,6 +38,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "GridElement")
 	UGridInfo* GridInfo = nullptr;
 
+	UPROPERTY(EditAnywhere, Category = "GridElement")
 	UGridVisual * GridVisual = nullptr;
 	
 	

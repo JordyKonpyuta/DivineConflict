@@ -59,15 +59,18 @@ FLinearColor UGridVisual::GetColorFromState(TArray<EDC_TileState> TileState)
 
 void UGridVisual::UpdateVisuals(FIntPoint Index)
 {
+	
 	Grid->RemoveInstance(Index);
 	int32 i =Grid->AddInstance(Index, Grid->GetGridData()->Find(Index)->TileTransform);
 
-	Grid->UpdateColor(i, GetColorFromState(Grid->GetGridData()->Find(Index)->TileState),1);	
+
+	Grid->UpdateColor(i, GetColorFromState(Grid->GetGridData()->Find(Index)->TileState),GetColorFromState(Grid->GetGridData()->Find(Index)->TileState).A);	
 	
 }
 
 void UGridVisual::SetGrid(AGrid* GridRef)
 {
+	Grid = GridRef;
 }
 
 void UGridVisual::addStateToTile(FIntPoint Index, EDC_TileState TileState)
@@ -88,6 +91,18 @@ void UGridVisual::addStateToTile(FIntPoint Index, EDC_TileState TileState)
 
 void UGridVisual::RemoveStateFromTile(FIntPoint Index, EDC_TileState TileState)
 {
+	if (Grid)
+	{
+		if(Grid->GetGridData()->Find(Index))
+		{
+			FDC_TileData* Data = Grid->GetGridData()->Find(Index);
+			Data->TileState.Remove(TileState);
+			Grid->GetGridData()->Add(Index, *Data);
+
+			UpdateVisuals(Index);
+		}
+	}
+	
 }
 
 

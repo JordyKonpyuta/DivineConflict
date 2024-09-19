@@ -7,6 +7,7 @@
 #include "EnhancedInputComponent.h"
 #include "Grid.h"
 #include "GridPath.h"
+#include "GridVisual.h"
 #include "Unit.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -135,7 +136,9 @@ void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 		}
 		else
 		{
+			CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()), EDC_TileState::Hovered);
 			this->SetActorLocation(this->GetActorLocation() + MoveDirection);
+			CustomPlayerController->Grid->GridVisual->addStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()), EDC_TileState::Hovered);
 		}
 		
 
