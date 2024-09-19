@@ -104,6 +104,10 @@ void ABase::CheckIfDead()
 	}
 }
 
+void ABase::OnInteract_Implementation()
+{
+}
+
 // TAKE DAMAGE
 void ABase::TakeDamage(int Damage)
 {

@@ -82,13 +82,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CheckIfDead();
 
+	// FUNCTIONS FOR UI
 	UFUNCTION(BlueprintNativeEvent)
 	void OnDeath();
+	UFUNCTION(BlueprintNativeEvent)
+	void OnInteract();
 
 	UFUNCTION(BlueprintCallable)
 	void TakeDamage(int Damage);
 
 	UFUNCTION(BlueprintCallable)
 	void Upgrade();
-
 };
