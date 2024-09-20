@@ -42,13 +42,7 @@ protected:
 	void SetGrid();
 
 	virtual void NotifyActorOnClicked(FKey ButtonPressed) override;
-
-	UPROPERTY(Blueprintable)
-	TArray<FString> Names = {"Raoul", "Dimitri", "Roger", "Geraud", "Remi", "Ben", "Marvin", "Titouan", "Guillaume", "Timothee", "Maxime", "Julien"};
-
-	UPROPERTY(Blueprintable)
-	TArray<AUnit*> Units = {};
-
+	
 	UPROPERTY()
 	UTexture2D* UnitIcon;
 	

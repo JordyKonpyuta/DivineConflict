@@ -5,7 +5,6 @@
 
 #include "Building.h"
 #include "Grid.h"
-#include "Spawner.h"
 #include "F_DC_TileData.h"
 #include "Unit.h"
 

@@ -14,8 +14,6 @@ void AUnit_Child_Leader::BeginPlay()
 	SetMaxHealth(20);
 	SetCurrentHealth(GetMaxHealth());
 	SetPM(3);
-
-	SetName(Names[FMath::RandRange(0, Names.Num()-1)]);
 }
 
 AUnit_Child_Leader::AUnit_Child_Leader()

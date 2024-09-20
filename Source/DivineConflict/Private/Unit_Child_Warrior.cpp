@@ -14,8 +14,6 @@ void AUnit_Child_Warrior::BeginPlay()
 	SetMaxHealth(11);
 	SetCurrentHealth(GetMaxHealth());
 	SetPM(5);
-
-	SetName(Names[FMath::RandRange(0, Names.Num()-1)]);
 }
 
 AUnit_Child_Warrior::AUnit_Child_Warrior()

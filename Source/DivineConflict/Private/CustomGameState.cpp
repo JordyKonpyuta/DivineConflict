@@ -44,6 +44,17 @@ void ACustomGameState::BeginPlay()
 
 void ACustomGameState::SwitchPlayerTurn()
 {
+//Ta mère la grosse chienne qui bugge
+	
+	GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Yellow, TEXT("p0 wood = "+FString::FromInt(AllPlayerStates[0]->WoodPoints)));
+	GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Yellow, TEXT("p0 stone = "+FString::FromInt(AllPlayerStates[0]->StonePoints)));
+	GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Yellow, TEXT("p0 gold = "+FString::FromInt(AllPlayerStates[0]->GoldPoints)));
+	GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Yellow, TEXT("p1 wood = "+FString::FromInt(AllPlayerStates[1]->WoodPoints)));
+	GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Yellow, TEXT("p1 stone = "+FString::FromInt(AllPlayerStates[1]->StonePoints)));
+	GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Yellow, TEXT("p1 gold = "+FString::FromInt(AllPlayerStates[1]->GoldPoints)));
+	
+	AllPlayerStates[bP1Turn]->NewTurnBegin();
+	bP1Turn = !bP1Turn;
 	if (PlayerControllers.Num() != -1)
 	{
 		for (ACustomPlayerController* CurrentController : PlayerControllers)

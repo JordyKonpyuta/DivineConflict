@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerState.h"
 #include "CustomPlayerState.generated.h"
 
+class ACustomGameState;
+
 /**
  * 
  */
@@ -48,9 +50,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Units")
 	int MaxUnitCount = 10;
-
+	
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
+	ACustomGameState* GameStateRef;
+	
 private:
-
+	virtual void BeginPlay() override;
 
 	// UFUNCTIONS //
 public:

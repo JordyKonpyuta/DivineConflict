@@ -2,9 +2,18 @@
 
 
 #include "CustomPlayerState.h"
+#include "CustomGameState.h"
 
 #include <set>
 
+
+
+void ACustomPlayerState::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GameStateRef->AllPlayerStates.Add(this);
+}
 
 int ACustomPlayerState::GetActionPoints()
 {
@@ -84,9 +93,9 @@ void ACustomPlayerState::SetUnits(int UnitNumber)
 
 void ACustomPlayerState::NewTurnBegin()
 {
-	ChangeWoodPoints(0 + (WoodBuildingOwned * 15), true);
-	ChangeStonePoints(0 + (StoneBuildingOwned * 15), true);
-	ChangeGoldPoints(0 + (GoldBuildingOwned * 15), true);
+	ChangeWoodPoints(5 + (WoodBuildingOwned * 15), true);
+	ChangeStonePoints(4 + (StoneBuildingOwned * 15), true);
+	ChangeGoldPoints(2 + (GoldBuildingOwned * 15), true);
 }
 
 void ACustomPlayerState::RefreshActionPoints()

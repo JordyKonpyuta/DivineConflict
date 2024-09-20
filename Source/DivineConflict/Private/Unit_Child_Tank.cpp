@@ -14,8 +14,6 @@ void AUnit_Child_Tank::BeginPlay()
 	SetMaxHealth(12);
 	SetCurrentHealth(GetMaxHealth());
 	SetPM(3);
-
-	SetName(Names[FMath::RandRange(0, Names.Num()-1)]);
 }
 
 AUnit_Child_Tank::AUnit_Child_Tank()

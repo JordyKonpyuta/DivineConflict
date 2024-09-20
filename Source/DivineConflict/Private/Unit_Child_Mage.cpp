@@ -14,8 +14,6 @@ void AUnit_Child_Mage::BeginPlay()
 	SetMaxHealth(10);
 	SetCurrentHealth(GetMaxHealth());
 	SetPM(4);
-	
-	SetName(Names[FMath::RandRange(0, Names.Num()-1)]);
 }
 
 AUnit_Child_Mage::AUnit_Child_Mage()

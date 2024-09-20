@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CustomPlayerState.h"
 #include "GameFramework/GameStateBase.h"
 #include "CustomGameState.generated.h"
 
@@ -27,6 +28,12 @@ public:
 	UPROPERTY(EditAnywhere, NotBlueprintable, Category = "Timer", meta = (AllowPrivateAccess = "true"))
 	int LoadingTimer = 2;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Refs")
+	TArray<ACustomPlayerState*> AllPlayerStates;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Turns")
+	bool bP1Turn = true;
+	
 private:
 	virtual void BeginPlay() override;
 
