@@ -53,6 +53,9 @@ public:
 	
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
 	ACustomGameState* GameStateRef;
+
+	UPROPERTY(EditAnywhere, NotBlueprintable, Category = "Timer", meta = (AllowPrivateAccess = "true"))
+	int LoadingTimer = 1;
 	
 private:
 	virtual void BeginPlay() override;

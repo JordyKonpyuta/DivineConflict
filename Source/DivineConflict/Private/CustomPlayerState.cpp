@@ -12,7 +12,9 @@ void ACustomPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GameStateRef = GetWorld()->GetGameState<ACustomGameState>();
 	GameStateRef->AllPlayerStates.Add(this);
+	
 }
 
 int ACustomPlayerState::GetActionPoints()
