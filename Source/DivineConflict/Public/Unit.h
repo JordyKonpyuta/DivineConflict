@@ -186,9 +186,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetUnitIcon(UTexture2D* i);
 
-	UFUNCTION(BlueprintNativeEvent)
-	void DisplayWidget();
-
 	UFUNCTION()
 	void SetIndexPosition(FIntPoint ip);
 	

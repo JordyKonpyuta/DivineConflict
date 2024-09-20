@@ -90,7 +90,6 @@ void AUnit::NotifyActorOnClicked(FKey ButtonPressed)
 {
 	Super::NotifyActorOnClicked(ButtonPressed);
 	SetIsSelected(true);
-	DisplayWidget();
 }
 
 // Called every frame
@@ -267,8 +266,4 @@ void AUnit::SetIndexPosition(FIntPoint ip)
 	IndexPosition = ip;
 }
 
-void AUnit::DisplayWidget_Implementation()
-{
-
-}
 

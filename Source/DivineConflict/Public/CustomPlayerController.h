@@ -92,5 +92,8 @@ public:
 	void SetIsDead(bool bD);
 	
 	void ControllerInteraction();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void DisplayWidget();
 	
 };
