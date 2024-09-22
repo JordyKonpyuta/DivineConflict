@@ -12,7 +12,7 @@
 
 class AUnit;
 class ABuilding;
-
+class ABase;
 
 
 
@@ -53,7 +53,7 @@ struct DIVINECONFLICT_API FDC_TileData
 public:
 	FDC_TileData();
 	FDC_TileData(FIntPoint tilePosition, EDC_TileType tileType, FTransform3d tileTransform,
-	             TArray<EDC_TileState> tileState, AUnit* unitOnTile, ABuilding* spawnerOnTile);
+	             TArray<EDC_TileState> tileState, AUnit* unitOnTile, ABuilding* spawnerOnTile, ABase* baseOnTile);
 	
 	
 	~FDC_TileData();
@@ -75,4 +75,7 @@ public:
 	
 	UPROPERTY( EditAnywhere, Category = "GridElement")
 	ABuilding* SpawnerOnTile = nullptr;
+
+	UPROPERTY( EditAnywhere, Category = "GridElement")
+	ABase *BaseOnTile = nullptr;
 };

@@ -9,6 +9,7 @@
 class AGrid;
 class AUnit;
 class ABuilding;
+class ABase;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DIVINECONFLICT_API UGridInfo : public UActorComponent
@@ -36,6 +37,12 @@ public:
 	UFUNCTION( Category = "GridElement",CallInEditor)
 	void SetSpawnUnitOnGrid(FIntPoint GridPosition, ABuilding* Spawner);
 
+	UFUNCTION( Category = "GridElement",CallInEditor)
+	void addBaseOnGrid(FIntPoint GridPosition, ABase* Base);
+
+	UFUNCTION(	Category = "GridElement",CallInEditor)
+	void SetBaseOnGrid(FIntPoint GridPosition, ABase* Base);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -49,6 +56,8 @@ protected:
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
 	TArray<ABuilding*> SpawnersGrid;
 
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
+	TArray<ABase*> BasesGrid;
 	
 
 	

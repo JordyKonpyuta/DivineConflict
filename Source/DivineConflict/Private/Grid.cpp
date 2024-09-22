@@ -47,7 +47,7 @@ AGrid::AGrid()
 			{
 				FIntPoint TileIndex = FIntPoint(X, Y);
 				FDC_TileData TileData = FDC_TileData(TileIndex, EDC_TileType::Normal, FTransform3d(FVector(X * 100, Y * 100, HitLocation.Z)),
-					TArray<EDC_TileState>(), nullptr, nullptr);
+					TArray<EDC_TileState>(), nullptr, nullptr, nullptr);
 
 				UE_LOG( LogTemp, Warning, TEXT("TileIndex: %d %d "),TileIndex.X , TileIndex.Y);
 				GridData.Add(TileIndex, TileData);
@@ -144,7 +144,7 @@ void AGrid::SpawnGrid()
 			{
 				FIntPoint TileIndex = FIntPoint(X, Y);
 				FDC_TileData TileData = FDC_TileData(TileIndex, EDC_TileType::Normal, FTransform3d(FVector(X * 100, Y * 100, HitLocation.Z)),
-					TArray<EDC_TileState>(), nullptr, nullptr);
+					TArray<EDC_TileState>(), nullptr, nullptr, nullptr);
 
 				UE_LOG( LogTemp, Warning, TEXT("TileIndex: %d %d "),TileIndex.X , TileIndex.Y);
 				GridData.Add(TileIndex, TileData);
