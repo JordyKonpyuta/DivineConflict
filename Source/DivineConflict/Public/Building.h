@@ -10,6 +10,7 @@
 
 class AGrid;
 class ACustomPlayerController;
+class UBuildingSpawnLocation;
 
 UCLASS()
 
@@ -20,6 +21,9 @@ class DIVINECONFLICT_API ABuilding : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ABuilding();
+
+	UPROPERTY(NotBlueprintable)
+	UBuildingSpawnLocation* BuildingSpawnLocationRef;
 
 	UPROPERTY(Blueprintable, BlueprintReadWrite, Category = "Building")
 	UStaticMeshComponent* StaticMeshBuilding;
@@ -33,6 +37,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player")
 	AGrid* Grid;
 
+	UPROPERTY(Blueprintable, BlueprintReadOnly, Category="Grid")
+	TArray<FIntPoint>AllSpawnLoc;
+
+	UPROPERTY(NotBlueprintable)
+	FIntPoint SpawnLocRef;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

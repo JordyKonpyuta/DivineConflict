@@ -2,6 +2,8 @@
 
 
 #include "Building.h"
+
+#include "BuildingSpawnLocation.h"
 #include "CustomPlayerController.h"
 #include "Grid.h"
 #include "GridInfo.h"
@@ -18,6 +20,7 @@ ABuilding::ABuilding()
 	// Add and name a static mesh
 	StaticMeshBuilding = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Building Appearance"));
 	RootComponent = StaticMeshBuilding;
+
 }
 
 // Called when the game starts or when spawned
@@ -25,6 +28,7 @@ void ABuilding::BeginPlay()
 {
 	Super::BeginPlay();
 
+	
 	switch (BuildingList) {
 	case EBuildingList::B_Wood:
 		UnitProduced = EUnitType::U_Mage;
@@ -61,12 +65,26 @@ void ABuilding::BeginPlay()
 		else
 		{
 			// Grid : Building
+			SpawnLocRef = Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(25, 25, 0));
 			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(25, 25, 0)), this);
 			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(25, -25, 0)), this);
 			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-25, 25, 0)), this);
 			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-25, -25, 0)), this);
 
 			// Grid : Spawners
+			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(150, 50, 0)));
+			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(150, -50, 0)));
+			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(50, 150, 0)));
+			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(50, -150, 0)));
+			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-50, 150, 0)));
+			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-50, -150, 0)));
+			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-150, 50, 0)));
+			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-150, -50, 0)));
+			
+			BuildingSpawnLocationRef->GridRef = Grid;
+			BuildingSpawnLocationRef->SpawnGridColors(AllSpawnLoc);
+
+			
 			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(75, 25, 0)), this);
 			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(75, -25, 0)), this);
 			Grid->GridInfo->addSpawnUnitOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(25, 75, 0)), this);

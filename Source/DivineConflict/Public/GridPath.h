@@ -76,7 +76,7 @@ protected:
 	bool bIsEscalation = false;
 	
 	
-	TArray<FIntPoint> FindTileNeighbors(FIntPoint Index);
+	
 	bool IsInputDataValid(FIntPoint Start, FIntPoint End);
 	void DiscoverTile(FPathData TilePath);
 	int MinimulCostBetweenTwoTile(FIntPoint Index1, FIntPoint Index2);
@@ -101,6 +101,6 @@ public:
 
 	void SetGrid(AGrid* GridRef);
 	
-		
+	TArray<FIntPoint> FindTileNeighbors(FIntPoint Index);
 };
 
