@@ -9,6 +9,7 @@
 #include "Building.generated.h"
 
 class AGrid;
+class ACustomPlayerController;
 
 UCLASS()
 
@@ -59,4 +60,11 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Player")
 	void SwitchOwner(ACustomPlayerState* NewOwner);
+
+	UFUNCTION(Blueprintable, Category = "Player")
+	bool IsPlayerPassive(ACustomPlayerController* PlayerController);
+
+	UFUNCTION(Blueprintable, Category = "Player")
+	void SpawnUnitFromBuilding(FIntPoint SpawnLocation);
+	
 };

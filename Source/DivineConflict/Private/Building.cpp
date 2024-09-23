@@ -3,8 +3,13 @@
 
 #include "Building.h"
 
+#include "CustomPlayerController.h"
 #include "Grid.h"
 #include "GridInfo.h"
+#include "Unit.h"
+#include "Unit_Child_Warrior.h"
+#include "Unit_Child_Mage.h"
+#include "Unit_Child_Tank.h"
 
 // Sets default values
 ABuilding::ABuilding()
@@ -110,6 +115,41 @@ void ABuilding::SwitchOwner(ACustomPlayerState* NewOwner)
 	
 	OwnerPlayerState = NewOwner;
 }
+
+// Check if Player is currently passive; will be used to spawn the HUD
+bool ABuilding::IsPlayerPassive(ACustomPlayerController* PlayerController)
+{
+	if(PlayerController->GetIsInActiveTurn())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+// Make a unit spawn in a specific point
+void ABuilding::SpawnUnitFromBuilding(FIntPoint SpawnLocation)
+{
+	FRotator BaseRotation(0.0f, 0.0f, 0.0f);
+	switch (UnitProduced)
+	{
+	case EUnitType::U_Warrior:
+		GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
+		break;
+	case EUnitType::U_Mage:
+		GetWorld()->SpawnActor<AUnit_Child_Mage>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
+		break;
+	case EUnitType::U_Tank:
+		GetWorld()->SpawnActor<AUnit_Child_Tank>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
+		break;
+	default:
+		GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
+	}
+	
+}
+
 
 // Called every frame
 void ABuilding::Tick(float DeltaTime)
