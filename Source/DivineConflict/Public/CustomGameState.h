@@ -7,6 +7,9 @@
 #include "GameFramework/GameStateBase.h"
 #include "CustomGameState.generated.h"
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTurnSwitchDelegate);
+
 class ACustomPlayerController;
 /**
  * 
@@ -33,6 +36,10 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Turns")
 	bool bP1Turn = false;
+	
+	UPROPERTY(BlueprintAssignable, Category = "Test")
+	FOnTurnSwitchDelegate OnTurnSwitchDelegate;
+
 	
 private:
 	virtual void BeginPlay() override;
