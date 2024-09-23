@@ -16,6 +16,8 @@ class AUnit;
 /**
  * 
  */
+
+
 UCLASS()
 class DIVINECONFLICT_API ACustomPlayerController : public APlayerController , public IInteractInterface
 {
@@ -63,7 +65,7 @@ protected:
 	
 	
 
-	void Move(/*const FInputActionValue& Value*/);
+	void Move();
 
 public:
 	
@@ -95,5 +97,9 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void DisplayWidget();
+
+	/*UFUNCTION(BlueprintNativeEvent)
+	void DisplayWidgetEndGame();*/
+	
 	
 };

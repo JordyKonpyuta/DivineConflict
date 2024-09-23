@@ -71,32 +71,35 @@ void ACustomPlayerController::ControllerInteraction()
 	if(Grid != nullptr)
 	{
 		if(UnitRef != nullptr)
-        {
-            CameraPlayerRef->IsMovingUnit = false;
-			UnitRef->SetIsSelected(false);
+		{
+			CameraPlayerRef->IsMovingUnit = false;
 			UnitRef->Move();
+			UnitRef->SetIsSelected(false);
 			UnitRef = nullptr;
-        }
-		
+		}
 		FIntPoint PlayerPositionInGrid = Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation());
 		
 		if(Grid->GetGridData()->Find(PlayerPositionInGrid) != nullptr)
 		{
 			if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
 			{
-				UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile;
-				CameraPlayerRef->SetCustomPlayerController(this);
-				IInteractInterface::Execute_Interact(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile, this);
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit Found"));
-				DisplayWidget();
-			}
-			else if(Grid->GetGridData()->Find(PlayerPositionInGrid))
-			{
+				if(!Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetIsSelected())
+				{
+					UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile;
+					CameraPlayerRef->SetCustomPlayerController(this);
+					IInteractInterface::Execute_Interact(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile, this);
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit Found"));
+					DisplayWidget();
+				}	
 				
 			}
 		}
 	}	
 }
+
+/*void ACustomPlayerController::DisplayWidgetEndGame_Implementation()
+{
+}*/
 
 void ACustomPlayerController::DisplayWidget_Implementation()
 {

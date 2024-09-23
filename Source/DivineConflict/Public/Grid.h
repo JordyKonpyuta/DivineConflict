@@ -54,7 +54,7 @@ protected:
 	TArray<FIntPoint> InstanceArray;
 
 	
-	FVector3d TraceHitGround(FVector Location);
+	FHitResult TraceHitGround(FVector Location);
 
 	UFUNCTION(Category = "GridElement", BlueprintCallable,CallInEditor)
 	void SpawnGrid();

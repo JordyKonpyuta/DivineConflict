@@ -30,7 +30,7 @@ bool AUnit::Interact_Implementation(ACustomPlayerController* PlayerController)
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Interact unit"));
 	PlayerControllerRef = PlayerController;
-	PlayerControllerRef->CameraPlayerRef->IsMovingUnit = true;
+	//PlayerControllerRef->CameraPlayerRef->IsMovingUnit = true;
 	//DisplayWidget();
 	
 
@@ -123,6 +123,17 @@ void AUnit::Move()
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit moved"));
 		
 		Grid->GridInfo->setUnitIndexOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()),this);
+		if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(GetActorLocation()))->TileType == EDC_TileType::Gate)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit is on gate"));
+
+			//layerControllerRef->DisplayWidgetEndGame();
+			
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit is not on gate"));
+		}
 	}
 }
 

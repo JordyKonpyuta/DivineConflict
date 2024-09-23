@@ -112,23 +112,24 @@ void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 			//print IsMovingUnit
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("IsMovingUnit"));
 			
-			
 			if (Path.Num()< CustomPlayerController->UnitRef->GetPM())
 			{
+
 				if (CustomPlayerController->Grid->GridPath->IsValidHeigh(CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(this->GetActorLocation() + MoveDirection)),
 					CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()))))
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Path : ") + FString::FromInt(Path.Num()+1));
+					
 				
 					
 					if (CustomPlayerController->Grid->IsTileWalkable(CustomPlayerController->Grid->ConvertLocationToIndex(this->GetActorLocation() + MoveDirection)))
 					{
 						
-						Path.AddUnique(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()));
+						Path.AddUnique(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()+MoveDirection));
 
-						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Path : ") + FString::FromInt(Path.Num()+2));
-				
+						
+						CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()), EDC_TileState::Hovered);
 						this->SetActorLocation(this->GetActorLocation() + MoveDirection);
+						CustomPlayerController->Grid->GridVisual->addStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()), EDC_TileState::Pathfinding);
 					}
 				}
 			}
@@ -136,6 +137,7 @@ void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 		}
 		else
 		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Move Camera"));
 			CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()), EDC_TileState::Hovered);
 			this->SetActorLocation(this->GetActorLocation() + MoveDirection);
 			CustomPlayerController->Grid->GridVisual->addStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()), EDC_TileState::Hovered);

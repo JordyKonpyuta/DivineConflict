@@ -3,6 +3,7 @@
 
 #include "Grid.h"
 
+#include "Base.h"
 #include "GridInfo.h"
 #include "GridPath.h"
 #include "GridVisual.h"
@@ -32,37 +33,7 @@ AGrid::AGrid()
 	}
 
 	GridMesh->NumCustomDataFloats = 4;
-	
-	int X = 0;
-	int Y = 0;
-	GridMesh->ClearInstances();
-	GridData.Empty();
-	InstanceArray.Empty();
-	while (X < GridSize.X)
-	{
-		while (Y < GridSize.Y)
-		{
-			FVector3d HitLocation = TraceHitGround(FVector(X * 100, Y * 100, 0));
-			if (HitLocation != FVector(0, 0, 0))
-			{
-				FIntPoint TileIndex = FIntPoint(X, Y);
-				FDC_TileData TileData = FDC_TileData(TileIndex, EDC_TileType::Normal, FTransform3d(FVector(X * 100, Y * 100, HitLocation.Z)),
-					TArray<EDC_TileState>(), nullptr, nullptr, nullptr);
 
-				UE_LOG( LogTemp, Warning, TEXT("TileIndex: %d %d "),TileIndex.X , TileIndex.Y);
-				GridData.Add(TileIndex, TileData);
-				AddInstance(FIntPoint(X, Y), FTransform3d(FVector(X * 100, Y * 100, HitLocation.Z)));
-
-		
-			}
-			Y++;
-		}
-		Y = 0;
-		X++;
-	}
-
-	
-	
 	GridPath = CreateDefaultSubobject<UGridPath>(TEXT("Grid Path"));
 	if(GridPath != nullptr)
 	{
@@ -91,7 +62,7 @@ AGrid::AGrid()
 		UE_LOG(LogTemp, Warning, TEXT("Grid Utilities not found"));
 	}
 
-	
+	SpawnGrid();
 
 	
 }
@@ -109,7 +80,7 @@ void AGrid::BeginPlay()
 	
 }
 
-FVector3d AGrid::TraceHitGround(FVector Location)
+FHitResult AGrid::TraceHitGround(FVector Location)
 {
 	FHitResult HitOut;
 	UKismetSystemLibrary::SphereTraceSingle(GetWorld(), Location + FVector(0, 0, 1000), Location + FVector(0, 0, -1000), 10,
@@ -120,9 +91,9 @@ FVector3d AGrid::TraceHitGround(FVector Location)
 			UE_LOG(LogTemp, Warning, TEXT("Hit : %s"), *HitOut.GetActor()->GetName());
 		HitOut.bBlockingHit ? DrawDebugPoint(GetWorld(), HitOut.ImpactPoint, 10, FColor::Green, false,
 		1, 0) : DrawDebugPoint(GetWorld(), Location + FVector(0, 0, -1000), 10, FColor::Red, false, 1, 0);
-		return HitOut.ImpactPoint;
+		return HitOut;
 	}
-		return FVector(0, 0, 0);
+		return FHitResult();
 }
 
 
@@ -139,16 +110,22 @@ void AGrid::SpawnGrid()
 	{
 		while (Y < GridSize.Y)
 		{
-			FVector3d HitLocation = TraceHitGround(FVector(X * 100, Y * 100, 0));
-			if (HitLocation != FVector(0, 0, 0))
+			FHitResult HitResult = TraceHitGround(FVector(X * 100, Y * 100, 0));
+			if (HitResult.ImpactPoint != FVector(0, 0, 0))
 			{
 				FIntPoint TileIndex = FIntPoint(X, Y);
-				FDC_TileData TileData = FDC_TileData(TileIndex, EDC_TileType::Normal, FTransform3d(FVector(X * 100, Y * 100, HitLocation.Z)),
+				FDC_TileData TileData = FDC_TileData(TileIndex, EDC_TileType::Normal, FTransform3d(FVector(X * 100, Y * 100, HitResult.ImpactPoint.Z)),
 					TArray<EDC_TileState>(), nullptr, nullptr, nullptr);
+
+				if(Cast<ABase>(HitResult.GetActor()))
+				{
+					TileData.TileType = EDC_TileType::Gate;
+					UE_LOG( LogTemp, Warning, TEXT("Obstacle"));
+				}
 
 				UE_LOG( LogTemp, Warning, TEXT("TileIndex: %d %d "),TileIndex.X , TileIndex.Y);
 				GridData.Add(TileIndex, TileData);
-	            AddInstance(FIntPoint(X, Y), FTransform3d(FVector(X * 100, Y * 100, HitLocation.Z)));
+	            AddInstance(FIntPoint(X, Y), FTransform3d(FVector(X * 100, Y * 100, HitResult.ImpactPoint.Z)));
 
 		
 			}
@@ -197,7 +174,7 @@ bool AGrid::IsTileWalkable(FIntPoint Index)
 
 bool AGrid::IsTileTypeWalkable(EDC_TileType Type)
 {
-	TArray<EDC_TileType> WalkableTypes = { EDC_TileType::None, EDC_TileType::Obstacle, EDC_TileType::Gate };
+	TArray<EDC_TileType> WalkableTypes = { EDC_TileType::None, EDC_TileType::Obstacle/*, EDC_TileType::Gate*/ };
 
 	return !WalkableTypes.Contains(Type);
 	
@@ -231,7 +208,6 @@ void AGrid::RemoveInstance(FIntPoint Index)
 	if (InstanceArray.Contains(Index))
 	{
 		GridMesh->RemoveInstance(InstanceArray.Find(Index));
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Instance Removed : %d"), InstanceArray.Find(Index)));
 		InstanceArray.Remove(Index);
 	}
 }
