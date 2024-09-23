@@ -143,11 +143,12 @@ void AGrid::SpawnGrid()
 
 void AGrid::TestPathfinding()
 {
-	TArray<FIntPoint> Path = GridPath->FindPath(FIntPoint	(0, 0), FIntPoint(9, 9), false,20 ,false);
+	TArray<FIntPoint> Path = GridPath->FindPath(FIntPoint	(0, 0), FIntPoint(9, 9), false,2 ,false);
 
 	for(FIntPoint Index : Path)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Path : %d %d"), Index.X, Index.Y);
+		GridVisual->addStateToTile(Index,EDC_TileState::Reachable);
 	}
 }
 
@@ -182,6 +183,15 @@ bool AGrid::IsTileTypeWalkable(EDC_TileType Type)
 TMap<FIntPoint, FDC_TileData>* AGrid::GetGridData()
 {
 	return &GridData;
+}
+
+void AGrid::TestReachedPath()
+{
+	TArray<FIntPoint> Reach = GridPath->FindPath(FIntPoint(0,0),FIntPoint(-999,-999), true, 3, false);
+	for(FIntPoint Index : Reach)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Reach : %d %d"), Index.X, Index.Y);
+	}
 }
 
 void AGrid::SetGridData(TMap<FIntPoint, FDC_TileData> Data)

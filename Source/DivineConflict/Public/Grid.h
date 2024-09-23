@@ -63,6 +63,10 @@ protected:
 	UFUNCTION( Category = "GridElement", BlueprintCallable,CallInEditor)
 	void TestPathfinding();
 
+	UFUNCTION(CallInEditor, BlueprintCallable,Category = "GridElement")
+	void TestReachedPath();
+	
+
 	FVector SnapVectorToVector(FVector InVector, const FVector InSnapTo);
 
 	
@@ -86,7 +90,6 @@ public:
 	bool IsTileTypeWalkable(EDC_TileType Type);
 
 	TMap <FIntPoint, FDC_TileData>* GetGridData();
-
 	
 	void SetGridData(TMap <FIntPoint, FDC_TileData> Data);
 
