@@ -6,6 +6,7 @@
 #include "CustomPlayerController.h"
 #include "Grid.h"
 #include "GridInfo.h"
+#include "GridVisual.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -116,6 +117,7 @@ void AUnit::Move()
 		for(FIntPoint index : Path)
 		{
 			FVector location = Grid->ConvertIndexToLocation(index);
+			Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
 			SetActorLocation(location);
 		}
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit moved"));
