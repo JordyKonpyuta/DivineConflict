@@ -88,6 +88,7 @@ void ACustomGameState::SwitchPlayerTurn()
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("p1 stone = "+FString::FromInt(AllPlayerStates[1]->StonePoints)));
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("p1 gold = "+FString::FromInt(AllPlayerStates[1]->GoldPoints)));
 	}
+	OnTurnSwitchDelegate.Broadcast();
 }
 
 
