@@ -67,6 +67,11 @@ int ABase::GetWoodCostUpgrade()
 	return WoodCostUpgrade;
 }
 
+FIntPoint ABase::GetGridPosition()
+{
+	return GridPosition;
+}
+
 void ABase::SetHealth(int h)
 {
 	Health = h;
@@ -87,6 +92,11 @@ void ABase::SetCostsUpgrade(int g, int s, int w)
 	GoldCostUpgrade = g;
 	StoneCostUpgrade = s;
 	WoodCostUpgrade = w;
+}
+
+void ABase::SetGridPosition(FIntPoint GridP)
+{
+	GridPosition = GridP;
 }
 
 // IF DEAD, END GAME

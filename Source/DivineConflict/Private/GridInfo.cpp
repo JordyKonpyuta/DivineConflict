@@ -119,7 +119,7 @@ void UGridInfo::addBaseOnGrid(FIntPoint GridPosition, ABase* Base)
 }
 
 void UGridInfo::SetBaseOnGrid(FIntPoint GridPosition, ABase* Base)
-{/*
+{
 	if(Grid == nullptr)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Grid is null"));
@@ -145,7 +145,7 @@ void UGridInfo::SetBaseOnGrid(FIntPoint GridPosition, ABase* Base)
 				Grid->GetGridData()->Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, NewIndex->SpawnerOnTile, Base));
 			}
 		}
-	}*/
+	}
 }
 
 

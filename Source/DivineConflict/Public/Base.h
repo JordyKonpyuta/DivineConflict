@@ -42,6 +42,9 @@ protected:
 	UPROPERTY()
 	int WoodCostUpgrade = 20;
 
+	UPROPERTY()
+	FIntPoint GridPosition= FIntPoint(-999,-999);
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -54,6 +57,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Controller")
 	ACustomPlayerController* PlayerControllerRef;
+
+	
 
 	// Getter
 	UFUNCTION(BlueprintCallable)
@@ -68,7 +73,9 @@ public:
 	int GetStoneCostUpgrade();
 	UFUNCTION(BlueprintCallable)
 	int GetWoodCostUpgrade();
-
+	UFUNCTION(BlueprintCallable)
+	FIntPoint GetGridPosition();
+	
 	// Setter
 	UFUNCTION(BlueprintCallable)
 	void SetHealth(int h);
@@ -78,6 +85,8 @@ public:
 	void SetIsHell(bool bH);
 	UFUNCTION(BlueprintCallable)
 	void SetCostsUpgrade(int g, int s, int w);
+	UFUNCTION(BlueprintCallable)
+	void SetGridPosition(FIntPoint GridP);
 
 	UFUNCTION(BlueprintCallable)
 	void CheckIfDead();
