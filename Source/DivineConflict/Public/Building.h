@@ -64,7 +64,7 @@ protected:
 	UFUNCTION(Blueprintable, Category = "Player")
 	bool IsPlayerPassive(ACustomPlayerController* PlayerController);
 
-	UFUNCTION(Blueprintable, Category = "Player")
+	UFUNCTION(BlueprintCallable, Category = "Player")
 	void SpawnUnitFromBuilding(FIntPoint SpawnLocation);
 	
 };
