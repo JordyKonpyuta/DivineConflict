@@ -9,6 +9,7 @@
 
 class APlayerController;
 class ACustomPlayerState;
+class AGrid;
 
 UCLASS()
 class DIVINECONFLICT_API ABase : public AActor
@@ -18,6 +19,9 @@ class DIVINECONFLICT_API ABase : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ABase();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player")
+	AGrid* Grid;
 
 protected:
 	// Called when the game starts or when spawned

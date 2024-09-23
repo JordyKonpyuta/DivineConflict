@@ -4,6 +4,8 @@
 #include "Base.h"
 
 #include "CustomPlayerController.h"
+#include "Grid.h"
+#include "GridInfo.h"
 #include "CustomPlayerState.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -28,6 +30,22 @@ void ABase::BeginPlay()
 	}
 
 	PlayerStateRef = PlayerControllerRef->GetPlayerState<ACustomPlayerState>();
+
+	if (Grid)
+	{
+		// Create Building Data
+	
+		// Grid : Building
+		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(100, -100, 0)), this);
+		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(100, 0, 0)), this);
+		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(100, 100, 0)), this);
+		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(0, 100, 0)), this);
+		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(0, -100, 0)), this);
+		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-100, -100, 0)), this);
+		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-100, 0, 0)), this);
+		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-100, 100, 0)), this);
+		}
 }
 
 // Called every frame

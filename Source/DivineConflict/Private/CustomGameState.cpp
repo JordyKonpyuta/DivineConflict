@@ -60,6 +60,11 @@ void ACustomGameState::SwitchPlayerTurn()
 		GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Yellow, TEXT("No controller Skull"));
 	}
 
+	if (AllPlayerStates.Num() <= 2)
+	{
+		AllPlayerStates.SetNum(2);
+	} 
+
 	if (AllPlayerStates[0] != nullptr)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("p0 wood = "+FString::FromInt(AllPlayerStates[0]->WoodPoints)));
