@@ -44,15 +44,32 @@ void ACustomGameState::BeginPlay()
 
 void ACustomGameState::SwitchPlayerTurn()
 {
-	AllPlayerStates[bP1Turn]->NewTurnBegin();
+	// Make sure the array has a size of minimum 2
+	if (AllPlayerStates.Num() < 2)
+	{
+		AllPlayerStates.SetNum(2, EAllowShrinking::Yes);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, TEXT("PlayerStates set to 2"));
+	} 
+
+	// Make sure those PlayerStates exist
+	if (AllPlayerStates[bP1Turn] != nullptr)
+	{
+		//Begin new Turn
+		AllPlayerStates[bP1Turn]->NewTurnBegin();
+	}
 	bP1Turn = !bP1Turn;
+	
 	if (PlayerControllers.Num() != -1)
 	{
 		for (ACustomPlayerController* CurrentController : PlayerControllers)
 		{
-			const bool bNewTurnMode = CurrentController->GetIsInActiveTurn();
-			CurrentController->SetIsInActiveTurn(!bNewTurnMode);
-			if (bNewTurnMode){GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("ACTIVE"));}else{GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("NOT ACTIVE"));}
+			// Make sure this controller exists
+			if (CurrentController != nullptr)
+			{
+				const bool bNewTurnMode = CurrentController->GetIsInActiveTurn();
+				CurrentController->SetIsInActiveTurn(!bNewTurnMode);
+				if (bNewTurnMode){GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("ACTIVE"));}else{GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("NOT ACTIVE"));}
+			}
 		}
 	}
 	else
@@ -60,10 +77,6 @@ void ACustomGameState::SwitchPlayerTurn()
 		GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Yellow, TEXT("No controller Skull"));
 	}
 
-	if (AllPlayerStates.Num() <= 2)
-	{
-		AllPlayerStates.SetNum(2);
-	} 
 
 	if (AllPlayerStates[0] != nullptr)
 	{
@@ -77,6 +90,7 @@ void ACustomGameState::SwitchPlayerTurn()
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("p1 gold = "+FString::FromInt(AllPlayerStates[1]->GoldPoints)));
 	}
 }
+
 
 void ACustomGameState::BeginTimer()
 {

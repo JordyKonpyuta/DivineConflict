@@ -32,7 +32,7 @@ public:
 	TArray<ACustomPlayerState*> AllPlayerStates;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Turns")
-	bool bP1Turn = true;
+	bool bP1Turn = false;
 	
 private:
 	virtual void BeginPlay() override;
