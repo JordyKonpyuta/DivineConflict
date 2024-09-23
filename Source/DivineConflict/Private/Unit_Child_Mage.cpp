@@ -2,7 +2,6 @@
 
 
 #include "Unit_Child_Mage.h"
-
 #include "UObject/ConstructorHelpers.h"
 
 void AUnit_Child_Mage::BeginPlay()

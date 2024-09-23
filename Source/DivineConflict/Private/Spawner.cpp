@@ -2,8 +2,6 @@
 
 
 #include "Spawner.h"
-#include "Grid.h"
-#include "GridInfo.h"
 
 // Sets default values
 ASpawner::ASpawner()

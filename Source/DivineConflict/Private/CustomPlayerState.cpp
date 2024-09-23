@@ -4,8 +4,6 @@
 #include "CustomPlayerState.h"
 #include "CustomGameState.h"
 
-#include <set>
-
 
 
 void ACustomPlayerState::BeginPlay()

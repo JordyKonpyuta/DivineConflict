@@ -2,7 +2,6 @@
 
 
 #include "Grid.h"
-
 #include "Base.h"
 #include "GridInfo.h"
 #include "GridPath.h"

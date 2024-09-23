@@ -4,7 +4,6 @@
 #include "CustomGameState.h"
 #include "CustomPlayerController.h"
 #include "CustomPlayerState.h"
-#include "CustomGameMode.h"
 
 void ACustomGameState::AssignPlayerTurns()
 {

@@ -2,7 +2,6 @@
 
 
 #include "GridVisual.h"
-
 #include "Grid.h"
 
 // Sets default values for this component's properties

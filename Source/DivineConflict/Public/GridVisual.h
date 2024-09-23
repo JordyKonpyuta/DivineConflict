@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "F_DC_TileData.h"
 #include "Components/ActorComponent.h"
-#include "CookOnTheSide/CookOnTheFlyServer.h"
 #include "GridVisual.generated.h"
 
 class AGrid;
