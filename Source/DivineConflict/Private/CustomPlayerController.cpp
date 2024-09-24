@@ -135,7 +135,6 @@ void ACustomPlayerController::ControllerInteraction()
 					for(FIntPoint Index : PathReachable)
 					{
 						Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Reachable);
-						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Remove State Tile : " + Index.ToString()));
 					}
 					PathReachable.Empty();
 					CameraPlayerRef->IsMovingUnit = false;
