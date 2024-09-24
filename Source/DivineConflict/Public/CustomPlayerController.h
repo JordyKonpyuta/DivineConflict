@@ -129,6 +129,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void DisplayWidget();
 
+	UFUNCTION(BlueprintNativeEvent)
+	void DisplayWidgetBuilding();
+
 	UFUNCTION(NotBlueprintable)
 	TArray<FIntPoint> PrepareSpawnArea(TArray<FIntPoint> AllSpawnArea, FIntPoint BaseTile);
 	

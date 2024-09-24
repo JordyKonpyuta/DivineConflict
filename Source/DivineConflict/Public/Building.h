@@ -27,6 +27,9 @@ public:
 	
 	UPROPERTY(NotBlueprintable)
 	UBuildingSpawnLocation* BuildingSpawnLocationRef;
+	
+	UPROPERTY(Blueprintable)
+	ACustomPlayerController* PlayerControllerRef;
 
 	UPROPERTY(Blueprintable, EditAnywhere, BlueprintReadWrite, Category = "Building")
 	UStaticMeshComponent* StaticMeshBuilding;

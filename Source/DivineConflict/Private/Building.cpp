@@ -37,7 +37,8 @@ ABuilding::ABuilding()
 
 bool ABuilding::Interact_Implementation(ACustomPlayerController* PlayerController)
 {
-	return IInteractInterface::Interact_Implementation(PlayerController);
+	PlayerControllerRef = PlayerController;
+	return true;
 }
 
 // Called when the game starts or when spawned

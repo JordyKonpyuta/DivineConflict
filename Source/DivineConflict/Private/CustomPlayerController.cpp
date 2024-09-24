@@ -2,6 +2,8 @@
 
 
 #include "CustomPlayerController.h"
+
+#include "Building.h"
 #include "EnhancedInputSubsystems.h"
 #include "CustomGameState.h"
 #include "Engine/LocalPlayer.h"
@@ -137,8 +139,11 @@ void ACustomPlayerController::ControllerInteraction()
 					}
 					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile != nullptr)
 					{
-					GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("That's a building"));
-						
+						if ((Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Hell && IsHell == true) || (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Heaven && IsHell == false))
+						{
+							GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("That's a building"));
+							DisplayWidgetBuilding();
+						}
 					}
 				}
 				break;
@@ -169,6 +174,11 @@ void ACustomPlayerController::ControllerInteraction()
 				break;
 		}
 	}	
+}
+
+void ACustomPlayerController::DisplayWidgetBuilding_Implementation()
+{
+	
 }
 
 TArray<FIntPoint> ACustomPlayerController::PrepareSpawnArea(TArray<FIntPoint> AllSpawnArea, FIntPoint BaseTile)
