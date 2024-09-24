@@ -16,7 +16,15 @@ class AUnit;
 /**
  * 
  */
-
+UENUM(BlueprintType)
+enum class EDC_ActionPlayer : uint8
+{
+	None UMETA(DisplayName = "None"),
+	MoveUnit UMETA(DisplayName = "MoveUnit"),
+	AttackUnit UMETA(DisplayName = "AttackUnit"),
+	SpellCast UMETA(DisplayName = "SpellCast"),
+	AttackBuilding UMETA(DisplayName = "AttackBuilding"),
+};
 
 UCLASS()
 class DIVINECONFLICT_API ACustomPlayerController : public APlayerController , public IInteractInterface
@@ -55,6 +63,9 @@ protected:
 
 	UPROPERTY()
 	bool IsDead = false;
+
+	UPROPERTY()
+	EDC_ActionPlayer PlayerAction = EDC_ActionPlayer::None;
 	
 	virtual void BeginPlay() override;
 
@@ -65,9 +76,22 @@ protected:
 	
 	
 
-	void Move();
+
 
 public:
+
+
+	UFUNCTION(BlueprintCallable)
+	void SelectModeMovement();
+
+	UFUNCTION(BlueprintCallable)
+	void SelectModeAttack();
+
+	UFUNCTION(	BlueprintCallable)
+	void SelectModeSpell();
+
+	UFUNCTION( BlueprintCallable)
+	void SelectModeBuilding();
 	
 	UFUNCTION(BlueprintCallable)
 	bool GetIsHell();

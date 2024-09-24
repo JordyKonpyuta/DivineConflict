@@ -64,34 +64,70 @@ void ACustomPlayerController::setGrid()
 	}
 }
 
+void ACustomPlayerController::SelectModeMovement()
+{
+	PlayerAction = EDC_ActionPlayer::MoveUnit;
+	CameraPlayerRef->IsMovingUnit = true;
+}
+
+void ACustomPlayerController::SelectModeAttack()
+{
+	PlayerAction = EDC_ActionPlayer::AttackUnit;
+}
+
+void ACustomPlayerController::SelectModeSpell()
+{
+	PlayerAction = EDC_ActionPlayer::SpellCast;
+}
+
+void ACustomPlayerController::SelectModeBuilding()
+{
+	PlayerAction = EDC_ActionPlayer::AttackBuilding;
+}
+
 void ACustomPlayerController::ControllerInteraction()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Interact Controller"));
+
 	if(Grid != nullptr)
 	{
-		if(UnitRef != nullptr)
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("PlayerAction : " + FString::FromInt((int)PlayerAction)));
+		switch (PlayerAction)
 		{
-			CameraPlayerRef->IsMovingUnit = false;
-			UnitRef->Move();
-			UnitRef->SetIsSelected(false);
-			UnitRef = nullptr;
-		}
-		FIntPoint PlayerPositionInGrid = Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation());
+			case EDC_ActionPlayer::None:
+
+				FIntPoint PlayerPositionInGrid = Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation());
 		
-		if(Grid->GetGridData()->Find(PlayerPositionInGrid) != nullptr)
-		{
-			if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
-			{
-				if(!Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetIsSelected())
+				if(Grid->GetGridData()->Find(PlayerPositionInGrid) != nullptr)
 				{
-					UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile;
-					CameraPlayerRef->SetCustomPlayerController(this);
-					IInteractInterface::Execute_Interact(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile, this);
-					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit Found"));
-					DisplayWidget();
-				}	
-				
-			}
+					if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
+					{
+						if(!Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetIsSelected())
+						{
+							UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile;
+							CameraPlayerRef->SetCustomPlayerController(this);
+							IInteractInterface::Execute_Interact(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile, this);
+							DisplayWidget();
+						}	
+					}
+				}
+				break;
+			case EDC_ActionPlayer::MoveUnit:
+				//Move();
+					CameraPlayerRef->IsMovingUnit = false;
+					UnitRef->Move();
+					UnitRef->SetIsSelected(false);
+					UnitRef = nullptr;
+					PlayerAction = EDC_ActionPlayer::None;
+				break;
+			case EDC_ActionPlayer::AttackUnit:
+				//Attack();
+			break;
+			case EDC_ActionPlayer::SpellCast:
+				//Spell();
+				break;
+			case EDC_ActionPlayer::AttackBuilding:
+				//AttackBuilding();
+				break;
 		}
 	}	
 }
@@ -103,14 +139,6 @@ void ACustomPlayerController::ControllerInteraction()
 void ACustomPlayerController::DisplayWidget_Implementation()
 {
 }
-
-void ACustomPlayerController::Move(/*const FInputActionValue& Value*/)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Move"));
-
-	UE_LOG(LogTemp, Warning, TEXT("Move"));
-}
-
 
 bool ACustomPlayerController::GetIsHell()
 {

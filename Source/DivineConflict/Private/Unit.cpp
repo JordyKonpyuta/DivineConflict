@@ -107,6 +107,8 @@ void AUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AUnit::Move()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit move"));
+	
 	if(PlayerControllerRef != nullptr)
 	{
 		Path.Empty();
