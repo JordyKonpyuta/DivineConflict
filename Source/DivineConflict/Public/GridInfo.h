@@ -32,10 +32,10 @@ public:
 	void RemoveUnitInGrid(AUnit* Unit);
 
 	UFUNCTION(	Category = "GridElement",CallInEditor)
-	void addSpawnUnitOnGrid(FIntPoint GridPosition, ABuilding* Spawner);
+	void addBuildingOnGrid(FIntPoint GridPosition, ABuilding* Building);
 
 	UFUNCTION( Category = "GridElement",CallInEditor)
-	void SetSpawnUnitOnGrid(FIntPoint GridPosition, ABuilding* Spawner);
+	void SetBuildingOnGrid(FIntPoint GridPosition, ABuilding* Building);
 
 	UFUNCTION( Category = "GridElement",CallInEditor)
 	void addBaseOnGrid(FIntPoint GridPosition, ABase* Base);
@@ -54,7 +54,7 @@ protected:
 	TArray<AUnit*> UnitsCombat;
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	TArray<ABuilding*> SpawnersGrid;
+	TArray<ABuilding*> BuildingGrid;
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
 	TArray<ABase*> BasesGrid;

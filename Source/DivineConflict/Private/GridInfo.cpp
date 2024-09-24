@@ -46,7 +46,7 @@ void UGridInfo::setUnitIndexOnGrid(FIntPoint GridPosition, AUnit* Unit)
 		{
 			if(PerviousIndex->UnitOnTile == Unit)
 			{
-				GridDataRef->Add(PerviousIndex->TilePosition, FDC_TileData(PerviousIndex->TilePosition, PerviousIndex->TileType, PerviousIndex->TileTransform, PerviousIndex->TileState, nullptr, PerviousIndex->SpawnerOnTile , PerviousIndex->BaseOnTile));
+				GridDataRef->Add(PerviousIndex->TilePosition, FDC_TileData(PerviousIndex->TilePosition, PerviousIndex->TileType, PerviousIndex->TileTransform, PerviousIndex->TileState, nullptr, PerviousIndex->BuildingOnTile , PerviousIndex->BaseOnTile));
 
 			}
 		}
@@ -58,7 +58,7 @@ void UGridInfo::setUnitIndexOnGrid(FIntPoint GridPosition, AUnit* Unit)
 			if(GridDataRef->Find(FIntPoint(0,0)) != nullptr)
 			{
 				GridDataRef->Add(GridDataRef->Find(GridPosition)->TilePosition, FDC_TileData(GridDataRef->Find(GridPosition)->TilePosition, GridDataRef->Find(GridPosition)->TileType,
-					GridDataRef->Find(GridPosition)->TileTransform, GridDataRef->Find(GridPosition)->TileState, Unit, GridDataRef->Find(GridPosition)->SpawnerOnTile, GridDataRef->Find(GridPosition)->BaseOnTile));
+					GridDataRef->Find(GridPosition)->TileTransform, GridDataRef->Find(GridPosition)->TileState, Unit, GridDataRef->Find(GridPosition)->BuildingOnTile, GridDataRef->Find(GridPosition)->BaseOnTile));
 			}
 			else
 			{
@@ -73,38 +73,29 @@ void UGridInfo::RemoveUnitInGrid(AUnit* Unit)
 	setUnitIndexOnGrid(FIntPoint(-999,-999), Unit);
 }
 
-void UGridInfo::addSpawnUnitOnGrid(FIntPoint GridPosition, ABuilding* Spawner)
+void UGridInfo::addBuildingOnGrid(FIntPoint GridPosition, ABuilding* Building)
 {
-	SpawnersGrid.Add(Spawner);
-	SetSpawnUnitOnGrid(GridPosition, Spawner);
+	BuildingGrid.Add(Building);
+	SetBuildingOnGrid(GridPosition, Building);
 	
 }
 
-void UGridInfo::SetSpawnUnitOnGrid(FIntPoint GridPosition, ABuilding* Spawner)
+void UGridInfo::SetBuildingOnGrid(FIntPoint GridPosition, ABuilding* Building)
 {
 	if(Grid == nullptr)
 	{
 		return;
 	}
 
-	if(GridPosition != Spawner->GetGridPosition())
+	if(GridPosition != Building->GetGridPosition())
 	{
-		FDC_TileData* PerviousIndex = Grid->GetGridData()->Find(Spawner->GetGridPosition());
-
-		if(PerviousIndex != nullptr)
+		Building->SetGridPosition(GridPosition);
+		if(Building->GetGridPosition() != FIntPoint(-999,-999))
 		{
-			if(PerviousIndex->SpawnerOnTile == Spawner)
-			{
-				Grid->GetGridData()->Add(PerviousIndex->TilePosition, FDC_TileData(PerviousIndex->TilePosition, PerviousIndex->TileType, PerviousIndex->TileTransform, PerviousIndex->TileState, PerviousIndex->UnitOnTile, nullptr, PerviousIndex->BaseOnTile));
-			}
-		}
-		Spawner->SetGridPosition(GridPosition);
-		if(Spawner->GetGridPosition() != FIntPoint(-999,-999))
-		{
-			FDC_TileData* NewIndex = Grid->GetGridData()->Find(Spawner->GetGridPosition());
+			FDC_TileData* NewIndex = Grid->GetGridData()->Find(Building->GetGridPosition());
 			if(NewIndex != nullptr)
 			{
-				Grid->GetGridData()->Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, Spawner, NewIndex->BaseOnTile));
+				Grid->GetGridData()->Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, Building, NewIndex->BaseOnTile));
 			}
 			
 		}
@@ -133,7 +124,7 @@ void UGridInfo::SetBaseOnGrid(FIntPoint GridPosition, ABase* Base)
 		{
 			if(PerviousIndex->BaseOnTile == Base)
 			{
-				Grid->GetGridData()->Add(PerviousIndex->TilePosition, FDC_TileData(PerviousIndex->TilePosition, PerviousIndex->TileType, PerviousIndex->TileTransform, PerviousIndex->TileState, PerviousIndex->UnitOnTile, PerviousIndex->SpawnerOnTile, nullptr));
+				Grid->GetGridData()->Add(PerviousIndex->TilePosition, FDC_TileData(PerviousIndex->TilePosition, PerviousIndex->TileType, PerviousIndex->TileTransform, PerviousIndex->TileState, PerviousIndex->UnitOnTile, PerviousIndex->BuildingOnTile, nullptr));
 			}
 		}
 		Base->SetGridPosition(GridPosition);
@@ -142,7 +133,7 @@ void UGridInfo::SetBaseOnGrid(FIntPoint GridPosition, ABase* Base)
 			FDC_TileData* NewIndex = Grid->GetGridData()->Find(Base->GetGridPosition());
 			if(NewIndex != nullptr)
 			{
-				Grid->GetGridData()->Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, NewIndex->SpawnerOnTile, Base));
+				Grid->GetGridData()->Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, NewIndex->BuildingOnTile, Base));
 			}
 		}
 	}

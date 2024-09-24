@@ -132,10 +132,12 @@ void ACustomPlayerController::ControllerInteraction()
 							CameraPlayerRef->SetCustomPlayerController(this);
 							IInteractInterface::Execute_Interact(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile, this);
 							DisplayWidget();
+							GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("That's not a building"));
 						}	
 					}
-					else if (Grid->GetGridData())
+					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile != nullptr)
 					{
+					GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("That's a building"));
 						
 					}
 				}

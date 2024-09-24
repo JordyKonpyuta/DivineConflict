@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "CustomPlayerState.h"
 #include "EnumsList.h"
+#include "InteractInterface.h"
 #include "GameFramework/Actor.h"
 #include "Building.generated.h"
 
@@ -14,14 +15,16 @@ class UBuildingSpawnLocation;
 
 UCLASS()
 
-class DIVINECONFLICT_API ABuilding : public AActor
+class DIVINECONFLICT_API ABuilding : public AActor, public IInteractInterface
 {
 	GENERATED_BODY()
-	
+
 public:	
 	// Sets default values for this actor's properties
 	ABuilding();
 
+	virtual bool Interact_Implementation(ACustomPlayerController* PlayerController) override;
+	
 	UPROPERTY(NotBlueprintable)
 	UBuildingSpawnLocation* BuildingSpawnLocationRef;
 
@@ -47,7 +50,7 @@ public:
 	TArray<FIntPoint>AllSpawnLoc;
 
 	UPROPERTY(NotBlueprintable)
-	FIntPoint SpawnLocRef;
+	TArray<FIntPoint> SpawnLocRef;
 	
 protected:
 	// Called when the game starts or when spawned

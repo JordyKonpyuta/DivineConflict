@@ -50,7 +50,7 @@ void UBuildingSpawnLocation::SpawnGridColors(TArray<FIntPoint> AllSpawnLocationI
 			{
 				GridRef->RemoveInstance(Index);
 				GridInstance = GridRef->AddInstance(Index, GridRef->GetGridData()->Find(Index)->TileTransform);
-				if (GridRef->GridPath->IsValidHeigh(GridRef->GetGridData()->Find(Index), GridRef->GetGridData()->Find(BuildingRef->SpawnLocRef)))
+				if (GridRef->GridPath->IsValidHeigh(GridRef->GetGridData()->Find(Index), GridRef->GetGridData()->Find(BuildingRef->SpawnLocRef[0])))
 				{
 					GridRef->UpdateColor(GridInstance, FLinearColor (0, 255, 0), 0);
 				}
