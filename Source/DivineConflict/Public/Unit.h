@@ -99,6 +99,9 @@ public:
 
 	UFUNCTION( BlueprintCallable)
 	void Move( );
+
+	UFUNCTION(BlueprintCallable)
+	void AttackUnit(AUnit* UnitToAttack);
 	
 
 	

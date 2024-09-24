@@ -139,6 +139,28 @@ void AUnit::Move()
 	}
 }
 
+void AUnit::AttackUnit(AUnit* UnitToAttack)
+{
+	if(UnitToAttack == nullptr || Grid == nullptr)
+	{
+		return;
+	}
+	SetCurrentHealth(UnitToAttack->GetAttack()-GetDefense());
+	UnitToAttack->SetCurrentHealth(GetAttack()-UnitToAttack->GetDefense());
+
+	if(GetCurrentHealth() <= 0)
+	{
+		Grid->GridInfo->RemoveUnitInGrid(this);
+		Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
+		Destroy();
+	}
+	if(UnitToAttack->GetCurrentHealth() <= 0)
+	{
+		Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
+		UnitToAttack->Destroy();
+	}
+}
+
 int AUnit::GetAttack()
 {
 	return Attack;
