@@ -21,6 +21,7 @@ enum class EDC_TileType : uint8
 	None UMETA(DisplayName = "None"),
 	Normal UMETA(DisplayName = "Normal"),
 	Obstacle UMETA(DisplayName = "Obstacle"),
+	Climbable UMETA(DisplayName = "Climbable"),
 	Gate UMETA(DisplayName = "Gate"),
 	Tower UMETA(DisplayName = "Tower"),
 	Walkable UMETA(DisplayName = "Walkable"),
