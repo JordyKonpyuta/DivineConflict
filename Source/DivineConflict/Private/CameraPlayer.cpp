@@ -88,7 +88,7 @@ void ACameraPlayer::SetCustomPlayerController(ACustomPlayerController* Cpc)
 void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 {
 	FVector2d Input = Value.Get<FVector2d>();
-
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Move Camera"));
 	if (Controller != nullptr)
 	{
 		FVector3d MoveDirection = FVector3d(0, 0, 0);
