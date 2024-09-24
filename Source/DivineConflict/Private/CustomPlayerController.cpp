@@ -8,6 +8,8 @@
 #include "CameraPlayer.h"
 #include "Kismet/GameplayStatics.h"
 #include "Grid.h"
+#include "GridPath.h"
+#include "GridVisual.h"
 #include "Unit.h"
 
 
@@ -64,8 +66,25 @@ void ACustomPlayerController::setGrid()
 	}
 }
 
+void ACustomPlayerController::FindReachableTiles()
+{
+	if(Grid)
+		
+		if(UnitRef)
+		{
+			PathReachable =  Grid->GridPath->FindPath(Grid->ConvertLocationToIndex(UnitRef->GetActorLocation()), FIntPoint(-999,-999), true,UnitRef->GetPM(),false);
+
+			for(FIntPoint Index : PathReachable)
+			{
+				Grid->GridVisual->addStateToTile(Index, EDC_TileState::Reachable);
+			}
+		}
+	
+}
+
 void ACustomPlayerController::SelectModeMovement()
 {
+	FindReachableTiles();
 	PlayerAction = EDC_ActionPlayer::MoveUnit;
 	CameraPlayerRef->IsMovingUnit = true;
 }
@@ -75,7 +94,7 @@ void ACustomPlayerController::SelectModeAttack()
 	PlayerAction = EDC_ActionPlayer::AttackUnit;
 }
 
-void ACustomPlayerController::SelectModeSpell()
+void ACustomPlayerController::SelectModeSpecial()
 {
 	PlayerAction = EDC_ActionPlayer::SpellCast;
 }
@@ -111,8 +130,14 @@ void ACustomPlayerController::ControllerInteraction()
 					}
 				}
 				break;
-			case EDC_ActionPlayer::MoveUnit:
+		case EDC_ActionPlayer::MoveUnit:
 				//Move();
+					for(FIntPoint Index : PathReachable)
+					{
+						Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Reachable);
+						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Remove State Tile : " + Index.ToString()));
+					}
+					PathReachable.Empty();
 					CameraPlayerRef->IsMovingUnit = false;
 					UnitRef->Move();
 					UnitRef->SetIsSelected(false);

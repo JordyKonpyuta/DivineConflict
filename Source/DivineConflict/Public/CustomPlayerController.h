@@ -66,6 +66,9 @@ protected:
 
 	UPROPERTY()
 	EDC_ActionPlayer PlayerAction = EDC_ActionPlayer::None;
+
+	UPROPERTY()
+	TArray<FIntPoint> PathReachable;
 	
 	virtual void BeginPlay() override;
 
@@ -73,7 +76,9 @@ protected:
 
 	void setGrid();
 
-	
+	UFUNCTION()
+	void FindReachableTiles();
+
 	
 
 
@@ -88,7 +93,7 @@ public:
 	void SelectModeAttack();
 
 	UFUNCTION(	BlueprintCallable)
-	void SelectModeSpell();
+	void SelectModeSpecial();
 
 	UFUNCTION( BlueprintCallable)
 	void SelectModeBuilding();
