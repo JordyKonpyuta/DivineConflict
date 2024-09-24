@@ -40,8 +40,8 @@ public:
 	UPROPERTY(Blueprintable, BlueprintReadWrite, Category = "Building")
 	USceneComponent* SceneComp;
 
-	UPROPERTY(Blueprintable, BlueprintReadWrite, Category="Player")
-	EPlayer PlayerOwner;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Player")
+	EPlayer PlayerOwner = EPlayer::P_Neutral;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Player")
 	ACustomPlayerState* OwnerPlayerState;
