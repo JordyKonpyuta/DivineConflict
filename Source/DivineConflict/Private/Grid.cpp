@@ -3,6 +3,7 @@
 
 #include "Grid.h"
 #include "Base.h"
+#include "Building.h"
 #include "ClimbActor.h"
 #include "GridInfo.h"
 #include "GridPath.h"
@@ -121,10 +122,14 @@ void AGrid::SpawnGrid()
 				{
 					TileData.TileType = EDC_TileType::Gate;
 					UE_LOG( LogTemp, Warning, TEXT("Obstacle"));
-				}else if(Cast<AClimbActor>(HitResult.GetActor()))
+				} else if(Cast<AClimbActor>(HitResult.GetActor()))
 				{
 					TileData.TileType = EDC_TileType::Climbable;
 					UE_LOG( LogTemp, Warning, TEXT("Climbable"));
+				} else if (Cast<ABuilding>(HitResult.GetActor()))
+				{
+					TileData.TileType = EDC_TileType::Building;
+					UE_LOG( LogTemp, Warning, TEXT("Building"));
 				}
 
 				UE_LOG( LogTemp, Warning, TEXT("TileIndex: %d %d "),TileIndex.X , TileIndex.Y);

@@ -6,11 +6,17 @@
 #include "CustomGameState.h"
 #include "Engine/LocalPlayer.h"
 #include "CameraPlayer.h"
+#include "EnumsList.h"
 #include "Kismet/GameplayStatics.h"
 #include "Grid.h"
 #include "GridPath.h"
 #include "GridVisual.h"
 #include "Unit.h"
+
+#include "Unit_Child_Leader.h"
+#include "Unit_Child_Mage.h"
+#include "Unit_Child_Tank.h"
+#include "Unit_Child_Warrior.h"
 
 
 
@@ -128,6 +134,10 @@ void ACustomPlayerController::ControllerInteraction()
 							DisplayWidget();
 						}	
 					}
+					else if (Grid->GetGridData())
+					{
+						
+					}
 				}
 				break;
 		case EDC_ActionPlayer::MoveUnit:
@@ -152,9 +162,66 @@ void ACustomPlayerController::ControllerInteraction()
 			case EDC_ActionPlayer::AttackBuilding:
 				//AttackBuilding();
 				break;
+			case EDC_ActionPlayer::SelectBuilding:
+				//SelectBuilding()
+				break;
 		}
 	}	
 }
+
+TArray<FIntPoint> ACustomPlayerController::PrepareSpawnArea(TArray<FIntPoint> AllSpawnArea, FIntPoint BaseTile)
+{
+	TArray<FIntPoint> TrueSpawnArea;
+	for (FIntPoint Index : AllSpawnArea)
+	{
+		if (Grid->GridPath->IsValidHeigh(Grid->GetGridData()->Find(Index), Grid->GetGridData()->Find(BaseTile)))
+		{
+			TrueSpawnArea.Add(Index);
+		}
+	}
+	return TrueSpawnArea;
+}
+
+bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, TArray<FIntPoint> PossibleSpawnAreas, FIntPoint SpawnChosen)
+{
+	if (Grid->GetGridData()->Find(SpawnChosen)->UnitOnTile == nullptr)
+	{
+		for (FIntPoint Index : PossibleSpawnAreas)
+		{
+			if (SpawnChosen == Index)
+			{
+				AUnit* UnitThatSpawned;
+				switch (UnitToSpawn)
+				{
+				case EUnitType::U_Warrior:
+					UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnChosen), FRotator(0,0,0));
+					UnitThatSpawned->Grid = Grid;
+					break;
+				case EUnitType::U_Mage:
+					UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Mage>(Grid->ConvertIndexToLocation(SpawnChosen), FRotator(0,0,0));
+					UnitThatSpawned->Grid = Grid;
+					break;
+				case EUnitType::U_Tank:
+					UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Tank>(Grid->ConvertIndexToLocation(SpawnChosen), FRotator(0,0,0));
+					UnitThatSpawned->Grid = Grid;
+					break;
+				case EUnitType::U_Leader:
+					UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Leader>(Grid->ConvertIndexToLocation(SpawnChosen), FRotator(0,0,0));
+					UnitThatSpawned->Grid = Grid;
+					break;
+				default:
+					UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnChosen), FRotator(0,0,0));
+					UnitThatSpawned->Grid = Grid;
+					break;
+				}
+				return true;
+			}
+		}
+	}
+	return false;
+		
+}
+
 
 /*void ACustomPlayerController::DisplayWidgetEndGame_Implementation()
 {

@@ -18,7 +18,6 @@ UBuildingSpawnLocation::UBuildingSpawnLocation()
 	if (BuildingRef != nullptr)
 	{
 		BuildingRef->BuildingSpawnLocationRef = this;
-		GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Turquoise, TEXT("BuildingRef is Set (1)!"));
 	}
 	// ...
 }
@@ -42,7 +41,6 @@ void UBuildingSpawnLocation::TickComponent(float DeltaTime, ELevelTick TickType,
 
 
 void UBuildingSpawnLocation::SpawnGridColors(TArray<FIntPoint> AllSpawnLocationIndex){
-	bool bStopperToDeath = false;
 	BuildingRef = Cast<ABuilding>(GetOwner()); 
 	if (BuildingRef != nullptr)
 	{
@@ -51,28 +49,25 @@ void UBuildingSpawnLocation::SpawnGridColors(TArray<FIntPoint> AllSpawnLocationI
 			for (FIntPoint Index : AllSpawnLocationIndex)
 			{
 				GridRef->RemoveInstance(Index);
-			GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Turquoise, TEXT("Index :" + Index.ToString()));
 				GridInstance = GridRef->AddInstance(Index, GridRef->GetGridData()->Find(Index)->TileTransform);
 				if (GridRef->GridPath->IsValidHeigh(GridRef->GetGridData()->Find(Index), GridRef->GetGridData()->Find(BuildingRef->SpawnLocRef)))
 				{
 					GridRef->UpdateColor(GridInstance, FLinearColor (0, 255, 0), 0);
-					GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Turquoise, TEXT("Colored to Green"));
 				}
 				else
 				{
 					GridRef->UpdateColor(GridInstance, FLinearColor (255, 0, 0), 0);
-					GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Turquoise, TEXT("Colored to Red"));
 				}
 			}
 		}
 		else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Turquoise, TEXT("AllSpawnLocationIndex is Empty"));
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("AllSpawnLocationIndex is Empty, that's an oomfie"));
 		}
 	}
 	else
 	{
-			GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Turquoise, TEXT("BuildingRef is Quantic! (4)"));
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("BuildingRef is Quantic and both exists and doesn't"));
 		
 	}
 }

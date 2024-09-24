@@ -7,9 +7,11 @@
 #include "CustomPlayerController.h"
 #include "Grid.h"
 #include "GridInfo.h"
+#include "InputBehavior.h"
 #include "Unit_Child_Warrior.h"
 #include "Unit_Child_Mage.h"
 #include "Unit_Child_Tank.h"
+#include "GeometryCollection/GeometryCollectionSimulationTypes.h"
 
 // Sets default values
 ABuilding::ABuilding()
@@ -19,8 +21,15 @@ ABuilding::ABuilding()
 
 	// Add and name a static mesh
 	StaticMeshBuilding = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Building Appearance"));
-	RootComponent = StaticMeshBuilding;
 
+	SceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
+	RootComponent = SceneComp;
+
+	StaticMeshBuilding->SetCollisionResponseToAllChannels(ECR_Ignore);
+
+	StaticMeshPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Plane StaticMesh"));
+    StaticMeshPlane->SetHiddenInGame(true);
+	
 }
 
 // Called when the game starts or when spawned

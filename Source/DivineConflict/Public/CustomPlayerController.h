@@ -12,6 +12,7 @@ class AGrid;
 class ACustomGameState;
 class UInputMappingContext;
 class UInputAction;
+class AEnumsList;
 class AUnit;
 /**
  * 
@@ -24,6 +25,7 @@ enum class EDC_ActionPlayer : uint8
 	AttackUnit UMETA(DisplayName = "AttackUnit"),
 	SpellCast UMETA(DisplayName = "SpellCast"),
 	AttackBuilding UMETA(DisplayName = "AttackBuilding"),
+	SelectBuilding UMETA(DisplayNmae = "SelectBuilding"),
 };
 
 UCLASS()
@@ -127,6 +129,13 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void DisplayWidget();
 
+	UFUNCTION(NotBlueprintable)
+	TArray<FIntPoint> PrepareSpawnArea(TArray<FIntPoint> AllSpawnArea, FIntPoint BaseTile);
+	
+	UFUNCTION(Blueprintable)
+	bool SpawnUnit(EUnitType UnitToSpawn, TArray<FIntPoint> PossibleSpawnAreas, FIntPoint SpawnChosen);
+
+	
 	/*UFUNCTION(BlueprintNativeEvent)
 	void DisplayWidgetEndGame();*/
 	

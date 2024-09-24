@@ -25,8 +25,14 @@ public:
 	UPROPERTY(NotBlueprintable)
 	UBuildingSpawnLocation* BuildingSpawnLocationRef;
 
-	UPROPERTY(Blueprintable, BlueprintReadWrite, Category = "Building")
+	UPROPERTY(Blueprintable, EditAnywhere, BlueprintReadWrite, Category = "Building")
 	UStaticMeshComponent* StaticMeshBuilding;
+
+	UPROPERTY(Blueprintable, EditAnywhere, BlueprintReadWrite, Category = "Building")
+	UStaticMeshComponent* StaticMeshPlane;
+
+	UPROPERTY(Blueprintable, BlueprintReadWrite, Category = "Building")
+	USceneComponent* SceneComp;
 
 	UPROPERTY(Blueprintable, BlueprintReadWrite, Category="Player")
 	EPlayer PlayerOwner;
