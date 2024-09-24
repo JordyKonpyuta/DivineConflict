@@ -94,12 +94,14 @@ void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 		FVector3d MoveDirection = FVector3d(0, 0, 0);
 		if (abs(Input.X)  >= abs(Input.Y) )
 		{
-			MoveDirection = UKismetMathLibrary::GetForwardVector(UKismetMathLibrary::MakeRotator(0,0,GetActorRotation().Yaw)) * (Input.X*100);
-
+			MoveDirection = UKismetMathLibrary::GetForwardVector(UKismetMathLibrary::MakeRotator(0,0,GetActorRotation().Yaw)) * (UKismetMathLibrary::SignOfFloat(Input.X) * 100);
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("MoveDirection: ") + MoveDirection.ToString());
+		
 		}
 		else
 		{
-			 MoveDirection = CameraBoom->GetRightVector() * (Input.Y*100);
+			MoveDirection = CameraBoom->GetRightVector() * (UKismetMathLibrary::SignOfFloat(Input.Y)*100);
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("MoveDirection: ") + MoveDirection.ToString());
 		}
 		if(!CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation() + MoveDirection)))
 			return;
