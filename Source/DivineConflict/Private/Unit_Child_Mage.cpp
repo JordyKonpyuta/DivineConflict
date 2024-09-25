@@ -17,6 +17,8 @@ void AUnit_Child_Mage::BeginPlay()
 
 AUnit_Child_Mage::AUnit_Child_Mage()
 {
+	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/ange_mage/mage.mage'")).Object);
+	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	if (IsHell)
 	{
 		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("Texture2D'Content/Blueprints/Widget/Assets/Images/Hell/UnitIcons/T_Icon_Mage_Hell.T_Icon_Mage_Hell'"));

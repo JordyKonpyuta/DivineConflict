@@ -126,13 +126,15 @@ void AUnit::Move(TArray<FIntPoint> PathIn)
 
 void AUnit::AttackUnit(AUnit* UnitToAttack)
 {
-	if(UnitToAttack == nullptr || Grid == nullptr)
+	if(UnitToAttack == nullptr || Grid == nullptr || UnitToAttack == this)
 	{
 		return;
 	}
-	SetCurrentHealth(GetCurrentHealth()-( UnitToAttack->GetAttack()-GetDefense()) );
+	if(UnitToAttack->GetAttack()-GetDefense() > 0)
+		SetCurrentHealth(GetCurrentHealth()-( UnitToAttack->GetAttack()-GetDefense()) );
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("health Attack: ") + FString::FromInt(GetCurrentHealth()));
-	UnitToAttack->SetCurrentHealth( UnitToAttack->GetCurrentHealth() - (GetAttack()- UnitToAttack->GetDefense()));
+	if(GetAttack()- UnitToAttack->GetDefense() > 0)
+		UnitToAttack->SetCurrentHealth( UnitToAttack->GetCurrentHealth() - (GetAttack()- UnitToAttack->GetDefense()));
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("health Defence: ") + FString::FromInt(UnitToAttack->GetCurrentHealth()));
 	
 
@@ -278,6 +280,11 @@ FIntPoint AUnit::GetIndexPosition()
 	return IndexPosition;
 }
 
+EPlayer AUnit::GetPlayerOwner()
+{
+	return PlayerOwner;
+}
+
 void AUnit::SetTotalDamageInflicted(int tdi)
 {
 	TotalDamagesInflicted = tdi;
@@ -301,6 +308,11 @@ void AUnit::SetUnitIcon(UTexture2D* i)
 void AUnit::SetIndexPosition(FIntPoint ip)
 {
 	IndexPosition = ip;
+}
+
+void AUnit::SetPlayerOwner(EPlayer po)
+{
+	PlayerOwner = po;
 }
 
 

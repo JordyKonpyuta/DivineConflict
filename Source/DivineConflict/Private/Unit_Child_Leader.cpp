@@ -17,6 +17,8 @@ void AUnit_Child_Leader::BeginPlay()
 
 AUnit_Child_Leader::AUnit_Child_Leader()
 {
+	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/Ange_test_shape/SM_ange_mage_Scale_up_full_float_1_2.SM_ange_mage_Scale_up_full_float_1_2'")).Object);
+	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	if (IsHell)
 	{
 		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("Texture2D'Content/Blueprints/Widget/Assets/Images/Hell/UnitIcons/T_Icon_Leader_Hell.T_Icon_Leader_Hell'"));

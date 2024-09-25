@@ -17,6 +17,10 @@ void AUnit_Child_Tank::BeginPlay()
 
 AUnit_Child_Tank::AUnit_Child_Tank()
 {
+
+	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/ange_thank/tank.tank'")).Object);
+	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	
 	if (IsHell)
 	{
 		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("Texture2D'Content/Blueprints/Widget/Assets/Images/Hell/UnitIcons/T_Icon_Tank_Hell.T_Icon_Tank_Hell'"));

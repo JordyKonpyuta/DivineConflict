@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "EnumsList.h"
 #include "InteractInterface.h"
 #include "Unit.generated.h"
 
@@ -16,8 +17,7 @@ class DIVINECONFLICT_API AUnit : public APawn , public IInteractInterface
 {
 	GENERATED_BODY()
 
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Unit", meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* UnitMesh;
+	
 
 
 public:
@@ -36,6 +36,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Unit", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* UnitMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit")
+	EPlayer PlayerOwner = EPlayer::P_Neutral;
+	
 	UPROPERTY()
 	ACustomPlayerController* PlayerControllerRef;
 
@@ -149,6 +155,9 @@ public:
 	UFUNCTION()
 	FIntPoint GetIndexPosition();
 
+	UFUNCTION()
+	EPlayer GetPlayerOwner();
+
 	// Setter for units stats
 	UFUNCTION(BlueprintCallable)
 	void SetAttack(int a);
@@ -191,5 +200,8 @@ public:
 
 	UFUNCTION()
 	void SetIndexPosition(FIntPoint ip);
+
+	UFUNCTION()
+	void SetPlayerOwner(EPlayer po);
 	
 };
