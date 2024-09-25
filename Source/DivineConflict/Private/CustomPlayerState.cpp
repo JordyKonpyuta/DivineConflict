@@ -92,8 +92,3 @@ void ACustomPlayerState::NewTurnBegin()
 	ChangeStonePoints(4 + (StoneBuildingOwned * 15), true);
 	ChangeGoldPoints(2 + (GoldBuildingOwned * 15), true);
 }
-
-void ACustomPlayerState::RefreshActionPoints()
-{
-	ActionPoints = MaxActionPoints;
-}

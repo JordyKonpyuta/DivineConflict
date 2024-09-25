@@ -231,6 +231,7 @@ void ACustomPlayerController::ControllerInteraction()
 					{
 						if (SpawnUnit(BuildingRef->UnitProduced, SpawnIndex))
 						{
+							GetPlayerState<ACustomPlayerState>()->SetUnits(GetPlayerState<ACustomPlayerState>()->GetUnits() + 1);
 							PlayerAction = EDC_ActionPlayer::None;
 							break;
 						}

@@ -64,9 +64,6 @@ private:
 	// UFUNCTIONS //
 public:
 	UFUNCTION(BlueprintCallable, Category = "Actions")
-	void RefreshActionPoints();
-
-	UFUNCTION(BlueprintCallable, Category = "Actions")
 	int GetMaxActionPoints();
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
