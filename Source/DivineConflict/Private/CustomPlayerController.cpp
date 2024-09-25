@@ -15,6 +15,7 @@
 #include "Grid.h"
 #include "GridPath.h"
 #include "GridVisual.h"
+#include "Tower.h"
 #include "Unit.h"
 
 #include "Unit_Child_Leader.h"
@@ -176,6 +177,7 @@ void ACustomPlayerController::ControllerInteraction()
 					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile != nullptr && IsInActiveTurn)
 					{
 						TowerRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile;
+						TowerRef->IsSelected = true;
 						DisplayWidgetTower();
 					}
 
@@ -221,6 +223,23 @@ void ACustomPlayerController::ControllerInteraction()
 					break;
 			case EDC_ActionPlayer::AttackBuilding:
 				//AttackBuilding();
+					if(TowerRef)
+					{
+						if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile != nullptr)
+						{
+							if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile->GetPlayerOwner() == EPlayer::P_Heaven && TowerRef->GetIsHell() || Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile->GetPlayerOwner() == EPlayer::P_Hell && !TowerRef->GetIsHell())
+								TowerRef->AttackUnit(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile);
+						}
+						PathReachable = TowerRef->TilesInRange;
+						TowerRef->TilesInRange.Empty();
+						for (FIntPoint Index : PathReachable)
+						{
+							Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Attacked);
+						}
+						PathReachable.Empty();
+						TowerRef = nullptr;
+						PlayerAction = EDC_ActionPlayer::None;
+					}
 					break;
 			case EDC_ActionPlayer::SelectBuilding:
 				TArray<FIntPoint> AllPossibleSpawns = PrepareSpawnArea(BuildingRef->AllSpawnLoc, BuildingRef->SpawnLocRef[0]);

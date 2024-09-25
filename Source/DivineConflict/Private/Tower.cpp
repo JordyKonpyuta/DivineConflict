@@ -96,13 +96,13 @@ void ATower::UpdateVisuals()
 	for (FIntPoint Tile : TilesInRange)
 	{
 			// Highlight Tiles
-			Grid->GridVisual->addStateToTile(Tile, EDC_TileState::Spawnable);
+			Grid->GridVisual->addStateToTile(Tile, EDC_TileState::Attacked);
 	} else
 	{
 		for (FIntPoint Tile : TilesInRange)
 		{
 			// Remove Highlight
-			Grid->GridVisual->RemoveStateFromTile(Tile, EDC_TileState::Spawnable);
+			Grid->GridVisual->RemoveStateFromTile(Tile, EDC_TileState::Attacked);
 		}
 	}
 	
