@@ -3,6 +3,8 @@
 
 #include "Tower.h"
 
+#include "Unit.h"
+
 // Sets default values
 ATower::ATower()
 {
@@ -51,13 +53,8 @@ void ATower::SetIsHell(bool NewIsHell)
 	IsHell = NewIsHell;
 }
 
-AUnit* ATower::GetUnitInGarnison()
+void ATower::AttackUnit(AUnit* UnitToAttack)
 {
-	return UnitInGarnison;
 }
 
-void ATower::SetUnitInGarnison(AUnit* NewUnitInGarnison)
-{
-	UnitInGarnison = NewUnitInGarnison;
-}
 

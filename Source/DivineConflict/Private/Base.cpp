@@ -6,6 +6,8 @@
 #include "Grid.h"
 #include "GridInfo.h"
 #include "CustomPlayerState.h"
+#include "GridVisual.h"
+#include "Unit.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -38,14 +40,13 @@ void ABase::BeginPlay()
 	
 		// Grid : Building
 		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
-		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(100, -100, 0)), this);
-		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(100, 0, 0)), this);
-		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(100, 100, 0)), this);
-		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(0, 100, 0)), this);
-		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(0, -100, 0)), this);
-		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-100, -100, 0)), this);
-		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-100, 0, 0)), this);
-		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-100, 100, 0)), this);
+
+		// Grid : Spawnable Locations
+		AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(100,0,0)));
+		AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(0,100,0)));
+		AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(100,-100,0)));
+		AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(-100,100,0)));
+		
 		}
 }
 
@@ -54,6 +55,62 @@ void ABase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ABase::VisualSpawn()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("Update Visual"));
+	for (int i = 0; i < AllSpawnLoc.Num(); i++)
+	{
+		if (Grid->GetGridData()->Find(AllSpawnLoc[i])->UnitOnTile == nullptr)
+		{
+			if (IsSelected)
+			{
+				Grid->GridVisual->addStateToTile(AllSpawnLoc[i], EDC_TileState::Spawnable);
+				break;
+			}
+			else Grid->GridVisual->RemoveStateFromTile(AllSpawnLoc[i], EDC_TileState::Spawnable);
+		}
+	}
+}
+
+void ABase::SpawnUnit(EUnitType UnitToSpawn)
+{
+	if (Grid != nullptr)
+	{
+		FIntPoint SpawnLoc;
+		for (int i = 0; i < AllSpawnLoc.Num(); i++)
+		{
+			if (Grid->GetGridData()->Find(AllSpawnLoc[i])->UnitOnTile == nullptr)
+			{
+				SpawnLoc = AllSpawnLoc[i];
+				break;
+			}
+		}
+		
+		 if (PlayerStateRef->CurrentUnitCount < PlayerStateRef->MaxUnitCount)
+		{
+			if (PlayerStateRef->GetGoldPoints() >= 0 && PlayerStateRef->GetStonePoints() >= 0 && PlayerStateRef->GetWoodPoints() >= 0)
+			{
+				PlayerStateRef->ChangeGoldPoints(0, false);
+				PlayerStateRef->ChangeStonePoints(0, false);
+				PlayerStateRef->ChangeWoodPoints(0, false);
+				PlayerStateRef->SetUnits(PlayerStateRef->CurrentUnitCount + 1);
+				PlayerControllerRef->SpawnUnit(UnitToSpawn, SpawnLoc);
+				Grid->GridVisual->RemoveStateFromTile(SpawnLoc, EDC_TileState::Spawnable);
+			}
+			else
+			{
+				IsSelected = false;
+				VisualSpawn();
+			}
+		}
+		else
+		{
+			IsSelected = false;
+			VisualSpawn();
+		}
+	}
 }
 
 int ABase::GetHealth()
@@ -147,6 +204,8 @@ void ABase::Upgrade()
 		}
 	}
 }
+
+
 
 // FUNCTION FOR UI
 void ABase::OnDeath_Implementation()

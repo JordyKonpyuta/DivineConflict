@@ -11,6 +11,7 @@
 class APlayerController;
 class ACustomPlayerState;
 class AGrid;
+class AUnit;
 
 UCLASS()
 class DIVINECONFLICT_API ABase : public AActor
@@ -54,14 +55,22 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mesh")
-	class UStaticMeshComponent* StaticMesh;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
 	ACustomPlayerState* PlayerStateRef;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Controller")
 	ACustomPlayerController* PlayerControllerRef;
+
+	UFUNCTION(BlueprintCallable)
+	void VisualSpawn();
+	UFUNCTION(BlueprintCallable)
+	void SpawnUnit(EUnitType UnitToSpawn);
+
+	UPROPERTY(Blueprintable, BlueprintReadOnly, Category = "Grid")
+	TArray<FIntPoint> AllSpawnLoc;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bool")
+	bool IsSelected = false;
 
 	
 
@@ -103,4 +112,5 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Upgrade();
+	
 };

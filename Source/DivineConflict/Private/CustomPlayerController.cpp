@@ -167,6 +167,8 @@ void ACustomPlayerController::ControllerInteraction()
 							GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("That's a base"));
 							{
 								BaseRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile;
+								BaseRef->IsSelected = true;
+								BaseRef->VisualSpawn();
 								DisplayWidgetBase();
 							}
 						}

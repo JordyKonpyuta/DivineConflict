@@ -50,8 +50,5 @@ public:
 	void SetIsHell(bool NewIsHell);
 
 	UFUNCTION(BlueprintCallable)
-	AUnit* GetUnitInGarnison();
-	UFUNCTION(BlueprintCallable)
-	void SetUnitInGarnison(AUnit* NewUnitInGarnison);
-
+	void AttackUnit(AUnit* UnitToAttack);
 };
