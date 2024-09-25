@@ -9,7 +9,7 @@ void ACustomGameState::AssignPlayerTurns()
 {
 	if (PlayerArray.Num() != -1)
 	{
-		for(const APlayerState* CurrentPlayerState : PlayerArray)
+		for(APlayerState* CurrentPlayerState : PlayerArray)
 		{
 			if(ACustomPlayerController* CurrentController = Cast<ACustomPlayerController>(CurrentPlayerState->GetPlayerController())){
 				if (PlayerArray[0] == CurrentPlayerState)
@@ -24,6 +24,8 @@ void ACustomGameState::AssignPlayerTurns()
 			}
 		}
 	}
+	// Problème : le Broadcast ne s'effectue que sur le serveur. 
+	OnTurnSwitchDelegate.Broadcast();
 }
 
 void ACustomGameState::BeginPlay()
@@ -67,7 +69,10 @@ void ACustomGameState::SwitchPlayerTurn()
 			{
 				const bool bNewTurnMode = CurrentController->GetIsInActiveTurn();
 				CurrentController->SetIsInActiveTurn(!bNewTurnMode);
-				if (bNewTurnMode){GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("ACTIVE"));}else{GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("NOT ACTIVE"));}
+				if (bNewTurnMode){
+					CurrentController->CurrentPA = CurrentController->GetPlayerState<ACustomPlayerState>()->GetMaxActionPoints();
+					CurrentController->GetPlayerState<ACustomPlayerState>()->TurnPassed +=1;
+				}else{GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("NOT ACTIVE"));}
 			}
 		}
 	}

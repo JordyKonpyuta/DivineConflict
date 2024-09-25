@@ -21,7 +21,7 @@
 #include "Unit_Child_Mage.h"
 #include "Unit_Child_Tank.h"
 #include "Unit_Child_Warrior.h"
-
+#include "BaseGizmos/GizmoElementShared.h"
 
 
 void ACustomPlayerController::BeginPlay()
@@ -130,24 +130,25 @@ void ACustomPlayerController::ControllerInteraction()
 	if(Grid != nullptr)
 	{
 		FIntPoint PlayerPositionInGrid = Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation());
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("PlayerAction : " + FString::FromInt((int)PlayerAction)));
-		switch (PlayerAction)
+		if(CurrentPA >= 1)
 		{
+			if (PlayerAction != EDC_ActionPlayer::None) CurrentPA -= 1;
+			switch (PlayerAction)
+			{
 			case EDC_ActionPlayer::None:
 				if(Grid->GetGridData()->Find(PlayerPositionInGrid) != nullptr)
 				{
 					if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
 					{
-						if(!Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetIsSelected()) // Unit
+						if(!Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetIsSelected() && IsInActiveTurn) // Unit
 						{
 							UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile;
 							CameraPlayerRef->SetCustomPlayerController(this);
 							IInteractInterface::Execute_Interact(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile, this);
 							DisplayWidget();
-							GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("That's not a building"));
 						}	
 					}
-					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile != nullptr) // Building
+					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile != nullptr && !IsInActiveTurn) // Building
 					{
 						if ((Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Hell && IsHell == true) || (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Heaven && IsHell == false))
 						{
@@ -160,11 +161,10 @@ void ACustomPlayerController::ControllerInteraction()
 							PlayerAction = EDC_ActionPlayer::SelectBuilding;
 						}
 					}
-					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile != nullptr) // Base
+					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile != nullptr && !IsInActiveTurn) // Base
 					{
 						if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile->GetIsHell() == IsHell)
 						{
-							GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("That's a base"));
 							{
 								BaseRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile;
 								BaseRef->IsSelected = true;
@@ -173,7 +173,7 @@ void ACustomPlayerController::ControllerInteraction()
 							}
 						}
 					}
-					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile != nullptr)
+					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile != nullptr && IsInActiveTurn)
 					{
 						TowerRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile;
 						DisplayWidgetTower();
@@ -181,31 +181,31 @@ void ACustomPlayerController::ControllerInteraction()
 
 				}
 				break;
-		case EDC_ActionPlayer::MoveUnit:
+			case EDC_ActionPlayer::MoveUnit:
 				//Move();
 					for(FIntPoint Index : PathReachable)
 					{
 						Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Reachable);
 					}
-					PathReachable.Empty();
-					CameraPlayerRef->IsMovingUnit = false;
-					UnitRef->Move(CameraPlayerRef->Path);
-					CameraPlayerRef->Path.Empty();
-					UnitRef->SetIsSelected(false);
-					UnitRef = nullptr;
-					PlayerAction = EDC_ActionPlayer::None;
+				PathReachable.Empty();
+				CameraPlayerRef->IsMovingUnit = false;
+				UnitRef->Move(CameraPlayerRef->Path);
+				CameraPlayerRef->Path.Empty();
+				UnitRef->SetIsSelected(false);
+				UnitRef = nullptr;
+				PlayerAction = EDC_ActionPlayer::None;
 				break;
 			case EDC_ActionPlayer::AttackUnit:
 				//Attack();
 					if(UnitRef)
 					{
 						if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile != nullptr)
-                        {
+						{
 							if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile->GetPlayerOwner() != UnitRef->GetPlayerOwner())
 								UnitRef->AttackUnit(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile);
 							if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BaseOnTile)
 								UnitRef->AttackBase(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BaseOnTile);
-                        }
+						}
 						for(FIntPoint Index : PathReachable)
 						{
 							Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Attacked);
@@ -215,14 +215,14 @@ void ACustomPlayerController::ControllerInteraction()
 						UnitRef = nullptr;
 						PlayerAction = EDC_ActionPlayer::None;
 					}
-			break;
+				break;
 			case EDC_ActionPlayer::SpellCast:
 				//Spell();
-				break;
+					break;
 			case EDC_ActionPlayer::AttackBuilding:
 				//AttackBuilding();
-				break;
-		case EDC_ActionPlayer::SelectBuilding:
+					break;
+			case EDC_ActionPlayer::SelectBuilding:
 				TArray<FIntPoint> AllPossibleSpawns = PrepareSpawnArea(BuildingRef->AllSpawnLoc, BuildingRef->SpawnLocRef[0]);
 				BuildingRef->BuildingSpawnLocationRef->DeSpawnGridColors(BuildingRef->AllSpawnLoc);
 				for (FIntPoint SpawnIndex : AllPossibleSpawns)
@@ -236,8 +236,9 @@ void ACustomPlayerController::ControllerInteraction()
 						}
 					}
 				}
-			PlayerAction = EDC_ActionPlayer::None;
-			break;
+				PlayerAction = EDC_ActionPlayer::None;
+				break;
+			}
 		}
 	}	
 }

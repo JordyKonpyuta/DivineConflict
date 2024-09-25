@@ -15,11 +15,6 @@ void ACustomPlayerState::BeginPlay()
 	
 }
 
-int ACustomPlayerState::GetActionPoints()
-{
-	return ActionPoints;
-}
-
 int ACustomPlayerState::GetMaxActionPoints()
 {
 	return MaxActionPoints;

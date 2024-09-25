@@ -140,14 +140,7 @@ void ABuilding::SwitchOwner(ACustomPlayerState* NewOwner)
 // Check if Player is currently passive; will be used to spawn the HUD
 bool ABuilding::IsPlayerPassive(ACustomPlayerController* PlayerController)
 {
-	if(PlayerController->GetIsInActiveTurn())
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return PlayerController->GetIsInActiveTurn();
 }
 
 // Make a unit spawn in a specific point

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "CustomPlayerState.generated.h"
 
 class ACustomGameState;
@@ -20,12 +21,12 @@ class DIVINECONFLICT_API ACustomPlayerState : public APlayerState
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actions")
 	bool GotCentralBuilding = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actions")
-	int MaxActionPoints = 10 + (GotCentralBuilding * 5);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actions")
-	int ActionPoints = MaxActionPoints;
+	int TurnPassed = 0;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actions")
+	int MaxActionPoints = 10 + (GotCentralBuilding * UKismetMathLibrary::Clamp(TurnPassed, 0, 5));
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ressources")
 	int WoodPoints = 0;
@@ -64,9 +65,6 @@ private:
 public:
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	void RefreshActionPoints();
-
-	UFUNCTION(BlueprintCallable, Category = "Actions")
-	int GetActionPoints();
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	int GetMaxActionPoints();
