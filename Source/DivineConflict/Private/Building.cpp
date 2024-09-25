@@ -103,7 +103,6 @@ void ABuilding::BeginPlay()
 			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-150, -50, 0)));
 			
 			BuildingSpawnLocationRef->GridRef = Grid;
-			BuildingSpawnLocationRef->SpawnGridColors(AllSpawnLoc);
 		}
 
 		// Access Grid Data :

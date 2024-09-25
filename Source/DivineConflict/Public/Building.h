@@ -54,6 +54,9 @@ public:
 
 	UPROPERTY(NotBlueprintable)
 	TArray<FIntPoint> SpawnLocRef;
+
+	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitType")
+	EUnitType UnitProduced;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -61,9 +64,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building")
 	EBuildingList BuildingList;
-
-	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitType")
-	EUnitType UnitProduced;
 
 	UPROPERTY()
 	FIntPoint GridPosition = FIntPoint(0, 0);

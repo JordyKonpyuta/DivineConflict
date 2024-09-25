@@ -40,8 +40,8 @@ enum class EDC_TileState : uint8
 	Reachable UMETA(DisplayName = "Reachable"),
 	Pathfinding	UMETA(DisplayName = "Pathfinding"),
 	Attacked UMETA(DisplayName = "Attacked"),
-
-
+	Spawnable UMETA(DisplayName = "Spawnable"),
+	NotSpawnable UMETA(DisplayName = "NotSpawnable"),
 
 };
 

@@ -6,6 +6,7 @@
 #include "Building.h"
 #include "Grid.h"
 #include "GridPath.h"
+#include "GridVisual.h"
 
 // Sets default values for this component's properties
 UBuildingSpawnLocation::UBuildingSpawnLocation()
@@ -50,13 +51,13 @@ void UBuildingSpawnLocation::SpawnGridColors(TArray<FIntPoint> AllSpawnLocationI
 			{
 				GridRef->RemoveInstance(Index);
 				GridInstance = GridRef->AddInstance(Index, GridRef->GetGridData()->Find(Index)->TileTransform);
-				if (GridRef->GridPath->IsValidHeigh(GridRef->GetGridData()->Find(Index), GridRef->GetGridData()->Find(BuildingRef->SpawnLocRef[0])))
+				if (GridRef->GridPath->IsValidHeigh(GridRef->GetGridData()->Find(Index), GridRef->GetGridData()->Find(BuildingRef->SpawnLocRef[0])) && GridRef->GetGridData()->Find(Index)->UnitOnTile == nullptr)
 				{
-					GridRef->UpdateColor(GridInstance, FLinearColor (0, 255, 0), 0);
+					GridRef->GridVisual->addStateToTile(Index, EDC_TileState::Spawnable);
 				}
 				else
 				{
-					GridRef->UpdateColor(GridInstance, FLinearColor (255, 0, 0), 0);
+					GridRef->GridVisual->addStateToTile(Index, EDC_TileState::NotSpawnable);
 				}
 			}
 		}
@@ -68,6 +69,39 @@ void UBuildingSpawnLocation::SpawnGridColors(TArray<FIntPoint> AllSpawnLocationI
 	else
 	{
 			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("BuildingRef is Quantic and both exists and doesn't"));
+		
+	}
+}
+
+void UBuildingSpawnLocation::DeSpawnGridColors(TArray<FIntPoint> AllSpawnLocationIndex)
+{
+	BuildingRef = Cast<ABuilding>(GetOwner()); 
+	if (BuildingRef != nullptr)
+	{
+		if (AllSpawnLocationIndex.Num() != 0)
+		{
+			for (FIntPoint Index : AllSpawnLocationIndex)
+			{
+				GridRef->RemoveInstance(Index);
+				GridInstance = GridRef->AddInstance(Index, GridRef->GetGridData()->Find(Index)->TileTransform);
+				if (GridRef->GridPath->IsValidHeigh(GridRef->GetGridData()->Find(Index), GridRef->GetGridData()->Find(BuildingRef->SpawnLocRef[0])) && GridRef->GetGridData()->Find(Index)->UnitOnTile == nullptr)
+				{
+					GridRef->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Spawnable);
+				}
+				else
+				{
+					GridRef->GridVisual->RemoveStateFromTile(Index, EDC_TileState::NotSpawnable);
+				}
+			}
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("AllSpawnLocationIndex is Empty, that's an oomfie"));
+		}
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("BuildingRef is Quantic and both exists and doesn't"));
 		
 	}
 }

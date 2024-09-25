@@ -19,6 +19,7 @@ AUnit::AUnit()
 	UnitMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Unit Mesh"));
 	SetRootComponent(UnitMesh);
 	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/tank_ange_pose.tank_ange_pose'")).Object);
+	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 
 	
 	

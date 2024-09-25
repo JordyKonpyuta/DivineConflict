@@ -7,6 +7,7 @@
 #include "InteractInterface.h"
 #include "CustomPlayerController.generated.h"
 
+class ABuilding;
 class ACameraPlayer;
 class AGrid;
 class ACustomGameState;
@@ -47,6 +48,9 @@ public:
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
 	AUnit* UnitRef = nullptr;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
+	ABuilding* BuildingRef = nullptr;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
 	TArray<AUnit*> Units;
@@ -136,7 +140,7 @@ public:
 	TArray<FIntPoint> PrepareSpawnArea(TArray<FIntPoint> AllSpawnArea, FIntPoint BaseTile);
 	
 	UFUNCTION(Blueprintable)
-	bool SpawnUnit(EUnitType UnitToSpawn, TArray<FIntPoint> PossibleSpawnAreas, FIntPoint SpawnChosen);
+	bool SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen);
 
 	
 	/*UFUNCTION(BlueprintNativeEvent)

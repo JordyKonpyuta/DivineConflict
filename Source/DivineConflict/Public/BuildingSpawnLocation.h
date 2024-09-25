@@ -44,4 +44,7 @@ public:
 
 	UFUNCTION(Blueprintable)
 	void SpawnGridColors(TArray<FIntPoint> AllSpawnLocationIndex);
+	
+	UFUNCTION(Blueprintable)
+	void DeSpawnGridColors(TArray<FIntPoint> AllSpawnLocationIndex);
 };

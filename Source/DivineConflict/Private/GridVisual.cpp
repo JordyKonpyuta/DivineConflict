@@ -30,7 +30,7 @@ FLinearColor UGridVisual::GetColorFromState(TArray<EDC_TileState> TileState)
 		return FLinearColor(0,0,0,0);
 	else
 	{
-		TArray<EDC_TileState> ArrayMake = {EDC_TileState::Selected, EDC_TileState::Hovered, EDC_TileState::Pathfinding, EDC_TileState::Reachable,EDC_TileState::Attacked};
+		TArray<EDC_TileState> ArrayMake = {EDC_TileState::Selected, EDC_TileState::Hovered, EDC_TileState::Pathfinding, EDC_TileState::Reachable,EDC_TileState::Attacked, EDC_TileState::Spawnable, EDC_TileState::NotSpawnable};
 		for(EDC_TileState i : ArrayMake)
 		{
 			if(TileState.Contains(i))
@@ -47,6 +47,10 @@ FLinearColor UGridVisual::GetColorFromState(TArray<EDC_TileState> TileState)
 						return FLinearColor(1,1,0,1);
 					case EDC_TileState::Attacked:
 						return FLinearColor(1,0,1,1);
+					case EDC_TileState::Spawnable:
+						return FLinearColor(0,0.35,0,1);
+					case EDC_TileState::NotSpawnable:
+						return FLinearColor(0.55, 0,0,1);
 					case EDC_TileState::None:
 						return FLinearColor(0,0,0,0);
 				}

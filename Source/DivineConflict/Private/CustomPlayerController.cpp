@@ -4,6 +4,7 @@
 #include "CustomPlayerController.h"
 
 #include "Building.h"
+#include "BuildingSpawnLocation.h"
 #include "EnhancedInputSubsystems.h"
 #include "CustomGameState.h"
 #include "Engine/LocalPlayer.h"
@@ -126,13 +127,11 @@ void ACustomPlayerController::ControllerInteraction()
 
 	if(Grid != nullptr)
 	{
+		FIntPoint PlayerPositionInGrid = Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation());
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("PlayerAction : " + FString::FromInt((int)PlayerAction)));
 		switch (PlayerAction)
 		{
 			case EDC_ActionPlayer::None:
-
-				FIntPoint PlayerPositionInGrid = Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation());
-		
 				if(Grid->GetGridData()->Find(PlayerPositionInGrid) != nullptr)
 				{
 					if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
@@ -150,8 +149,15 @@ void ACustomPlayerController::ControllerInteraction()
 					{
 						if ((Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Hell && IsHell == true) || (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Heaven && IsHell == false))
 						{
+							BuildingRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile;
+							for (FIntPoint BuildingIndex : BuildingRef->SpawnLocRef)
+							{
+								Grid->GridVisual->addStateToTile(BuildingIndex, EDC_TileState::Selected);
+							}
 							GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("That's a building"));
 							DisplayWidgetBuilding();
+							PlayerAction = EDC_ActionPlayer::SelectBuilding;
+							BuildingRef->BuildingSpawnLocationRef->SpawnGridColors(BuildingRef->AllSpawnLoc);
 						}
 					}
 				}
@@ -164,8 +170,9 @@ void ACustomPlayerController::ControllerInteraction()
 					}
 					PathReachable.Empty();
 					CameraPlayerRef->IsMovingUnit = false;
-					UnitRef->Move();
-					UnitRef->SetIsSelected(false);
+				UnitRef->Move(CameraPlayerRef->Path);
+			
+				UnitRef->SetIsSelected(false);
 					UnitRef = nullptr;
 					PlayerAction = EDC_ActionPlayer::None;
 				break;
@@ -194,9 +201,30 @@ void ACustomPlayerController::ControllerInteraction()
 			case EDC_ActionPlayer::AttackBuilding:
 				//AttackBuilding();
 				break;
-			case EDC_ActionPlayer::SelectBuilding:
-				//SelectBuilding()
-				break;
+		case EDC_ActionPlayer::SelectBuilding:
+				for (FIntPoint BuildingIndex : BuildingRef->SpawnLocRef)
+				{
+					Grid->GridVisual->RemoveStateFromTile(BuildingIndex, EDC_TileState::Selected);
+			}
+				for (FIntPoint Index : BuildingRef->SpawnLocRef)
+				{
+					Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Spawnable);
+				}
+				TArray<FIntPoint> AllPossibleSpawns = PrepareSpawnArea(BuildingRef->AllSpawnLoc, BuildingRef->SpawnLocRef[0]);
+				BuildingRef->BuildingSpawnLocationRef->DeSpawnGridColors(BuildingRef->AllSpawnLoc);
+				for (FIntPoint SpawnIndex : AllPossibleSpawns)
+				{
+					if (Grid->GetGridData()->Find(PlayerPositionInGrid)->TilePosition == SpawnIndex)
+					{
+						if (SpawnUnit(BuildingRef->UnitProduced, SpawnIndex))
+						{
+							PlayerAction = EDC_ActionPlayer::None;
+							break;
+						}
+					}
+				}
+			PlayerAction = EDC_ActionPlayer::None;
+			break;
 		}
 	}	
 }
@@ -219,41 +247,35 @@ TArray<FIntPoint> ACustomPlayerController::PrepareSpawnArea(TArray<FIntPoint> Al
 	return TrueSpawnArea;
 }
 
-bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, TArray<FIntPoint> PossibleSpawnAreas, FIntPoint SpawnChosen)
+bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen)
 {
 	if (Grid->GetGridData()->Find(SpawnChosen)->UnitOnTile == nullptr)
 	{
-		for (FIntPoint Index : PossibleSpawnAreas)
+		AUnit* UnitThatSpawned;
+		switch (UnitToSpawn)
 		{
-			if (SpawnChosen == Index)
-			{
-				AUnit* UnitThatSpawned;
-				switch (UnitToSpawn)
-				{
-				case EUnitType::U_Warrior:
-					UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnChosen), FRotator(0,0,0));
-					UnitThatSpawned->Grid = Grid;
-					break;
-				case EUnitType::U_Mage:
-					UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Mage>(Grid->ConvertIndexToLocation(SpawnChosen), FRotator(0,0,0));
-					UnitThatSpawned->Grid = Grid;
-					break;
-				case EUnitType::U_Tank:
-					UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Tank>(Grid->ConvertIndexToLocation(SpawnChosen), FRotator(0,0,0));
-					UnitThatSpawned->Grid = Grid;
-					break;
-				case EUnitType::U_Leader:
-					UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Leader>(Grid->ConvertIndexToLocation(SpawnChosen), FRotator(0,0,0));
-					UnitThatSpawned->Grid = Grid;
-					break;
-				default:
-					UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnChosen), FRotator(0,0,0));
-					UnitThatSpawned->Grid = Grid;
-					break;
-				}
-				return true;
-			}
+		case EUnitType::U_Warrior:
+			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
+			UnitThatSpawned->Grid = Grid;
+			break;
+		case EUnitType::U_Mage:
+			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Mage>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
+			UnitThatSpawned->Grid = Grid;
+			break;
+		case EUnitType::U_Tank:
+			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Tank>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
+			UnitThatSpawned->Grid = Grid;
+			break;
+		case EUnitType::U_Leader:
+			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Leader>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
+			UnitThatSpawned->Grid = Grid;
+			break;
+		default:
+			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
+			UnitThatSpawned->Grid = Grid;
+			break;
 		}
+		return true;
 	}
 	return false;
 		
