@@ -146,19 +146,23 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 		return;
 	}
 	SetCurrentHealth(UnitToAttack->GetAttack()-GetDefense());
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("health: ") + FString::FromInt(GetCurrentHealth()));
 	UnitToAttack->SetCurrentHealth(GetAttack()-UnitToAttack->GetDefense());
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("health: ") + FString::FromInt(UnitToAttack->GetCurrentHealth()));
+	
 
+	if(UnitToAttack->GetCurrentHealth() <= 0)
+	{
+		Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
+		UnitToAttack->Destroy();
+	}
 	if(GetCurrentHealth() <= 0)
 	{
 		Grid->GridInfo->RemoveUnitInGrid(this);
 		Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
 		Destroy();
 	}
-	if(UnitToAttack->GetCurrentHealth() <= 0)
-	{
-		Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
-		UnitToAttack->Destroy();
-	}
+
 }
 
 int AUnit::GetAttack()

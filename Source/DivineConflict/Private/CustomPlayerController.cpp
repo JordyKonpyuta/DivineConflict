@@ -92,6 +92,7 @@ void ACustomPlayerController::FindReachableTiles()
 
 void ACustomPlayerController::SelectModeMovement()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SelectModeMovement"));
 	FindReachableTiles();
 	PlayerAction = EDC_ActionPlayer::MoveUnit;
 	CameraPlayerRef->IsMovingUnit = true;
@@ -99,16 +100,24 @@ void ACustomPlayerController::SelectModeMovement()
 
 void ACustomPlayerController::SelectModeAttack()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SelectModeAttack"));
 	PlayerAction = EDC_ActionPlayer::AttackUnit;
+	PathReachable = Grid->GridPath->FindTileNeighbors(UnitRef->GetIndexPosition());
+	for(FIntPoint Index : PathReachable)
+    {
+        Grid->GridVisual->addStateToTile(Index, EDC_TileState::Attacked);
+    }
 }
 
 void ACustomPlayerController::SelectModeSpecial()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SelectModeSpecial"));
 	PlayerAction = EDC_ActionPlayer::SpellCast;
 }
 
 void ACustomPlayerController::SelectModeBuilding()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SelectModeBuilding"));
 	PlayerAction = EDC_ActionPlayer::AttackBuilding;
 }
 
@@ -162,6 +171,22 @@ void ACustomPlayerController::ControllerInteraction()
 				break;
 			case EDC_ActionPlayer::AttackUnit:
 				//Attack();
+					if(UnitRef)
+					{
+						if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile != nullptr)
+                        {
+                            UnitRef->AttackUnit(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile);
+							
+                        }
+						for(FIntPoint Index : PathReachable)
+						{
+							Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Attacked);
+						}
+						PathReachable.Empty();
+						UnitRef->SetIsSelected(false);
+						UnitRef = nullptr;
+						PlayerAction = EDC_ActionPlayer::None;
+					}
 			break;
 			case EDC_ActionPlayer::SpellCast:
 				//Spell();
