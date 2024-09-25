@@ -3,6 +3,7 @@
 
 #include "CustomPlayerController.h"
 
+#include "Base.h"
 #include "Building.h"
 #include "BuildingSpawnLocation.h"
 #include "EnhancedInputSubsystems.h"
@@ -160,6 +161,23 @@ void ACustomPlayerController::ControllerInteraction()
 							BuildingRef->BuildingSpawnLocationRef->SpawnGridColors(BuildingRef->AllSpawnLoc);
 						}
 					}
+					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile != nullptr)
+					{
+						if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile->GetIsHell() == IsHell)
+						{
+							GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("That's a base"));
+							{
+								BaseRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile;
+								DisplayWidgetBase();
+							}
+						}
+					}
+					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile != nullptr)
+					{
+						TowerRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile;
+						DisplayWidgetTower();
+					}
+
 				}
 				break;
 		case EDC_ActionPlayer::MoveUnit:
@@ -231,7 +249,14 @@ void ACustomPlayerController::ControllerInteraction()
 
 void ACustomPlayerController::DisplayWidgetBuilding_Implementation()
 {
-	
+}
+
+void ACustomPlayerController::DisplayWidgetBase_Implementation()
+{
+}
+
+void ACustomPlayerController::DisplayWidgetTower_Implementation()
+{
 }
 
 TArray<FIntPoint> ACustomPlayerController::PrepareSpawnArea(TArray<FIntPoint> AllSpawnArea, FIntPoint BaseTile)

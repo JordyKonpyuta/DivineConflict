@@ -15,6 +15,9 @@ class UInputMappingContext;
 class UInputAction;
 class AEnumsList;
 class AUnit;
+class ABase;
+class ATower;
+
 /**
  * 
  */
@@ -46,8 +49,13 @@ public:
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
 	ACustomGameState* GameStateRef;
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
 	AUnit* UnitRef = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
+	ABase* BaseRef = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
+	ATower* TowerRef = nullptr;
+	
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
 	ABuilding* BuildingRef = nullptr;
@@ -132,9 +140,12 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void DisplayWidget();
-
 	UFUNCTION(BlueprintNativeEvent)
 	void DisplayWidgetBuilding();
+	UFUNCTION(BlueprintNativeEvent)
+	void DisplayWidgetBase();
+	UFUNCTION(BlueprintNativeEvent)
+	void DisplayWidgetTower();
 
 	UFUNCTION(NotBlueprintable)
 	TArray<FIntPoint> PrepareSpawnArea(TArray<FIntPoint> AllSpawnArea, FIntPoint BaseTile);

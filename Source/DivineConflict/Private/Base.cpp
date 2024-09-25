@@ -21,6 +21,8 @@ void ABase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetMesh();
+
 	TArray<AActor*> FoundActor;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(),ACustomPlayerController::StaticClass(),FoundActor);
 	for(AActor* Actor : FoundActor)
@@ -59,11 +61,6 @@ int ABase::GetHealth()
 	return Health;
 }
 
-int ABase::GetAttack()
-{
-	return Attack;
-}
-
 bool ABase::GetIsHell()
 {
 	return IsHell;
@@ -92,11 +89,6 @@ FIntPoint ABase::GetGridPosition()
 void ABase::SetHealth(int h)
 {
 	Health = h;
-}
-
-void ABase::SetAttack(int a)
-{
-	Attack = a;
 }
 
 void ABase::SetIsHell(bool bH)
@@ -131,9 +123,10 @@ void ABase::CheckIfDead()
 	}
 }
 
-void ABase::OnInteract_Implementation()
+void ABase::SetMesh_Implementation()
 {
 }
+
 
 // TAKE DAMAGE
 void ABase::TakeDamage(int Damage)

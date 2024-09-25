@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "CustomPlayerController.h"
 #include "GameFramework/Actor.h"
+#include "EnumsList.h"
 #include "Base.generated.h"
 
 class APlayerController;
@@ -23,6 +24,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player")
 	AGrid* Grid;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+	UStaticMeshComponent* Mesh;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -30,9 +34,6 @@ protected:
 	// Stats
 	UPROPERTY()
 	int Health = 200;
-
-	UPROPERTY()
-	int Attack = 10;
 
 	UPROPERTY()
 	bool IsHell = false;
@@ -68,8 +69,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int GetHealth();
 	UFUNCTION(BlueprintCallable)
-	int GetAttack();
-	UFUNCTION(BlueprintCallable)
 	bool GetIsHell();
 	UFUNCTION(BlueprintCallable)
 	int GetGoldCostUpgrade();
@@ -84,8 +83,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetHealth(int h);
 	UFUNCTION(BlueprintCallable)
-	void SetAttack(int a);
-	UFUNCTION(BlueprintCallable)
 	void SetIsHell(bool bH);
 	UFUNCTION(BlueprintCallable)
 	void SetCostsUpgrade(int g, int s, int w);
@@ -94,12 +91,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void CheckIfDead();
+	UFUNCTION(BlueprintNativeEvent)
+	void SetMesh();
 
 	// FUNCTIONS FOR UI
 	UFUNCTION(BlueprintNativeEvent)
 	void OnDeath();
-	UFUNCTION(BlueprintNativeEvent)
-	void OnInteract();
 
 	UFUNCTION(BlueprintCallable)
 	void TakeDamage(int Damage);

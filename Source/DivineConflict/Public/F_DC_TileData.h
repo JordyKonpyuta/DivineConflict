@@ -12,6 +12,7 @@
 class AUnit;
 class ABuilding;
 class ABase;
+class ATower;
 
 
 
@@ -78,5 +79,8 @@ public:
 	ABuilding* BuildingOnTile = nullptr;
 
 	UPROPERTY( EditAnywhere, Category = "GridElement")
-	ABase *BaseOnTile = nullptr;
+	ABase* BaseOnTile = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "GridElement")
+	ATower* TowerOnTile = nullptr;
 };
