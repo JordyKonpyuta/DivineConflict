@@ -6,6 +6,7 @@
 #include "Base.h"
 #include "CameraPlayer.h"
 #include "CustomPlayerController.h"
+#include "CustomPlayerState.h"
 #include "Grid.h"
 #include "GridInfo.h"
 #include "GridVisual.h"
@@ -145,23 +146,24 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 	}
 	if(UnitToAttack->GetAttack()-GetDefense() > 0)
 		SetCurrentHealth(GetCurrentHealth()-( UnitToAttack->GetAttack()-GetDefense()) );
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("health Attack: ") + FString::FromInt(GetCurrentHealth()));
+
 	if(GetAttack()- UnitToAttack->GetDefense() > 0)
 		UnitToAttack->SetCurrentHealth( UnitToAttack->GetCurrentHealth() - (GetAttack()- UnitToAttack->GetDefense()));
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("health Defence: ") + FString::FromInt(UnitToAttack->GetCurrentHealth()));
+
 	
 
 	if(UnitToAttack->GetCurrentHealth() < 1)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit defend is dead"));
 		Path.Add(UnitToAttack->GetIndexPosition());
 		Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
+		PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
 		GetWorld()->DestroyActor(UnitToAttack);
 		if(GetCurrentHealth() < 1)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit attack is dead"));
+
 			Grid->GridInfo->RemoveUnitInGrid(this);
 			Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
+			PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
 			GetWorld()->DestroyActor(this);
 		}
 		else
@@ -169,9 +171,9 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 	}
 	if(GetCurrentHealth() < 1)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit attack is dead"));
 		Grid->GridInfo->RemoveUnitInGrid(this);
 		Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
+		PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
 		GetWorld()->DestroyActor(this);
 	}
 
