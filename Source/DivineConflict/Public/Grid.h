@@ -65,6 +65,9 @@ protected:
 
 	UFUNCTION(CallInEditor, BlueprintCallable,Category = "GridElement")
 	void TestReachedPath();
+
+	UFUNCTION(CallInEditor, BlueprintCallable,Category = "GridElement")
+	void TestReachwithCliming();
 	
 
 	FVector SnapVectorToVector(FVector InVector, const FVector InSnapTo);

@@ -308,6 +308,11 @@ EPlayer AUnit::GetPlayerOwner()
 	return PlayerOwner;
 }
 
+bool AUnit::GetIsClimbing()
+{
+	return bIsClimbing;
+}
+
 void AUnit::SetTotalDamageInflicted(int tdi)
 {
 	TotalDamagesInflicted = tdi;

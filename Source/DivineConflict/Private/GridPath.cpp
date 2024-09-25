@@ -177,6 +177,12 @@ TArray<FPathData> UGridPath::GetValidTileNeighbors(FIntPoint Index)
 		{
 			continue;
 		}
+
+		if(NeighborTileData->TileType == EDC_TileType::Climbable && bIsEscalation)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Climbable"));
+			Ret.Add(FPathData(NeighborTileData->TilePosition,1,99999,99999));
+		}
 		//check if the heigh is valid
 		if (IsValidHeigh(NeighborTileData, TileData))
 		{

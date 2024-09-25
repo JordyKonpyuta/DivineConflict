@@ -115,7 +115,7 @@ void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 			{
 
 				if (CustomPlayerController->Grid->GridPath->IsValidHeigh(CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(this->GetActorLocation() + MoveDirection)),
-					CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()))))
+					CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()))) || CustomPlayerController->UnitRef->GetIsClimbing())
 				{
 					
 				

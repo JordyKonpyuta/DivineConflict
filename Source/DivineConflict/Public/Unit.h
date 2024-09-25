@@ -45,6 +45,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit")
 	EPlayer PlayerOwner = EPlayer::P_Neutral;
+
+	UPROPERTY()
+	bool bIsClimbing = false;
 	
 	UPROPERTY()
 	ACustomPlayerController* PlayerControllerRef;
@@ -166,6 +169,9 @@ public:
 
 	UFUNCTION()
 	EPlayer GetPlayerOwner();
+
+	UFUNCTION()
+	bool GetIsClimbing();
 
 	// Setter for units stats
 	UFUNCTION(BlueprintCallable)

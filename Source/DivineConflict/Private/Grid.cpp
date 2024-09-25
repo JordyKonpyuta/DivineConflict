@@ -197,10 +197,19 @@ TMap<FIntPoint, FDC_TileData>* AGrid::GetGridData()
 
 void AGrid::TestReachedPath()
 {
-	TArray<FIntPoint> Reach = GridPath->FindPath(FIntPoint(0,0),FIntPoint(-999,-999), true, 3, false);
+	TArray<FIntPoint> Reach = GridPath->FindPath(FIntPoint(14,3),FIntPoint(-999,-999), true, 2, false);
 	for(FIntPoint Index : Reach)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Reach : %d %d"), Index.X, Index.Y);
+		UE_LOG(LogTemp, Warning, TEXT("Reach not clim : %d %d"), Index.X, Index.Y);
+	}
+}
+
+void AGrid::TestReachwithCliming()
+{
+	TArray<FIntPoint> Reach = GridPath->FindPath(FIntPoint(14,3),FIntPoint(-999,-999), true, 2, true);
+	for(FIntPoint Index : Reach)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Reach with clim : %d %d"), Index.X, Index.Y);
 	}
 }
 
