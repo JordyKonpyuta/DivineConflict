@@ -55,7 +55,7 @@ struct DIVINECONFLICT_API FDC_TileData
 public:
 	FDC_TileData();
 	FDC_TileData(FIntPoint tilePosition, EDC_TileType tileType, FTransform3d tileTransform,
-	             TArray<EDC_TileState> tileState, AUnit* unitOnTile, ABuilding* BuildingOnTile, ABase* baseOnTile);
+	             TArray<EDC_TileState> tileState, AUnit* unitOnTile, ABuilding* BuildingOnTile, ABase* baseOnTile , ATower* towerOnTile);
 	
 	
 	~FDC_TileData();

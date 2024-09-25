@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "GridInfo.generated.h"
 
+class ATower;
 class AGrid;
 class AUnit;
 class ABuilding;
@@ -43,6 +44,12 @@ public:
 	UFUNCTION(	Category = "GridElement",CallInEditor)
 	void SetBaseOnGrid(FIntPoint GridPosition, ABase* Base);
 
+	UFUNCTION( Category = "GridElement",CallInEditor)
+	void addTowerOnGrid(FIntPoint GridPosition, ATower* Tower);
+
+	UFUNCTION(	Category = "GridElement",CallInEditor)
+	void SetTowerOnGrid(FIntPoint GridPosition, ATower* Tower);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -58,7 +65,9 @@ protected:
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
 	TArray<ABase*> BasesGrid;
-	
+
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
+	TArray<ATower*> TowerGrid;
 
 	
 	

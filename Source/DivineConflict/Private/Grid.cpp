@@ -116,7 +116,7 @@ void AGrid::SpawnGrid()
 			{
 				FIntPoint TileIndex = FIntPoint(X, Y);
 				FDC_TileData TileData = FDC_TileData(TileIndex, EDC_TileType::Normal, FTransform3d(FVector(X * 100, Y * 100, HitResult.ImpactPoint.Z)),
-					TArray<EDC_TileState>(), nullptr, nullptr, nullptr);
+					TArray<EDC_TileState>(), nullptr, nullptr, nullptr, nullptr);
 
 				if(Cast<ABase>(HitResult.GetActor()))
 				{

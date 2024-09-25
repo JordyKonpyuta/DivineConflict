@@ -3,10 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Grid.h"
+#include "GridVisual.h"
+#include "Kismet/GameplayStatics.h"
 #include "GameFramework/Actor.h"
 #include "Tower.generated.h"
 
 class AUnit;
+class AGrid;
 
 UCLASS()
 class DIVINECONFLICT_API ATower : public AActor
@@ -25,6 +29,14 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit")
 	AUnit* UnitInGarnison = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
+	AGrid* Grid;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
+	TArray<FIntPoint> TilesInRange;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controller")
+	ACustomPlayerController* PlayerController;
 
 
 protected:
@@ -35,11 +47,18 @@ protected:
 	int Attack = 10;
 	UPROPERTY()
 	bool IsHell = false;
+	
+
+	UPROPERTY()
+	FIntPoint GridPosition = FIntPoint(-999, -999);
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bool")
+	bool IsSelected = false;
+	
 	UFUNCTION(BlueprintCallable)
 	int GetAttack();
 	UFUNCTION(BlueprintCallable)
@@ -51,4 +70,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AttackUnit(AUnit* UnitToAttack);
+	UFUNCTION(BlueprintCallable)
+	void UpdateVisuals();
+
+	FIntPoint GetGridPosition();
+
+	void SetGridPosition(FIntPoint NewGridPosition);
 };

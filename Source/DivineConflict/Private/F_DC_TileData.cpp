@@ -16,7 +16,7 @@ FDC_TileData::FDC_TileData()
 }
 
 FDC_TileData::FDC_TileData(FIntPoint tilePosition, EDC_TileType tileType, FTransform3d tileTransform,
-	TArray<EDC_TileState> tileState, AUnit* unitOnTile, ABuilding* BuildingOnTile, ABase* baseOnTile)
+	TArray<EDC_TileState> tileState, AUnit* unitOnTile, ABuilding* BuildingOnTile, ABase* baseOnTile , ATower* towerOnTile)
 {
 	this->TilePosition.X = tilePosition.X;
 	this->TilePosition.Y = tilePosition.Y;
@@ -26,6 +26,7 @@ FDC_TileData::FDC_TileData(FIntPoint tilePosition, EDC_TileType tileType, FTrans
 	this->UnitOnTile = unitOnTile;
 	this->BuildingOnTile = BuildingOnTile;
 	this->BaseOnTile = baseOnTile;
+	this->TowerOnTile = towerOnTile;	
 }
 
 FDC_TileData::~FDC_TileData()
