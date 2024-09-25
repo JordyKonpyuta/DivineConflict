@@ -98,6 +98,15 @@ void UBuildingSpawnLocation::DeSpawnGridColors(TArray<FIntPoint> AllSpawnLocatio
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("AllSpawnLocationIndex is Empty, that's an oomfie"));
 		}
+		
+		for (FIntPoint BuildingIndex : BuildingRef->SpawnLocRef)
+		{
+			GridRef->GridVisual->RemoveStateFromTile(BuildingIndex, EDC_TileState::Selected);
+		}
+		for (FIntPoint Index : BuildingRef->SpawnLocRef)
+		{
+			GridRef->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Spawnable);
+		}
 	}
 	else
 	{

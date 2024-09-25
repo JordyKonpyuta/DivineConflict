@@ -25,7 +25,7 @@ public:
 
 	virtual bool Interact_Implementation(ACustomPlayerController* PlayerController) override;
 	
-	UPROPERTY(NotBlueprintable)
+	UPROPERTY(Blueprintable, BlueprintReadOnly)
 	UBuildingSpawnLocation* BuildingSpawnLocationRef;
 	
 	UPROPERTY(Blueprintable)
@@ -52,7 +52,7 @@ public:
 	UPROPERTY(Blueprintable, BlueprintReadOnly, Category="Grid")
 	TArray<FIntPoint>AllSpawnLoc;
 
-	UPROPERTY(NotBlueprintable)
+	UPROPERTY(Blueprintable, BlueprintReadOnly, Category="Grid")
 	TArray<FIntPoint> SpawnLocRef;
 
 	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitType")
@@ -77,8 +77,6 @@ public:
 	void SetGridPosition(FIntPoint GridPosition);
 	
 protected:
-	UFUNCTION(BlueprintCallable, Category = "UnitType")
-	void SpawnUnit();
 
 	UFUNCTION(BlueprintCallable, Category = "Player")
 	void SwitchOwner(ACustomPlayerState* NewOwner);

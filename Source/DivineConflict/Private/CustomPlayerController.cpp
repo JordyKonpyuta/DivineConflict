@@ -96,6 +96,7 @@ void ACustomPlayerController::SelectModeMovement()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SelectModeMovement"));
 	FindReachableTiles();
+	CameraPlayerRef->Path.Add(UnitRef->GetIndexPosition());
 	PlayerAction = EDC_ActionPlayer::MoveUnit;
 	CameraPlayerRef->IsMovingUnit = true;
 }
@@ -137,7 +138,7 @@ void ACustomPlayerController::ControllerInteraction()
 				{
 					if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
 					{
-						if(!Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetIsSelected())
+						if(!Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetIsSelected()) // Unit
 						{
 							UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile;
 							CameraPlayerRef->SetCustomPlayerController(this);
@@ -146,7 +147,7 @@ void ACustomPlayerController::ControllerInteraction()
 							GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("That's not a building"));
 						}	
 					}
-					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile != nullptr)
+					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile != nullptr) // Building
 					{
 						if ((Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Hell && IsHell == true) || (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Heaven && IsHell == false))
 						{
@@ -155,13 +156,11 @@ void ACustomPlayerController::ControllerInteraction()
 							{
 								Grid->GridVisual->addStateToTile(BuildingIndex, EDC_TileState::Selected);
 							}
-							GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("That's a building"));
 							DisplayWidgetBuilding();
 							PlayerAction = EDC_ActionPlayer::SelectBuilding;
-							BuildingRef->BuildingSpawnLocationRef->SpawnGridColors(BuildingRef->AllSpawnLoc);
 						}
 					}
-					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile != nullptr)
+					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile != nullptr) // Base
 					{
 						if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile->GetIsHell() == IsHell)
 						{
@@ -188,9 +187,9 @@ void ACustomPlayerController::ControllerInteraction()
 					}
 					PathReachable.Empty();
 					CameraPlayerRef->IsMovingUnit = false;
-				UnitRef->Move(CameraPlayerRef->Path);
-			
-				UnitRef->SetIsSelected(false);
+					UnitRef->Move(CameraPlayerRef->Path);
+					CameraPlayerRef->Path.Empty();
+					UnitRef->SetIsSelected(false);
 					UnitRef = nullptr;
 					PlayerAction = EDC_ActionPlayer::None;
 				break;
@@ -202,7 +201,8 @@ void ACustomPlayerController::ControllerInteraction()
                         {
 							if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile->GetPlayerOwner() != UnitRef->GetPlayerOwner())
 								UnitRef->AttackUnit(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile);
-							
+							if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BaseOnTile)
+								UnitRef->AttackBase(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BaseOnTile);
                         }
 						for(FIntPoint Index : PathReachable)
 						{
@@ -221,14 +221,6 @@ void ACustomPlayerController::ControllerInteraction()
 				//AttackBuilding();
 				break;
 		case EDC_ActionPlayer::SelectBuilding:
-				for (FIntPoint BuildingIndex : BuildingRef->SpawnLocRef)
-				{
-					Grid->GridVisual->RemoveStateFromTile(BuildingIndex, EDC_TileState::Selected);
-			}
-				for (FIntPoint Index : BuildingRef->SpawnLocRef)
-				{
-					Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Spawnable);
-				}
 				TArray<FIntPoint> AllPossibleSpawns = PrepareSpawnArea(BuildingRef->AllSpawnLoc, BuildingRef->SpawnLocRef[0]);
 				BuildingRef->BuildingSpawnLocationRef->DeSpawnGridColors(BuildingRef->AllSpawnLoc);
 				for (FIntPoint SpawnIndex : AllPossibleSpawns)
@@ -250,6 +242,7 @@ void ACustomPlayerController::ControllerInteraction()
 
 void ACustomPlayerController::DisplayWidgetBuilding_Implementation()
 {
+	
 }
 
 void ACustomPlayerController::DisplayWidgetBase_Implementation()

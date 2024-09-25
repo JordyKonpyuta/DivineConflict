@@ -42,9 +42,9 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UFUNCTION(Blueprintable)
+	UFUNCTION(Blueprintable, BlueprintCallable)
 	void SpawnGridColors(TArray<FIntPoint> AllSpawnLocationIndex);
 	
-	UFUNCTION(Blueprintable)
+	UFUNCTION(Blueprintable, BlueprintCallable)
 	void DeSpawnGridColors(TArray<FIntPoint> AllSpawnLocationIndex);
 };

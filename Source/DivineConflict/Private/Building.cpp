@@ -110,11 +110,6 @@ void ABuilding::BeginPlay()
 	}
 }
 
-void ABuilding::SpawnUnit()
-{
-	
-}
-
 void ABuilding::SwitchOwner(ACustomPlayerState* NewOwner)
 {
 	switch (BuildingList)
@@ -193,4 +188,3 @@ void ABuilding::SetGridPosition(FIntPoint GridP)
 {
 	GridPosition = GridP;
 }
-
