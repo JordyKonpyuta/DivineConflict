@@ -106,15 +106,10 @@ void AUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void AUnit::Move()
+void AUnit::Move(TArray<FIntPoint> PathIn)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit move"));
-	
-	if(PlayerControllerRef != nullptr)
-	{
-		Path.Empty();
-		Path = PlayerControllerRef->CameraPlayerRef->Path;
-	}
+
+	Path = PathIn;
 	if (Path.Num()!=-1)
 	{
 		for(FIntPoint index : Path)
@@ -126,17 +121,6 @@ void AUnit::Move()
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit moved"));
 		
 		Grid->GridInfo->setUnitIndexOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()),this);
-		if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(GetActorLocation()))->TileType == EDC_TileType::Gate)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit is on gate"));
-
-			//layerControllerRef->DisplayWidgetEndGame();
-			
-		}
-		else
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit is not on gate"));
-		}
 	}
 }
 
@@ -146,23 +130,36 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 	{
 		return;
 	}
-	SetCurrentHealth(UnitToAttack->GetAttack()-GetDefense());
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("health: ") + FString::FromInt(GetCurrentHealth()));
-	UnitToAttack->SetCurrentHealth(GetAttack()-UnitToAttack->GetDefense());
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("health: ") + FString::FromInt(UnitToAttack->GetCurrentHealth()));
+	SetCurrentHealth(GetCurrentHealth()-( UnitToAttack->GetAttack()-GetDefense()) );
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("health Attack: ") + FString::FromInt(GetCurrentHealth()));
+	UnitToAttack->SetCurrentHealth( UnitToAttack->GetCurrentHealth() - (GetAttack()- UnitToAttack->GetDefense()));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("health Defence: ") + FString::FromInt(UnitToAttack->GetCurrentHealth()));
 	
 
-	if(UnitToAttack->GetCurrentHealth() <= 0)
+	if(UnitToAttack->GetCurrentHealth() < 1)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit defend is dead"));
+		Path.Add(UnitToAttack->GetIndexPosition());
 		Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
-		UnitToAttack->Destroy();
+		GetWorld()->DestroyActor(UnitToAttack);
+		if(GetCurrentHealth() < 1)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit attack is dead"));
+			Grid->GridInfo->RemoveUnitInGrid(this);
+			Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
+			GetWorld()->DestroyActor(this);
+		}
+		else
+		Move(Path);
 	}
-	if(GetCurrentHealth() <= 0)
+	if(GetCurrentHealth() < 1)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit attack is dead"));
 		Grid->GridInfo->RemoveUnitInGrid(this);
 		Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
-		Destroy();
+		GetWorld()->DestroyActor(this);
 	}
+
 
 }
 

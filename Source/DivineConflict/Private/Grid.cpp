@@ -184,7 +184,7 @@ bool AGrid::IsTileWalkable(FIntPoint Index)
 
 bool AGrid::IsTileTypeWalkable(EDC_TileType Type)
 {
-	TArray<EDC_TileType> WalkableTypes = { EDC_TileType::None, EDC_TileType::Obstacle/*, EDC_TileType::Gate*/ };
+	TArray<EDC_TileType> WalkableTypes = { EDC_TileType::None, EDC_TileType::Obstacle, EDC_TileType::Gate };
 
 	return !WalkableTypes.Contains(Type);
 	
