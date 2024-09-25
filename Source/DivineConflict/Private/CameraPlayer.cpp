@@ -88,20 +88,19 @@ void ACameraPlayer::SetCustomPlayerController(ACustomPlayerController* Cpc)
 void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 {
 	FVector2d Input = Value.Get<FVector2d>();
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Move Camera"));
+
 	if (Controller != nullptr)
 	{
 		FVector3d MoveDirection = FVector3d(0, 0, 0);
 		if (abs(Input.X)  >= abs(Input.Y) )
 		{
 			MoveDirection = UKismetMathLibrary::GetForwardVector(UKismetMathLibrary::MakeRotator(0,0,GetActorRotation().Yaw)) * (UKismetMathLibrary::SignOfFloat(Input.X) * 100);
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("MoveDirection: ") + MoveDirection.ToString());
-		
+
 		}
 		else
 		{
 			MoveDirection = CameraBoom->GetRightVector() * (UKismetMathLibrary::SignOfFloat(Input.Y)*100);
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("MoveDirection: ") + MoveDirection.ToString());
+
 		}
 		if(!CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation() + MoveDirection)))
 			return;
@@ -110,7 +109,7 @@ void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 		if (IsMovingUnit)
 		{
 			//print IsMovingUnit
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("IsMovingUnit"));
+
 			
 			if (Path.Num()< CustomPlayerController->UnitRef->GetPM())
 			{
@@ -125,7 +124,6 @@ void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 					{
 						
 						Path.AddUnique(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()+MoveDirection));
-
 						
 						CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()), EDC_TileState::Hovered);
 						this->SetActorLocation(this->GetActorLocation() + MoveDirection);
@@ -137,7 +135,6 @@ void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 		}
 		else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Move Camera"));
 			CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()), EDC_TileState::Hovered);
 			this->SetActorLocation(this->GetActorLocation() + MoveDirection);
 			CustomPlayerController->Grid->GridVisual->addStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()), EDC_TileState::Hovered);
@@ -150,7 +147,7 @@ void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 
 void ACameraPlayer::RotateCamera(const FInputActionValue& Value)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Rotate Camera rotation: ") + FString::SanitizeFloat(CameraBoom->GetComponentRotation().Roll));
+
 
 	float Input = Value.Get<float>();
 
@@ -165,7 +162,6 @@ void ACameraPlayer::RotateCamera(const FInputActionValue& Value)
 		
 		CameraBoom->SetRelativeRotation(SnapRotation);
 
-		//CameraBoom->AddLocalRotation(FRotator(0, Input*90, 0));
 		
 	}
 	
@@ -184,5 +180,10 @@ void ACameraPlayer::ZoomCamera( const FInputActionValue& Value)
 		
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Zoom Camera Length: ") + FString::SanitizeFloat(CameraBoom->TargetArmLength));
 		}
+}
+
+void ACameraPlayer::PathClear()
+{
+	Path.Empty();
 }
 

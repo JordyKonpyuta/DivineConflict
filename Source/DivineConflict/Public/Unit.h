@@ -8,6 +8,7 @@
 #include "InteractInterface.h"
 #include "Unit.generated.h"
 
+class ABase;
 class AGrid;
 class UStaticMeshComponent;
 class ACustomPlayerController;
@@ -32,6 +33,9 @@ public:
 	UFUNCTION()
 	void interaction(ACustomPlayerController *PlayerController);
 
+	UFUNCTION(BlueprintCallable)
+	void SetGrid(AGrid* NewGrid);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -44,8 +48,10 @@ protected:
 	
 	UPROPERTY()
 	ACustomPlayerController* PlayerControllerRef;
-
+	
 	void SetGrid();
+
+	
 
 	virtual void NotifyActorOnClicked(FKey ButtonPressed) override;
 	
@@ -108,6 +114,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AttackUnit(AUnit* UnitToAttack);
+
+	UFUNCTION(BlueprintCallable)
+	void AttackBase(ABase* BaseToAttack);
 	
 
 	

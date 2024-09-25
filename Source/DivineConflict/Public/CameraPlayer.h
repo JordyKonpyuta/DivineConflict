@@ -81,6 +81,8 @@ public:
 
 	void ZoomCamera( const FInputActionValue& Value);
 
+	void PathClear();
+
 	//void FreeCam();
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Variable", meta = (AllowPrivate = "true"))

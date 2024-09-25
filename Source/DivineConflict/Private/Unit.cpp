@@ -2,6 +2,8 @@
 
 
 #include "Unit.h"
+
+#include "Base.h"
 #include "CameraPlayer.h"
 #include "CustomPlayerController.h"
 #include "Grid.h"
@@ -41,6 +43,11 @@ bool AUnit::Interact_Implementation(ACustomPlayerController* PlayerController)
 
 void AUnit::interaction(ACustomPlayerController* PlayerController)
 {
+}
+
+void AUnit::SetGrid(AGrid* NewGrid)
+{
+	Grid = NewGrid;
 }
 
 // Called when the game starts or when spawned
@@ -108,15 +115,21 @@ void AUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AUnit::Move(TArray<FIntPoint> PathIn)
 {
-
+	Path.Empty();
 	Path = PathIn;
 	if (Path.Num()!=-1)
 	{
 		for(FIntPoint index : Path)
 		{
+			if (index == Path.Last() && Grid->GetGridData()->Find(index)->UnitOnTile)
+			{
+				Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
+				break;
+			}
 			FVector location = Grid->ConvertIndexToLocation(index);
 			Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
 			SetActorLocation(location);
+
 		}
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit moved"));
 		
@@ -163,6 +176,16 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 	}
 
 
+}
+
+void AUnit::AttackBase(ABase* BaseToAttack)
+{
+	if(BaseToAttack == nullptr || Grid == nullptr)
+	{
+		return;
+	}
+	BaseToAttack->TakeDamage(/*GetAttack()*/100);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("health Base: ") + FString::FromInt(BaseToAttack->GetHealth()));
 }
 
 int AUnit::GetAttack()
