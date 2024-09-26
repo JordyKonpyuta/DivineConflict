@@ -353,31 +353,73 @@ bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnCh
 {
 	if (Grid->GetGridData()->Find(SpawnChosen)->UnitOnTile == nullptr)
 	{
-		AUnit* UnitThatSpawned;
+		AUnit* UnitThatSpawned = nullptr;
 		switch (UnitToSpawn)
 		{
 		case EUnitType::U_Warrior:
 			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 			UnitThatSpawned->Grid = Grid;
+			if (IsHell)
+			{
+				UnitThatSpawned->SetPlayerOwner(EPlayer::P_Hell);
+			}
+			else
+			{
+				UnitThatSpawned->SetPlayerOwner(EPlayer::P_Heaven);
+			}
 			break;
 		case EUnitType::U_Mage:
 			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Mage>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 			UnitThatSpawned->Grid = Grid;
+			if (IsHell)
+			{
+				UnitThatSpawned->SetPlayerOwner(EPlayer::P_Hell);
+			}
+			else
+			{
+				UnitThatSpawned->SetPlayerOwner(EPlayer::P_Heaven);
+			}
 			break;
 		case EUnitType::U_Tank:
 			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Tank>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 			UnitThatSpawned->Grid = Grid;
+			if (IsHell)
+			{
+				UnitThatSpawned->SetPlayerOwner(EPlayer::P_Hell);
+			}
+			else
+			{
+				UnitThatSpawned->SetPlayerOwner(EPlayer::P_Heaven);
+			}
 			break;
 		case EUnitType::U_Leader:
 			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Leader>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 			UnitThatSpawned->Grid = Grid;
+			if (IsHell)
+			{
+				UnitThatSpawned->SetPlayerOwner(EPlayer::P_Hell);
+			}
+			else
+			{
+				UnitThatSpawned->SetPlayerOwner(EPlayer::P_Heaven);
+			}
 			break;
 		default:
 			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 			UnitThatSpawned->Grid = Grid;
+			if (IsHell)
+			{
+				UnitThatSpawned->SetPlayerOwner(EPlayer::P_Hell);
+			}
+			else
+			{
+				UnitThatSpawned->SetPlayerOwner(EPlayer::P_Heaven);
+			}
 			break;
 		}
 		return true;
+
+		
 	}
 	return false;
 		

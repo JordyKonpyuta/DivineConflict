@@ -62,14 +62,17 @@ void ABase::VisualSpawn()
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("Update Visual"));
 	for (int i = 0; i < AllSpawnLoc.Num(); i++)
 	{
-		if (Grid->GetGridData()->Find(AllSpawnLoc[i])->UnitOnTile == nullptr)
-		{
-			if (IsSelected)
+		if (IsSelected)
 			{
-				Grid->GridVisual->addStateToTile(AllSpawnLoc[i], EDC_TileState::Spawnable);
-				break;
+				if (Grid->GetGridData()->Find(AllSpawnLoc[i])->UnitOnTile == nullptr)
+				{
+						Grid->GridVisual->addStateToTile(AllSpawnLoc[i], EDC_TileState::Spawnable);
+						break;
+				}
 			}
-			else Grid->GridVisual->RemoveStateFromTile(AllSpawnLoc[i], EDC_TileState::Spawnable);
+		else
+		{
+			Grid->GridVisual->RemoveStateFromTile(AllSpawnLoc[i], EDC_TileState::Spawnable);
 		}
 	}
 }
@@ -101,14 +104,12 @@ void ABase::SpawnUnit(EUnitType UnitToSpawn)
 			}
 			else
 			{
-				IsSelected = false;
-				VisualSpawn();
+				Grid->GridVisual->RemoveStateFromTile(SpawnLoc, EDC_TileState::Spawnable);
 			}
 		}
 		else
 		{
-			IsSelected = false;
-			VisualSpawn();
+			Grid->GridVisual->RemoveStateFromTile(SpawnLoc, EDC_TileState::Spawnable);
 		}
 	}
 }
