@@ -27,14 +27,14 @@ AUnit_Child_Tank::AUnit_Child_Tank()
 	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	
 
-		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjectHell(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/UnitIcons/T_Icon_Tank_Hell.T_Icon_Tank_Hell'"));
+		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjectHell(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Tank_Hell.T_Icon_Tank_Hell'"));
 		if (IconTexObjectHell.Object != NULL)
 		{
 			UnitIconHell = IconTexObjectHell.Object;
 		}
 
 
-		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/UnitIcons/T_Icon_Tank_Paradise.T_Icon_Tank_Paradise'"));
+		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Tank_Paradise.T_Icon_Tank_Paradise'"));
 		if (IconTexObject.Object != NULL)
 		{
 			UnitIconParadise = IconTexObject.Object;
