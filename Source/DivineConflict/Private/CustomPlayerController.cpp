@@ -171,11 +171,13 @@ void ACustomPlayerController::ControllerInteraction()
 							CameraPlayerRef->SetCustomPlayerController(this);
 							IInteractInterface::Execute_Interact(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile, this);
 							DisplayWidget();
-						}	
+						}
 					}
-					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile != nullptr && !IsInActiveTurn) // Building
+					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile != nullptr && !IsInActiveTurn) // Building, Passive Turn
 					{
-						if ((Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Hell && IsHell == true) || (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Heaven && IsHell == false))
+						if ((Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Hell && IsHell == true)
+							|| (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Heaven && IsHell == false)
+							)
 						{
 							BuildingRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile;
 							for (FIntPoint BuildingIndex : BuildingRef->SpawnLocRef)
@@ -184,6 +186,18 @@ void ACustomPlayerController::ControllerInteraction()
 							}
 							DisplayWidgetBuilding();
 							PlayerAction = EDC_ActionPlayer::SelectBuilding;
+						}
+					}
+					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile != nullptr && IsInActiveTurn) // Building, Active Turn
+					{
+						if (((Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Hell && IsHell == true)
+							|| (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Heaven && IsHell == false))
+							&& Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->GarrisonFull)
+						{
+							UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef;
+							CameraPlayerRef->SetCustomPlayerController(this);
+							IInteractInterface::Execute_Interact(Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef, this);
+							DisplayWidget();
 						}
 					}
 					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile != nullptr && !IsInActiveTurn) // Base
@@ -204,7 +218,6 @@ void ACustomPlayerController::ControllerInteraction()
 						TowerRef->IsSelected = true;
 						DisplayWidgetTower();
 					}
-
 				}
 				break;
 			case EDC_ActionPlayer::MoveUnit:
@@ -302,7 +315,7 @@ void ACustomPlayerController::ControllerInteraction()
 					}
 			}
 		}
-	}	
+	}
 }
 
 TArray<FIntPoint> ACustomPlayerController::GetPathReachable()

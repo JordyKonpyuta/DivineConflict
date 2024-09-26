@@ -139,6 +139,9 @@ void AUnit::Move(TArray<FIntPoint> PathIn)
 		if (Grid->GetGridData()->Find(Path.Last())->BuildingOnTile != nullptr)
 		{
 			SetActorLocation(Grid->GetGridData()->Find(Path.Last())->BuildingOnTile->GetActorLocation());
+			Grid->GetGridData()->Find(Path.Last())->BuildingOnTile->UnitRef = this;
+			Grid->GetGridData()->Find(Path.Last())->BuildingOnTile->GarrisonFull = true;
+			
 		}
 		
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit moved"));

@@ -12,6 +12,7 @@
 class AGrid;
 class ACustomPlayerController;
 class UBuildingSpawnLocation;
+class AUnit;
 
 UCLASS()
 
@@ -60,6 +61,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitType")
 	EUnitType UnitProduced;
+
+	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitSelection")
+	bool GarrisonFull = false;
+
+	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitSelection")
+	AUnit* UnitRef = nullptr;
 	
 protected:
 	// Called when the game starts or when spawned
