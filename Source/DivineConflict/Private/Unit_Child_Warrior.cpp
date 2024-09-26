@@ -13,6 +13,8 @@ void AUnit_Child_Warrior::BeginPlay()
 	SetMaxHealth(11);
 	SetCurrentHealth(GetMaxHealth());
 	SetPM(5);
+
+	UnitName = EUnitName::Warrior;
 }
 
 AUnit_Child_Warrior::AUnit_Child_Warrior()
@@ -35,4 +37,11 @@ AUnit_Child_Warrior::AUnit_Child_Warrior()
 			UnitIcon = IconTexObject.Object;
 		}
 	}
+}
+
+void AUnit_Child_Warrior::Special()
+{
+	Super::Special();
+	//Special ability
+	SetIsClimbing(true);
 }

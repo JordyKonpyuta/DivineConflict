@@ -24,6 +24,8 @@ AUnit::AUnit()
 	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/tank_ange_pose.tank_ange_pose'")).Object);
 	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 
+	UnitName = EUnitName::Tank;
+
 	
 	
 }
@@ -144,11 +146,26 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 	{
 		return;
 	}
-	if(UnitToAttack->GetAttack()-GetDefense() > 0)
-		SetCurrentHealth(GetCurrentHealth()-( UnitToAttack->GetAttack()-GetDefense()) );
-
-	if(GetAttack()- UnitToAttack->GetDefense() > 0)
-		UnitToAttack->SetCurrentHealth( UnitToAttack->GetCurrentHealth() - (GetAttack()- UnitToAttack->GetDefense()));
+	if (UnitToAttack->GetBuffTank())
+	{
+		if(UnitToAttack->GetAttack()-(GetDefense()+1)  > 0)
+			SetCurrentHealth(GetCurrentHealth()-( UnitToAttack->GetAttack()-(GetDefense()+1 )));
+	}
+	else
+	{
+		if(UnitToAttack->GetAttack()- GetDefense() > 0)
+			SetCurrentHealth( GetCurrentHealth() - (UnitToAttack->GetAttack()- GetDefense()));
+	}
+	if(GetBuffTank())
+	{
+		if(GetAttack()- UnitToAttack->GetDefense() > 0)
+			UnitToAttack->SetCurrentHealth( UnitToAttack->GetCurrentHealth() - (GetAttack()- UnitToAttack->GetDefense()));
+	}
+	else 
+	{
+		if(GetAttack()- UnitToAttack->GetDefense() > 0)
+			UnitToAttack->SetCurrentHealth( UnitToAttack->GetCurrentHealth() - (GetAttack()- UnitToAttack->GetDefense()));
+	}
 
 	
 
@@ -188,6 +205,27 @@ void AUnit::AttackBase(ABase* BaseToAttack)
 	}
 	BaseToAttack->TakeDamage(/*GetAttack()*/100);
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("health Base: ") + FString::FromInt(BaseToAttack->GetHealth()));
+}
+
+void AUnit::Special()
+{
+	
+}
+
+void AUnit::SpecialUnit(AUnit* UnitToAttack)
+{
+}
+
+void AUnit::SpecialBase(ABase* BaseToAttack)
+{
+}
+
+void AUnit::NewTurn()
+{
+	SetIsSelected(false);
+	bIsClimbing = false;
+	SetBuffTank(false);
+	
 }
 
 int AUnit::GetAttack()
@@ -315,6 +353,11 @@ bool AUnit::GetIsClimbing()
 	return bIsClimbing;
 }
 
+bool AUnit::GetBuffTank()
+{
+	return bBuffTank;
+}
+
 void AUnit::SetTotalDamageInflicted(int tdi)
 {
 	TotalDamagesInflicted = tdi;
@@ -343,6 +386,16 @@ void AUnit::SetIndexPosition(FIntPoint ip)
 void AUnit::SetPlayerOwner(EPlayer po)
 {
 	PlayerOwner = po;
+}
+
+void AUnit::SetIsClimbing(bool ic)
+{
+	bIsClimbing = ic;
+}
+
+void AUnit::SetBuffTank(bool bt)
+{
+	bBuffTank = bt;
 }
 
 

@@ -19,4 +19,6 @@ protected:
 
 public:
 	AUnit_Child_Tank();
+
+	void Special() override;
 };

@@ -2,6 +2,9 @@
 
 
 #include "Unit_Child_Tank.h"
+
+#include "Grid.h"
+#include "GridPath.h"
 #include "UObject/ConstructorHelpers.h"
 
 void AUnit_Child_Tank::BeginPlay()
@@ -13,6 +16,8 @@ void AUnit_Child_Tank::BeginPlay()
 	SetMaxHealth(12);
 	SetCurrentHealth(GetMaxHealth());
 	SetPM(3);
+
+	UnitName = EUnitName::Tank;
 }
 
 AUnit_Child_Tank::AUnit_Child_Tank()
@@ -35,6 +40,21 @@ AUnit_Child_Tank::AUnit_Child_Tank()
 		if (IconTexObject.Object != NULL)
 		{
 			UnitIcon = IconTexObject.Object;
+		}
+	}
+}
+
+void AUnit_Child_Tank::Special()
+{
+	Super::Special();
+	//Special ability
+
+	TArray<FIntPoint> PathBuff =  Grid->GridPath->FindTileNeighbors(GetIndexPosition());
+	for(FIntPoint Tile : PathBuff)
+	{
+		if(Grid->GetGridData()->Find(Tile)->UnitOnTile)
+		{
+			Grid->GetGridData()->Find(Tile)->UnitOnTile->SetBuffTank(true);
 		}
 	}
 }

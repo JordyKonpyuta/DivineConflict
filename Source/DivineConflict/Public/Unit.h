@@ -13,6 +13,16 @@ class AGrid;
 class UStaticMeshComponent;
 class ACustomPlayerController;
 
+UENUM(BlueprintType)
+enum class EUnitName : uint8
+{
+	Tank UMETA(DisplayName = "Tank"),
+	Warrior UMETA(DisplayName = "Warrior"),
+	Mage UMETA(DisplayName = "Mage"),
+	Leader UMETA(DisplayName = "Leader"),
+};
+
+
 UCLASS()
 class DIVINECONFLICT_API AUnit : public APawn , public IInteractInterface
 {
@@ -36,6 +46,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetGrid(AGrid* NewGrid);
 
+	EUnitName UnitName;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -46,7 +58,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit")
 	EPlayer PlayerOwner = EPlayer::P_Neutral;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
 	bool bIsClimbing = false;
 	
 	UPROPERTY()
@@ -104,6 +116,11 @@ protected:
 	UPROPERTY()
 	TArray<FIntPoint> Path;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
+	bool bBuffTank = false;
+
+	
+
 public:
 	
 	// Called every frame
@@ -120,8 +137,20 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AttackBase(ABase* BaseToAttack);
-	
 
+	UFUNCTION(BlueprintCallable)
+	virtual void Special();
+
+	
+	virtual void SpecialUnit(AUnit* UnitToAttack);
+
+	
+	virtual void SpecialBase(ABase *BaseToAttack);
+
+	UFUNCTION()
+	void NewTurn();
+	
+	
 	
 
 	// Getter for units stats
@@ -173,6 +202,9 @@ public:
 	UFUNCTION()
 	bool GetIsClimbing();
 
+	UFUNCTION()
+	bool GetBuffTank();
+
 	// Setter for units stats
 	UFUNCTION(BlueprintCallable)
 	void SetAttack(int a);
@@ -218,5 +250,11 @@ public:
 
 	UFUNCTION()
 	void SetPlayerOwner(EPlayer po);
+
+	UFUNCTION()
+	void SetIsClimbing(bool ic);
+
+	UFUNCTION()
+	void SetBuffTank(bool bt);
 	
 };

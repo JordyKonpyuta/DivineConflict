@@ -19,5 +19,9 @@ protected:
 
 public:
 	AUnit_Child_Mage();
+
+	void SpecialUnit(AUnit* UnitToAttack) override;
+
+	void SpecialBase(ABase* BaseToAttack) override;
 	
 };

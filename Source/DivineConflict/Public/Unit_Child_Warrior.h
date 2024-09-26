@@ -19,5 +19,7 @@ protected:
 
 public:
 	AUnit_Child_Warrior();
+
+	virtual void Special() override;
 	
 };

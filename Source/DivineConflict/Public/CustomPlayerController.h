@@ -157,9 +157,4 @@ public:
 	UFUNCTION(Blueprintable)
 	bool SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen);
 
-	
-	/*UFUNCTION(BlueprintNativeEvent)
-	void DisplayWidgetEndGame();*/
-	
-	
 };
