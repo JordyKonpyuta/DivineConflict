@@ -23,7 +23,7 @@ AUnit_Child_Leader::AUnit_Child_Leader()
 	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	if (IsHell)
 	{
-		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("Texture2D'Content/Blueprints/Widget/Assets/Images/Hell/UnitIcons/T_Icon_Leader_Hell.T_Icon_Leader_Hell'"));
+		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/UnitIcons/T_Icon_Leader_Hell.T_Icon_Leader_Hell'"));
 		if (IconTexObject.Object != NULL)
 		{
 			UnitIcon = IconTexObject.Object;
@@ -31,7 +31,7 @@ AUnit_Child_Leader::AUnit_Child_Leader()
 	}
 	else
 	{
-		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("Texture2D'Content/Blueprints/Widget/Assets/Images/Paradise/UnitIcons/T_Icon_Leader_Paradise.T_Icon_Leader_Paradise'"));
+		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/UnitIcons/T_Icon_Leader_Paradise.T_Icon_Leader_Paradise'"));
 		if (IconTexObject.Object != NULL)
 		{
 			UnitIcon = IconTexObject.Object;

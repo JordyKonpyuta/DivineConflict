@@ -23,18 +23,18 @@ AUnit_Child_Warrior::AUnit_Child_Warrior()
 	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	if (IsHell)
 	{
-		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("Texture2D'Content/Blueprints/Widget/Assets/Images/Hell/UnitIcons/T_Icon_Warrior_Hell.T_Icon_Warrior_Hell'"));
-		if (IconTexObject.Object != NULL)
+		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObj(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/UnitIcons/T_Icon_Warrior_Hell.T_Icon_Warrior_Hell'"));
+		if (IconTexObj.Object)
 		{
-			UnitIcon = IconTexObject.Object;
+			UnitIcon = IconTexObj.Object;
 		}
 	}
 	else
 	{
-		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("Texture2D'Content/Blueprints/Widget/Assets/Images/Paradise/UnitIcons/T_Icon_Warrior_Paradise.T_Icon_Warrior_Paradise'"));
-		if (IconTexObject.Object != NULL)
+		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObj(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/UnitIcons/T_Icon_Warrior_Paradise.T_Icon_Warrior_Paradise'"));
+		if (IconTexObj.Object)
 		{
-			UnitIcon = IconTexObject.Object;
+			UnitIcon = IconTexObj.Object;
 		}
 	}
 }

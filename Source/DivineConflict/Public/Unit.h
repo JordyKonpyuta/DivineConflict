@@ -70,7 +70,7 @@ protected:
 
 	virtual void NotifyActorOnClicked(FKey ButtonPressed) override;
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit")
 	UTexture2D* UnitIcon;
 	
 	// Units stats

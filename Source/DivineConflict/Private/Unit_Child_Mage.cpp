@@ -28,7 +28,7 @@ AUnit_Child_Mage::AUnit_Child_Mage()
 	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	if (IsHell)
 	{
-		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("Texture2D'Content/Blueprints/Widget/Assets/Images/Hell/UnitIcons/T_Icon_Mage_Hell.T_Icon_Mage_Hell'"));
+		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/UnitIcons/T_Icon_Mage_Hell.T_Icon_Mage_Hell'"));
 		if (IconTexObject.Object != NULL)
 		{
 			UnitIcon = IconTexObject.Object;
@@ -36,7 +36,7 @@ AUnit_Child_Mage::AUnit_Child_Mage()
 	}
 	else
 	{
-		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("Texture2D'Content/Blueprints/Widget/Assets/Images/Paradise/UnitIcons/T_Icon_Mage_Paradise.T_Icon_Mage_Paradise'"));
+		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/UnitIcons/T_Icon_Mage_Paradise.T_Icon_Mage_Paradise'"));
 		if (IconTexObject.Object != NULL)
 		{
 			UnitIcon = IconTexObject.Object;

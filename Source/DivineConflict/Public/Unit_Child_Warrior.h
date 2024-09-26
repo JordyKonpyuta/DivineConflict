@@ -6,6 +6,8 @@
 #include "Unit.h"
 #include "Unit_Child_Warrior.generated.h"
 
+
+
 /**
  * 
  */
@@ -21,5 +23,8 @@ public:
 	AUnit_Child_Warrior();
 
 	virtual void Special() override;
+
+
+	//virtual void OnConstruction(const FTransform& Transform) override;
 	
 };
