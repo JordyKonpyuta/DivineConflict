@@ -21,22 +21,19 @@ AUnit_Child_Warrior::AUnit_Child_Warrior()
 {
 	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/ange_guerrier/gerrier.gerrier'")).Object);
 	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
-	if (IsHell)
-	{
-		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObj(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/UnitIcons/T_Icon_Warrior_Hell.T_Icon_Warrior_Hell'"));
-		if (IconTexObj.Object)
+
+		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjHell(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/UnitIcons/T_Icon_Warrior_Hell.T_Icon_Warrior_Hell'"));
+		if (IconTexObjHell.Object)
 		{
-			UnitIcon = IconTexObj.Object;
+			UnitIconHell = IconTexObjHell.Object;
 		}
-	}
-	else
-	{
+	
 		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObj(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/UnitIcons/T_Icon_Warrior_Paradise.T_Icon_Warrior_Paradise'"));
 		if (IconTexObj.Object)
 		{
-			UnitIcon = IconTexObj.Object;
+			UnitIconParadise = IconTexObj.Object;
 		}
-	}
+
 }
 
 void AUnit_Child_Warrior::Special()

@@ -333,10 +333,6 @@ int AUnit::GetPM()
 	return PM;
 }
 
-UTexture2D* AUnit::GetUnitIcon()
-{
-	return UnitIcon;
-}
 
 FIntPoint AUnit::GetIndexPosition()
 {
@@ -373,10 +369,6 @@ void AUnit::SetPM(int p)
 	PM = p;
 }
 
-void AUnit::SetUnitIcon(UTexture2D* i)
-{
-	UnitIcon = i;
-}
 
 void AUnit::SetIndexPosition(FIntPoint ip)
 {

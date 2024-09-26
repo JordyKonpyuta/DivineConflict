@@ -26,22 +26,18 @@ AUnit_Child_Mage::AUnit_Child_Mage()
 {
 	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/ange_mage/mage.mage'")).Object);
 	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
-	if (IsHell)
-	{
-		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/UnitIcons/T_Icon_Mage_Hell.T_Icon_Mage_Hell'"));
-		if (IconTexObject.Object != NULL)
+
+		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjectHell(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/UnitIcons/T_Icon_Mage_Hell.T_Icon_Mage_Hell'"));
+		if (IconTexObjectHell.Object != NULL)
 		{
-			UnitIcon = IconTexObject.Object;
+			UnitIconHell = IconTexObjectHell.Object;
 		}
-	}
-	else
-	{
+
 		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/UnitIcons/T_Icon_Mage_Paradise.T_Icon_Mage_Paradise'"));
 		if (IconTexObject.Object != NULL)
 		{
-			UnitIcon = IconTexObject.Object;
+			UnitIconParadise = IconTexObject.Object;
 		}
-	}
 }
 
 void AUnit_Child_Mage::SpecialUnit(AUnit* UnitToAttack)

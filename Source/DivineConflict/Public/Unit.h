@@ -70,8 +70,10 @@ protected:
 
 	virtual void NotifyActorOnClicked(FKey ButtonPressed) override;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit")
-	UTexture2D* UnitIcon;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Texture")
+	UTexture2D* UnitIconParadise;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Texture")
+	UTexture2D* UnitIconHell;
 	
 	// Units stats
 	UPROPERTY()
@@ -190,9 +192,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int GetPM();
 
-	UFUNCTION(BlueprintCallable)
-	UTexture2D* GetUnitIcon();
-
 	UFUNCTION()
 	FIntPoint GetIndexPosition();
 
@@ -241,9 +240,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetPM(int p);
-
-	UFUNCTION(BlueprintCallable)
-	void SetUnitIcon(UTexture2D* i);
 
 	UFUNCTION()
 	void SetIndexPosition(FIntPoint ip);
