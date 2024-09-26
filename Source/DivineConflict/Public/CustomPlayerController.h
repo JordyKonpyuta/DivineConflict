@@ -142,6 +142,8 @@ public:
 	
 	void ControllerInteraction();
 
+	TArray<FIntPoint> GetPathReachable();
+	
 	UFUNCTION(BlueprintNativeEvent)
 	void DisplayWidget();
 	UFUNCTION(BlueprintNativeEvent)

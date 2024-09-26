@@ -2,7 +2,10 @@
 
 
 #include "GridPath.h"
+
+#include "Building.h"
 #include "Grid.h"
+#include "Unit.h"
 
 
 // Sets default values for this component's properties
@@ -30,9 +33,9 @@ TArray<FIntPoint> UGridPath::FindTileNeighbors(FIntPoint Index)
 {
 	TArray<FIntPoint> Neighbors;
 	Neighbors.Add(FIntPoint(Index.X + 1, Index.Y));
-	Neighbors.Add(FIntPoint(Index.X - 1, Index.Y));
+	if (Index.X > 0){Neighbors.Add(FIntPoint(Index.X - 1, Index.Y));}
 	Neighbors.Add(FIntPoint(Index.X, Index.Y + 1));
-	Neighbors.Add(FIntPoint(Index.X, Index.Y - 1));
+	if (Index.Y > 0){Neighbors.Add(FIntPoint(Index.X, Index.Y - 1));}
 	
 	
 	return Neighbors;
@@ -304,5 +307,52 @@ TArray<FIntPoint> UGridPath::FindPath(FIntPoint Start, FIntPoint End, bool IsRea
 	
 	
 	
+}
+
+TArray<FIntPoint> UGridPath::NewFindPath(FIntPoint Start, ACustomPlayerController* CPC)
+{
+
+	FIntPoint StartPos = CPC->UnitRef->GetIndexPosition();
+	TArray<FIntPoint> AllMoveCases = {StartPos};
+	TArray<FIntPoint> NewCases = {StartPos};
+	if (Grid->GetGridData()->Find(StartPos)->BuildingOnTile)
+	{
+		AllMoveCases = Grid->GetGridData()->Find(StartPos)->BuildingOnTile->SpawnLocRef;
+		NewCases = Grid->GetGridData()->Find(StartPos)->BuildingOnTile->SpawnLocRef;
+	}
+	TArray<FIntPoint> NewNewCases;
+	int AllMovement = CPC->UnitRef->GetPM();
+
+	for (int i = 0; i < AllMovement; i++)
+	{
+		for (FIntPoint CaseToCheck : NewCases)
+		{
+			for (FIntPoint NeighbourToCheck : Grid->GridPath->FindTileNeighbors(CaseToCheck))
+			{
+				if (AllMoveCases.Find(NeighbourToCheck)
+					&& Grid->GridPath->IsValidHeigh(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck)) 
+					&& Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile
+					)
+				{
+					AllMoveCases += CPC->Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile->SpawnLocRef;
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("BOP"));
+				}
+				else if (AllMoveCases.Find(NeighbourToCheck)
+					&& Grid->GridPath->IsValidHeigh(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck))
+					)
+				{
+					NewNewCases.Add(NeighbourToCheck);
+				}
+				else
+				{
+				}
+			}
+		}
+		AllMoveCases += NewCases;
+		NewCases = NewNewCases;
+		NewNewCases.Empty();
+	}
+	AllMoveCases += NewCases;
+	return AllMoveCases;
 }
 

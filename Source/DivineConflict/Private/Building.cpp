@@ -69,28 +69,46 @@ void ABuilding::BeginPlay()
 		
 		if(BuildingList == EBuildingList::B_AP)
 		{
+// Get Position Stocked
+			SpawnLocRef.Add(Grid->ConvertLocationToIndex(GetActorLocation()));
+			SpawnLocRef.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(100, 100, 0)));
+			SpawnLocRef.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(100, 0, 0)));
+			SpawnLocRef.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(100, -100, 0)));
+			SpawnLocRef.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(0, 100, 0)));
+			SpawnLocRef.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(0, -100, 0)));
+			SpawnLocRef.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-100, 100, 0)));
+			SpawnLocRef.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-100, 0, 0)));
+			SpawnLocRef.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-100, -100, 0)));
+			
 			// Grid : Building
-			Grid->GridInfo->addBuildingOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
-			Grid->GridInfo->addBuildingOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(100, -100, 0)), this);
-			Grid->GridInfo->addBuildingOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(100, 0, 0)), this);
-			Grid->GridInfo->addBuildingOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(100, 100, 0)), this);
-			Grid->GridInfo->addBuildingOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(0, 100, 0)), this);
-			Grid->GridInfo->addBuildingOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(0, -100, 0)), this);
-			Grid->GridInfo->addBuildingOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-100, -100, 0)), this);
-			Grid->GridInfo->addBuildingOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-100, 0, 0)), this);
-			Grid->GridInfo->addBuildingOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-100, 100, 0)), this);
+			Grid->GridInfo->addBuildingOnGrid(SpawnLocRef[0], this);
+			Grid->GridInfo->addBuildingOnGrid(SpawnLocRef[1], this);
+			Grid->GridInfo->addBuildingOnGrid(SpawnLocRef[2], this);
+			Grid->GridInfo->addBuildingOnGrid(SpawnLocRef[3], this);
+			Grid->GridInfo->addBuildingOnGrid(SpawnLocRef[4], this);
+			Grid->GridInfo->addBuildingOnGrid(SpawnLocRef[5], this);
+			Grid->GridInfo->addBuildingOnGrid(SpawnLocRef[6], this);
+			Grid->GridInfo->addBuildingOnGrid(SpawnLocRef[7], this);
+			Grid->GridInfo->addBuildingOnGrid(SpawnLocRef[8], this);
+
+			UnitPosition = GetActorLocation();
 		}
 		else
 		{
 			// Grid : Building
+			UnitPosition = GetActorLocation();
+			
+			//Get Position Stocked
 			SpawnLocRef.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(50, 50, 0)));
 			SpawnLocRef.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(50, -50, 0)));
 			SpawnLocRef.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-50, 50, 0)));
 			SpawnLocRef.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-50, -50, 0)));
-			Grid->GridInfo->addBuildingOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(50, 50, 0)), this);
-			Grid->GridInfo->addBuildingOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(50, -50, 0)), this);
-			Grid->GridInfo->addBuildingOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-50, 50, 0)), this);
-			Grid->GridInfo->addBuildingOnGrid(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-50, -50, 0)), this);
+
+			// Add itself to the Grid
+			Grid->GridInfo->addBuildingOnGrid(SpawnLocRef[0], this);
+			Grid->GridInfo->addBuildingOnGrid(SpawnLocRef[1], this);
+			Grid->GridInfo->addBuildingOnGrid(SpawnLocRef[2], this);
+			Grid->GridInfo->addBuildingOnGrid(SpawnLocRef[3], this);
 
 			// Grid : Spawners
 			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(150, 50, 0)));

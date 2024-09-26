@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CustomPlayerController.h"
 #include "Components/ActorComponent.h"
 #include "F_DC_TileData.h"
 #include "GridPath.generated.h"
@@ -98,6 +99,8 @@ public:
 	
 	UFUNCTION()
 	TArray<FIntPoint> FindPath(FIntPoint Start, FIntPoint End , bool IsReachable, int PathLenght, bool IsEscalation);
+
+	TArray<FIntPoint> NewFindPath(FIntPoint Start, ACustomPlayerController* CustomPlayerController);
 
 	void SetGrid(AGrid* GridRef);
 	

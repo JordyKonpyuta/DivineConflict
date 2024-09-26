@@ -83,7 +83,7 @@ void ACustomPlayerController::FindReachableTiles()
 		
 		if(UnitRef)
 		{
-			PathReachable =  Grid->GridPath->FindPath(Grid->ConvertLocationToIndex(UnitRef->GetActorLocation()), FIntPoint(-999,-999), true,UnitRef->GetPM(),UnitRef->GetIsClimbing());
+			PathReachable =  Grid->GridPath->NewFindPath(Grid->ConvertLocationToIndex(UnitRef->GetActorLocation()), this);
 
 			for(FIntPoint Index : PathReachable)
 			{
@@ -303,6 +303,11 @@ void ACustomPlayerController::ControllerInteraction()
 			}
 		}
 	}	
+}
+
+TArray<FIntPoint> ACustomPlayerController::GetPathReachable()
+{
+	return PathReachable;
 }
 
 void ACustomPlayerController::DisplayWidgetBuilding_Implementation()

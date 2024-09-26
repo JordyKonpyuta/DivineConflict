@@ -55,6 +55,9 @@ public:
 	UPROPERTY(Blueprintable, BlueprintReadOnly, Category="Grid")
 	TArray<FIntPoint> SpawnLocRef;
 
+	UPROPERTY(Blueprintable, BlueprintReadOnly, Category="Grid")
+	FVector UnitPosition;
+
 	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitType")
 	EUnitType UnitProduced;
 	
