@@ -58,8 +58,9 @@ void ACameraPlayer::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 
-	CameraBoom->SetWorldRotation(FRotator(UKismetMathLibrary::FInterpTo_Constant(CameraBoom->GetComponentRotation().Pitch, TargetRotationPitch.Pitch, DeltaTime, 10.0f),0,0));
-
+	CameraBoom->SetWorldRotation(FRotator(UKismetMathLibrary::FInterpTo(CameraBoom->GetComponentRotation().Pitch,TargetRotationPitch.Pitch, DeltaTime, 20.0f),
+		UKismetMathLibrary::RInterpTo(CameraBoom->GetComponentRotation(),TargetRotationYaw,DeltaTime,10).Yaw,0));
+	
 
 	
 }
@@ -144,18 +145,18 @@ void ACameraPlayer::RotateCamera(const FInputActionValue& Value)
 {
 	FVector2d Input = Value.Get<FVector2d>();
 
-	TargetRotationYaw = FRotator(0,CameraBoom->GetComponentRotation().Yaw + UKismetMathLibrary::SignOfFloat(Input.Y) * -90 , 0);
-	
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Snap Rotation Yaw: ") + FString::SanitizeFloat(TargetRotationPitch.Yaw));
+	TargetRotationYaw = FRotator(0,TargetRotationYaw.Yaw + UKismetMathLibrary::SignOfFloat(Input.X)*-90 , 0);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Input X: ") + FString::SanitizeFloat(Input.X));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Snap Rotation Yaw: ") + FString::SanitizeFloat(CameraBoom->GetComponentRotation().Yaw + UKismetMathLibrary::SignOfFloat(Input.X) * -90));
 }
 
 void ACameraPlayer::RotateCameraPitch(const FInputActionValue& Value)
 {
 	FVector2d Input = Value.Get<FVector2d>();
 	
-	TargetRotationPitch = FRotator(UKismetMathLibrary::Clamp((CameraBoom->GetComponentRotation().Pitch + Input.X), -80.0f, -20.0f),TargetRotationPitch.Yaw , 0);
+	TargetRotationPitch = FRotator(UKismetMathLibrary::Clamp(TargetRotationPitch.Pitch + Input.Y, -80.0f, -20.0f),0, 0);
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Target Rotation Pitch: ") + FString::SanitizeFloat(TargetRotationPitch.Pitch));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Target Rotation Pitch: ") + FString::SanitizeFloat(TargetRotationPitch.Pitch));
 }
 
 void ACameraPlayer::ZoomCamera( const FInputActionValue& Value)
