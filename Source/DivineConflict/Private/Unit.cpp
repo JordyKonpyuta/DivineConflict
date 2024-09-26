@@ -5,7 +5,6 @@
 
 #include "Base.h"
 #include "Building.h"
-#include "CameraPlayer.h"
 #include "CustomPlayerController.h"
 #include "CustomPlayerState.h"
 #include "Grid.h"

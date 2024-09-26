@@ -7,12 +7,9 @@
 #include "CustomPlayerController.h"
 #include "Grid.h"
 #include "GridInfo.h"
-#include "InputBehavior.h"
-#include "MovieSceneTracksComponentTypes.h"
 #include "Unit_Child_Warrior.h"
 #include "Unit_Child_Mage.h"
 #include "Unit_Child_Tank.h"
-#include "GeometryCollection/GeometryCollectionSimulationTypes.h"
 
 // Sets default values
 ABuilding::ABuilding()
