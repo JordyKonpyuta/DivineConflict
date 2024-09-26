@@ -49,7 +49,7 @@ void AUnit_Child_Tank::Special()
 	TArray<FIntPoint> PathBuff =  Grid->GridPath->FindTileNeighbors(GetIndexPosition());
 	for(FIntPoint Tile : PathBuff)
 	{
-		if(Grid->GetGridData()->Find(Tile)->UnitOnTile)
+		if(Grid->GetGridData()->Find(Tile)->UnitOnTile && Grid->GetGridData()->Find(Tile)->UnitOnTile != this && Grid->GetGridData()->Find(Tile)->UnitOnTile->GetPlayerOwner() == GetPlayerOwner())
 		{
 			Grid->GetGridData()->Find(Tile)->UnitOnTile->SetBuffTank(true);
 		}

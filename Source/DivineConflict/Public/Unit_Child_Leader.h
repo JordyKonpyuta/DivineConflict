@@ -18,4 +18,6 @@ protected:
 
 public:
 	AUnit_Child_Leader();
+
+	void Special() override;
 };

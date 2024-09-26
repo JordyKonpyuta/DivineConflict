@@ -2,6 +2,9 @@
 
 
 #include "Unit_Child_Leader.h"
+
+#include "Grid.h"
+#include "GridPath.h"
 #include "UObject/ConstructorHelpers.h"
 
 void AUnit_Child_Leader::BeginPlay()
@@ -35,4 +38,20 @@ AUnit_Child_Leader::AUnit_Child_Leader()
 		}
 
 	
+}
+
+void AUnit_Child_Leader::Special()
+{
+	Super::Special();
+	//Special ability
+
+	TArray<FIntPoint> PathBuff =  Grid->GridPath->FindPath(GetIndexPosition(),FIntPoint(-999,-999),true,3,false);
+	for(FIntPoint Tile : PathBuff)
+	{
+		if(Grid->GetGridData()->Find(Tile)->UnitOnTile  && Grid->GetGridData()->Find(Tile)->UnitOnTile != this && Grid->GetGridData()->Find(Tile)->UnitOnTile->GetPlayerOwner() == GetPlayerOwner())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Buff Leader"));
+			//Grid->GetGridData()->Find(Tile)->UnitOnTile->SetBuffLeader(true);
+		}
+	}
 }
