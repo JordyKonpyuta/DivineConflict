@@ -199,3 +199,8 @@ void ABuilding::SetGridPosition(FIntPoint GridP)
 {
 	GridPosition = GridP;
 }
+
+EBuildingList ABuilding::GetBuildingList()
+{
+	return BuildingList;
+}

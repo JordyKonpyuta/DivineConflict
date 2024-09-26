@@ -78,6 +78,8 @@ public:
 	FIntPoint GetGridPosition();
 
 	void SetGridPosition(FIntPoint GridPosition);
+
+	EBuildingList GetBuildingList();
 	
 protected:
 

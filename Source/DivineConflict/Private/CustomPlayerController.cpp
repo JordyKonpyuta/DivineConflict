@@ -213,13 +213,13 @@ void ACustomPlayerController::ControllerInteraction()
 					{
 						Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Reachable);
 					}
-				PathReachable.Empty();
-				CameraPlayerRef->IsMovingUnit = false;
-				UnitRef->Move(CameraPlayerRef->Path);
-				CameraPlayerRef->Path.Empty();
-				UnitRef->SetIsSelected(false);
-				UnitRef = nullptr;
-				PlayerAction = EDC_ActionPlayer::None;
+					UnitRef->Move(CameraPlayerRef->Path);
+					PathReachable.Empty();
+					CameraPlayerRef->IsMovingUnit = false;
+					CameraPlayerRef->Path.Empty();
+					UnitRef->SetIsSelected(false);
+					UnitRef = nullptr;
+					PlayerAction = EDC_ActionPlayer::None;
 				break;
 			case EDC_ActionPlayer::AttackUnit:
 				//Attack();

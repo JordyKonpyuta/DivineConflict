@@ -4,6 +4,7 @@
 #include "Unit.h"
 
 #include "Base.h"
+#include "Building.h"
 #include "CameraPlayer.h"
 #include "CustomPlayerController.h"
 #include "CustomPlayerState.h"
@@ -134,6 +135,12 @@ void AUnit::Move(TArray<FIntPoint> PathIn)
 			SetActorLocation(location);
 
 		}
+		
+		if (Grid->GetGridData()->Find(Path.Last())->BuildingOnTile != nullptr)
+		{
+			SetActorLocation(Grid->GetGridData()->Find(Path.Last())->BuildingOnTile->GetActorLocation());
+		}
+		
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit moved"));
 		
 		Grid->GridInfo->setUnitIndexOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()),this);
