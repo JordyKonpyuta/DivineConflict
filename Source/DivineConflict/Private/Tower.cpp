@@ -38,23 +38,12 @@ void ATower::BeginPlay()
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Grid is not null"));
 		Grid->GridInfo->addTowerOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+				
+
+		// Set Reachable Tiles for Attack
+		TilesInRange = Grid->GridPath->FindPath(GridPosition,FIntPoint(-999,-999),true,4,false);
 	}
-		
-	/*
-	// Set Reachable Tiles for Attack
-	TilesInRange.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(100, 0, 0)));
-	TilesInRange.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(200, 0, 0)));
-	TilesInRange.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(300, 0, 0)));
-	TilesInRange.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-100, 0, 0)));
-	TilesInRange.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-200, 0, 0)));
-	TilesInRange.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(-300, 0, 0)));
-	TilesInRange.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(0, 100, 0)));
-	TilesInRange.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(0, 200, 0)));
-	TilesInRange.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(0, 300, 0)));
-	TilesInRange.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(0, -100, 0)));
-	TilesInRange.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(0, -200, 0)));
-	TilesInRange.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(0, -300, 0)));*/
-	TilesInRange = Grid->GridPath->FindPath(GridPosition,FIntPoint(-999,-999),true,4,false);
+
 	
 	
 }
@@ -88,6 +77,7 @@ void ATower::SetIsHell(bool NewIsHell)
 
 void ATower::AttackUnit(AUnit* UnitToAttack)
 {
+	UnitToAttack->SetCurrentHealth(UnitToAttack->GetCurrentHealth() - Attack);
 }
 
 void ATower::UpdateVisuals()
