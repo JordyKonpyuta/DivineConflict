@@ -45,7 +45,7 @@ void ACameraPlayer::BeginPlay()
 	Super::BeginPlay();
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Camera Player Begin Play"));
 	CameraBoom->AttachToComponent(CameraRoot, FAttachmentTransformRules::KeepRelativeTransform);
-	CameraBoom->SetRelativeRotation( FRotator(-60, 0, 0));
+	CameraBoom->SetRelativeRotation( FRotator(-25, 0, 0));
 	
 	
 	
@@ -56,7 +56,12 @@ void ACameraPlayer::BeginPlay()
 void ACameraPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
 
+	CameraBoom->SetWorldRotation(FRotator(UKismetMathLibrary::FInterpTo_Constant(CameraBoom->GetComponentRotation().Pitch, TargetRotationPitch.Pitch, DeltaTime, 10.0f),0,0));
+
+
+	
 }
 
 // Called to bind functionality to input
@@ -68,6 +73,7 @@ void ACameraPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	{
 		EnhancedInputComponent->BindAction(AIMove, ETriggerEvent::Started, this, &ACameraPlayer::MoveCamera);
 		EnhancedInputComponent->BindAction(AIRotate, ETriggerEvent::Started, this, &ACameraPlayer::RotateCamera);
+		EnhancedInputComponent->BindAction(AIRotate, ETriggerEvent::Triggered, this, &ACameraPlayer::RotateCameraPitch);
 		EnhancedInputComponent->BindAction(AIZoom, ETriggerEvent::Triggered, this, &ACameraPlayer::ZoomCamera);
 		EnhancedInputComponent->BindAction(AIInteraction,ETriggerEvent::Started, this, &ACameraPlayer::Interaction);
 	}
@@ -136,26 +142,20 @@ void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 
 void ACameraPlayer::RotateCamera(const FInputActionValue& Value)
 {
+	FVector2d Input = Value.Get<FVector2d>();
 
-
-	float Input = Value.Get<float>();
-
-	if(abs(Input) > 0.6)
-	{
-		
-		
-		SnapRotation = FRotator( CameraBoom->GetComponentRotation().Pitch,CameraBoom->GetComponentRotation().Yaw + UKismetMathLibrary::SignOfFloat(Input) * -90 , 0);
-
-		
-		
-		
-		CameraBoom->SetRelativeRotation(SnapRotation);
-
-		
-	}
+	TargetRotationYaw = FRotator(0,CameraBoom->GetComponentRotation().Yaw + UKismetMathLibrary::SignOfFloat(Input.Y) * -90 , 0);
 	
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Snap Rotation Yaw: ") + FString::SanitizeFloat(TargetRotationPitch.Yaw));
+}
+
+void ACameraPlayer::RotateCameraPitch(const FInputActionValue& Value)
+{
+	FVector2d Input = Value.Get<FVector2d>();
 	
-	
+	TargetRotationPitch = FRotator(UKismetMathLibrary::Clamp((CameraBoom->GetComponentRotation().Pitch + Input.X), -80.0f, -20.0f),TargetRotationPitch.Yaw , 0);
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Target Rotation Pitch: ") + FString::SanitizeFloat(TargetRotationPitch.Pitch));
 }
 
 void ACameraPlayer::ZoomCamera( const FInputActionValue& Value)
@@ -164,7 +164,7 @@ void ACameraPlayer::ZoomCamera( const FInputActionValue& Value)
 
 		if (Controller != nullptr)
 		{
-			CameraBoom->TargetArmLength = FMath::Clamp((CameraBoom->TargetArmLength+Input*ZoomCameraSpeed), 750.0f, 3750.0f);
+			CameraBoom->TargetArmLength = FMath::Clamp((CameraBoom->TargetArmLength + Input * ZoomCameraSpeed), 750.0f, 3750.0f);
 			
 		
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Zoom Camera Length: ") + FString::SanitizeFloat(CameraBoom->TargetArmLength));

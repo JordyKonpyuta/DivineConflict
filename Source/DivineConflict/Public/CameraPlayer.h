@@ -66,6 +66,9 @@ protected:
 
 	void Interaction();
 
+	FRotator TargetRotationPitch=FRotator( -20, 0 ,0 );
+	FRotator TargetRotationYaw=FRotator( 0, 0 ,0 );
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -79,7 +82,11 @@ public:
 
 	void RotateCamera(const FInputActionValue& Value);
 
+	void RotateCameraPitch(const FInputActionValue& Value);
+
 	void ZoomCamera( const FInputActionValue& Value);
+
+	
 
 	void PathClear();
 
