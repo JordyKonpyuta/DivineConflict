@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EnumsList.h"
 #include "GameFramework/PlayerController.h"
 #include "InteractInterface.h"
 #include "CustomPlayerController.generated.h"
@@ -72,6 +73,9 @@ protected:
 
 	UPROPERTY()
 	bool IsHell = false;
+	
+	UPROPERTY()
+	EPlayer PlayerTeam = EPlayer::P_Hell;
 
 	UPROPERTY()
 	bool IsInActiveTurn = false;
@@ -121,6 +125,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetIsHell(bool bH);
+
+	UFUNCTION(BlueprintCallable)
+	EPlayer GetPlayerTeam();
+
+	UFUNCTION(BlueprintCallable)
+	void SetPlayerTeam(EPlayer PT);
 
 	UFUNCTION(BlueprintCallable)
 	bool GetIsInActiveTurn();

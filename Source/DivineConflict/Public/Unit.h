@@ -182,6 +182,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool GetIsHell();
+	
+	UFUNCTION(BluePrintCallable)
+	EPlayer GetUnitTeam();
 
 	UFUNCTION(BlueprintCallable)
 	int GetTotalDamageInflicted();
@@ -231,6 +234,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetIsHell(bool h);
+
+	UFUNCTION(BluePrintCallable)
+	void SetUnitTeam(EPlayer PO);
 
 	UFUNCTION(BlueprintCallable)
 	void SetTotalDamageInflicted(int tdi);

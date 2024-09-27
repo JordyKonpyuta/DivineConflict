@@ -79,7 +79,6 @@ void ACustomPlayerController::setGrid()
 void ACustomPlayerController::FindReachableTiles()
 {
 	if(Grid)
-		
 		if(UnitRef)
 		{
 			PathReachable =  Grid->GridPath->NewFindPath(Grid->ConvertLocationToIndex(UnitRef->GetActorLocation()), this);
@@ -94,7 +93,7 @@ void ACustomPlayerController::FindReachableTiles()
 
 void ACustomPlayerController::SelectModeMovement()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SelectModeMovement"));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SelectModeMovement"));
 	FindReachableTiles();
 	CameraPlayerRef->Path.Add(UnitRef->GetIndexPosition());
 	PlayerAction = EDC_ActionPlayer::MoveUnit;
@@ -164,7 +163,7 @@ void ACustomPlayerController::ControllerInteraction()
 				{
 					if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
 					{
-						if(!Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetIsSelected() && IsInActiveTurn) // Unit
+						if(!Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetIsSelected() && IsInActiveTurn && Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() == PlayerTeam) // Unit
 						{
 							UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile;
 							CameraPlayerRef->SetCustomPlayerController(this);
@@ -441,6 +440,16 @@ bool ACustomPlayerController::GetIsHell()
 void ACustomPlayerController::SetIsHell(bool bH)
 {
 	IsHell = bH;
+}
+
+EPlayer ACustomPlayerController::GetPlayerTeam()
+{
+	return PlayerTeam;
+}
+
+void ACustomPlayerController::SetPlayerTeam(EPlayer PT)
+{
+	PlayerTeam = PT;
 }
 
 bool ACustomPlayerController::GetIsInActiveTurn()

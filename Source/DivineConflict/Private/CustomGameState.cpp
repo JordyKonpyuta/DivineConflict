@@ -72,7 +72,7 @@ void ACustomGameState::SwitchPlayerTurn()
 				if (bNewTurnMode){
 					CurrentController->CurrentPA = CurrentController->GetPlayerState<ACustomPlayerState>()->GetMaxActionPoints();
 					CurrentController->GetPlayerState<ACustomPlayerState>()->TurnPassed +=1;
-				}else{GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("NOT ACTIVE"));}
+				}
 			}
 		}
 	}

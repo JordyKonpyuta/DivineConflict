@@ -7,6 +7,7 @@
 #include "CustomPlayerController.h"
 #include "Grid.h"
 #include "GridInfo.h"
+#include "Unit_Child_Leader.h"
 #include "Unit_Child_Warrior.h"
 #include "Unit_Child_Mage.h"
 #include "Unit_Child_Tank.h"
@@ -119,9 +120,25 @@ void ABuilding::BeginPlay()
 			
 			BuildingSpawnLocationRef->GridRef = Grid;
 		}
-
-		// Access Grid Data :
-		// Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(25, 25, 0))).
+		
+		switch (BuildingList)
+		{
+		case EBuildingList::B_Gold:
+			UnitRef = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
+			break;
+		case EBuildingList::B_Wood:
+			UnitRef = GetWorld()->SpawnActor<AUnit_Child_Mage>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
+			break;
+		case EBuildingList::B_Stone:
+			UnitRef = GetWorld()->SpawnActor<AUnit_Child_Tank>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
+			break;
+		case EBuildingList::B_AP:
+			UnitRef = GetWorld()->SpawnActor<AUnit_Child_Leader>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
+			break;
+		default:
+			UnitRef = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
+		}
+		GarrisonFull = true;
 	}
 }
 
@@ -161,21 +178,22 @@ bool ABuilding::IsPlayerPassive(ACustomPlayerController* PlayerController)
 // Make a unit spawn in a specific point
 void ABuilding::SpawnUnitFromBuilding(FIntPoint SpawnLocation)
 {
-	FRotator BaseRotation(0.0f, 0.0f, 0.0f);
+	AUnit* UnitToSpawn = nullptr;
 	switch (UnitProduced)
 	{
 	case EUnitType::U_Warrior:
-		GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
+		UnitToSpawn = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
 		break;
 	case EUnitType::U_Mage:
-		GetWorld()->SpawnActor<AUnit_Child_Mage>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
+		UnitToSpawn =GetWorld()->SpawnActor<AUnit_Child_Mage>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
 		break;
 	case EUnitType::U_Tank:
-		GetWorld()->SpawnActor<AUnit_Child_Tank>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
+		UnitToSpawn =GetWorld()->SpawnActor<AUnit_Child_Tank>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
 		break;
 	default:
-		GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
+		UnitToSpawn =GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
 	}
+	UnitToSpawn->SetUnitTeam(PlayerOwner);
 	
 }
 

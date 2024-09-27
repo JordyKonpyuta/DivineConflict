@@ -70,7 +70,6 @@ void AUnit::BeginPlay()
 	}
 	else 
     {
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("Grid is null"));
 		SetGrid();
     }
 	
@@ -132,7 +131,6 @@ void AUnit::Move(TArray<FIntPoint> PathIn)
 			FVector location = Grid->ConvertIndexToLocation(index);
 			Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
 			SetActorLocation(location);
-
 		}
 		
 		if (Grid->GetGridData()->Find(Path.Last())->BuildingOnTile != nullptr)
@@ -282,6 +280,11 @@ bool AUnit::GetIsHell()
 	return IsHell;
 }
 
+EPlayer AUnit::GetUnitTeam()
+{
+	return PlayerOwner;
+}
+
 void AUnit::SetAttack(int a)
 {
 	Attack = a;
@@ -325,6 +328,11 @@ void AUnit::SetIsSelected(bool s)
 void AUnit::SetIsHell(bool h)
 {
 	IsHell = h;
+}
+
+void AUnit::SetUnitTeam(EPlayer PO)
+{
+	PlayerOwner = PO;
 }
 
 int AUnit::GetTotalDamageInflicted()
