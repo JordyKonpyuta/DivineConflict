@@ -128,17 +128,32 @@ void AUnit::Move(TArray<FIntPoint> PathIn)
 				Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
 				break;
 			}
+			if (Grid->GetGridData()->Find(index)->BuildingOnTile)
+			{
+				if (Grid->GetGridData()->Find(index)->BuildingOnTile->GarrisonFull != true)
+				{
+					SetActorLocation(Grid->GetGridData()->Find(Path.Last())->BuildingOnTile->GetActorLocation());
+					Grid->GetGridData()->Find(Path.Last())->BuildingOnTile->UnitRef = this;
+					Grid->GetGridData()->Find(Path.Last())->BuildingOnTile->GarrisonFull = true;
+					Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
+					break;
+				}
+				else
+				{
+					if (this != Grid->GetGridData()->Find(index)->BuildingOnTile->UnitRef)
+					{
+						for(FIntPoint Superindex : Path)
+						{
+							Grid->GridVisual->RemoveStateFromTile(Superindex, EDC_TileState::Pathfinding);
+						}
+						Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
+						break;
+					}
+				}
+			}
 			FVector location = Grid->ConvertIndexToLocation(index);
 			Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
 			SetActorLocation(location);
-		}
-		
-		if (Grid->GetGridData()->Find(Path.Last())->BuildingOnTile != nullptr)
-		{
-			SetActorLocation(Grid->GetGridData()->Find(Path.Last())->BuildingOnTile->GetActorLocation());
-			Grid->GetGridData()->Find(Path.Last())->BuildingOnTile->UnitRef = this;
-			Grid->GetGridData()->Find(Path.Last())->BuildingOnTile->GarrisonFull = true;
-			
 		}
 		
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit moved"));

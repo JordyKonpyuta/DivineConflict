@@ -96,7 +96,10 @@ protected:
 	UFUNCTION(Blueprintable, Category = "Player")
 	bool IsPlayerPassive(ACustomPlayerController* PlayerController);
 
-	UFUNCTION(BlueprintCallable, Category = "Player")
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Player")
 	void SpawnUnitFromBuilding(FIntPoint SpawnLocation);
+
+	UFUNCTION(BlueprintCallable, Category = "Unit")
+	void removeUnitRef();
 	
 };

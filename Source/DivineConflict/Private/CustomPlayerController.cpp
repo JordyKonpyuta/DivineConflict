@@ -161,17 +161,7 @@ void ACustomPlayerController::ControllerInteraction()
 			case EDC_ActionPlayer::None:
 				if(Grid->GetGridData()->Find(PlayerPositionInGrid) != nullptr)
 				{
-					if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
-					{
-						if(!Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetIsSelected() && IsInActiveTurn && Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() == PlayerTeam) // Unit
-						{
-							UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile;
-							CameraPlayerRef->SetCustomPlayerController(this);
-							IInteractInterface::Execute_Interact(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile, this);
-							DisplayWidget();
-						}
-					}
-					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile != nullptr && !IsInActiveTurn) // Building, Passive Turn
+					if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile != nullptr && !IsInActiveTurn) // Building, Passive Turn
 					{
 						if ((Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Hell && IsHell == true)
 							|| (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Heaven && IsHell == false)
@@ -195,6 +185,16 @@ void ACustomPlayerController::ControllerInteraction()
 							UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef;
 							CameraPlayerRef->SetCustomPlayerController(this);
 							IInteractInterface::Execute_Interact(Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef, this);
+							DisplayWidget();
+						}
+					}
+					else if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
+					{
+						if(!Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetIsSelected() && IsInActiveTurn && Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() == PlayerTeam) // Unit
+						{
+							UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile;
+							CameraPlayerRef->SetCustomPlayerController(this);
+							IInteractInterface::Execute_Interact(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile, this);
 							DisplayWidget();
 						}
 					}
@@ -450,6 +450,16 @@ EPlayer ACustomPlayerController::GetPlayerTeam()
 void ACustomPlayerController::SetPlayerTeam(EPlayer PT)
 {
 	PlayerTeam = PT;
+}
+
+bool ACustomPlayerController::GetSelectingUnitFromBuilding()
+{
+	return IsSelectingUnitFromBuilding;
+}
+
+void ACustomPlayerController::SetSelectingUnitFromBuilding(bool bS)
+{
+	IsSelectingUnitFromBuilding = bS;
 }
 
 bool ACustomPlayerController::GetIsInActiveTurn()

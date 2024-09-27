@@ -81,6 +81,9 @@ protected:
 	bool IsInActiveTurn = false;
 
 	UPROPERTY()
+	bool IsSelectingUnitFromBuilding;
+
+	UPROPERTY()
 	bool IsReady = false;
 
 	UPROPERTY()
@@ -131,6 +134,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetPlayerTeam(EPlayer PT);
+	
+	UFUNCTION(BlueprintCallable)
+	bool GetSelectingUnitFromBuilding();
+
+	UFUNCTION(BlueprintCallable)
+	void SetSelectingUnitFromBuilding(bool bS);
 
 	UFUNCTION(BlueprintCallable)
 	bool GetIsInActiveTurn();

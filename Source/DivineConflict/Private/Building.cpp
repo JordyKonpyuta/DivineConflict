@@ -176,7 +176,7 @@ bool ABuilding::IsPlayerPassive(ACustomPlayerController* PlayerController)
 }
 
 // Make a unit spawn in a specific point
-void ABuilding::SpawnUnitFromBuilding(FIntPoint SpawnLocation)
+void ABuilding::SpawnUnitFromBuilding_Implementation(FIntPoint SpawnLocation)
 {
 	AUnit* UnitToSpawn = nullptr;
 	switch (UnitProduced)
@@ -194,7 +194,13 @@ void ABuilding::SpawnUnitFromBuilding(FIntPoint SpawnLocation)
 		UnitToSpawn =GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
 	}
 	UnitToSpawn->SetUnitTeam(PlayerOwner);
-	
+	UnitToSpawn->SetActorLocation(GetActorLocation());
+}
+
+void ABuilding::removeUnitRef()
+{
+	UnitRef = nullptr;
+	GarrisonFull = false;
 }
 
 
