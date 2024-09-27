@@ -2,24 +2,30 @@
 
 
 #include "CustomGameState.h"
+#include "EnumsList.h"
 #include "CustomPlayerController.h"
 #include "CustomPlayerState.h"
 
 void ACustomGameState::AssignPlayerTurns()
 {
+
 	if (PlayerArray.Num() != -1)
 	{
 		for(APlayerState* CurrentPlayerState : PlayerArray)
 		{
-			if(ACustomPlayerController* CurrentController = Cast<ACustomPlayerController>(CurrentPlayerState->GetPlayerController())){
+			if(ACustomPlayerState* PlayerState = Cast<ACustomPlayerState>(CurrentPlayerState)){
 				if (PlayerArray[0] == CurrentPlayerState)
 				{
 					
-					CurrentController->SetIsInActiveTurn(true);
+					PlayerState->bIsActiveTurn = true;
+					PlayerState->OnRep_bIsActiveTurn();
+					PlayerState->PlayerTeam = EPlayer::P_Heaven;
 				}
 				else
 				{
-					CurrentController->SetIsInActiveTurn(false);
+					PlayerState->bIsActiveTurn = false;
+					PlayerState->OnRep_bIsActiveTurn();
+					PlayerState->PlayerTeam = EPlayer::P_Hell;
 				}
 			}
 		}
@@ -46,6 +52,21 @@ void ACustomGameState::BeginPlay()
 void ACustomGameState::SwitchPlayerTurn()
 {
 	// Make sure the array has a size of minimum 2
+	
+	for(APlayerState* CurrentPlayerState : PlayerArray)
+	{
+		ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState);
+
+		if(CurrentCustomPlayerState)
+		{
+			CurrentCustomPlayerState->bIsActiveTurn = !CurrentCustomPlayerState->bIsActiveTurn;
+			CurrentCustomPlayerState->OnRep_bIsActiveTurn();
+		}
+			
+	}
+	
+	
+	/*
 	if (AllPlayerStates.Num() < 2)
 	{
 		AllPlayerStates.SetNum(2, EAllowShrinking::Yes);
@@ -67,6 +88,7 @@ void ACustomGameState::SwitchPlayerTurn()
 			// Make sure this controller exists
 			if (CurrentController != nullptr)
 			{
+				GEngine->AddOnScreenDebugMessage(-1, 12.f, FColor::Yellow, TEXT("Controller : "+CurrentController->GetPlayerState<ACustomPlayerState>()->GetPlayerName() +"is in turn : "+FString::FromInt(CurrentController->GetIsInActiveTurn())));
 				const bool bNewTurnMode = CurrentController->GetIsInActiveTurn();
 				CurrentController->SetIsInActiveTurn(!bNewTurnMode);
 				if (bNewTurnMode){
@@ -93,7 +115,23 @@ void ACustomGameState::SwitchPlayerTurn()
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("p1 stone = "+FString::FromInt(AllPlayerStates[1]->StonePoints)));
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("p1 gold = "+FString::FromInt(AllPlayerStates[1]->GoldPoints)));
 	}
-	OnTurnSwitchDelegate.Broadcast();
+	OnTurnSwitchDelegate.Broadcast();/*
+	for(APlayerState * CurrentPlayerState : PlayerArray)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Player "+CurrentPlayerState->GetPlayerName()));
+		ACustomPlayerController* CurrentController = Cast<ACustomPlayerController>(CurrentPlayerState->GetPlayerController());
+		
+			if(CurrentController->GetIsInActiveTurn())
+			{
+				CurrentController->SetIsInActiveTurn(false);
+			}
+			else
+			{
+				CurrentController->SetIsInActiveTurn(true);
+			}
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Player "+CurrentPlayerState->GetPlayerName()+" is in turn :" + FString::SanitizeFloat(CurrentController->GetIsInActiveTurn())));
+		
+	}*/
 }
 
 

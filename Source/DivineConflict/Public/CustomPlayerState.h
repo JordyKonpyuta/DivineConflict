@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EnumsList.h"
 #include "GameFramework/PlayerState.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "CustomPlayerState.generated.h"
 
+class ACustomPlayerController;
 class ACustomGameState;
 
 /**
@@ -57,12 +59,28 @@ public:
 
 	UPROPERTY(EditAnywhere, NotBlueprintable, Category = "Timer", meta = (AllowPrivateAccess = "true"))
 	int LoadingTimer = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRep_bIsActiveTurn , Category = "Turn")
+	bool bIsActiveTurn = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRep_PlayerTeam, Category = "Turn")
+	EPlayer PlayerTeam = EPlayer::P_Hell;
 	
 private:
 	virtual void BeginPlay() override;
 
+	UPROPERTY(VisibleAnywhere, Category = "Ref", meta = (AllowPrivate = "true"))
+	ACustomPlayerController* PlayerControllerRef;
+
 	// UFUNCTIONS //
 public:
+
+	UFUNCTION(BlueprintCallable, Category = "Actions")
+	void OnRep_bIsActiveTurn();
+
+	UFUNCTION(BlueprintCallable, Category = "Actions")
+	void OnRep_PlayerTeam();
+	
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	int GetMaxActionPoints();
 

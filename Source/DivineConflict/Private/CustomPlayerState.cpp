@@ -3,7 +3,8 @@
 
 #include "CustomPlayerState.h"
 #include "CustomGameState.h"
-
+#include "CustomPlayerController.h"
+#include "Net/UnrealNetwork.h"
 
 
 void ACustomPlayerState::BeginPlay()
@@ -11,8 +12,41 @@ void ACustomPlayerState::BeginPlay()
 	Super::BeginPlay();
 
 	GameStateRef = GetWorld()->GetGameState<ACustomGameState>();
+
 	GameStateRef->AllPlayerStates.Add(this);
 	
+}
+
+void ACustomPlayerState::OnRep_bIsActiveTurn()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Player "+GetPlayerName()+" is in turn :" + FString::FromInt(bIsActiveTurn)));
+	if(Cast<ACustomPlayerController>(GetPlayerController()))
+	{
+		Cast<ACustomPlayerController>(GetPlayerController())->SetIsInActiveTurn(bIsActiveTurn);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Player(Controller) "+GetPlayerName()+" is in turn :" + FString::FromInt(bIsActiveTurn)));
+	}
+		
+	if(bIsActiveTurn)
+	{
+		NewTurnBegin();
+	}
+}
+
+void ACustomPlayerState::OnRep_PlayerTeam()
+{
+	if(Cast<ACustomPlayerController>(GetPlayerController()))
+	{
+		Cast<ACustomPlayerController>(GetPlayerController())->SetPlayerTeam(PlayerTeam);
+	}	
+}
+
+void ACustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    
+	DOREPLIFETIME(ACustomPlayerState, bIsActiveTurn);
+	DOREPLIFETIME(ACustomPlayerState, PlayerTeam);
+
 }
 
 int ACustomPlayerState::GetMaxActionPoints()
