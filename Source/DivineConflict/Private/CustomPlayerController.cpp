@@ -481,3 +481,8 @@ void ACustomPlayerController::SetIsDead(bool bD)
 {
 	IsDead = bD;
 }
+
+void ACustomPlayerController::SetPlayerAction(EDC_ActionPlayer PA)
+{
+	PlayerAction = PA;
+}

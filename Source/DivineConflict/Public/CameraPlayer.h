@@ -86,6 +86,8 @@ public:
 
 	void ZoomCamera( const FInputActionValue& Value);
 
+	void PathRemove(const FInputActionValue& Value);
+
 	
 
 	void PathClear();

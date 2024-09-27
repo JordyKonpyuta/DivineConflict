@@ -77,6 +77,8 @@ void ACameraPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		EnhancedInputComponent->BindAction(AIRotate, ETriggerEvent::Triggered, this, &ACameraPlayer::RotateCameraPitch);
 		EnhancedInputComponent->BindAction(AIZoom, ETriggerEvent::Triggered, this, &ACameraPlayer::ZoomCamera);
 		EnhancedInputComponent->BindAction(AIInteraction,ETriggerEvent::Started, this, &ACameraPlayer::Interaction);
+
+		EnhancedInputComponent->BindAction(AIRemovePath,ETriggerEvent::Started, this, &ACameraPlayer::PathRemove);
 	}
 }
 
@@ -145,7 +147,7 @@ void ACameraPlayer::RotateCamera(const FInputActionValue& Value)
 {
 	FVector2d Input = Value.Get<FVector2d>();
 
-	TargetRotationYaw = FRotator(0,TargetRotationYaw.Yaw + UKismetMathLibrary::SignOfFloat(Input.X)*-90 , 0);
+	TargetRotationYaw = FRotator(0,TargetRotationYaw.Yaw + UKismetMathLibrary::SignOfFloat(Input.X)*-90, 0);
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Input X: ") + FString::SanitizeFloat(Input.X));
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Snap Rotation Yaw: ") + FString::SanitizeFloat(CameraBoom->GetComponentRotation().Yaw + UKismetMathLibrary::SignOfFloat(Input.X) * -90));
 }
@@ -154,7 +156,7 @@ void ACameraPlayer::RotateCameraPitch(const FInputActionValue& Value)
 {
 	FVector2d Input = Value.Get<FVector2d>();
 	
-	TargetRotationPitch = FRotator(UKismetMathLibrary::Clamp(TargetRotationPitch.Pitch + Input.Y, -80.0f, -20.0f),0, 0);
+	TargetRotationPitch = FRotator(UKismetMathLibrary::Clamp(TargetRotationPitch.Pitch + Input.Y, -70.0f, -20.0f),0, 0);
 
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Target Rotation Pitch: ") + FString::SanitizeFloat(TargetRotationPitch.Pitch));
 }
@@ -170,6 +172,38 @@ void ACameraPlayer::ZoomCamera( const FInputActionValue& Value)
 		
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Zoom Camera Length: ") + FString::SanitizeFloat(CameraBoom->TargetArmLength));
 		}
+}
+
+void ACameraPlayer::PathRemove(const FInputActionValue& Value)
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Path Remove"));
+	if (Path.Num() == 0)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Path Remove: Empty"));
+		return;
+	}
+	CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(Path.Last(), EDC_TileState::Pathfinding);
+	Path.RemoveAt(Path.Num() - 1);
+
+	if(Path.Num() == 0)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Path Remove: Empty!!"));
+		for(FIntPoint Point : CustomPlayerController->GetPathReachable())
+		{
+			CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(Point, EDC_TileState::Reachable);
+		}
+		CustomPlayerController->SetPlayerAction(EDC_ActionPlayer::None);
+		IsMovingUnit = false;
+		return;
+	}
+	
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Path Remove: " +  Path.Last().ToString()));
+	SetActorLocation(FVector( Path.Last().X * 100,Path.Last().Y*100, GetActorLocation().Z));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Path Remove: ") + FString::SanitizeFloat(Path.Num()));
+	UE_LOG( LogTemp, Warning, TEXT("Path Remove: %s"), *Path.Last().ToString());
+	
+	
+	
 }
 
 void ACameraPlayer::PathClear()

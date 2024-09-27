@@ -149,6 +149,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetIsDead(bool bD);
+
+	UFUNCTION()
+	void SetPlayerAction(EDC_ActionPlayer PA);
 	
 	void ControllerInteraction();
 
