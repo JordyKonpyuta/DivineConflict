@@ -117,6 +117,7 @@ void AUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AUnit::Move(TArray<FIntPoint> PathIn)
 {
+	bool bJustBecameGarrison = false;
 	Path.Empty();
 	Path = PathIn;
 	if (Path.Num()!=-1)
@@ -136,6 +137,9 @@ void AUnit::Move(TArray<FIntPoint> PathIn)
 					Grid->GetGridData()->Find(Path.Last())->BuildingOnTile->UnitRef = this;
 					Grid->GetGridData()->Find(Path.Last())->BuildingOnTile->GarrisonFull = true;
 					Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
+					SetIsGarrison(true);
+					bJustBecameGarrison = true;
+					BuildingRef = Grid->GetGridData()->Find(Path.Last())->BuildingOnTile;
 					break;
 				}
 				else
@@ -159,6 +163,13 @@ void AUnit::Move(TArray<FIntPoint> PathIn)
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit moved"));
 		
 		Grid->GridInfo->setUnitIndexOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()),this);
+
+		if (IsGarrison && !bJustBecameGarrison)
+		{
+			BuildingRef->UnitRef = nullptr;
+			BuildingRef->GarrisonFull = false;
+			BuildingRef = nullptr;
+		}
 	}
 }
 
@@ -242,6 +253,16 @@ bool AUnit::GetIsGarrison()
 void AUnit::SetIsGarrison(bool bG)
 {
 	IsGarrison = bG;
+}
+
+ABuilding* AUnit::GetBuildingRef()
+{
+	return BuildingRef;
+}
+
+void AUnit::SetBuildingRef(ABuilding* Building)
+{
+	BuildingRef = Building;
 }
 
 void AUnit::SpecialUnit(AUnit* UnitToAttack)

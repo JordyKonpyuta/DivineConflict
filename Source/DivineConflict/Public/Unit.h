@@ -110,6 +110,9 @@ protected:
 	bool IsGarrison = false;
 
 	UPROPERTY()
+	ABuilding* BuildingRef = nullptr;
+
+	UPROPERTY()
 	FString Name = "";
 
 	UPROPERTY()
@@ -151,6 +154,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetIsGarrison(bool bG);
+
+	UFUNCTION(BlueprintCallable)
+	ABuilding* GetBuildingRef();
+
+	UFUNCTION(BlueprintCallable)
+	void SetBuildingRef(ABuilding* Building);
 	
 	virtual void SpecialUnit(AUnit* UnitToAttack);
 
@@ -258,7 +267,7 @@ public:
 	UFUNCTION()
 	void SetIndexPosition(FIntPoint ip);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void SetPlayerOwner(EPlayer po);
 
 	UFUNCTION()
