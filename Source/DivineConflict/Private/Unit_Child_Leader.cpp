@@ -11,11 +11,16 @@ void AUnit_Child_Leader::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetAttack(7);
-	SetDefense(0);
-	SetMaxHealth(20);
-	SetCurrentHealth(GetMaxHealth());
-	SetPM(3);
+	if (Attack == 0)
+		SetAttack(7);
+	if (Defense == 0)
+		SetDefense(0);
+	if (MaxHealth == 0)
+		SetMaxHealth(20);
+	if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
+		SetCurrentHealth(MaxHealth);
+	if (PM == 3)
+		SetPM(3);
 
 	UnitName = EUnitName::Leader;
 }

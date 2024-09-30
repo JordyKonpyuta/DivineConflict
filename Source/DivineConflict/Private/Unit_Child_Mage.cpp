@@ -13,11 +13,16 @@ void AUnit_Child_Mage::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetAttack(5);
-	SetDefense(2);
-	SetMaxHealth(10);
-	SetCurrentHealth(GetMaxHealth());
-	SetPM(4);
+	if (Attack == 0)
+		SetAttack(5);
+	if (Defense == 0)
+		SetDefense(2);
+	if (MaxHealth == 0)
+		SetMaxHealth(10);
+	if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
+		SetCurrentHealth(MaxHealth);
+	if (PM == 3)
+		SetPM(4);
 
 	UnitName = EUnitName::Mage;
 }

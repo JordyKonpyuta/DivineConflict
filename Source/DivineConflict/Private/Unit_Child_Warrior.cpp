@@ -8,11 +8,16 @@ void AUnit_Child_Warrior::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetAttack(12);
-	SetDefense(4);
-	SetMaxHealth(11);
-	SetCurrentHealth(GetMaxHealth());
-	SetPM(5);
+	if (Attack == 0)
+		SetAttack(12);
+	if (Defense == 0)
+		SetDefense(4);
+	if (MaxHealth == 0)
+		SetMaxHealth(11);
+	if (CurrentHealth == 0 or CurrentHealth > MaxHealth )
+		SetCurrentHealth(MaxHealth);
+	if (PM == 3)
+		SetPM(5);
 
 	UnitName = EUnitName::Warrior;
 }

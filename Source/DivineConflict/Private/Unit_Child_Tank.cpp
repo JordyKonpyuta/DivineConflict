@@ -11,11 +11,16 @@ void AUnit_Child_Tank::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetAttack(10);
-	SetDefense(9);
-	SetMaxHealth(12);
-	SetCurrentHealth(GetMaxHealth());
-	SetPM(3);
+	if (Attack == 0)
+		SetAttack(10);
+	if (Defense == 0)
+		SetDefense(9);
+	if (MaxHealth == 0)
+		SetMaxHealth(12);
+	if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
+		SetCurrentHealth(MaxHealth);
+	if (PM == 3)
+		SetPM(3);
 
 	UnitName = EUnitName::Tank;
 }
