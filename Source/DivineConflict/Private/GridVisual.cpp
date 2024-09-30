@@ -85,6 +85,9 @@ void UGridVisual::addStateToTile(FIntPoint Index, EDC_TileState TileState)
 			FDC_TileData* Data = Grid->GetGridData()->Find(Index);
 			Data->TileState.Add(TileState);
 			Grid->GetGridData()->Add(Index, *Data);
+			Grid->SetGridDataReplicated(FGRidData(*Grid->GetGridData()));
+			
+			
 
 			UpdateVisuals(Index);
 			
@@ -101,7 +104,7 @@ void UGridVisual::RemoveStateFromTile(FIntPoint Index, EDC_TileState TileState)
 			FDC_TileData* Data = Grid->GetGridData()->Find(Index);
 			Data->TileState.Remove(TileState);
 			Grid->GetGridData()->Add(Index, *Data);
-
+			Grid->SetGridDataReplicated(FGRidData(*Grid->GetGridData()));
 			UpdateVisuals(Index);
 		}
 	}

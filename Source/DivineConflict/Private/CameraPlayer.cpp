@@ -98,15 +98,17 @@ void ACameraPlayer::SetCustomPlayerController(ACustomPlayerController* Cpc)
 
 void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 {
-	FVector2d Input = Value.Get<FVector2d>();
 
+	FVector2d Input = Value.Get<FVector2d>();
+	
 	if (Controller != nullptr)
 	{
+
 		FVector3d MoveDirection = FVector3d(0, 0, 0);
 		if (abs(Input.X)  >= abs(Input.Y) )
 		{
 			MoveDirection = UKismetMathLibrary::GetForwardVector(UKismetMathLibrary::MakeRotator(0,0,GetActorRotation().Yaw)) * (UKismetMathLibrary::SignOfFloat(Input.X) * 100);
-
+			
 		}
 		else
 		{
@@ -114,7 +116,11 @@ void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 
 		}
 		if(!CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation() + MoveDirection)))
+		{
+			GEngine->AddOnScreenDebugMessage( -1, 5.f, FColor::Green, TEXT("Move Camera"));
 			return;
+		}
+			
 
 		
 		if (IsMovingUnit)

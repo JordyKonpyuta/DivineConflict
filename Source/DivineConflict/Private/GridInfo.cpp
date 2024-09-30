@@ -15,13 +15,6 @@ UGridInfo::UGridInfo()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-
-
-		
-
-
-
 	// ...
 }
 
@@ -38,17 +31,18 @@ void UGridInfo::setUnitIndexOnGrid(FIntPoint GridPosition, AUnit* Unit)
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Grid is null"));
 		return;
 	}
-	TMap<FIntPoint,FDC_TileData>* GridDataRef = Grid->GetGridData();
+	TMap<FIntPoint,FDC_TileData> GridDataRef = Grid->GetGridDataReplicated().GridDateReplicted;
 	if(GridPosition != Unit->GetIndexPosition())
 	{
-		FDC_TileData* PerviousIndex = GridDataRef->Find(Unit->GetIndexPosition());
-
+		FDC_TileData* PerviousIndex = GridDataRef.Find(Unit->GetIndexPosition());
+		
 		if(PerviousIndex != nullptr)
 		{
 			if(PerviousIndex->UnitOnTile == Unit)
 			{
-				GridDataRef->Add(PerviousIndex->TilePosition, FDC_TileData(PerviousIndex->TilePosition, PerviousIndex->TileType, PerviousIndex->TileTransform, PerviousIndex->TileState, nullptr, PerviousIndex->BuildingOnTile , PerviousIndex->BaseOnTile, PerviousIndex->TowerOnTile));
-
+				GridDataRef.Add(PerviousIndex->TilePosition, FDC_TileData(PerviousIndex->TilePosition, PerviousIndex->TileType, PerviousIndex->TileTransform, PerviousIndex->TileState, nullptr, PerviousIndex->BuildingOnTile , PerviousIndex->BaseOnTile, PerviousIndex->TowerOnTile));
+				Grid->GridData.Add(PerviousIndex->TilePosition, FDC_TileData(PerviousIndex->TilePosition, PerviousIndex->TileType, PerviousIndex->TileTransform, PerviousIndex->TileState, nullptr, PerviousIndex->BuildingOnTile , PerviousIndex->BaseOnTile, PerviousIndex->TowerOnTile));
+				Grid->SetGridDataReplicated_Implementation(FGRidData(GridDataRef));
 			}
 		}
 		Unit->SetIndexPosition(GridPosition);
@@ -56,10 +50,15 @@ void UGridInfo::setUnitIndexOnGrid(FIntPoint GridPosition, AUnit* Unit)
 		if(Unit->GetIndexPosition() != FIntPoint(-999,-999))
 		{
 
-			if(GridDataRef->Find(FIntPoint(0,0)) != nullptr)
+			if(GridDataRef.Find(FIntPoint(0,0)) != nullptr)
 			{
-				GridDataRef->Add(GridDataRef->Find(GridPosition)->TilePosition, FDC_TileData(GridDataRef->Find(GridPosition)->TilePosition, GridDataRef->Find(GridPosition)->TileType,
-					GridDataRef->Find(GridPosition)->TileTransform, GridDataRef->Find(GridPosition)->TileState, Unit, GridDataRef->Find(GridPosition)->BuildingOnTile, GridDataRef->Find(GridPosition)->BaseOnTile , GridDataRef->Find(GridPosition)->TowerOnTile));
+				
+				GridDataRef.Add(GridDataRef.Find(GridPosition)->TilePosition, FDC_TileData(GridDataRef.Find(GridPosition)->TilePosition, GridDataRef.Find(GridPosition)->TileType,
+					GridDataRef.Find(GridPosition)->TileTransform, GridDataRef.Find(GridPosition)->TileState, Unit, GridDataRef.Find(GridPosition)->BuildingOnTile, GridDataRef.Find(GridPosition)->BaseOnTile , GridDataRef.Find(GridPosition)->TowerOnTile));
+				
+				Grid->GridData.Add(GridDataRef.Find(GridPosition)->TilePosition, FDC_TileData(GridDataRef.Find(GridPosition)->TilePosition, GridDataRef.Find(GridPosition)->TileType,
+					GridDataRef.Find(GridPosition)->TileTransform, GridDataRef.Find(GridPosition)->TileState, Unit, GridDataRef.Find(GridPosition)->BuildingOnTile, GridDataRef.Find(GridPosition)->BaseOnTile , GridDataRef.Find(GridPosition)->TowerOnTile));			
+				Grid->SetGridDataReplicated_Implementation(FGRidData(GridDataRef));
 			}
 			else
 			{
@@ -87,16 +86,18 @@ void UGridInfo::SetBuildingOnGrid(FIntPoint GridPosition, ABuilding* Building)
 	{
 		return;
 	}
-
+	TMap<FIntPoint,FDC_TileData>* GridDataRef = Grid->GetGridData();
 	if(GridPosition != Building->GetGridPosition())
 	{
 		Building->SetGridPosition(GridPosition);
 		if(Building->GetGridPosition() != FIntPoint(-999,-999))
 		{
-			FDC_TileData* NewIndex = Grid->GetGridData()->Find(Building->GetGridPosition());
+			FDC_TileData* NewIndex = GridDataRef->Find(Building->GetGridPosition());
 			if(NewIndex != nullptr)
 			{
-				Grid->GetGridData()->Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, Building, NewIndex->BaseOnTile, NewIndex->TowerOnTile));
+				GridDataRef->Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, Building, NewIndex->BaseOnTile, NewIndex->TowerOnTile));
+				Grid->GridData.Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, Building, NewIndex->BaseOnTile, NewIndex->TowerOnTile));
+				Grid->SetGridDataReplicated(FGRidData(*GridDataRef));
 			}
 			
 		}
@@ -117,24 +118,19 @@ void UGridInfo::SetBaseOnGrid(FIntPoint GridPosition, ABase* Base)
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Grid is null"));
 		return;
 	}
+	TMap<FIntPoint,FDC_TileData>* GridDataRef = Grid->GetGridData();
 	if(GridPosition != Base->GetGridPosition())
 	{
-		FDC_TileData* PerviousIndex = Grid->GetGridData()->Find(Base->GetGridPosition());
 
-		if(PerviousIndex != nullptr)
-		{
-			if(PerviousIndex->BaseOnTile == Base)
-			{
-				Grid->GetGridData()->Add(PerviousIndex->TilePosition, FDC_TileData(PerviousIndex->TilePosition, PerviousIndex->TileType, PerviousIndex->TileTransform, PerviousIndex->TileState, PerviousIndex->UnitOnTile, PerviousIndex->BuildingOnTile, nullptr, PerviousIndex->TowerOnTile));
-			}
-		}
 		Base->SetGridPosition(GridPosition);
 		if(Base->GetGridPosition() != FIntPoint(-999,-999))
 		{
 			FDC_TileData* NewIndex = Grid->GetGridData()->Find(Base->GetGridPosition());
 			if(NewIndex != nullptr)
 			{
-				Grid->GetGridData()->Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, NewIndex->BuildingOnTile, Base, NewIndex->TowerOnTile));
+				GridDataRef->Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, NewIndex->BuildingOnTile, Base, NewIndex->TowerOnTile));
+				Grid->GridData.Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, NewIndex->BuildingOnTile, Base, NewIndex->TowerOnTile));
+				Grid->SetGridDataReplicated(FGRidData(*GridDataRef));
 			}
 		}
 	}
@@ -163,6 +159,8 @@ void UGridInfo::SetTowerOnGrid(FIntPoint GridPosition, ATower* Tower)
 			if(NewIndex)
 			{
 				Grid->GetGridData()->Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, NewIndex->BuildingOnTile, NewIndex->BaseOnTile, Tower));
+				Grid->GridData.Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, NewIndex->BuildingOnTile, NewIndex->BaseOnTile, Tower));
+				Grid->SetGridDataReplicated_Implementation(FGRidData(Grid->GridData));
 			}
 		}
 	}	
@@ -190,6 +188,5 @@ void UGridInfo::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 void UGridInfo::SetGrid(AGrid* GridRef)
 {
 	Grid = GridRef;
-	UE_LOG( LogTemp, Warning, TEXT("Grid Data : %d "),Grid->GridData.Num());
 }
 

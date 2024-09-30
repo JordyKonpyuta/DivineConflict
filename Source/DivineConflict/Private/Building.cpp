@@ -122,7 +122,7 @@ void ABuilding::BeginPlay()
 			
 			BuildingSpawnLocationRef->GridRef = Grid;
 		}
-		
+		UE_LOG(LogTemp, Warning, TEXT("Building : %d %d "), SpawnLocRef[0].X, SpawnLocRef[0].Y);
 		switch (BuildingList)
 		{
 		case EBuildingList::B_Gold:

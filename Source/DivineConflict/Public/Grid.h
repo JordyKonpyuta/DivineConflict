@@ -6,10 +6,11 @@
 #include "F_DC_TileData.h"
 #include "GameFramework/Actor.h"
 #include "InteractInterface.h"
+#include "Grid/FDC_GridData.h"
 #include "Grid.generated.h"
 
 
-
+class UFDC_GridData;
 class Ainstancedstaticmesh;
 class UGridPath;
 class UGridInfo;
@@ -78,15 +79,19 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere, Category = "GridElement", meta = (AllowPrivate))
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "GridElement", meta = (AllowPrivate))
 	TMap <FIntPoint, FDC_TileData> GridData;
 
+	UPROPERTY(EditAnywhere,Replicated, Category = "GridElement")
+	FGRidData GridDataReplicatedStruct;
+	
 	UPROPERTY(Blueprintable, EditAnywhere, Category = "GridElement")
 	FIntPoint GridSize = FIntPoint(10, 10);
 
 	UPROPERTY(Blueprintable, EditAnywhere, Category = "GridElement")
 	FVector TileSize = FVector(100, 100, 100);
-
+	
+	
 	UFUNCTION( Category = "GridElement")
 	bool IsTileWalkable(FIntPoint Index);
 
@@ -105,6 +110,16 @@ public:
 	int AddInstance(FIntPoint Index, FTransform3d Transform);
 
 	void UpdateColor(int I, FLinearColor InColor, float	Alpha);
+
+	
+	UFUNCTION(Server, Reliable)
+	void SetGridDataReplicated(FGRidData Data);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void SetGridDataReplicatedMulticast(FGRidData Data);
+
+	UFUNCTION()
+	FGRidData GetGridDataReplicated();
 	
 
 };

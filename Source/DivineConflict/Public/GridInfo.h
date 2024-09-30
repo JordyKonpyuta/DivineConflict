@@ -11,6 +11,7 @@ class AGrid;
 class AUnit;
 class ABuilding;
 class ABase;
+class UFDC_GridData;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DIVINECONFLICT_API UGridInfo : public UActorComponent

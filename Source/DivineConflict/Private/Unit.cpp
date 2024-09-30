@@ -19,13 +19,17 @@ AUnit::AUnit()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	SetReplicates(true);
+	
 	UnitMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Unit Mesh"));
 	SetRootComponent(UnitMesh);
 	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/tank_ange_pose.tank_ange_pose'")).Object);
 	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	UnitMesh->SetIsReplicated(true);
 
 	UnitName = EUnitName::Tank;
 
+	
 	
 	
 }
@@ -115,7 +119,7 @@ void AUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void AUnit::Move(TArray<FIntPoint> PathIn)
+void AUnit::Move_Implementation(const TArray<FIntPoint>& PathIn)
 {
 	bool bJustBecameGarrison = false;
 	Path.Empty();
@@ -134,12 +138,12 @@ void AUnit::Move(TArray<FIntPoint> PathIn)
 				if (Grid->GetGridData()->Find(index)->BuildingOnTile->GarrisonFull != true)
 				{
 					SetActorLocation(Grid->GetGridData()->Find(Path.Last())->BuildingOnTile->GetActorLocation());
-					Grid->GetGridData()->Find(Path.Last())->BuildingOnTile->UnitRef = this;
-					Grid->GetGridData()->Find(Path.Last())->BuildingOnTile->GarrisonFull = true;
+					Grid->GetGridDataReplicated().GridDateReplicted.Find(Path.Last())->BuildingOnTile->UnitRef = this;
+					Grid->GetGridDataReplicated().GridDateReplicted.Find(Path.Last())->BuildingOnTile->GarrisonFull = true;
 					Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
 					SetIsGarrison(true);
 					bJustBecameGarrison = true;
-					BuildingRef = Grid->GetGridData()->Find(Path.Last())->BuildingOnTile;
+					BuildingRef = Grid->GetGridDataReplicated().GridDateReplicted.Find(Path.Last())->BuildingOnTile;
 					if (PlayerControllerRef->PlayerStateRef != nullptr)
 					{
 						BuildingRef->SwitchOwner(PlayerControllerRef->PlayerStateRef);
@@ -148,7 +152,7 @@ void AUnit::Move(TArray<FIntPoint> PathIn)
 				}
 				else
 				{
-					if (this != Grid->GetGridData()->Find(index)->BuildingOnTile->UnitRef)
+					if (this != Grid->GetGridDataReplicated().GridDateReplicted.Find(index)->BuildingOnTile->UnitRef)
 					{
 						for(FIntPoint Superindex : Path)
 						{
@@ -176,6 +180,7 @@ void AUnit::Move(TArray<FIntPoint> PathIn)
 		}
 	}
 }
+
 
 void AUnit::AttackUnit(AUnit* UnitToAttack)
 {

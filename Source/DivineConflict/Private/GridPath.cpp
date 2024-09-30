@@ -158,7 +158,7 @@ TArray<FPathData> UGridPath::GetValidTileNeighbors(FIntPoint Index)
 {
 	//initialize the neighbors
 	TArray<FPathData> Ret;
-	
+
 	//get the Grid data for the index
 	FDC_TileData* TileData = Grid->GetGridData()->Find(Index);
 	
@@ -174,7 +174,8 @@ TArray<FPathData> UGridPath::GetValidTileNeighbors(FIntPoint Index)
 			continue;
 		}
 		//get the Grid data for the neighbor
-		FDC_TileData* NeighborTileData = Grid->GetGridData()->Find(Neighbor);
+
+		FDC_TileData* NeighborTileData = Grid->GetGridDataReplicated().GridDateReplicted.Find(Neighbor);
 		//check if the neighbor is walkable
 		if(!Grid->IsTileTypeWalkable(NeighborTileData->TileType))
 		{

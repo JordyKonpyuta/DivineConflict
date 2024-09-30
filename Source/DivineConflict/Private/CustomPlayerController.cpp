@@ -162,13 +162,13 @@ void ACustomPlayerController::ControllerInteraction()
 			case EDC_ActionPlayer::None:
 				if(Grid->GetGridData()->Find(PlayerPositionInGrid) != nullptr)
 				{
-					if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile != nullptr && !IsInActiveTurn) // Building, Passive Turn
+					if (Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->BuildingOnTile != nullptr && !IsInActiveTurn) // Building, Passive Turn
 					{
-						if ((Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Hell && IsHell == true)
-							|| (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Heaven && IsHell == false)
+						if ((Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Hell && IsHell == true)
+							|| (Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Heaven && IsHell == false)
 							)
 						{
-							BuildingRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile;
+							BuildingRef = Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->BuildingOnTile;
 							for (FIntPoint BuildingIndex : BuildingRef->SpawnLocRef)
 							{
 								Grid->GridVisual->addStateToTile(BuildingIndex, EDC_TileState::Selected);
@@ -177,31 +177,32 @@ void ACustomPlayerController::ControllerInteraction()
 							PlayerAction = EDC_ActionPlayer::SelectBuilding;
 						}
 					}
-					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile != nullptr && IsInActiveTurn) // Building, Active Turn
+					else if (Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->BuildingOnTile != nullptr && IsInActiveTurn) // Building, Active Turn
 					{
-						if (((Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Hell && PlayerTeam == EPlayer::P_Hell)
-							|| (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Heaven && PlayerTeam == EPlayer::P_Heaven))
-							&& Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->GarrisonFull)
+						if (((Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Hell && PlayerTeam == EPlayer::P_Hell)
+							|| (Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Heaven && PlayerTeam == EPlayer::P_Heaven))
+							&& Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->BuildingOnTile->GarrisonFull)
 						{
-							UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef;
+							UnitRef = Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef;
 							CameraPlayerRef->SetCustomPlayerController(this);
-							IInteractInterface::Execute_Interact(Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef, this);
+							IInteractInterface::Execute_Interact(Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef, this);
 							DisplayWidget();
 						}
 					}
-					else if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
+					else if(Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
 					{
-						if(!Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetIsSelected() && IsInActiveTurn && Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() == PlayerTeam) // Unit
+						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Unit"));
+						if(!Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->UnitOnTile->GetIsSelected() && IsInActiveTurn/* && Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() == PlayerTeam*/) // Unit
 						{
-							UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile;
+							UnitRef = Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->UnitOnTile;
 							CameraPlayerRef->SetCustomPlayerController(this);
-							IInteractInterface::Execute_Interact(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile, this);
+							IInteractInterface::Execute_Interact(Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->UnitOnTile, this);
 							DisplayWidget();
 						}
 					}
-					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile != nullptr && !IsInActiveTurn) // Base
+					else if (Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->BaseOnTile != nullptr && !IsInActiveTurn) // Base
 					{
-						if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile->GetIsHell() == IsHell)
+						if (Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->BaseOnTile->GetIsHell() == IsHell)
 						{
 							{
 								BaseRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile;
@@ -211,7 +212,7 @@ void ACustomPlayerController::ControllerInteraction()
 							}
 						}
 					}
-					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile != nullptr && IsInActiveTurn)
+					else if (Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->TowerOnTile != nullptr && IsInActiveTurn)
 					{
 						TowerRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile;
 						TowerRef->IsSelected = true;
@@ -225,7 +226,7 @@ void ACustomPlayerController::ControllerInteraction()
 					{
 						Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Reachable);
 					}
-					UnitRef->Move(CameraPlayerRef->Path);
+					UnitRef->Move_Implementation(CameraPlayerRef->Path);
 					PathReachable.Empty();
 					CameraPlayerRef->IsMovingUnit = false;
 					CameraPlayerRef->Path.Empty();
