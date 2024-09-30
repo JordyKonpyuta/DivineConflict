@@ -38,7 +38,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "GridElement")
 	UGridInfo* GridInfo = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "GridElement")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GridElement")
 	UGridVisual * GridVisual = nullptr;
 	
 	
@@ -78,10 +78,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere, Category = "GridElement", meta = (AllowPrivate))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GridElement", meta = (AllowPrivate))
 	TMap <FIntPoint, FDC_TileData> GridData;
 
-	UPROPERTY(Blueprintable, EditAnywhere, Category = "GridElement")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GridElement")
 	FIntPoint GridSize = FIntPoint(10, 10);
 
 	UPROPERTY(Blueprintable, EditAnywhere, Category = "GridElement")
@@ -91,9 +91,9 @@ public:
 	bool IsTileWalkable(FIntPoint Index);
 
 	bool IsTileTypeWalkable(EDC_TileType Type);
-
-	TMap <FIntPoint, FDC_TileData>* GetGridData();
 	
+	TMap <FIntPoint, FDC_TileData>* GetGridData();
+
 	void SetGridData(TMap <FIntPoint, FDC_TileData> Data);
 
 	FIntPoint ConvertLocationToIndex(FVector3d Location);

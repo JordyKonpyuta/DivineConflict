@@ -63,7 +63,7 @@ public:
 	UPROPERTY( EditAnywhere, Category = "GridElement")
 	FIntPoint TilePosition;
 	
-	UPROPERTY(EditAnywhere, Category = "GridElement")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GridElement")
 	EDC_TileType TileType;
 	
 	UPROPERTY( EditAnywhere, Category = "GridElement")
@@ -72,15 +72,15 @@ public:
 	UPROPERTY( EditAnywhere, Category = "GridElement")
 	TArray<EDC_TileState> TileState;
 	
-	UPROPERTY( EditAnywhere, Category = "GridElement")
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "GridElement")
 	AUnit* UnitOnTile = nullptr;
 	
-	UPROPERTY( EditAnywhere, Category = "GridElement")
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "GridElement")
 	ABuilding* BuildingOnTile = nullptr;
 
-	UPROPERTY( EditAnywhere, Category = "GridElement")
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "GridElement")
 	ABase* BaseOnTile = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "GridElement")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GridElement")
 	ATower* TowerOnTile = nullptr;
 };
