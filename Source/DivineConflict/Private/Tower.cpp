@@ -7,6 +7,7 @@
 #include "GridInfo.h"
 #include "GridPath.h"
 #include "Unit.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ATower::ATower()
@@ -75,9 +76,30 @@ void ATower::SetIsHell(bool NewIsHell)
 	IsHell = NewIsHell;
 }
 
+EPlayer ATower::GetPlayerOwner()
+{
+	return PlayerOwner;
+}
+
+void ATower::SetPlayerOwner(EPlayer NewPlayerOwner)
+{
+	PlayerOwner = NewPlayerOwner;
+}
+
+bool ATower::GetCanAttack()
+{
+	return CanAttack;
+}
+
+void ATower::SetCanAttack(bool NewCanAttack)
+{
+	CanAttack = NewCanAttack;
+}
+
 void ATower::AttackUnit(AUnit* UnitToAttack)
 {
 	UnitToAttack->SetCurrentHealth(UnitToAttack->GetCurrentHealth() - Attack);
+	SetCanAttack(false);
 }
 
 void ATower::UpdateVisuals()

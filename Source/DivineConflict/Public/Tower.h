@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EnumsList.h"
 #include "Grid.h"
 #include "GridVisual.h"
-#include "Kismet/GameplayStatics.h"
 #include "GameFramework/Actor.h"
 #include "Tower.generated.h"
 
@@ -47,6 +47,12 @@ protected:
 	int Attack = 10;
 	UPROPERTY()
 	bool IsHell = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Bool")
+	bool CanAttack = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enum")
+	EPlayer PlayerOwner = EPlayer::P_Neutral;
 	
 
 	UPROPERTY()
@@ -67,6 +73,14 @@ public:
 	bool GetIsHell();
 	UFUNCTION(BlueprintCallable)
 	void SetIsHell(bool NewIsHell);
+	UFUNCTION(BlueprintCallable)
+	EPlayer GetPlayerOwner();
+	UFUNCTION(BlueprintCallable)
+	void SetPlayerOwner(EPlayer NewPlayerOwner);
+	UFUNCTION(BlueprintCallable)
+	bool GetCanAttack();
+	UFUNCTION(BlueprintCallable)
+	void SetCanAttack(bool NewCanAttack);
 
 	UFUNCTION(BlueprintCallable)
 	void AttackUnit(AUnit* UnitToAttack);
