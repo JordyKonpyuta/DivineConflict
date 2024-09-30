@@ -19,7 +19,7 @@ void AUnit_Child_Leader::BeginPlay()
 		SetMaxHealth(20);
 	if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
 		SetCurrentHealth(MaxHealth);
-	if (PM == 3)
+	if (PM == 0)
 		SetPM(3);
 
 	UnitName = EUnitName::Leader;

@@ -21,7 +21,7 @@ void AUnit_Child_Mage::BeginPlay()
 		SetMaxHealth(10);
 	if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
 		SetCurrentHealth(MaxHealth);
-	if (PM == 3)
+	if (PM == 0)
 		SetPM(4);
 
 	UnitName = EUnitName::Mage;

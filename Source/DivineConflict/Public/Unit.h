@@ -116,7 +116,7 @@ protected:
 	FString Name = "";
 
 	UPROPERTY()
-	int PM = 3;
+	int PM = 0;
 
 	UPROPERTY()
 	FIntPoint IndexPosition = FIntPoint(-999, -999);

@@ -16,7 +16,7 @@ void AUnit_Child_Warrior::BeginPlay()
 		SetMaxHealth(11);
 	if (CurrentHealth == 0 or CurrentHealth > MaxHealth )
 		SetCurrentHealth(MaxHealth);
-	if (PM == 3)
+	if (PM == 0)
 		SetPM(5);
 
 	UnitName = EUnitName::Warrior;
