@@ -107,6 +107,9 @@ protected:
 	int TotalDamagesInflicted = 0;
 
 	UPROPERTY()
+	bool IsGarrison = false;
+
+	UPROPERTY()
 	FString Name = "";
 
 	UPROPERTY()
@@ -143,6 +146,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void Special();
 
+	UFUNCTION(BlueprintCallable)
+	bool GetIsGarrison();
+
+	UFUNCTION(BlueprintCallable)
+	void SetIsGarrison(bool bG);
 	
 	virtual void SpecialUnit(AUnit* UnitToAttack);
 

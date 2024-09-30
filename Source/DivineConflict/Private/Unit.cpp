@@ -234,6 +234,16 @@ void AUnit::Special()
 	
 }
 
+bool AUnit::GetIsGarrison()
+{
+	return IsGarrison;
+}
+
+void AUnit::SetIsGarrison(bool bG)
+{
+	IsGarrison = bG;
+}
+
 void AUnit::SpecialUnit(AUnit* UnitToAttack)
 {
 }
