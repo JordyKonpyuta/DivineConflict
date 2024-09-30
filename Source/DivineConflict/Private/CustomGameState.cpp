@@ -19,13 +19,13 @@ void ACustomGameState::AssignPlayerTurns()
 					
 					PlayerState->bIsActiveTurn = true;
 					PlayerState->OnRep_bIsActiveTurn();
-					PlayerState->PlayerTeam = EPlayer::P_Heaven;
+					PlayerState->PlayerTeam = EPlayer::P_Hell;
 				}
 				else
 				{
 					PlayerState->bIsActiveTurn = false;
 					PlayerState->OnRep_bIsActiveTurn();
-					PlayerState->PlayerTeam = EPlayer::P_Hell;
+					PlayerState->PlayerTeam = EPlayer::P_Heaven;
 				}
 			}
 		}

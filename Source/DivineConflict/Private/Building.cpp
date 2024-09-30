@@ -30,7 +30,10 @@ ABuilding::ABuilding()
     StaticMeshPlane->SetHiddenInGame(true);
 	StaticMeshPlane->SetupAttachment(RootComponent);
 	StaticMeshBuilding->SetupAttachment(RootComponent);
-	
+
+	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture_DEBUG/M_NeutralPlayer.M_NeutralPlayer'")).Object);
+	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HeavenPlayer.Mi_HeavenPlayer'")).Object);
+	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HellPlayer.Mi_HellPlayer'")).Object);
 }
 
 bool ABuilding::Interact_Implementation(ACustomPlayerController* PlayerController)
@@ -43,7 +46,6 @@ bool ABuilding::Interact_Implementation(ACustomPlayerController* PlayerControlle
 void ABuilding::BeginPlay()
 {
 	Super::BeginPlay();
-
 	
 	switch (BuildingList) {
 	case EBuildingList::B_Wood:
@@ -142,6 +144,7 @@ void ABuilding::BeginPlay()
 		UnitRef->SetIsGarrison(true);
 		UnitRef->SetBuildingRef(this);
 		UnitRef->SetActorLocation(GetActorLocation());
+		StaticMeshBuilding->SetMaterial(0, AllMaterials[0]);
 		
 	}
 }
@@ -151,25 +154,39 @@ void ABuilding::SwitchOwner(ACustomPlayerState* NewOwner)
 	switch (BuildingList)
 	{
 	case EBuildingList::B_Wood:
-		OwnerPlayerState->WoodBuildingOwned -= 1;
+		if (OwnerPlayerState){OwnerPlayerState->WoodBuildingOwned -= 1;}
 		NewOwner->WoodBuildingOwned += 1;
 		break;
 	case EBuildingList::B_Stone:
-		OwnerPlayerState->StoneBuildingOwned -= 1;
+		if (OwnerPlayerState){OwnerPlayerState->StoneBuildingOwned -= 1;}
 		NewOwner->StoneBuildingOwned += 1;
 		break;
 	case EBuildingList::B_Gold:
-		OwnerPlayerState->GoldBuildingOwned -= 1;
+		if (OwnerPlayerState){OwnerPlayerState->GoldBuildingOwned -= 1;}
 		NewOwner->GoldBuildingOwned += 1;
 		break;
 	case EBuildingList::B_AP:
-		OwnerPlayerState->GotCentralBuilding = false;
+		if (OwnerPlayerState){OwnerPlayerState->GotCentralBuilding = false;}
 		NewOwner->GotCentralBuilding = true;
 		break;
 	default:
 		break;
 	}
 	
+	PlayerOwner = NewOwner->PlayerTeam;
+	
+	switch (PlayerOwner)
+	{
+	case EPlayer::P_Hell:
+	StaticMeshBuilding->SetMaterial(0, AllMaterials[2]);
+		break;
+	case EPlayer::P_Heaven:
+	StaticMeshBuilding->SetMaterial(0, AllMaterials[1]);
+		break;
+	case EPlayer::P_Neutral:
+	StaticMeshBuilding->SetMaterial(0, AllMaterials[0]);
+		break;
+	}
 	OwnerPlayerState = NewOwner;
 }
 

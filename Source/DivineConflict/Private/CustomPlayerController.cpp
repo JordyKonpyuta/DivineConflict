@@ -42,6 +42,7 @@ void ACustomPlayerController::BeginPlay()
 	}
 
 	setGrid();
+	PlayerStateRef = GetPlayerState<ACustomPlayerState>();
 }
 
 void ACustomPlayerController::SetupInputComponent()
@@ -178,8 +179,8 @@ void ACustomPlayerController::ControllerInteraction()
 					}
 					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile != nullptr && IsInActiveTurn) // Building, Active Turn
 					{
-						if (((Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Hell && IsHell == true)
-							|| (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Heaven && IsHell == false))
+						if (((Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Hell && PlayerTeam == EPlayer::P_Hell)
+							|| (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Heaven && PlayerTeam == EPlayer::P_Heaven))
 							&& Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->GarrisonFull)
 						{
 							UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef;

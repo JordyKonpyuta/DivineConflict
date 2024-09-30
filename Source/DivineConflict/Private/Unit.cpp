@@ -140,6 +140,10 @@ void AUnit::Move(TArray<FIntPoint> PathIn)
 					SetIsGarrison(true);
 					bJustBecameGarrison = true;
 					BuildingRef = Grid->GetGridData()->Find(Path.Last())->BuildingOnTile;
+					if (PlayerControllerRef->PlayerStateRef != nullptr)
+					{
+						BuildingRef->SwitchOwner(PlayerControllerRef->PlayerStateRef);
+					}
 					break;
 				}
 				else

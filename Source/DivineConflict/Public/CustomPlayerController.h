@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CustomPlayerState.h"
 #include "EnumsList.h"
 #include "GameFramework/PlayerController.h"
 #include "InteractInterface.h"
@@ -49,6 +50,9 @@ public:
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
 	ACustomGameState* GameStateRef;
+
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
+	ACustomPlayerState* PlayerStateRef;
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
 	int CurrentPA = 10;

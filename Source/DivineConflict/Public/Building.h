@@ -67,6 +67,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitSelection")
 	AUnit* UnitRef = nullptr;
+
+	UPROPERTY()
+	TArray<UMaterialInterface*> AllMaterials;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -87,11 +90,11 @@ public:
 	void SetGridPosition(FIntPoint GridPosition);
 
 	EBuildingList GetBuildingList();
-	
-protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Player")
 	void SwitchOwner(ACustomPlayerState* NewOwner);
+	
+protected:
 
 	UFUNCTION(Blueprintable, Category = "Player")
 	bool IsPlayerPassive(ACustomPlayerController* PlayerController);
