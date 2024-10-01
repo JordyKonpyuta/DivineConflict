@@ -25,8 +25,10 @@ AUnit::AUnit()
 	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 
 	UnitName = EUnitName::Tank;
-
 	
+	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture_DEBUG/M_NeutralPlayer.M_NeutralPlayer'")).Object);
+	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HeavenPlayer.Mi_HeavenPlayer'")).Object);
+	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HellPlayer.Mi_HellPlayer'")).Object);
 	
 }
 
@@ -66,6 +68,20 @@ void AUnit::BeginPlay()
 		}
 
 		Grid->GridInfo->AddUnitInGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+
+		
+		switch (PlayerOwner)
+		{
+		case EPlayer::P_Hell:
+			UnitMesh->SetMaterial(0, AllMaterials[2]);
+			break;
+		case EPlayer::P_Heaven:
+			UnitMesh->SetMaterial(0, AllMaterials[1]);
+			break;
+		case EPlayer::P_Neutral:
+			UnitMesh->SetMaterial(0, AllMaterials[0]);
+			break;
+		}
 		
 	}
 	else 
