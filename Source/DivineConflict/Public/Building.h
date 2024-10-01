@@ -32,6 +32,12 @@ public:
 	UPROPERTY(Blueprintable)
 	ACustomPlayerController* PlayerControllerRef;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Player")
+	ACustomPlayerState* OwnerPlayerState;
+
+	UPROPERTY()
+	ACustomGameState* GameStateRef;
+
 	UPROPERTY(Blueprintable, EditAnywhere, BlueprintReadWrite, Category = "Building")
 	UStaticMeshComponent* StaticMeshBuilding;
 
@@ -43,9 +49,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Player")
 	EPlayer PlayerOwner = EPlayer::P_Neutral;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Player")
-	ACustomPlayerState* OwnerPlayerState;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player")
 	AGrid* Grid;
@@ -104,5 +107,8 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Unit")
 	void removeUnitRef();
+
+	UFUNCTION()
+	void OnTurnChanged();
 	
 };

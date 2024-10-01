@@ -28,8 +28,10 @@ AUnit::AUnit()
 	UnitMesh->SetIsReplicated(true);
 
 	UnitName = EUnitName::Tank;
-
 	
+	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture_DEBUG/M_NeutralPlayer.M_NeutralPlayer'")).Object);
+	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HeavenPlayer.Mi_HeavenPlayer'")).Object);
+	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HellPlayer.Mi_HellPlayer'")).Object);
 	
 	
 }
@@ -69,10 +71,29 @@ void AUnit::BeginPlay()
 			return;
 		}
 
+
 		//Grid->GridInfo->AddUnitInGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
 		//Timer 2s
 		FTimerHandle TimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AUnit::Server_AddOnGrid_Implementation, 2.0f, false);
+
+		Grid->GridInfo->AddUnitInGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+
+		
+		switch (PlayerOwner)
+		{
+		case EPlayer::P_Hell:
+			UnitMesh->SetMaterial(0, AllMaterials[2]);
+			break;
+		case EPlayer::P_Heaven:
+			UnitMesh->SetMaterial(0, AllMaterials[1]);
+			break;
+		case EPlayer::P_Neutral:
+			UnitMesh->SetMaterial(0, AllMaterials[0]);
+			break;
+		}
+		
+
 	}
 	else 
     {
@@ -146,13 +167,15 @@ void AUnit::Move_Implementation(const TArray<FIntPoint>& PathIn)
 			{
 				if (Grid->GetGridData()->Find(index)->BuildingOnTile->GarrisonFull != true)
 				{
-					SetActorLocation(Grid->GetGridData()->Find(Path.Last())->BuildingOnTile->GetActorLocation());
-					Grid->GetGridDataReplicated().GridDateReplicted.Find(Path.Last())->BuildingOnTile->UnitRef = this;
-					Grid->GetGridDataReplicated().GridDateReplicted.Find(Path.Last())->BuildingOnTile->GarrisonFull = true;
+
+					SetActorLocation(Grid->GetGridData()->Find(index)->BuildingOnTile->GetActorLocation());
+					Grid->GetGridData()->Find(index)->BuildingOnTile->UnitRef = this;
+					Grid->GetGridData()->Find(index)->BuildingOnTile->GarrisonFull = true;
+
 					Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
 					SetIsGarrison(true);
 					bJustBecameGarrison = true;
-					BuildingRef = Grid->GetGridData()->Find(Path.Last())->BuildingOnTile;
+					BuildingRef = Grid->GetGridData()->Find(index)->BuildingOnTile;
 					if (PlayerControllerRef->PlayerStateRef != nullptr)
 					{
 						BuildingRef->SwitchOwner(PlayerControllerRef->PlayerStateRef);
@@ -185,6 +208,7 @@ void AUnit::Move_Implementation(const TArray<FIntPoint>& PathIn)
 		{
 			BuildingRef->UnitRef = nullptr;
 			BuildingRef->GarrisonFull = false;
+			IsGarrison = false;
 			BuildingRef = nullptr;
 		}
 	}
@@ -225,10 +249,15 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 		Path.Add(UnitToAttack->GetIndexPosition());
 		Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
 		PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
+		if (UnitToAttack->BuildingRef)
+		{
+			UnitToAttack->BuildingRef->UnitRef = nullptr;
+			UnitToAttack->BuildingRef->GarrisonFull = false;
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Unit Got Killed and removed")));
+		}
 		GetWorld()->DestroyActor(UnitToAttack);
 		if(GetCurrentHealth() < 1)
 		{
-
 			Grid->GridInfo->RemoveUnitInGrid(this);
 			Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
 			PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
@@ -280,6 +309,7 @@ ABuilding* AUnit::GetBuildingRef()
 
 void AUnit::SetBuildingRef(ABuilding* Building)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 150.f, FColor::Turquoise, FString::Printf(TEXT("BuildingRefGotSet")));
 	BuildingRef = Building;
 }
 

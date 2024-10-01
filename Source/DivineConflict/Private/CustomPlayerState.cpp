@@ -125,4 +125,8 @@ void ACustomPlayerState::NewTurnBegin()
 	ChangeWoodPoints(5 + (WoodBuildingOwned * 15), true);
 	ChangeStonePoints(4 + (StoneBuildingOwned * 15), true);
 	ChangeGoldPoints(2 + (GoldBuildingOwned * 15), true);
+	if (PlayerControllerRef)
+	{
+		PlayerControllerRef->CurrentPA = MaxActionPoints;
+	}
 }
