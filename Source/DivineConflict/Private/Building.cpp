@@ -4,6 +4,7 @@
 #include "Building.h"
 
 #include "BuildingSpawnLocation.h"
+#include "CustomGameState.h"
 #include "CustomPlayerController.h"
 #include "Grid.h"
 #include "GridInfo.h"
@@ -34,6 +35,8 @@ ABuilding::ABuilding()
 	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture_DEBUG/M_NeutralPlayer.M_NeutralPlayer'")).Object);
 	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HeavenPlayer.Mi_HeavenPlayer'")).Object);
 	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HellPlayer.Mi_HellPlayer'")).Object);
+	
+
 }
 
 bool ABuilding::Interact_Implementation(ACustomPlayerController* PlayerController)
@@ -145,7 +148,11 @@ void ABuilding::BeginPlay()
 		UnitRef->SetBuildingRef(this);
 		UnitRef->SetActorLocation(GetActorLocation());
 		StaticMeshBuilding->SetMaterial(0, AllMaterials[0]);
-		
+
+		GameStateRef = Cast<ACustomGameState>(GetWorld()->GetGameState());
+	
+		GameStateRef->OnTurnSwitchDelegate.AddUniqueDynamic(this,
+			&ABuilding::OnTurnChanged);
 	}
 }
 
@@ -221,6 +228,24 @@ void ABuilding::removeUnitRef()
 {
 	UnitRef = nullptr;
 	GarrisonFull = false;
+}
+
+void ABuilding::OnTurnChanged()
+{
+	if (UnitRef && OwnerPlayerState)
+	{
+		if (OwnerPlayerState->bIsActiveTurn == false)
+		{
+			if (UnitRef->GetCurrentHealth() + 3 > UnitRef->GetMaxHealth())
+			{
+				UnitRef->SetCurrentHealth(UnitRef->GetMaxHealth());
+			}
+			else
+			{
+				UnitRef->SetCurrentHealth(UnitRef->GetCurrentHealth() + 3);
+			}
+		}
+	}
 }
 
 

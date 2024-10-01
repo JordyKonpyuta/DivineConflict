@@ -64,6 +64,7 @@ void ACustomGameState::SwitchPlayerTurn()
 		}
 			
 	}
+	OnTurnSwitchDelegate.Broadcast();
 	
 	
 	/*

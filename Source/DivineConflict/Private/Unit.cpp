@@ -149,13 +149,13 @@ void AUnit::Move(TArray<FIntPoint> PathIn)
 			{
 				if (Grid->GetGridData()->Find(index)->BuildingOnTile->GarrisonFull != true)
 				{
-					SetActorLocation(Grid->GetGridData()->Find(Path.Last())->BuildingOnTile->GetActorLocation());
-					Grid->GetGridData()->Find(Path.Last())->BuildingOnTile->UnitRef = this;
-					Grid->GetGridData()->Find(Path.Last())->BuildingOnTile->GarrisonFull = true;
+					SetActorLocation(Grid->GetGridData()->Find(index)->BuildingOnTile->GetActorLocation());
+					Grid->GetGridData()->Find(index)->BuildingOnTile->UnitRef = this;
+					Grid->GetGridData()->Find(index)->BuildingOnTile->GarrisonFull = true;
 					Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
 					SetIsGarrison(true);
 					bJustBecameGarrison = true;
-					BuildingRef = Grid->GetGridData()->Find(Path.Last())->BuildingOnTile;
+					BuildingRef = Grid->GetGridData()->Find(index)->BuildingOnTile;
 					if (PlayerControllerRef->PlayerStateRef != nullptr)
 					{
 						BuildingRef->SwitchOwner(PlayerControllerRef->PlayerStateRef);
@@ -188,6 +188,7 @@ void AUnit::Move(TArray<FIntPoint> PathIn)
 		{
 			BuildingRef->UnitRef = nullptr;
 			BuildingRef->GarrisonFull = false;
+			IsGarrison = false;
 			BuildingRef = nullptr;
 		}
 	}
