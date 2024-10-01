@@ -85,7 +85,7 @@ public:
 	ATower* TowerOnTile = nullptr;
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FGRidData
 {
 	GENERATED_BODY()

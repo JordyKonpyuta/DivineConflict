@@ -137,7 +137,7 @@ void AGrid::SpawnGrid()
 
 				
 				GridData.Add(TileIndex, TileData);
-				SetGridDataReplicated(FGRidData(GridData));
+				//SetGridDataReplicated(FGRidData(GridData));
 	            AddInstance(FIntPoint(X, Y), FTransform3d(FVector(X * 100, Y * 100, HitResult.ImpactPoint.Z)));
 
 		
@@ -263,8 +263,7 @@ void AGrid::UpdateColor(int I, FLinearColor InColor, float	Alpha)
 
 void AGrid::SetGridDataReplicated_Implementation(FGRidData Data)
 {
-	GridDataReplicatedStruct = Data;
-	SetGridDataReplicatedMulticast_Implementation(Data);
+	SetGridDataReplicatedMulticast(Data);
 
 	//print Grid Data
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Grid Data"));
@@ -275,6 +274,7 @@ void AGrid::SetGridDataReplicated_Implementation(FGRidData Data)
 
 void AGrid::SetGridDataReplicatedMulticast_Implementation(FGRidData Data)
 {
+	GEngine->AddOnScreenDebugMessage( -1, 5.f, FColor::Cyan, TEXT("Grid Data"));
 	GridDataReplicatedStruct = Data;
 }
 

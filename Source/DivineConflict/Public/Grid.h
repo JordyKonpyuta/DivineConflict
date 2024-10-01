@@ -82,10 +82,10 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "GridElement", meta = (AllowPrivate))
 	TMap <FIntPoint, FDC_TileData> GridData;
 
-	UPROPERTY(EditAnywhere,Replicated, Category = "GridElement")
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated, Category = "GridElement")
 	FGRidData GridDataReplicatedStruct;
 	
-	UPROPERTY(Blueprintable, EditAnywhere, Category = "GridElement")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GridElement")
 	FIntPoint GridSize = FIntPoint(10, 10);
 
 	UPROPERTY(Blueprintable, EditAnywhere, Category = "GridElement")

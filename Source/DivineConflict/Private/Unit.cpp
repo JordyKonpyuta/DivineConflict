@@ -69,8 +69,10 @@ void AUnit::BeginPlay()
 			return;
 		}
 
-		Grid->GridInfo->AddUnitInGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
-		
+		//Grid->GridInfo->AddUnitInGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+		//Timer 2s
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AUnit::Server_AddOnGrid_Implementation, 2.0f, false);
 	}
 	else 
     {
@@ -119,8 +121,15 @@ void AUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+void AUnit::Server_AddOnGrid_Implementation()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Unit Add on grid"));
+	Grid->GridInfo->AddUnitInGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+}
+
 void AUnit::Move_Implementation(const TArray<FIntPoint>& PathIn)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit moved"));
 	bool bJustBecameGarrison = false;
 	Path.Empty();
 	Path = PathIn;
@@ -143,7 +152,7 @@ void AUnit::Move_Implementation(const TArray<FIntPoint>& PathIn)
 					Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
 					SetIsGarrison(true);
 					bJustBecameGarrison = true;
-					BuildingRef = Grid->GetGridDataReplicated().GridDateReplicted.Find(Path.Last())->BuildingOnTile;
+					BuildingRef = Grid->GetGridData()->Find(Path.Last())->BuildingOnTile;
 					if (PlayerControllerRef->PlayerStateRef != nullptr)
 					{
 						BuildingRef->SwitchOwner(PlayerControllerRef->PlayerStateRef);
@@ -170,7 +179,7 @@ void AUnit::Move_Implementation(const TArray<FIntPoint>& PathIn)
 		
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit moved"));
 		
-		Grid->GridInfo->setUnitIndexOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()),this);
+		Grid->GridInfo->Multi_setUnitIndexOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()),this);
 
 		if (IsGarrison && !bJustBecameGarrison)
 		{

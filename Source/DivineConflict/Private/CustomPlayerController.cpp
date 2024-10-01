@@ -160,6 +160,7 @@ void ACustomPlayerController::ControllerInteraction()
 			switch (PlayerAction)
 			{
 			case EDC_ActionPlayer::None:
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("None"));
 				if(Grid->GetGridData()->Find(PlayerPositionInGrid) != nullptr)
 				{
 					if (Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->BuildingOnTile != nullptr && !IsInActiveTurn) // Building, Passive Turn
@@ -189,15 +190,20 @@ void ACustomPlayerController::ControllerInteraction()
 							DisplayWidget();
 						}
 					}
-					else if(Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
+					else if(Grid->GridData.Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
 					{
 						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Unit"));
-						if(!Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->UnitOnTile->GetIsSelected() && IsInActiveTurn/* && Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() == PlayerTeam*/) // Unit
+						if(!Grid->GridData.Find(PlayerPositionInGrid)->UnitOnTile->GetIsSelected() /*&& IsInActiveTurn/* && Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() == PlayerTeam*/) // Unit
 						{
-							UnitRef = Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->UnitOnTile;
+							UE_LOG( LogTemp, Warning, TEXT("Unit Selected") );
+							UnitRef = Grid->GridData.Find(PlayerPositionInGrid)->UnitOnTile;
+							UE_LOG( LogTemp, Warning, TEXT("Unit Selected") );
 							CameraPlayerRef->SetCustomPlayerController(this);
-							IInteractInterface::Execute_Interact(Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->UnitOnTile, this);
+							UE_LOG( LogTemp, Warning, TEXT("Unit Selected") );
+							IInteractInterface::Execute_Interact(Grid->GridData.Find(PlayerPositionInGrid)->UnitOnTile, this);
+							UE_LOG( LogTemp, Warning, TEXT("Unit Selected") );
 							DisplayWidget();
+							UE_LOG( LogTemp, Warning, TEXT("Unit Selected") );
 						}
 					}
 					else if (Grid->GetGridDataReplicated().GridDateReplicted.Find(PlayerPositionInGrid)->BaseOnTile != nullptr && !IsInActiveTurn) // Base
@@ -226,12 +232,13 @@ void ACustomPlayerController::ControllerInteraction()
 					{
 						Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Reachable);
 					}
-					UnitRef->Move_Implementation(CameraPlayerRef->Path);
+					UnitRef->SetIsSelected(false);
+					ServerMoveUnit(CameraPlayerRef->Path,UnitRef);
 					PathReachable.Empty();
 					CameraPlayerRef->IsMovingUnit = false;
 					CameraPlayerRef->Path.Empty();
-					UnitRef->SetIsSelected(false);
-					UnitRef = nullptr;
+					
+					
 					PlayerAction = EDC_ActionPlayer::None;
 				break;
 			case EDC_ActionPlayer::AttackUnit:
@@ -430,6 +437,18 @@ bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnCh
 	}
 	return false;
 		
+}
+
+void ACustomPlayerController::ServerMoveUnit_Implementation(const TArray<FIntPoint> &PathToMove, const AUnit* UnitRefServer)
+{
+	AUnit* RefUnit = const_cast<AUnit*>(UnitRefServer);
+	
+	if(UnitRefServer)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("ServerMoveUnit"));
+		RefUnit->Move(PathToMove);
+		UnitRef = nullptr;
+	}
 }
 
 

@@ -27,8 +27,11 @@ public:
 	UFUNCTION( Category = "GridElement",CallInEditor)
 	void AddUnitInGrid(FIntPoint GridPosition, AUnit* Unit);
 
-	UFUNCTION( Category = "GridElement",CallInEditor)
-	void setUnitIndexOnGrid(FIntPoint GridPosition, AUnit *Unit);
+	UFUNCTION(NetMulticast,Reliable, Category = "GridElement",CallInEditor)
+	void Multi_setUnitIndexOnGrid(const FIntPoint GridPosition, const AUnit* Unit);
+
+	UFUNCTION(Server,Reliable, Category = "GridElement")
+	void Server_setUnitIndexOnGrid(const FIntPoint GridPosition, const AUnit* Unit);
 
 	UFUNCTION( Category = "GridElement",CallInEditor)
 	void RemoveUnitInGrid(AUnit* Unit);

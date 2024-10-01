@@ -185,4 +185,7 @@ public:
 	UFUNCTION(Blueprintable)
 	bool SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen);
 
+	UFUNCTION(Server, Reliable)
+	void ServerMoveUnit(const TArray<FIntPoint> &PathToMove , const AUnit* UnitToMove);
+
 };
