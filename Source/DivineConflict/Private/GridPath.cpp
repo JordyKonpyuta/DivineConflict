@@ -335,7 +335,6 @@ TArray<FIntPoint> UGridPath::NewFindPath(FIntPoint Start, ACustomPlayerControlle
 					)
 				{
 					AllMoveCases += CPC->Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile->SpawnLocRef;
-					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("BOP"));
 				}
 				else if (AllMoveCases.Find(NeighbourToCheck)
 					&& Grid->GridPath->IsValidHeigh(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck))

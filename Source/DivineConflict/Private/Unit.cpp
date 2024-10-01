@@ -230,7 +230,12 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 		GetWorld()->DestroyActor(UnitToAttack);
 		if(GetCurrentHealth() < 1)
 		{
-
+			if (UnitToAttack->BuildingRef)
+			{
+				UnitToAttack->BuildingRef->UnitRef = nullptr;
+				UnitToAttack->BuildingRef->GarrisonFull = false;
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Unit Got Killed and removed")));
+			}
 			Grid->GridInfo->RemoveUnitInGrid(this);
 			Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
 			PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
@@ -282,6 +287,7 @@ ABuilding* AUnit::GetBuildingRef()
 
 void AUnit::SetBuildingRef(ABuilding* Building)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 150.f, FColor::Turquoise, FString::Printf(TEXT("BuildingRefGotSet")));
 	BuildingRef = Building;
 }
 
