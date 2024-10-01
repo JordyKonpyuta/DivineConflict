@@ -29,7 +29,7 @@ protected:
 	UFUNCTION()
 	FLinearColor GetColorFromState(TArray<EDC_TileState> TileState);
 
-	UFUNCTION(	)
+	UFUNCTION(BlueprintCallable	)
 	void UpdateVisuals(FIntPoint Index);	
 
 public:	
@@ -38,10 +38,10 @@ public:
 
 	void SetGrid(AGrid* GridRef);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Blueprintable)
 	void addStateToTile(FIntPoint Index, EDC_TileState TileState);
-
-	UFUNCTION()
+	
+	UFUNCTION(BlueprintCallable)
 	void RemoveStateFromTile(FIntPoint Index, EDC_TileState TileState);
 
 	

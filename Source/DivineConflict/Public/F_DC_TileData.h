@@ -9,8 +9,6 @@
  * 
  */
 
-
-
 class AUnit;
 class ABuilding;
 class ABase;
@@ -48,6 +46,8 @@ enum class EDC_TileState : uint8
 
 };
 
+
+
 USTRUCT(BlueprintType)
 struct DIVINECONFLICT_API FDC_TileData
 {
@@ -60,37 +60,27 @@ public:
 	
 	~FDC_TileData();
 	
-	UPROPERTY( EditAnywhere,BlueprintReadWrite, Category = "GridElement")
+	UPROPERTY( EditAnywhere, Category = "GridElement")
 	FIntPoint TilePosition;
 	
-	UPROPERTY(EditAnywhere,BlueprintReadWrite , Category = "GridElement")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GridElement")
 	EDC_TileType TileType;
 	
-	UPROPERTY( EditAnywhere,BlueprintReadWrite, Category = "GridElement")
-	FTransform TileTransform;
+	UPROPERTY( EditAnywhere, Category = "GridElement")
+	FTransform3d TileTransform;
 
-	UPROPERTY( EditAnywhere,BlueprintReadWrite, Category = "GridElement")
+	UPROPERTY( EditAnywhere, Category = "GridElement")
 	TArray<EDC_TileState> TileState;
 	
-	UPROPERTY( EditAnywhere,BlueprintReadWrite, Category = "GridElement")
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "GridElement")
 	AUnit* UnitOnTile = nullptr;
 	
-	UPROPERTY( EditAnywhere,BlueprintReadWrite, Category = "GridElement")
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "GridElement")
 	ABuilding* BuildingOnTile = nullptr;
 
-	UPROPERTY( EditAnywhere,BlueprintReadWrite, Category = "GridElement")
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "GridElement")
 	ABase* BaseOnTile = nullptr;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "GridElement")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GridElement")
 	ATower* TowerOnTile = nullptr;
-};
-
-USTRUCT(BlueprintType)
-struct FGRidData
-{
-	GENERATED_BODY()
-
-public:
-	//UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "GridElement")
-	TMap<FIntPoint,FDC_TileData> GridDateReplicted;
 };
