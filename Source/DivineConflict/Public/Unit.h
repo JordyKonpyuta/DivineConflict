@@ -140,8 +140,11 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UFUNCTION( BlueprintCallable)
-	void Move(TArray<FIntPoint> PathToFollow);
+	UFUNCTION(Server,Reliable)
+	void Server_AddOnGrid();
+
+	UFUNCTION( BlueprintCallable,NetMulticast,Reliable)
+	void Move(const TArray<FIntPoint>& PathToFollow);
 
 	UFUNCTION(BlueprintCallable)
 	void AttackUnit(AUnit* UnitToAttack);

@@ -19,16 +19,20 @@ AUnit::AUnit()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	SetReplicates(true);
+	
 	UnitMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Unit Mesh"));
 	SetRootComponent(UnitMesh);
 	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/tank_ange_pose.tank_ange_pose'")).Object);
 	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	UnitMesh->SetIsReplicated(true);
 
 	UnitName = EUnitName::Tank;
 	
 	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture_DEBUG/M_NeutralPlayer.M_NeutralPlayer'")).Object);
 	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HeavenPlayer.Mi_HeavenPlayer'")).Object);
 	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HellPlayer.Mi_HellPlayer'")).Object);
+	
 	
 }
 
@@ -67,6 +71,12 @@ void AUnit::BeginPlay()
 			return;
 		}
 
+
+		//Grid->GridInfo->AddUnitInGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+		//Timer 2s
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AUnit::Server_AddOnGrid_Implementation, 2.0f, false);
+
 		Grid->GridInfo->AddUnitInGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
 
 		
@@ -83,6 +93,7 @@ void AUnit::BeginPlay()
 			break;
 		}
 		
+
 	}
 	else 
     {
@@ -131,8 +142,15 @@ void AUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void AUnit::Move(TArray<FIntPoint> PathIn)
+void AUnit::Server_AddOnGrid_Implementation()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Unit Add on grid"));
+	Grid->GridInfo->AddUnitInGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+}
+
+void AUnit::Move_Implementation(const TArray<FIntPoint>& PathIn)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit moved"));
 	bool bJustBecameGarrison = false;
 	Path.Empty();
 	Path = PathIn;
@@ -149,9 +167,11 @@ void AUnit::Move(TArray<FIntPoint> PathIn)
 			{
 				if (Grid->GetGridData()->Find(index)->BuildingOnTile->GarrisonFull != true)
 				{
+
 					SetActorLocation(Grid->GetGridData()->Find(index)->BuildingOnTile->GetActorLocation());
 					Grid->GetGridData()->Find(index)->BuildingOnTile->UnitRef = this;
 					Grid->GetGridData()->Find(index)->BuildingOnTile->GarrisonFull = true;
+
 					Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
 					SetIsGarrison(true);
 					bJustBecameGarrison = true;
@@ -164,7 +184,7 @@ void AUnit::Move(TArray<FIntPoint> PathIn)
 				}
 				else
 				{
-					if (this != Grid->GetGridData()->Find(index)->BuildingOnTile->UnitRef)
+					if (this != Grid->GetGridDataReplicated().GridDateReplicted.Find(index)->BuildingOnTile->UnitRef)
 					{
 						for(FIntPoint Superindex : Path)
 						{
@@ -182,7 +202,7 @@ void AUnit::Move(TArray<FIntPoint> PathIn)
 		
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit moved"));
 		
-		Grid->GridInfo->setUnitIndexOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()),this);
+		Grid->GridInfo->Multi_setUnitIndexOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()),this);
 
 		if (IsGarrison && !bJustBecameGarrison)
 		{
@@ -193,6 +213,7 @@ void AUnit::Move(TArray<FIntPoint> PathIn)
 		}
 	}
 }
+
 
 void AUnit::AttackUnit(AUnit* UnitToAttack)
 {

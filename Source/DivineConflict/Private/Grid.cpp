@@ -11,7 +11,7 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
-
+#include "Net/UnrealNetwork.h"
 
 
 // Sets default values
@@ -64,10 +64,15 @@ AGrid::AGrid()
 	}
 
 	SpawnGrid();
-
 	
 }
 
+void AGrid::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AGrid,GridDataReplicatedStruct );
+	
+}
 
 
 // Called when the game starts or when spawned
@@ -75,10 +80,9 @@ void AGrid::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//print le numbre de grid data
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Grid Data Num : %d"), GridData.Num()));
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Get Grid Data Num : %d"), GetGridData()->Num()));
-	
+	//print Grid Data
+	SetGridDataReplicated_Implementation(FGRidData(GridData));
+
 }
 
 FHitResult AGrid::TraceHitGround(FVector Location)
@@ -105,7 +109,7 @@ void AGrid::SpawnGrid()
 	int X = 0;
 	int Y = 0;
 	GridMesh->ClearInstances();
-	GridData.Empty();
+	GridDataReplicatedStruct.GridDateReplicted.Empty();
 	InstanceArray.Empty();
 	while (X < GridSize.X)
 	{
@@ -131,8 +135,9 @@ void AGrid::SpawnGrid()
 					UE_LOG( LogTemp, Warning, TEXT("Building"));
 				}
 
-				UE_LOG( LogTemp, Warning, TEXT("TileIndex: %d %d "),TileIndex.X , TileIndex.Y);
+				
 				GridData.Add(TileIndex, TileData);
+				//SetGridDataReplicated(FGRidData(GridData));
 	            AddInstance(FIntPoint(X, Y), FTransform3d(FVector(X * 100, Y * 100, HitResult.ImpactPoint.Z)));
 
 		
@@ -177,7 +182,7 @@ void AGrid::Tick(float DeltaTime)
 
 bool AGrid::IsTileWalkable(FIntPoint Index)
 {
-	return IsTileTypeWalkable(GridData.Find(Index)->TileType);
+	return IsTileTypeWalkable(GridDataReplicatedStruct.GridDateReplicted.Find(Index)->TileType);
 	
 }
 
@@ -226,6 +231,7 @@ FIntPoint AGrid::ConvertLocationToIndex(FVector3d Location)
 
 FVector3d AGrid::ConvertIndexToLocation(FIntPoint Index)
 {
+	UE_LOG( LogTemp, Warning, TEXT("Index : %d %d"), Index.X, Index.Y);
 	return GridData.Find(Index)->TileTransform.GetLocation();
 }
 
@@ -253,4 +259,26 @@ void AGrid::UpdateColor(int I, FLinearColor InColor, float	Alpha)
 	GridMesh->SetCustomDataValue(I, 1, InColor.G);
 	GridMesh->SetCustomDataValue(I, 2, InColor.B);
 	GridMesh->SetCustomDataValue(I, 3, Alpha);
+}
+
+void AGrid::SetGridDataReplicated_Implementation(FGRidData Data)
+{
+	SetGridDataReplicatedMulticast(Data);
+
+	//print Grid Data
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Grid Data"));
+	UE_LOG( LogTemp, Warning, TEXT("Grid Data"));
+
+}
+
+
+void AGrid::SetGridDataReplicatedMulticast_Implementation(FGRidData Data)
+{
+	GEngine->AddOnScreenDebugMessage( -1, 5.f, FColor::Cyan, TEXT("Grid Data"));
+	GridDataReplicatedStruct = Data;
+}
+
+FGRidData AGrid::GetGridDataReplicated()
+{
+	return GridDataReplicatedStruct;
 }
