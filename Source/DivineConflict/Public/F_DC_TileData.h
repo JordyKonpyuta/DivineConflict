@@ -72,15 +72,22 @@ public:
 	UPROPERTY( EditAnywhere, Category = "GridElement")
 	TArray<EDC_TileState> TileState;
 	
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "GridElement")
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "GridElement")
 	AUnit* UnitOnTile = nullptr;
 	
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "GridElement")
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "GridElement")
 	ABuilding* BuildingOnTile = nullptr;
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "GridElement")
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "GridElement")
 	ABase* BaseOnTile = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GridElement")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GridElement")
 	ATower* TowerOnTile = nullptr;
+};
+
+USTRUCT()
+struct FGRidData
+{
+	GENERATED_BODY()
+	TMap<FIntPoint, FDC_TileData> GridDateReplicted;
 };
