@@ -9,6 +9,7 @@
 #include "GridVisual.h"
 #include "Unit.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ABase::ABase()
@@ -16,6 +17,16 @@ ABase::ABase()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+}
+
+void ABase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ABase, Health);
+	DOREPLIFETIME(ABase, GoldCostUpgrade);
+	DOREPLIFETIME(ABase, StoneCostUpgrade);
+	DOREPLIFETIME(ABase, WoodCostUpgrade);
+	DOREPLIFETIME(ABase, GridPosition);
 }
 
 // Called when the game starts or when spawned
@@ -119,11 +130,6 @@ int ABase::GetHealth()
 	return Health;
 }
 
-bool ABase::GetIsHell()
-{
-	return IsHell;
-}
-
 int ABase::GetGoldCostUpgrade()
 {
 	return GoldCostUpgrade;
@@ -149,11 +155,6 @@ void ABase::SetHealth(int h)
 	Health = h;
 }
 
-void ABase::SetIsHell(bool bH)
-{
-	IsHell = bH;
-}
-
 void ABase::SetCostsUpgrade(int g, int s, int w)
 {
 	GoldCostUpgrade = g;
@@ -172,12 +173,9 @@ void ABase::CheckIfDead()
 	if (Health <= 0)
 	{
 		Health = 0;
-		if (PlayerControllerRef->GetIsHell() == IsHell)
-		{
-			PlayerControllerRef->SetIsDead(true);
-			OnDeath();
-			
-		}
+		PlayerControllerRef->SetIsDead(true);
+		OnDeath();
+		
 	}
 }
 

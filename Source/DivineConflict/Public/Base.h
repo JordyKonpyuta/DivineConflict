@@ -22,10 +22,10 @@ public:
 	// Sets default values for this actor's properties
 	ABase();
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	AGrid* Grid;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Mesh")
 	UStaticMeshComponent* Mesh;
 
 protected:
@@ -33,22 +33,15 @@ protected:
 	virtual void BeginPlay() override;
 
 	// Stats
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
 	int Health = 200;
-
-	UPROPERTY()
-	bool IsHell = false;
-
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
 	int GoldCostUpgrade = 20;
-
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
 	int StoneCostUpgrade = 20;
-
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
 	int WoodCostUpgrade = 20;
-
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Grid")
 	FIntPoint GridPosition= FIntPoint(-999,-999);
 
 public:	
@@ -72,13 +65,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bool")
 	bool IsSelected = false;
 
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Enum")
+	EPlayer PlayerOwner = EPlayer::P_Neutral;
+
 	
 
 	// Getter
 	UFUNCTION(BlueprintCallable)
 	int GetHealth();
-	UFUNCTION(BlueprintCallable)
-	bool GetIsHell();
 	UFUNCTION(BlueprintCallable)
 	int GetGoldCostUpgrade();
 	UFUNCTION(BlueprintCallable)
@@ -91,8 +85,6 @@ public:
 	// Setter
 	UFUNCTION(BlueprintCallable)
 	void SetHealth(int h);
-	UFUNCTION(BlueprintCallable)
-	void SetIsHell(bool bH);
 	UFUNCTION(BlueprintCallable)
 	void SetCostsUpgrade(int g, int s, int w);
 	UFUNCTION(BlueprintCallable)

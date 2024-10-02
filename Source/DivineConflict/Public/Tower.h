@@ -21,15 +21,15 @@ public:
 	// Sets default values for this actor's properties
 	ATower();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Mesh")
 	UStaticMeshComponent* Mesh;
 
 	UFUNCTION(BlueprintNativeEvent)
 	void SetMesh();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit")
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Unit")
 	AUnit* UnitInGarrison = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bool")
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Bool")
 	bool IsGarrisoned = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	AGrid* Grid;
@@ -45,19 +45,17 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
 	int Attack = 10;
-	UPROPERTY()
-	bool IsHell = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Bool")
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadOnly, Category = "Bool")
 	bool CanAttack = true;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enum")
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadOnly, Category = "Enum")
 	EPlayer PlayerOwner = EPlayer::P_Neutral;
 	
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadOnly, Category = "Grid")
 	FIntPoint GridPosition = FIntPoint(-999, -999);
 
 public:	
@@ -71,10 +69,6 @@ public:
 	int GetAttack();
 	UFUNCTION(BlueprintCallable)
 	void SetAttack(int NewAttack);
-	UFUNCTION(BlueprintCallable)
-	bool GetIsHell();
-	UFUNCTION(BlueprintCallable)
-	void SetIsHell(bool NewIsHell);
 	UFUNCTION(BlueprintCallable)
 	EPlayer GetPlayerOwner();
 	UFUNCTION(BlueprintCallable)

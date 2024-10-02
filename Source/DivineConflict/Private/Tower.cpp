@@ -8,6 +8,7 @@
 #include "GridPath.h"
 #include "Unit.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ATower::ATower()
@@ -22,6 +23,18 @@ ATower::ATower()
 		PlayerController = Cast<ACustomPlayerController>(Actor);
 	}
 
+}
+
+void ATower::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ATower, UnitInGarrison);
+	DOREPLIFETIME(ATower, IsGarrisoned);
+	DOREPLIFETIME(ATower, Attack);
+	DOREPLIFETIME(ATower, CanAttack);
+	DOREPLIFETIME(ATower, PlayerOwner);
+	DOREPLIFETIME(ATower, Mesh);
+	DOREPLIFETIME(ATower, GridPosition);
 }
 
 void ATower::SetMesh_Implementation()
@@ -66,15 +79,6 @@ void ATower::SetAttack(int NewAttack)
 	Attack = NewAttack;
 }
 
-bool ATower::GetIsHell()
-{
-	return IsHell;
-}
-
-void ATower::SetIsHell(bool NewIsHell)
-{
-	IsHell = NewIsHell;
-}
 
 EPlayer ATower::GetPlayerOwner()
 {

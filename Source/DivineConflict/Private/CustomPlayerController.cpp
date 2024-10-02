@@ -155,10 +155,10 @@ void ACustomPlayerController::ControllerInteraction()
 				{
 					if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile != nullptr && !PlayerStateRef->bIsActiveTurn) // Building, Passive Turn
 					{
-						if ((Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Hell && IsHell == true)
-							|| (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Heaven && IsHell == false)
+						if ((Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Hell && PlayerTeam == EPlayer::P_Hell)
+							|| (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Heaven && PlayerTeam ==EPlayer::P_Heaven)
 							)
-						{
+						{CurrentPA += 1;
 							BuildingRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile;
 							for (FIntPoint BuildingIndex : BuildingRef->SpawnLocRef)
 							{
@@ -198,7 +198,7 @@ void ACustomPlayerController::ControllerInteraction()
 					}
 					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile != nullptr && !PlayerStateRef->bIsActiveTurn) // Base
 					{
-						if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile->GetIsHell() == IsHell)
+						if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile->PlayerOwner == PlayerTeam)
 						{
 							{
 								BaseRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile;
@@ -285,7 +285,7 @@ void ACustomPlayerController::ControllerInteraction()
 								{
 									if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile != nullptr)
 									{
-										if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile->GetPlayerOwner() == EPlayer::P_Heaven && TowerRef->GetIsHell() || Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile->GetPlayerOwner() == EPlayer::P_Hell && !TowerRef->GetIsHell())
+										if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile->GetPlayerOwner() == EPlayer::P_Heaven && TowerRef->GetPlayerOwner() == PlayerTeam)
 											TowerRef->AttackUnit(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile);
 									}
 									PathReachable = TowerRef->TilesInRange;
