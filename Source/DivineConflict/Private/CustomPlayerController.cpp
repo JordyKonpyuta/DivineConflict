@@ -185,15 +185,10 @@ void ACustomPlayerController::ControllerInteraction()
 						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Unit"));
 						if(!Grid->GridData.Find(PlayerPositionInGrid)->UnitOnTile->GetIsSelected() && PlayerStateRef->bIsActiveTurn/* && Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() == PlayerTeam*/) // Unit
 						{
-							UE_LOG( LogTemp, Warning, TEXT("Unit Selected") );
 							UnitRef = Grid->GridData.Find(PlayerPositionInGrid)->UnitOnTile;
-							UE_LOG( LogTemp, Warning, TEXT("Unit Selected") );
 							CameraPlayerRef->SetCustomPlayerController(this);
-							UE_LOG( LogTemp, Warning, TEXT("Unit Selected") );
 							IInteractInterface::Execute_Interact(Grid->GridData.Find(PlayerPositionInGrid)->UnitOnTile, this);
-							UE_LOG( LogTemp, Warning, TEXT("Unit Selected") );
 							DisplayWidget();
-							UE_LOG( LogTemp, Warning, TEXT("Unit Selected") );
 						}
 					}
 					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile != nullptr && !PlayerStateRef->bIsActiveTurn) // Base
@@ -237,6 +232,7 @@ void ACustomPlayerController::ControllerInteraction()
 					{
 						if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile != nullptr)
 						{
+							GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("UnitOnTile"));
 							if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile->GetPlayerOwner() != UnitRef->GetPlayerOwner())
 								UnitRef->AttackUnit(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile);
 							if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BaseOnTile)
@@ -244,10 +240,11 @@ void ACustomPlayerController::ControllerInteraction()
 						}
 						if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BuildingOnTile != nullptr)
 						{
-							if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BuildingOnTile->UnitRef->GetPlayerOwner() != UnitRef->GetPlayerOwner())
-							{
-								UnitRef->AttackUnit(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BuildingOnTile->UnitRef);
-							}
+							if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BuildingOnTile->GarrisonFull)
+								if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BuildingOnTile->UnitRef->GetPlayerOwner() != UnitRef->GetPlayerOwner())
+									{
+										UnitRef->AttackUnit(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BuildingOnTile->UnitRef);
+									}
 						}
 						for(FIntPoint Index : PathReachable)
 						{
