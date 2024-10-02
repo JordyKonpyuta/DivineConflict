@@ -19,13 +19,7 @@ void ACustomPlayerState::BeginPlay()
 
 void ACustomPlayerState::OnRep_bIsActiveTurn()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Player "+GetPlayerName()+" is in turn :" + FString::FromInt(bIsActiveTurn)));
-	if(Cast<ACustomPlayerController>(GetPlayerController()))
-	{
-		Cast<ACustomPlayerController>(GetPlayerController())->SetIsInActiveTurn(bIsActiveTurn);
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Player(Controller) "+GetPlayerName()+" is in turn :" + FString::FromInt(bIsActiveTurn)));
-	}
-		
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("OnRep_bIsActiveTurn : " + FString::FromInt(bIsActiveTurn)));
 	if(bIsActiveTurn)
 	{
 		NewTurnBegin();
@@ -34,10 +28,7 @@ void ACustomPlayerState::OnRep_bIsActiveTurn()
 
 void ACustomPlayerState::OnRep_PlayerTeam()
 {
-	if(Cast<ACustomPlayerController>(GetPlayerController()))
-	{
-		Cast<ACustomPlayerController>(GetPlayerController())->SetPlayerTeam(PlayerTeam);
-	}	
+
 }
 
 void ACustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -123,8 +114,11 @@ void ACustomPlayerState::SetUnits(int UnitNumber)
 void ACustomPlayerState::NewTurnBegin()
 {
 	ChangeWoodPoints(5 + (WoodBuildingOwned * 15), true);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Player Wood : " + FString::FromInt(WoodPoints)));
 	ChangeStonePoints(4 + (StoneBuildingOwned * 15), true);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Player Stone : " + FString::FromInt(StonePoints)));
 	ChangeGoldPoints(2 + (GoldBuildingOwned * 15), true);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Player Gold : " + FString::FromInt(GoldPoints)));
 	if (PlayerControllerRef)
 	{
 		PlayerControllerRef->CurrentPA = MaxActionPoints;

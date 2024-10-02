@@ -4,6 +4,7 @@
 #include "CameraPlayer.h"
 
 #include "Building.h"
+#include "CustomGameState.h"
 #include "CustomPlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
@@ -79,6 +80,14 @@ void ACameraPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		EnhancedInputComponent->BindAction(AIInteraction,ETriggerEvent::Started, this, &ACameraPlayer::Interaction);
 
 		EnhancedInputComponent->BindAction(AIRemovePath,ETriggerEvent::Started, this, &ACameraPlayer::PathRemove);
+		if(CustomPlayerController)
+			EnhancedInputComponent->BindAction(AIEndTurn,ETriggerEvent::Started, CustomPlayerController, &ACustomPlayerController::EndTurn);
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("CustomPlayerController is null"));
+			CustomPlayerController = Cast<ACustomPlayerController>(GetController());
+			EnhancedInputComponent->BindAction(AIEndTurn,ETriggerEvent::Started, CustomPlayerController, &ACustomPlayerController::EndTurn);
+		}
 	}
 }
 

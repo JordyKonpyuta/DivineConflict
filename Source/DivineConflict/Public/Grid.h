@@ -82,9 +82,6 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "GridElement", meta = (AllowPrivate))
 	TMap <FIntPoint, FDC_TileData> GridData;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Replicated, Category = "GridElement")
-	FGRidData GridDataReplicatedStruct;
-	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GridElement")
 	FIntPoint GridSize = FIntPoint(10, 10);
 
@@ -111,15 +108,5 @@ public:
 
 	void UpdateColor(int I, FLinearColor InColor, float	Alpha);
 
-	
-	UFUNCTION(Server, Reliable)
-	void SetGridDataReplicated(FGRidData Data);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void SetGridDataReplicatedMulticast(FGRidData Data);
-
-	UFUNCTION()
-	FGRidData GetGridDataReplicated();
-	
 
 };

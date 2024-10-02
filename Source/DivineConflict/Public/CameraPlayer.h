@@ -54,6 +54,7 @@ public:
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
 	USceneComponent* CameraRoot;
 	
+	
 	// Sets default values for this pawn's properties
 	ACameraPlayer();
 	

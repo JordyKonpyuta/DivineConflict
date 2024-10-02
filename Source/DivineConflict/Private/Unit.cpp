@@ -184,7 +184,7 @@ void AUnit::Move_Implementation(const TArray<FIntPoint>& PathIn)
 				}
 				else
 				{
-					if (this != Grid->GetGridDataReplicated().GridDateReplicted.Find(index)->BuildingOnTile->UnitRef)
+					if (this != Grid->GetGridData()->Find(index)->BuildingOnTile->UnitRef)
 					{
 						for(FIntPoint Superindex : Path)
 						{

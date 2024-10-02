@@ -21,7 +21,7 @@ UGridInfo::UGridInfo()
 void UGridInfo::AddUnitInGrid(FIntPoint GridPosition, AUnit* Unit)
 {
 	UnitsCombat.Add(Unit);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit added to grid"));
+
 	//Server_setUnitIndexOnGrid(GridPosition, Unit);
 	Multi_setUnitIndexOnGrid(GridPosition, Unit);
 }
@@ -33,7 +33,7 @@ void UGridInfo::Multi_setUnitIndexOnGrid_Implementation(const FIntPoint GridPosi
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Grid is null"));
 		return;
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Multi set unit index on grid"));
+
 	AUnit* UnitRef = const_cast<AUnit*>(Unit);
 	//TMap<FIntPoint,FDC_TileData> GridDataRef = Grid->GetGridData();
 	if(GridPosition != UnitRef->GetIndexPosition())
@@ -52,14 +52,14 @@ void UGridInfo::Multi_setUnitIndexOnGrid_Implementation(const FIntPoint GridPosi
 
 		if(UnitRef->GetIndexPosition() != FIntPoint(-999,-999))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Unit index position is not -999,-999"));
+
 			if(Grid->GetGridData()->Find(GridPosition) != nullptr)
 			{
 				
 				Grid->GetGridData()->Add(Grid->GetGridData()->Find(GridPosition)->TilePosition, FDC_TileData(Grid->GetGridData()->Find(GridPosition)->TilePosition, Grid->GetGridData()->Find(GridPosition)->TileType,
 					Grid->GetGridData()->Find(GridPosition)->TileTransform, Grid->GetGridData()->Find(GridPosition)->TileState, UnitRef, Grid->GetGridData()->Find(GridPosition)->BuildingOnTile,
 					Grid->GetGridData()->Find(GridPosition)->BaseOnTile, Grid->GetGridData()->Find(GridPosition)->TowerOnTile));
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Unit added to grid"));
+
 				
 			}
 
@@ -69,7 +69,6 @@ void UGridInfo::Multi_setUnitIndexOnGrid_Implementation(const FIntPoint GridPosi
 
 void UGridInfo::Server_setUnitIndexOnGrid_Implementation(const FIntPoint GridPosition, const AUnit* Unit)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Server set unit index on grid"));
 	Multi_setUnitIndexOnGrid(GridPosition, Unit);
 }
 
@@ -103,7 +102,6 @@ void UGridInfo::SetBuildingOnGrid(FIntPoint GridPosition, ABuilding* Building)
 			{
 				GridDataRef->Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, Building, NewIndex->BaseOnTile, NewIndex->TowerOnTile));
 				Grid->GridData.Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, Building, NewIndex->BaseOnTile, NewIndex->TowerOnTile));
-				Grid->SetGridDataReplicated(FGRidData(*GridDataRef));
 			}
 			
 		}
@@ -136,7 +134,6 @@ void UGridInfo::SetBaseOnGrid(FIntPoint GridPosition, ABase* Base)
 			{
 				GridDataRef->Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, NewIndex->BuildingOnTile, Base, NewIndex->TowerOnTile));
 				Grid->GridData.Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, NewIndex->BuildingOnTile, Base, NewIndex->TowerOnTile));
-				Grid->SetGridDataReplicated(FGRidData(*GridDataRef));
 			}
 		}
 	}
@@ -166,7 +163,6 @@ void UGridInfo::SetTowerOnGrid(FIntPoint GridPosition, ATower* Tower)
 			{
 				Grid->GetGridData()->Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, NewIndex->BuildingOnTile, NewIndex->BaseOnTile, Tower));
 				Grid->GridData.Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, NewIndex->BuildingOnTile, NewIndex->BaseOnTile, Tower));
-				Grid->SetGridDataReplicated_Implementation(FGRidData(Grid->GridData));
 			}
 		}
 	}	

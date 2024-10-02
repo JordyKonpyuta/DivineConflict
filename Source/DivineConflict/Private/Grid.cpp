@@ -67,12 +67,6 @@ AGrid::AGrid()
 	
 }
 
-void AGrid::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AGrid,GridDataReplicatedStruct );
-	
-}
 
 
 // Called when the game starts or when spawned
@@ -80,8 +74,6 @@ void AGrid::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//print Grid Data
-	SetGridDataReplicated_Implementation(FGRidData(GridData));
 
 }
 
@@ -109,7 +101,6 @@ void AGrid::SpawnGrid()
 	int X = 0;
 	int Y = 0;
 	GridMesh->ClearInstances();
-	GridDataReplicatedStruct.GridDateReplicted.Empty();
 	InstanceArray.Empty();
 	while (X < GridSize.X)
 	{
@@ -182,7 +173,7 @@ void AGrid::Tick(float DeltaTime)
 
 bool AGrid::IsTileWalkable(FIntPoint Index)
 {
-	return IsTileTypeWalkable(GridDataReplicatedStruct.GridDateReplicted.Find(Index)->TileType);
+	return IsTileTypeWalkable(GetGridData()->Find(Index)->TileType);
 	
 }
 
@@ -259,26 +250,4 @@ void AGrid::UpdateColor(int I, FLinearColor InColor, float	Alpha)
 	GridMesh->SetCustomDataValue(I, 1, InColor.G);
 	GridMesh->SetCustomDataValue(I, 2, InColor.B);
 	GridMesh->SetCustomDataValue(I, 3, Alpha);
-}
-
-void AGrid::SetGridDataReplicated_Implementation(FGRidData Data)
-{
-	SetGridDataReplicatedMulticast(Data);
-
-	//print Grid Data
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Grid Data"));
-	UE_LOG( LogTemp, Warning, TEXT("Grid Data"));
-
-}
-
-
-void AGrid::SetGridDataReplicatedMulticast_Implementation(FGRidData Data)
-{
-	GEngine->AddOnScreenDebugMessage( -1, 5.f, FColor::Cyan, TEXT("Grid Data"));
-	GridDataReplicatedStruct = Data;
-}
-
-FGRidData AGrid::GetGridDataReplicated()
-{
-	return GridDataReplicatedStruct;
 }

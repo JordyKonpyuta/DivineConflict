@@ -188,4 +188,9 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerMoveUnit(const TArray<FIntPoint> &PathToMove , const AUnit* UnitToMove);
 
+	UFUNCTION()
+	void EndTurn();
+
+	UFUNCTION(Server, Reliable)
+	void Server_EndTurn();
 };
