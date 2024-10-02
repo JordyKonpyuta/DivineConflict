@@ -188,6 +188,12 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerMoveUnit(const TArray<FIntPoint> &PathToMove , const AUnit* UnitToMove);
 
+	UFUNCTION(Server, Reliable)
+	void Server_SpawnBaseUnit(EUnitType UnitToSpawn,AGrid* GridSer, ABase* BaseToSpawn, EPlayer PlayerOwner);
+	
+	UFUNCTION(BlueprintCallable)
+	void SpawnBaseUnit(EUnitType UnitToSpawn);
+	
 	UFUNCTION()
 	void EndTurn();
 

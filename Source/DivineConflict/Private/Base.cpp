@@ -88,10 +88,12 @@ void ABase::VisualSpawn()
 	}
 }
 
-void ABase::SpawnUnit(EUnitType UnitToSpawn)
+
+void ABase::Server_SpawnUnit_Implementation(EUnitType UnitToSpawn)
 {
 	if (Grid != nullptr)
 	{
+		
 		FIntPoint SpawnLoc;
 		for (int i = 0; i < AllSpawnLoc.Num(); i++)
 		{
@@ -102,26 +104,27 @@ void ABase::SpawnUnit(EUnitType UnitToSpawn)
 			}
 		}
 		
-		 if (PlayerStateRef->CurrentUnitCount < PlayerStateRef->MaxUnitCount)
-		{
-			if (PlayerStateRef->GetGoldPoints() >= 0 && PlayerStateRef->GetStonePoints() >= 0 && PlayerStateRef->GetWoodPoints() >= 0)
-			{
-				PlayerStateRef->ChangeGoldPoints(0, false);
-				PlayerStateRef->ChangeStonePoints(0, false);
-				PlayerStateRef->ChangeWoodPoints(0, false);
-				PlayerStateRef->SetUnits(PlayerStateRef->CurrentUnitCount + 1);
+		 //if (PlayerStateRef->CurrentUnitCount < PlayerStateRef->MaxUnitCount)
+		//{
+			//if (PlayerStateRef->GetGoldPoints() >= 0 && PlayerStateRef->GetStonePoints() >= 0 && PlayerStateRef->GetWoodPoints() >= 0)
+			//{
+				//PlayerStateRef->ChangeGoldPoints(0, false);
+				//PlayerStateRef->ChangeStonePoints(0, false);
+				//PlayerStateRef->ChangeWoodPoints(0, false);
+				//PlayerStateRef->SetUnits(PlayerStateRef->CurrentUnitCount + 1);
 				PlayerControllerRef->SpawnUnit(UnitToSpawn, SpawnLoc);
+				Grid->GetGridData()->Find(SpawnLoc)->UnitOnTile->SetPlayerOwner(PlayerOwner);
 				Grid->GridVisual->RemoveStateFromTile(SpawnLoc, EDC_TileState::Spawnable);
-			}
-			else
-			{
-				Grid->GridVisual->RemoveStateFromTile(SpawnLoc, EDC_TileState::Spawnable);
-			}
-		}
-		else
-		{
-			Grid->GridVisual->RemoveStateFromTile(SpawnLoc, EDC_TileState::Spawnable);
-		}
+			//}
+			//else
+			//{
+				//Grid->GridVisual->RemoveStateFromTile(SpawnLoc, EDC_TileState::Spawnable);
+			//}
+		//}
+		//else
+		//{
+			//Grid->GridVisual->RemoveStateFromTile(SpawnLoc, EDC_TileState::Spawnable);
+		//}
 	}
 }
 
