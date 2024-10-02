@@ -19,9 +19,12 @@ ABuilding::ABuilding()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	SetReplicates(true);
+	
 	// Add and name a static mesh
 	StaticMeshBuilding = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Building Appearance"));
 
+	
 	SceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
 	RootComponent = SceneComp;
 
@@ -31,6 +34,7 @@ ABuilding::ABuilding()
     StaticMeshPlane->SetHiddenInGame(true);
 	StaticMeshPlane->SetupAttachment(RootComponent);
 	StaticMeshBuilding->SetupAttachment(RootComponent);
+	StaticMeshBuilding->SetIsReplicated(true);
 
 	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture_DEBUG/M_NeutralPlayer.M_NeutralPlayer'")).Object);
 	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HeavenPlayer.Mi_HeavenPlayer'")).Object);

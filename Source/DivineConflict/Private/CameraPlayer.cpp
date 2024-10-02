@@ -116,8 +116,8 @@ void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 		FVector3d MoveDirection = FVector3d(0, 0, 0);
 		if (abs(Input.X)  >= abs(Input.Y) )
 		{
-			MoveDirection = UKismetMathLibrary::GetForwardVector(UKismetMathLibrary::MakeRotator(0,0,GetActorRotation().Yaw)) * (UKismetMathLibrary::SignOfFloat(Input.X) * 100);
-			
+			FVector Forward = FVector(UKismetMathLibrary::Round(CameraBoom->GetForwardVector().X), UKismetMathLibrary::Round(CameraBoom->GetForwardVector().Y), 0);
+			MoveDirection = Forward * (UKismetMathLibrary::SignOfFloat(Input.X) * 100);
 		}
 		else
 		{
@@ -171,7 +171,7 @@ void ACameraPlayer::RotateCameraPitch(const FInputActionValue& Value)
 {
 	FVector2d Input = Value.Get<FVector2d>();
 	
-	TargetRotationPitch = FRotator(UKismetMathLibrary::Clamp(TargetRotationPitch.Pitch + Input.Y, -70.0f, -20.0f),0, 0);
+	TargetRotationPitch = FRotator(UKismetMathLibrary::Clamp(TargetRotationPitch.Pitch + Input.Y, -60.0f, -20.0f),0, 0);
 
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Target Rotation Pitch: ") + FString::SanitizeFloat(TargetRotationPitch.Pitch));
 }

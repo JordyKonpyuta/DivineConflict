@@ -324,7 +324,6 @@ ABuilding* AUnit::GetBuildingRef()
 
 void AUnit::SetBuildingRef(ABuilding* Building)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 150.f, FColor::Turquoise, FString::Printf(TEXT("BuildingRefGotSet")));
 	BuildingRef = Building;
 }
 
