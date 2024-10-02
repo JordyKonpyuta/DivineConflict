@@ -37,6 +37,18 @@ void ACustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
     
 	DOREPLIFETIME(ACustomPlayerState, bIsActiveTurn);
 	DOREPLIFETIME(ACustomPlayerState, PlayerTeam);
+	DOREPLIFETIME(ACustomPlayerState, GotCentralBuilding);
+	DOREPLIFETIME(ACustomPlayerState, TurnPassed);
+	DOREPLIFETIME(ACustomPlayerState, MaxActionPoints);
+	DOREPLIFETIME(ACustomPlayerState, WoodPoints);
+	DOREPLIFETIME(ACustomPlayerState, StonePoints);
+	DOREPLIFETIME(ACustomPlayerState, GoldPoints);
+	DOREPLIFETIME(ACustomPlayerState, WoodBuildingOwned);
+	DOREPLIFETIME(ACustomPlayerState, StoneBuildingOwned);
+	DOREPLIFETIME(ACustomPlayerState, GoldBuildingOwned);
+	DOREPLIFETIME(ACustomPlayerState, CurrentUnitCount);
+	DOREPLIFETIME(ACustomPlayerState, MaxUnitCount);
+	
 
 }
 
@@ -114,11 +126,9 @@ void ACustomPlayerState::SetUnits(int UnitNumber)
 void ACustomPlayerState::NewTurnBegin()
 {
 	ChangeWoodPoints(5 + (WoodBuildingOwned * 15), true);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Player Wood : " + FString::FromInt(WoodPoints)));
 	ChangeStonePoints(4 + (StoneBuildingOwned * 15), true);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Player Stone : " + FString::FromInt(StonePoints)));
 	ChangeGoldPoints(2 + (GoldBuildingOwned * 15), true);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Player Gold : " + FString::FromInt(GoldPoints)));
+
 	if (PlayerControllerRef)
 	{
 		PlayerControllerRef->CurrentPA = MaxActionPoints;

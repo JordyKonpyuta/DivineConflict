@@ -27,31 +27,31 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actions")
 	int TurnPassed = 0;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actions")
+	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Actions")
 	int MaxActionPoints = 10 + (GotCentralBuilding * UKismetMathLibrary::Clamp(TurnPassed, 0, 5));
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ressources")
+	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Ressources")
 	int WoodPoints = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ressources")
+	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Ressources")
 	int StonePoints = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ressources")
+	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Ressources")
 	int GoldPoints = 0;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RessourceGathering")
+	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "RessourceGathering")
 	int WoodBuildingOwned = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RessourceGathering")
+	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "RessourceGathering")
 	int StoneBuildingOwned = 0;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "RessourceGathering")
+	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "RessourceGathering")
 	int GoldBuildingOwned = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Units")
+	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Units")
 	int CurrentUnitCount = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Units")
+	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Units")
 	int MaxUnitCount = 10;
 	
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
