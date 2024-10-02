@@ -146,7 +146,7 @@ void ACustomPlayerController::ControllerInteraction()
 		FIntPoint PlayerPositionInGrid = Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation());
 		if(CurrentPA >= 1)
 		{
-			if (PlayerAction != EDC_ActionPlayer::None) CurrentPA -= 1;
+			if (PlayerAction != EDC_ActionPlayer::None) PlayerStateRef->CurrentPA -= 1;
 			switch (PlayerAction)
 			{
 			case EDC_ActionPlayer::None:
@@ -227,7 +227,7 @@ void ACustomPlayerController::ControllerInteraction()
 					PathReachable.Empty();
 					CameraPlayerRef->IsMovingUnit = false;
 					CameraPlayerRef->Path.Empty();
-					
+					UpdateUi();
 					
 					PlayerAction = EDC_ActionPlayer::None;
 				break;
@@ -433,6 +433,10 @@ void ACustomPlayerController::EndTurn()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("EndTurn"));
 	Server_EndTurn();
+}
+
+void ACustomPlayerController::UpdateUi_Implementation()
+{
 }
 
 void ACustomPlayerController::Server_EndTurn_Implementation()

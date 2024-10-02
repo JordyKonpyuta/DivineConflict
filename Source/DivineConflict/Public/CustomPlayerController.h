@@ -193,4 +193,7 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_EndTurn();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void UpdateUi();
 };

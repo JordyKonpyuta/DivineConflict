@@ -62,6 +62,9 @@ public:
 	
 	UFUNCTION(NotBlueprintable, Category = "TurnSystem")
 	void AssignTurnOrder();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastSwitchPlayerTurn();
 	
 private:
 };

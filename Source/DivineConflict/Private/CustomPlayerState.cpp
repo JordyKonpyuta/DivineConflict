@@ -19,16 +19,19 @@ void ACustomPlayerState::BeginPlay()
 
 void ACustomPlayerState::OnRep_bIsActiveTurn()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("OnRep_bIsActiveTurn : " + FString::FromInt(bIsActiveTurn)));
-	if(bIsActiveTurn)
+	
+	if(!bIsActiveTurn)
 	{
 		NewTurnBegin();
 	}
+	if(Cast<ACustomPlayerController>(GetPlayerController()))
+		Cast<ACustomPlayerController>(GetPlayerController())->UpdateUi();
 }
 
 void ACustomPlayerState::OnRep_PlayerTeam()
 {
-
+	if(Cast<ACustomPlayerController>(GetPlayerController()))
+        Cast<ACustomPlayerController>(GetPlayerController())->SetPlayerTeam(PlayerTeam);
 }
 
 void ACustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -127,9 +130,9 @@ void ACustomPlayerState::NewTurnBegin()
 	ChangeStonePoints(4 + (StoneBuildingOwned * 15), true);
 	ChangeGoldPoints(2 + (GoldBuildingOwned * 15), true);
 
-	if (PlayerControllerRef)
-	{
-		CurrentPA = 10 + (GotCentralBuilding * UKismetMathLibrary::Clamp(TurnPassed, 0, 5));
-		PlayerControllerRef->CurrentPA = CurrentPA;
-	}
+
+		MaxActionPoints = 10 + (GotCentralBuilding * UKismetMathLibrary::Clamp(TurnPassed, 0, 5));
+		CurrentPA = MaxActionPoints;
+		//PlayerControllerRef->CurrentPA = CurrentPA;
+
 }
