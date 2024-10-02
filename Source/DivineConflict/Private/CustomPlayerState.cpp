@@ -37,9 +37,8 @@ void ACustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
     
 	DOREPLIFETIME(ACustomPlayerState, bIsActiveTurn);
 	DOREPLIFETIME(ACustomPlayerState, PlayerTeam);
-	DOREPLIFETIME(ACustomPlayerState, GotCentralBuilding);
-	DOREPLIFETIME(ACustomPlayerState, TurnPassed);
 	DOREPLIFETIME(ACustomPlayerState, MaxActionPoints);
+	DOREPLIFETIME(ACustomPlayerState, CurrentPA);
 	DOREPLIFETIME(ACustomPlayerState, WoodPoints);
 	DOREPLIFETIME(ACustomPlayerState, StonePoints);
 	DOREPLIFETIME(ACustomPlayerState, GoldPoints);
@@ -48,7 +47,6 @@ void ACustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(ACustomPlayerState, GoldBuildingOwned);
 	DOREPLIFETIME(ACustomPlayerState, CurrentUnitCount);
 	DOREPLIFETIME(ACustomPlayerState, MaxUnitCount);
-	
 
 }
 
@@ -131,6 +129,7 @@ void ACustomPlayerState::NewTurnBegin()
 
 	if (PlayerControllerRef)
 	{
-		PlayerControllerRef->CurrentPA = MaxActionPoints;
+		CurrentPA = 10 + (GotCentralBuilding * UKismetMathLibrary::Clamp(TurnPassed, 0, 5));
+		PlayerControllerRef->CurrentPA = CurrentPA;
 	}
 }

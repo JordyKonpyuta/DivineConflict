@@ -30,6 +30,9 @@ public:
 	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Actions")
 	int MaxActionPoints = 10 + (GotCentralBuilding * UKismetMathLibrary::Clamp(TurnPassed, 0, 5));
 
+	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Actions")
+	int CurrentPA = 10;
+
 	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Ressources")
 	int WoodPoints = 0;
 
