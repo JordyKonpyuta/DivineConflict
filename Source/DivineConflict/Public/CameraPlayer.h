@@ -54,6 +54,9 @@ public:
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
 	USceneComponent* CameraRoot;
 	
+	FTimerHandle RepeatMoveTimer;
+	FTimerDelegate RepeatMoveTimerDelegate;
+	
 	
 	// Sets default values for this pawn's properties
 	ACameraPlayer();
@@ -67,8 +70,17 @@ protected:
 
 	void Interaction();
 
+	UPROPERTY()
+	FInputActionValue ValueInput = FInputActionValue();
+
+	UPROPERTY()
+	FVector OldMoveDirection;
+	
+	UPROPERTY()
+	FVector FullMoveDirection;
+
 	FRotator TargetRotationPitch=FRotator( -20, 0 ,0 );
-	FRotator TargetRotationYaw=FRotator( 0, 0 ,0 );
+	FRotator TargetRotationYaw=FRotator( 0, 10 ,0 );
 
 public:	
 	// Called every frame
@@ -79,7 +91,17 @@ public:
 
 	void SetCustomPlayerController(ACustomPlayerController* Cpc);
 
-	void MoveCamera( const FInputActionValue& Value);
+	UFUNCTION()
+	void RepeatMoveTimerCamera(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void UpdatedMove(const FInputActionValue& Value);
+
+	UFUNCTION()
+	void StopRepeatMoveTimerCamera();
+
+	UFUNCTION()
+	void MoveCamera(/* const FInputActionValue& Value*/);
 
 	void RotateCamera(const FInputActionValue& Value);
 

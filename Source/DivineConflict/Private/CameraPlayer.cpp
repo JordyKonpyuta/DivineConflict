@@ -31,13 +31,8 @@ ACameraPlayer::ACameraPlayer()
 	CameraBoom->bDoCollisionTest = false;
 	CameraBoom->bUsePawnControlRotation = false;
 	
-	
-	
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
-	
-	
-
 }
 
 // Called when the game starts or when spawned
@@ -46,11 +41,9 @@ void ACameraPlayer::BeginPlay()
 	Super::BeginPlay();
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Camera Player Begin Play"));
 	CameraBoom->AttachToComponent(CameraRoot, FAttachmentTransformRules::KeepRelativeTransform);
-	CameraBoom->SetRelativeRotation( FRotator(-25, 0, 0));
-	
-	
-	
-	
+	CameraBoom->SetRelativeRotation( FRotator(-25, 10, 0));
+	FullMoveDirection = GetActorLocation();
+	OldMoveDirection = GetActorLocation();
 }
 
 // Called every frame
@@ -61,9 +54,8 @@ void ACameraPlayer::Tick(float DeltaTime)
 
 	CameraBoom->SetWorldRotation(FRotator(UKismetMathLibrary::FInterpTo(CameraBoom->GetComponentRotation().Pitch,TargetRotationPitch.Pitch, DeltaTime, 20.0f),
 		UKismetMathLibrary::RInterpTo(CameraBoom->GetComponentRotation(),TargetRotationYaw,DeltaTime,10).Yaw,0));
-	
 
-	
+	SetActorLocation(UKismetMathLibrary::VInterpTo(GetActorLocation(),FullMoveDirection,DeltaTime,10));
 }
 
 // Called to bind functionality to input
@@ -73,7 +65,9 @@ void ACameraPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 	if(UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(AIMove, ETriggerEvent::Started, this, &ACameraPlayer::MoveCamera);
+		EnhancedInputComponent->BindAction(AIMove, ETriggerEvent::Started, this, &ACameraPlayer::RepeatMoveTimerCamera);
+		EnhancedInputComponent->BindAction(AIMove, ETriggerEvent::Completed, this, &ACameraPlayer::StopRepeatMoveTimerCamera);
+		EnhancedInputComponent->BindAction(AIMove,ETriggerEvent::Triggered, this, &ACameraPlayer::UpdatedMove);
 		EnhancedInputComponent->BindAction(AIRotate, ETriggerEvent::Started, this, &ACameraPlayer::RotateCamera);
 		EnhancedInputComponent->BindAction(AIRotate, ETriggerEvent::Triggered, this, &ACameraPlayer::RotateCameraPitch);
 		EnhancedInputComponent->BindAction(AIZoom, ETriggerEvent::Triggered, this, &ACameraPlayer::ZoomCamera);
@@ -91,9 +85,6 @@ void ACameraPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	}
 }
 
-
-
-
 void ACameraPlayer::Interaction()
 {
 	CustomPlayerController->ControllerInteraction();
@@ -105,14 +96,38 @@ void ACameraPlayer::SetCustomPlayerController(ACustomPlayerController* Cpc)
 		CustomPlayerController = Cpc;
 }
 
-void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
+void ACameraPlayer::RepeatMoveTimerCamera(const FInputActionValue& Value)
+{
+	ValueInput = Value;
+	MoveCamera();
+	RepeatMoveTimerDelegate.BindUFunction(this, "MoveCamera", Value); 
+	GetWorld()->GetTimerManager().SetTimer(
+		RepeatMoveTimer,
+		RepeatMoveTimerDelegate,
+		0.1, 
+		true,
+		0.15); 
+}
+
+void ACameraPlayer::UpdatedMove(const FInputActionValue& Value)
+{
+	ValueInput = Value;
+}
+
+void ACameraPlayer::StopRepeatMoveTimerCamera()
+{
+	GetWorld()->GetTimerManager().ClearTimer(RepeatMoveTimer);
+}
+
+void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 {
 
-	FVector2d Input = Value.Get<FVector2d>();
+	GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Green,TEXT("valueinput : ") + FString::FromInt(ValueInput.Get<FVector2d>().X) + " " + FString::FromInt(ValueInput.Get<FVector2d>().Y));
+	FVector2d Input = ValueInput.Get<FVector2d>();
 	
 	if (Controller != nullptr)
 	{
-
+		OldMoveDirection = FullMoveDirection;
 		FVector3d MoveDirection = FVector3d(0, 0, 0);
 		if (abs(Input.X)  >= abs(Input.Y) )
 		{
@@ -121,41 +136,38 @@ void ACameraPlayer::MoveCamera( const FInputActionValue& Value)
 		}
 		else
 		{
-			MoveDirection = CameraBoom->GetRightVector() * (UKismetMathLibrary::SignOfFloat(Input.Y)*100);
+			FVector Right = FVector(UKismetMathLibrary::Round(CameraBoom->GetRightVector().X), UKismetMathLibrary::Round(CameraBoom->GetRightVector().Y), 0);
+			MoveDirection = Right * (UKismetMathLibrary::SignOfFloat(Input.Y) * 100);
 
 		}
-		if(!CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation() + MoveDirection)))
+		if(!CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection)))
 		{
 			GEngine->AddOnScreenDebugMessage( -1, 5.f, FColor::Green, TEXT("Move Camera"));
 			return;
 		}
-			
-
-		
 		if (IsMovingUnit)
 		{
 			//print IsMovingUnit
 			TArray<FIntPoint> AllReachable = CustomPlayerController->GetPathReachable();
 
-			if (AllReachable.Contains(CustomPlayerController->Grid->ConvertLocationToIndex(this->GetActorLocation() + MoveDirection)))
+			if (AllReachable.Contains(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection)))
 			{
-				Path.AddUnique(CustomPlayerController->Grid->ConvertLocationToIndex(this->GetActorLocation() + MoveDirection));
-				CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()), EDC_TileState::Hovered);
-				this->SetActorLocation(this->GetActorLocation() + MoveDirection);
-				CustomPlayerController->Grid->GridVisual->addStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()), EDC_TileState::Pathfinding);
+				Path.AddUnique(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection));
+				CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection), EDC_TileState::Hovered);
+				//this->SetActorLocation(FullMoveDirection);
+				FullMoveDirection = OldMoveDirection + MoveDirection;
+				CustomPlayerController->Grid->GridVisual->addStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection), EDC_TileState::Pathfinding);
 			}
 			
 		}
 		else
 		{
-			CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()), EDC_TileState::Hovered);
-			this->SetActorLocation(this->GetActorLocation() + MoveDirection);
-			CustomPlayerController->Grid->GridVisual->addStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(GetActorLocation()), EDC_TileState::Hovered);
+			CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection), EDC_TileState::Hovered);
+			//this->SetActorLocation(FullMoveDirection);
+			FullMoveDirection = OldMoveDirection + MoveDirection;
+			CustomPlayerController->Grid->GridVisual->addStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection), EDC_TileState::Hovered);
 		}
-		
-
 	}
-	
 }
 
 void ACameraPlayer::RotateCamera(const FInputActionValue& Value)
@@ -172,8 +184,6 @@ void ACameraPlayer::RotateCameraPitch(const FInputActionValue& Value)
 	FVector2d Input = Value.Get<FVector2d>();
 	
 	TargetRotationPitch = FRotator(UKismetMathLibrary::Clamp(TargetRotationPitch.Pitch + Input.Y, -60.0f, -20.0f),0, 0);
-
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Target Rotation Pitch: ") + FString::SanitizeFloat(TargetRotationPitch.Pitch));
 }
 
 void ACameraPlayer::ZoomCamera( const FInputActionValue& Value)
@@ -182,10 +192,7 @@ void ACameraPlayer::ZoomCamera( const FInputActionValue& Value)
 
 		if (Controller != nullptr)
 		{
-			CameraBoom->TargetArmLength = FMath::Clamp((CameraBoom->TargetArmLength + Input * ZoomCameraSpeed), 750.0f, 3750.0f);
-			
-		
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Zoom Camera Length: ") + FString::SanitizeFloat(CameraBoom->TargetArmLength));
+			CameraBoom->TargetArmLength = FMath::Clamp((CameraBoom->TargetArmLength + Input * ZoomCameraSpeed), 750.0f, 2050.0f);
 		}
 }
 
@@ -216,13 +223,9 @@ void ACameraPlayer::PathRemove(const FInputActionValue& Value)
 	SetActorLocation(FVector( Path.Last().X * 100,Path.Last().Y*100, GetActorLocation().Z));
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Path Remove: ") + FString::SanitizeFloat(Path.Num()));
 	UE_LOG( LogTemp, Warning, TEXT("Path Remove: %s"), *Path.Last().ToString());
-	
-	
-	
 }
 
 void ACameraPlayer::PathClear()
 {
 	Path.Empty();
 }
-
