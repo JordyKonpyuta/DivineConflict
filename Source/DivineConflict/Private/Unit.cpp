@@ -10,6 +10,7 @@
 #include "Grid.h"
 #include "GridInfo.h"
 #include "GridVisual.h"
+#include "Tower.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -193,6 +194,20 @@ void AUnit::Move_Implementation(const TArray<FIntPoint>& PathIn)
 						Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
 						break;
 					}
+				}
+			}
+
+			else if (Grid->GetGridData()->Find(index)->TowerOnTile)
+			{
+				if (Grid->GetGridData()->Find(index)->TowerOnTile->IsGarrisoned == false)
+				{
+					SetActorLocation(Grid->GetGridData()->Find(index)->TowerOnTile->GetActorLocation());
+					Grid->GetGridData()->Find(index)->TowerOnTile->UnitInGarrison = this;
+					Grid->GetGridData()->Find(index)->TowerOnTile->IsGarrisoned = true;
+
+					Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
+					SetIsGarrison(true);
+					bJustBecameGarrison = true;
 				}
 			}
 			FVector location = Grid->ConvertIndexToLocation(index);

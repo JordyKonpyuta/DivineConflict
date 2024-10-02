@@ -28,7 +28,9 @@ public:
 	void SetMesh();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unit")
-	AUnit* UnitInGarnison = nullptr;
+	AUnit* UnitInGarrison = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bool")
+	bool IsGarrisoned = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	AGrid* Grid;
 
