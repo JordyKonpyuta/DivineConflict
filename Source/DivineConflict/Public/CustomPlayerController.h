@@ -72,6 +72,7 @@ public:
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
 	TArray<AUnit*> Units;
 	
+	TArray<FIntPoint> AllCurrentSpawnPoints;
 	
 protected:
 
@@ -125,7 +126,10 @@ public:
 	void SelectModeSpecial();
 
 	UFUNCTION( BlueprintCallable)
-	void SelectModeBuilding();
+	void SelectModeAttackBuilding();
+	
+	UFUNCTION( BlueprintCallable)
+	void SelectModeSelectBuilding();
 	
 	UFUNCTION(BlueprintCallable)
 	bool GetIsHell();

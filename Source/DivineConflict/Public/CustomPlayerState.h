@@ -99,6 +99,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Ressources")
 	int GetStonePoints();
 
+	// true to add ; false to remove
 	UFUNCTION(BlueprintCallable, Category = "Ressources")
 	void ChangeStonePoints(int StoneChange, bool Add);
 

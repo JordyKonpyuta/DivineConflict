@@ -129,4 +129,7 @@ public:
 	UPROPERTY(VisibleAnywhere , BlueprintReadWrite, Category = "Variable", meta = (AllowPrivate = "true"))
 	bool IsMovingUnit = false;
 
+	UPROPERTY(VisibleAnywhere , BlueprintReadWrite, Category = "Variable", meta = (AllowPrivate = "true"))
+	bool IsSpawningUnit = false;
+
 };

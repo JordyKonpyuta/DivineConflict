@@ -121,8 +121,6 @@ void ACameraPlayer::StopRepeatMoveTimerCamera()
 
 void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 {
-
-	GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Green,TEXT("valueinput : ") + FString::FromInt(ValueInput.Get<FVector2d>().X) + " " + FString::FromInt(ValueInput.Get<FVector2d>().Y));
 	FVector2d Input = ValueInput.Get<FVector2d>();
 	
 	if (Controller != nullptr)
@@ -142,7 +140,6 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 		}
 		if(!CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection)))
 		{
-			GEngine->AddOnScreenDebugMessage( -1, 5.f, FColor::Green, TEXT("Move Camera"));
 			return;
 		}
 		if (IsMovingUnit)
@@ -154,11 +151,19 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 			{
 				Path.AddUnique(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection));
 				CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection), EDC_TileState::Hovered);
-				//this->SetActorLocation(FullMoveDirection);
 				FullMoveDirection = OldMoveDirection + MoveDirection;
 				CustomPlayerController->Grid->GridVisual->addStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection), EDC_TileState::Pathfinding);
 			}
-			
+		}
+		else if (IsSpawningUnit)
+		{
+			TArray<FIntPoint> AllReachable = CustomPlayerController->AllCurrentSpawnPoints;
+			if (AllReachable.Contains(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection)))
+			{
+				CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection), EDC_TileState::Hovered);
+				FullMoveDirection = OldMoveDirection + MoveDirection;
+				CustomPlayerController->Grid->GridVisual->addStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection), EDC_TileState::Hovered);
+			}
 		}
 		else
 		{

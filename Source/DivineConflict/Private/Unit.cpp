@@ -11,7 +11,10 @@
 #include "GridInfo.h"
 #include "GridVisual.h"
 #include "Tower.h"
+#include "Chaos/ChaosGameplayEventDispatcher.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
+#include "Preferences/UnrealEdKeyBindings.h"
 
 
 // Sets default values
@@ -93,8 +96,6 @@ void AUnit::BeginPlay()
 			UnitMesh->SetMaterial(0, AllMaterials[0]);
 			break;
 		}
-		
-
 	}
 	else 
     {
@@ -503,6 +504,19 @@ void AUnit::SetIndexPosition(FIntPoint ip)
 void AUnit::SetPlayerOwner(EPlayer po)
 {
 	PlayerOwner = po;
+	
+	switch (PlayerOwner)
+	{
+	case EPlayer::P_Hell:
+		UnitMesh->SetMaterial(0, AllMaterials[2]);
+		break;
+	case EPlayer::P_Heaven:
+		UnitMesh->SetMaterial(0, AllMaterials[1]);
+		break;
+	case EPlayer::P_Neutral:
+		UnitMesh->SetMaterial(0, AllMaterials[0]);
+		break;
+	}
 }
 
 void AUnit::SetIsClimbing(bool ic)
@@ -515,4 +529,14 @@ void AUnit::SetBuffTank(bool bt)
 	bBuffTank = bt;
 }
 
+void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProps) const{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(AUnit, UnitMesh);
+	DOREPLIFETIME(AUnit, PlayerOwner);
+	DOREPLIFETIME(AUnit, bIsClimbing);
+	DOREPLIFETIME(AUnit, CurrentHealth);
+	DOREPLIFETIME(AUnit, IsGarrison);
+	DOREPLIFETIME(AUnit, PM);
+	DOREPLIFETIME(AUnit, bBuffTank);
+}

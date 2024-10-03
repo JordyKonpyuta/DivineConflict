@@ -101,9 +101,10 @@ protected:
 
 	UFUNCTION(Blueprintable, Category = "Player")
 	bool IsPlayerPassive(ACustomPlayerController* PlayerController);
-
+	
+	// Cost takes three arguments, in order : wood, stone, gold
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Player")
-	void SpawnUnitFromBuilding(FIntPoint SpawnLocation);
+	void SpawnUnitFromBuilding(const FIntPoint &SpawnLocation, const TArray<int> &Cost);
 
 	UFUNCTION(BlueprintCallable, Category = "Unit")
 	void removeUnitRef();

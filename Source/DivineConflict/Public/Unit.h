@@ -55,13 +55,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Unit", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Unit", Replicated, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* UnitMesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Category = "Unit")
 	EPlayer PlayerOwner = EPlayer::P_Neutral;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Unit")
 	bool bIsClimbing = false;
 	
 	UPROPERTY()
@@ -85,7 +85,7 @@ protected:
 	UPROPERTY()
 	int Defense = 0;
 	
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	int CurrentHealth = 0;
 	
 	UPROPERTY()
@@ -109,7 +109,7 @@ protected:
 	UPROPERTY()
 	int TotalDamagesInflicted = 0;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	bool IsGarrison = false;
 
 	UPROPERTY()
@@ -118,7 +118,7 @@ protected:
 	UPROPERTY()
 	FString Name = "";
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	int PM = 0;
 
 	UPROPERTY()
@@ -127,7 +127,7 @@ protected:
 	UPROPERTY()
 	TArray<FIntPoint> Path;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Unit")
 	bool bBuffTank = false;
 
 	
@@ -139,6 +139,9 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitType")
+	TArray<int> UnitCost;
 
 	UFUNCTION(Server,Reliable)
 	void Server_AddOnGrid();
