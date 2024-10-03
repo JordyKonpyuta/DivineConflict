@@ -506,7 +506,7 @@ void ACustomPlayerController::Server_SpawnBaseUnit_Implementation(EUnitType Unit
 void ACustomPlayerController::SpawnBaseUnit(EUnitType UnitToSpawn)
 {
 	UE_LOG(	LogTemp, Warning, TEXT("SpawnBaseUnit") );
-	Server_SpawnBaseUnit(UnitToSpawn, Grid, BaseRef, PlayerTeam);
+	Server_SpawnBaseUnit(UnitToSpawn, Grid, BaseRef, PlayerStateRef->PlayerTeam);
 }
 
 void ACustomPlayerController::Server_EndTurn_Implementation()

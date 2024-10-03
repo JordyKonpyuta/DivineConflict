@@ -53,10 +53,16 @@ void ABase::BeginPlay()
 		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
 
 		// Grid : Spawnable Locations
-		AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(100,0,0)));
-		AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(0,100,0)));
-		AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(100,-100,0)));
-		AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(-100,100,0)));
+		int Ratio = 1;
+
+		if (PlayerStateRef->PlayerTeam == EPlayer::P_Heaven) Ratio = -1;
+
+		
+			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(100*Ratio,0,0)));
+			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(0,100*Ratio,0)));
+			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(100*Ratio,-100*Ratio,0)));
+			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(-100*Ratio,100*Ratio,0)));
+
 		
 		}
 }
