@@ -76,13 +76,14 @@ protected:
 	UPROPERTY()
 	FVector OldMoveDirection;
 	
-	UPROPERTY()
-	FVector FullMoveDirection;
-
 	FRotator TargetRotationPitch=FRotator( -20, 0 ,0 );
 	FRotator TargetRotationYaw=FRotator( 0, 10 ,0 );
 
-public:	
+public:
+
+	UPROPERTY()
+	FVector FullMoveDirection;
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

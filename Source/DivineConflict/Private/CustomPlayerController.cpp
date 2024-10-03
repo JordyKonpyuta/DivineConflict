@@ -22,6 +22,8 @@
 #include "Unit_Child_Mage.h"
 #include "Unit_Child_Tank.h"
 #include "Unit_Child_Warrior.h"
+#include "Net/UnrealNetwork.h"
+#include "Utility/DC_CustomPlayerStart.h"
 
 
 void ACustomPlayerController::BeginPlay()
@@ -34,8 +36,16 @@ void ACustomPlayerController::BeginPlay()
 	{
 		CameraPlayerRef->SetCustomPlayerController(this);
 	}
-	
 	setGrid();
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACustomPlayerController::AssignPlayerPosition, 2.2f, false);
+}
+
+void ACustomPlayerController::GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ACustomPlayerController, PlayerTeam);
 
 }
 
@@ -83,6 +93,12 @@ void ACustomPlayerController::FindReachableTiles()
 			}
 		}
 	
+}
+
+void ACustomPlayerController::OnRep_PlayerTeam()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("OnRep_PlayerTeam"));
+	AssignPlayerPosition();
 }
 
 void ACustomPlayerController::SelectModeMovement()
@@ -456,6 +472,36 @@ void ACustomPlayerController::EndTurn()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("EndTurn"));
 	Server_EndTurn();
+}
+
+void ACustomPlayerController::AssignPlayerPosition()
+{
+	if(!PlayerStateRef)
+		PlayerStateRef = Cast<ACustomPlayerState>(PlayerState);
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADC_CustomPlayerStart::StaticClass(), FoundActors);
+	for(AActor* CurrentActor : FoundActors)
+	{
+		if(Cast <ADC_CustomPlayerStart>(CurrentActor))
+        {
+			ADC_CustomPlayerStart* PlayerStart = Cast<ADC_CustomPlayerStart>(CurrentActor);
+			if(PlayerStateRef)
+				if(PlayerStart->PlayerTeam == PlayerStateRef->PlayerTeam)
+				{
+					if(CameraPlayerRef)
+					{
+						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("PlayerStart Position : ") + PlayerStart->GetActorLocation().ToString());
+						CameraPlayerRef->SetActorLocation(PlayerStart->GetActorLocation());
+						CameraPlayerRef->FullMoveDirection = PlayerStart->GetActorLocation();
+						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("CameraPlayerRef Position : ") + CameraPlayerRef->GetActorLocation().ToString());
+						return;
+					}
+
+				}
+        }
+	}
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACustomPlayerController::AssignPlayerPosition, 0.2f, false);
 }
 
 void ACustomPlayerController::UpdateUi_Implementation()

@@ -79,8 +79,8 @@ protected:
 	UPROPERTY()
 	bool IsHell = false;
 	
-	UPROPERTY()
-	EPlayer PlayerTeam = EPlayer::P_Hell;
+	UPROPERTY(ReplicatedUsing = OnRep_PlayerTeam)
+	EPlayer PlayerTeam = EPlayer::P_Neutral;
 
 	UPROPERTY()
 	bool IsInActiveTurn = false;
@@ -115,6 +115,8 @@ protected:
 
 public:
 
+	UFUNCTION()
+	void OnRep_PlayerTeam();
 
 	UFUNCTION(BlueprintCallable)
 	void SelectModeMovement();
@@ -206,4 +208,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateUi();
+
+	UFUNCTION()
+	void AssignPlayerPosition();
 };
