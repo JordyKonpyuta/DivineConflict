@@ -53,16 +53,17 @@ void ABase::BeginPlay()
 		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
 
 		// Grid : Spawnable Locations
-		int Ratio = 1;
-/*
-		if (PlayerStateRef->PlayerTeam == EPlayer::P_Heaven) Ratio = -1;
+		int Ratio = 0;
+
+		if (PlayerOwner == EPlayer::P_Heaven) Ratio = -1;
+		else if (PlayerOwner == EPlayer::P_Hell) Ratio = 1;
 
 		
 			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(100*Ratio,0,0)));
 			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(0,100*Ratio,0)));
 			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(100*Ratio,-100*Ratio,0)));
 			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(-100*Ratio,100*Ratio,0)));
-*/
+
 		
 		}
 }
@@ -91,46 +92,6 @@ void ABase::VisualSpawn()
 		{
 			Grid->GridVisual->RemoveStateFromTile(AllSpawnLoc[i], EDC_TileState::Spawnable);
 		}
-	}
-}
-
-
-void ABase::Server_SpawnUnit_Implementation(EUnitType UnitToSpawn)
-{
-	if (Grid != nullptr)
-	{
-		
-		FIntPoint SpawnLoc;
-		for (int i = 0; i < AllSpawnLoc.Num(); i++)
-		{
-			if (Grid->GetGridData()->Find(AllSpawnLoc[i])->UnitOnTile == nullptr)
-			{
-				SpawnLoc = AllSpawnLoc[i];
-				break;
-			}
-		}
-		
-		 //if (PlayerStateRef->CurrentUnitCount < PlayerStateRef->MaxUnitCount)
-		//{
-			//if (PlayerStateRef->GetGoldPoints() >= 0 && PlayerStateRef->GetStonePoints() >= 0 && PlayerStateRef->GetWoodPoints() >= 0)
-			//{
-				//PlayerStateRef->ChangeGoldPoints(0, false);
-				//PlayerStateRef->ChangeStonePoints(0, false);
-				//PlayerStateRef->ChangeWoodPoints(0, false);
-				//PlayerStateRef->SetUnits(PlayerStateRef->CurrentUnitCount + 1);
-				PlayerControllerRef->SpawnUnit(UnitToSpawn, SpawnLoc);
-				Grid->GetGridData()->Find(SpawnLoc)->UnitOnTile->SetPlayerOwner(PlayerOwner);
-				Grid->GridVisual->RemoveStateFromTile(SpawnLoc, EDC_TileState::Spawnable);
-			//}
-			//else
-			//{
-				//Grid->GridVisual->RemoveStateFromTile(SpawnLoc, EDC_TileState::Spawnable);
-			//}
-		//}
-		//else
-		//{
-			//Grid->GridVisual->RemoveStateFromTile(SpawnLoc, EDC_TileState::Spawnable);
-		//}
 	}
 }
 

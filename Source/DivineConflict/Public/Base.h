@@ -56,8 +56,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void VisualSpawn();
-	UFUNCTION(Server, Reliable, BlueprintCallable)
-	void Server_SpawnUnit(EUnitType UnitToSpawn);
 
 	UPROPERTY(Blueprintable, BlueprintReadOnly, Category = "Grid")
 	TArray<FIntPoint> AllSpawnLoc;
