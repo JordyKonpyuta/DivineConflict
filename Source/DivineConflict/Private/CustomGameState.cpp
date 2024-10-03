@@ -51,19 +51,29 @@ void ACustomGameState::BeginPlay()
 
 void ACustomGameState::SwitchPlayerTurn()
 {
+	int PlayerReadyCount = 0;
 	// Make sure the array has a size of minimum 2
-	
 	for(APlayerState* CurrentPlayerState : PlayerArray)
 	{
-		ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState);
-
-		if(CurrentCustomPlayerState)
-		{
-			CurrentCustomPlayerState->bIsActiveTurn = !CurrentCustomPlayerState->bIsActiveTurn;
-			CurrentCustomPlayerState->OnRep_bIsActiveTurn();
+		if(ACustomPlayerState* PlayerState = Cast<ACustomPlayerState>(CurrentPlayerState)){
+			if (PlayerState->GetIsReadyToSwitchTurn())
+	           	PlayerReadyCount++;
 		}
-			
 	}
+	if(PlayerReadyCount == PlayerArray.Num())
+    {
+		for(APlayerState* CurrentPlayerState : PlayerArray)
+		{
+			ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState);
+			if(CurrentCustomPlayerState)
+			{
+				CurrentCustomPlayerState->bIsActiveTurn = !CurrentCustomPlayerState->bIsActiveTurn;
+				CurrentCustomPlayerState->SetIsReadyToSwitchTurn(false);
+				CurrentCustomPlayerState->OnRep_bIsActiveTurn();
+			}
+		}
+    }
+	
 	//OnTurnSwitchDelegate.Broadcast();
 	MulticastSwitchPlayerTurn();
 }

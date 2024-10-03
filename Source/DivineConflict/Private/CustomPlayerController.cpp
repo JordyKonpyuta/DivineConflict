@@ -557,6 +557,7 @@ void ACustomPlayerController::SpawnBaseUnit(EUnitType UnitToSpawn)
 
 void ACustomPlayerController::Server_EndTurn_Implementation()
 {
+	PlayerStateRef->SetIsReadyToSwitchTurn(true);
 	Cast<ACustomGameState>(GetWorld()->GetGameState())->SwitchPlayerTurn();
 }
 

@@ -73,6 +73,16 @@ int ACustomPlayerState::GetStonePoints()
 	return StonePoints;
 }
 
+bool ACustomPlayerState::GetIsReadyToSwitchTurn()
+{
+	return bIsReadyToSiwtchTurn;
+}
+
+void ACustomPlayerState::SetIsReadyToSwitchTurn(bool Ready)
+{
+	bIsReadyToSiwtchTurn = Ready;
+}
+
 int ACustomPlayerState::GetGoldPoints()
 {
 	return GoldPoints;

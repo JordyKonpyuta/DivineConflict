@@ -68,6 +68,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRep_PlayerTeam, Category = "Turn")
 	EPlayer PlayerTeam = EPlayer::P_Hell;
+
+	UPROPERTY()
+	bool bIsReadyToSiwtchTurn = false;
 	
 private:
 	virtual void BeginPlay() override;
@@ -99,6 +102,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Ressources")
 	int GetStonePoints();
 
+	UFUNCTION()
+	bool GetIsReadyToSwitchTurn();
+
+	UFUNCTION()
+	void SetIsReadyToSwitchTurn(bool Ready);
+	
 	// true to add ; false to remove
 	UFUNCTION(BlueprintCallable, Category = "Ressources")
 	void ChangeStonePoints(int StoneChange, bool Add);

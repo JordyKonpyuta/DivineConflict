@@ -54,7 +54,7 @@ void ABase::BeginPlay()
 
 		// Grid : Spawnable Locations
 		int Ratio = 1;
-
+/*
 		if (PlayerStateRef->PlayerTeam == EPlayer::P_Heaven) Ratio = -1;
 
 		
@@ -62,7 +62,7 @@ void ABase::BeginPlay()
 			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(0,100*Ratio,0)));
 			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(100*Ratio,-100*Ratio,0)));
 			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(-100*Ratio,100*Ratio,0)));
-
+*/
 		
 		}
 }
