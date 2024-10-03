@@ -32,9 +32,9 @@ void UGridPath::BeginPlay()
 TArray<FIntPoint> UGridPath::FindTileNeighbors(FIntPoint Index)
 {
 	TArray<FIntPoint> Neighbors;
-	Neighbors.Add(FIntPoint(Index.X + 1, Index.Y));
+	if(Index.X < Grid->GridSize.X-1) Neighbors.Add(FIntPoint(Index.X + 1, Index.Y));
 	if (Index.X > 0){Neighbors.Add(FIntPoint(Index.X - 1, Index.Y));}
-	Neighbors.Add(FIntPoint(Index.X, Index.Y + 1));
+	if(Index.Y < Grid->GridSize.Y-1) Neighbors.Add(FIntPoint(Index.X, Index.Y + 1));
 	if (Index.Y > 0){Neighbors.Add(FIntPoint(Index.X, Index.Y - 1));}
 	
 	
