@@ -27,6 +27,7 @@ void ABase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	DOREPLIFETIME(ABase, StoneCostUpgrade);
 	DOREPLIFETIME(ABase, WoodCostUpgrade);
 	DOREPLIFETIME(ABase, GridPosition);
+	DOREPLIFETIME(ABase, AllSpawnLoc);
 }
 
 // Called when the game starts or when spawned
@@ -47,7 +48,6 @@ void ABase::BeginPlay()
 
 	if (Grid)
 	{
-		// Create Building Data
 	
 		// Grid : Building
 		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
@@ -57,15 +57,12 @@ void ABase::BeginPlay()
 
 		if (PlayerOwner == EPlayer::P_Heaven) Ratio = -1;
 		else if (PlayerOwner == EPlayer::P_Hell) Ratio = 1;
-
-		
-			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(100*Ratio,0,0)));
-			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(0,100*Ratio,0)));
-			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(100*Ratio,-100*Ratio,0)));
-			AllSpawnLoc.Add(Grid->ConvertLocationToIndex(GetActorLocation()+ FVector3d(-100*Ratio,100*Ratio,0)));
-
-		
-		}
+			
+		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, 0));
+		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, -1*Ratio));
+		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(0, 1*Ratio));
+		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 1*Ratio));
+	}
 }
 
 // Called every frame
@@ -78,19 +75,34 @@ void ABase::Tick(float DeltaTime)
 void ABase::VisualSpawn()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("Update Visual"));
-	for (int i = 0; i < AllSpawnLoc.Num(); i++)
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("AllSpawnLoc : " + FString::FromInt(AllSpawnLoc.Num())));
+	AllSpawnLoc.Empty();
+	int Ratio = 0;
+
+	if (PlayerOwner == EPlayer::P_Heaven) Ratio = -1;
+	else if (PlayerOwner == EPlayer::P_Hell) Ratio = 1;
+			
+	AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, 0));
+	AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, -1*Ratio));
+	AllSpawnLoc.Add(GetGridPosition() + FIntPoint(0, 1*Ratio));
+	AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 1*Ratio));
+	
+	for (FIntPoint i : AllSpawnLoc)
 	{
+		UE_LOG( LogTemp, Warning, TEXT("i : %s"), *i.ToString());
 		if (IsSelected)
 			{
-				if (Grid->GetGridData()->Find(AllSpawnLoc[i])->UnitOnTile == nullptr)
+			UE_LOG( LogTemp, Warning, TEXT("i : %s"), *i.ToString());
+				if (Grid->GetGridData()->Find(i)->UnitOnTile == nullptr)
 				{
-						Grid->GridVisual->addStateToTile(AllSpawnLoc[i], EDC_TileState::Spawnable);
-						break;
+					UE_LOG( LogTemp, Warning, TEXT("i : %s"), *i.ToString());
+					Grid->GridVisual->addStateToTile(i, EDC_TileState::Spawnable);
+					return;
 				}
 			}
 		else
 		{
-			Grid->GridVisual->RemoveStateFromTile(AllSpawnLoc[i], EDC_TileState::Spawnable);
+			Grid->GridVisual->RemoveStateFromTile(i, EDC_TileState::Spawnable);
 		}
 	}
 }

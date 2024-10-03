@@ -57,7 +57,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void VisualSpawn();
 
-	UPROPERTY(Blueprintable, BlueprintReadOnly, Category = "Grid")
+	UPROPERTY(Blueprintable,Replicated, BlueprintReadOnly, Category = "Grid")
 	TArray<FIntPoint> AllSpawnLoc;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bool")

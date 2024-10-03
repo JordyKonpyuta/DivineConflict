@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "CustomPlayerState.h"
 #include "EnumsList.h"
+#include "Grid.h"
 #include "GameFramework/PlayerController.h"
 #include "InteractInterface.h"
 #include "CustomPlayerController.generated.h"
@@ -190,6 +191,12 @@ public:
 	
 	UFUNCTION(Blueprintable)
 	bool SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen);
+
+	UFUNCTION(Server, Reliable)
+	void Server_SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_SpawnUnit(AUnit* UnitSpawned,AGrid* GridSpawned, ACustomPlayerState* PlayerStatRef);
 
 	UFUNCTION(Server, Reliable)
 	void ServerMoveUnit(const TArray<FIntPoint> &PathToMove , const AUnit* UnitToMove);
