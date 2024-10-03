@@ -51,17 +51,34 @@ void ACustomGameState::BeginPlay()
 
 void ACustomGameState::SwitchPlayerTurn()
 {
+
+	for(APlayerState* CurrentPlayerState : PlayerArray)
+	{
+		ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState);
+		if(CurrentCustomPlayerState)
+		{
+			CurrentCustomPlayerState->bIsActiveTurn = !CurrentCustomPlayerState->bIsActiveTurn;
+			CurrentCustomPlayerState->SetIsReadyToSwitchTurn(false);
+			CurrentCustomPlayerState->OnRep_bIsActiveTurn();
+
+		}
+	}
+
+}
+
+void ACustomGameState::CheckSwitchPlayerTurn()
+{
 	int PlayerReadyCount = 0;
 	// Make sure the array has a size of minimum 2
 	for(APlayerState* CurrentPlayerState : PlayerArray)
 	{
 		if(ACustomPlayerState* PlayerState = Cast<ACustomPlayerState>(CurrentPlayerState)){
 			if (PlayerState->GetIsReadyToSwitchTurn())
-	           	PlayerReadyCount++;
+				PlayerReadyCount++;
 		}
 	}
 	if(PlayerReadyCount == PlayerArray.Num())
-    {
+	{
 		for(APlayerState* CurrentPlayerState : PlayerArray)
 		{
 			ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState);
@@ -70,12 +87,12 @@ void ACustomGameState::SwitchPlayerTurn()
 				CurrentCustomPlayerState->bIsActiveTurn = !CurrentCustomPlayerState->bIsActiveTurn;
 				CurrentCustomPlayerState->SetIsReadyToSwitchTurn(false);
 				CurrentCustomPlayerState->OnRep_bIsActiveTurn();
+				// Timer to switch turns                                                           
+				GetWorld()->GetTimerManager().ClearTimer(TurnTimerHandle);
+				GetWorld()->GetTimerManager().SetTimer(TurnTimerHandle,	this,	&ACustomGameState::BeginTimer,	TurnTimerLength,	true);
 			}
 		}
-    }
-	
-	//OnTurnSwitchDelegate.Broadcast();
-	MulticastSwitchPlayerTurn();
+	}
 }
 
 
@@ -94,7 +111,8 @@ void ACustomGameState::AssignTurnOrder()
 		this,
 		&ACustomGameState::BeginTimer,
 		TurnTimerLength,
-		true);
+		true
+		);
 }
 
 void ACustomGameState::MulticastSwitchPlayerTurn_Implementation()

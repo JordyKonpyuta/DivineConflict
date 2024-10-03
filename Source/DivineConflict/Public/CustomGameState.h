@@ -26,7 +26,7 @@ public:
 	TArray<ACustomPlayerController*> PlayerControllers;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timer", meta = (AllowPrivateAccess = "true"))
-	int TurnTimerLength = 90;
+	int TurnTimerLength = 10;
 
 	UPROPERTY(EditAnywhere, NotBlueprintable, Category = "Timer", meta = (AllowPrivateAccess = "true"))
 	int LoadingTimer = 2;
@@ -53,6 +53,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "TurnSystem")
 	void SwitchPlayerTurn();
 
+	UFUNCTION()
+	void CheckSwitchPlayerTurn();
+	
 	FTimerHandle TurnTimerHandle;
 	
 	UFUNCTION(BlueprintCallable, Category = "TurnSystem")
