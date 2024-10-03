@@ -107,7 +107,6 @@ void AUnit::BeginPlay()
 void AUnit::SetGrid()
 {
 	//get the grid
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Set Grid"));
 	AActor* FoundActors = UGameplayStatics::GetActorOfClass(GetWorld(), AGrid::StaticClass());
 	if (FoundActors != nullptr)
 	{

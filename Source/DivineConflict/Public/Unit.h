@@ -46,6 +46,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetGrid(AGrid* NewGrid);
 
+	UPROPERTY(BlueprintReadOnly)
 	EUnitName UnitName;
 
 	UPROPERTY()

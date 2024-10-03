@@ -3,6 +3,8 @@
 
 #include "CameraPlayer.h"
 
+#include <string>
+
 #include "Building.h"
 #include "CustomGameState.h"
 #include "CustomPlayerController.h"
@@ -12,6 +14,7 @@
 #include "GridPath.h"
 #include "GridVisual.h"
 #include "Unit.h"
+#include "Components/ArrowComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -104,7 +107,7 @@ void ACameraPlayer::RepeatMoveTimerCamera(const FInputActionValue& Value)
 	GetWorld()->GetTimerManager().SetTimer(
 		RepeatMoveTimer,
 		RepeatMoveTimerDelegate,
-		0.1, 
+		0.15, 
 		true,
 		0.15); 
 }
@@ -129,8 +132,32 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 		FVector3d MoveDirection = FVector3d(0, 0, 0);
 		if (abs(Input.X)  >= abs(Input.Y) )
 		{
-			FVector Forward = FVector(UKismetMathLibrary::Round(CameraBoom->GetForwardVector().X), UKismetMathLibrary::Round(CameraBoom->GetForwardVector().Y), 0);
-			MoveDirection = Forward * (UKismetMathLibrary::SignOfFloat(Input.X) * 100);
+			if(CameraBoom->GetComponentRotation().Pitch <= 0 && CameraBoom->GetComponentRotation().Yaw <= 0)
+			{
+				double Xbase = abs(CameraBoom->GetForwardVector().X); 
+				
+				double Xmod = 0;
+				if (Xbase < 0){Xmod = 1;} else {Xmod = -1;}
+				double Ybase = abs(CameraBoom->GetForwardVector().Y);
+				double Ymod = 0;
+				if (Ybase < 0){Ymod = 1;} else {Ymod = -1;}
+				
+				if (Xbase > Ybase){Xbase = 1 * Xmod; Ybase = 0;} else {Xbase = 0; Ybase = 1 * Ymod;}
+				FVector Forward = FVector(Xbase, Ybase, 0);
+				MoveDirection = Forward * (UKismetMathLibrary::SignOfFloat(Input.X) * 100);
+			} else
+			{
+				double Xbase = abs(CameraBoom->GetForwardVector().X);
+				double Xmod = 0;
+				if (Xbase < 0){Xmod = -1;} else {Xmod = 1;}
+				double Ybase = abs(CameraBoom->GetForwardVector().Y);
+				double Ymod = 0;
+				if (Ybase < 0){Ymod = -1;} else {Ymod = 1;}
+				
+				if (Xbase > Ybase){Xbase = 1 * Xmod; Ybase = 0;} else {Xbase = 0; Ybase = 1 * Ymod;}
+				FVector Forward = FVector(Xbase, Ybase, 0);
+				MoveDirection = Forward * (UKismetMathLibrary::SignOfFloat(Input.X) * 100);
+			}
 		}
 		else
 		{
@@ -168,8 +195,8 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 		else
 		{
 			CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection), EDC_TileState::Hovered);
-			//this->SetActorLocation(FullMoveDirection);
-			FullMoveDirection = OldMoveDirection + MoveDirection;
+			FullMoveDirection = OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0);
+			FullMoveDirection.Z = (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
 			CustomPlayerController->Grid->GridVisual->addStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection), EDC_TileState::Hovered);
 		}
 	}
@@ -180,15 +207,13 @@ void ACameraPlayer::RotateCamera(const FInputActionValue& Value)
 	FVector2d Input = Value.Get<FVector2d>();
 
 	TargetRotationYaw = FRotator(0,TargetRotationYaw.Yaw + UKismetMathLibrary::SignOfFloat(Input.X)*-90, 0);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Input X: ") + FString::SanitizeFloat(Input.X));
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Snap Rotation Yaw: ") + FString::SanitizeFloat(CameraBoom->GetComponentRotation().Yaw + UKismetMathLibrary::SignOfFloat(Input.X) * -90));
 }
 
 void ACameraPlayer::RotateCameraPitch(const FInputActionValue& Value)
 {
 	FVector2d Input = Value.Get<FVector2d>();
 	
-	TargetRotationPitch = FRotator(UKismetMathLibrary::Clamp(TargetRotationPitch.Pitch + Input.Y, -60.0f, -20.0f),0, 0);
+	TargetRotationPitch = FRotator(UKismetMathLibrary::Clamp(TargetRotationPitch.Pitch + Input.Y, -75.0f, -20.0f),0, 0);
 }
 
 void ACameraPlayer::ZoomCamera( const FInputActionValue& Value)
@@ -203,7 +228,6 @@ void ACameraPlayer::ZoomCamera( const FInputActionValue& Value)
 
 void ACameraPlayer::PathRemove(const FInputActionValue& Value)
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Path Remove"));
 	if (Path.Num() == 0)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Path Remove: Empty"));
@@ -223,11 +247,7 @@ void ACameraPlayer::PathRemove(const FInputActionValue& Value)
 		IsMovingUnit = false;
 		return;
 	}
-	
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Path Remove: " +  Path.Last().ToString()));
 	SetActorLocation(FVector( Path.Last().X * 100,Path.Last().Y*100, GetActorLocation().Z));
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Path Remove: ") + FString::SanitizeFloat(Path.Num()));
-	UE_LOG( LogTemp, Warning, TEXT("Path Remove: %s"), *Path.Last().ToString());
 }
 
 void ACameraPlayer::PathClear()
