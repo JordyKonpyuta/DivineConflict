@@ -171,9 +171,7 @@ void ACustomPlayerController::ControllerInteraction()
 				{
 					if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile != nullptr && !PlayerStateRef->bIsActiveTurn) // Building, Passive Turn
 					{
-						if ((Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Hell && PlayerTeam == EPlayer::P_Hell)
-							|| (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == EPlayer::P_Heaven && PlayerTeam ==EPlayer::P_Heaven)
-							)
+						if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == PlayerStateRef->PlayerTeam)
 						{
 							CurrentPA += 1;
 							BuildingRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile;
@@ -370,6 +368,23 @@ TArray<FIntPoint> ACustomPlayerController::PrepareSpawnArea(TArray<FIntPoint> Al
 
 bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen)
 {
+	Server_SpawnUnit(UnitToSpawn, SpawnChosen);
+	return Grid->GetGridData()->Find(SpawnChosen)->UnitOnTile != nullptr;
+}
+
+void ACustomPlayerController::Multicast_SpawnUnit_Implementation(AUnit* UnitSpawned,AGrid* GridSpawned, ACustomPlayerState* PlayerStatRef)
+{
+	if(UnitSpawned)
+	{
+		UnitSpawned->Grid = Grid;
+		UnitSpawned->SetPlayerOwner(PlayerStateRef->PlayerTeam);
+	}
+		
+	
+}
+
+void ACustomPlayerController::Server_SpawnUnit_Implementation(EUnitType UnitToSpawn, FIntPoint SpawnChosen)
+{
 	TArray<int> CostOfSpawn;
 	switch (UnitToSpawn)
 	{
@@ -388,6 +403,9 @@ bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnCh
 	default:
 		CostOfSpawn = {15,15,15};
 	}
+	if(!PlayerStateRef)
+		PlayerStateRef = Cast<ACustomPlayerState>(PlayerState);
+	
 	if (Grid->GetGridData()->Find(SpawnChosen)->UnitOnTile == nullptr
 		&& (PlayerStateRef->GetWoodPoints() >= CostOfSpawn[0])
 		&& (PlayerStateRef->GetStonePoints() >= CostOfSpawn[1])
@@ -401,71 +419,31 @@ bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnCh
 		{
 		case EUnitType::U_Warrior:
 			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
-			UnitThatSpawned->Grid = Grid;
-			if (PlayerTeam == EPlayer::P_Hell)
-			{
-				UnitThatSpawned->SetPlayerOwner(EPlayer::P_Hell);
-			}
-			else
-			{
-				UnitThatSpawned->SetPlayerOwner(EPlayer::P_Heaven);
-			}
+			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStateRef);
+			
 			break;
 		case EUnitType::U_Mage:
 			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Mage>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
-			UnitThatSpawned->Grid = Grid;
-			if (PlayerTeam == EPlayer::P_Hell)
-			{
-				UnitThatSpawned->SetPlayerOwner(EPlayer::P_Hell);
-			}
-			else
-			{
-				UnitThatSpawned->SetPlayerOwner(EPlayer::P_Heaven);
-			}
+			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStateRef);
 			break;
 		case EUnitType::U_Tank:
 			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Tank>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
-			UnitThatSpawned->Grid = Grid;
-			if (PlayerTeam == EPlayer::P_Hell)
-			{
-				UnitThatSpawned->SetPlayerOwner(EPlayer::P_Hell);
-			}
-			else
-			{
-				UnitThatSpawned->SetPlayerOwner(EPlayer::P_Heaven);
-			}
+			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStateRef);
 			break;
 		case EUnitType::U_Leader:
 			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Leader>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
-			UnitThatSpawned->Grid = Grid;
-			if (PlayerTeam == EPlayer::P_Hell)
-			{
-				UnitThatSpawned->SetPlayerOwner(EPlayer::P_Hell);
-			}
-			else
-			{
-				UnitThatSpawned->SetPlayerOwner(EPlayer::P_Heaven);
-			}
+			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStateRef);
 			break;
 		default:
 			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
-			UnitThatSpawned->Grid = Grid;
-			if (PlayerTeam == EPlayer::P_Hell)
-			{
-				UnitThatSpawned->SetPlayerOwner(EPlayer::P_Hell);
-			}
-			else
-			{
-				UnitThatSpawned->SetPlayerOwner(EPlayer::P_Heaven);
-			}
+			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStateRef);
 			break;
 		}
-		return true;
+
 
 		
 	}
-	return false;
-		
+
 }
 
 void ACustomPlayerController::EndTurn()
@@ -552,7 +530,7 @@ void ACustomPlayerController::Server_SpawnBaseUnit_Implementation(EUnitType Unit
 void ACustomPlayerController::SpawnBaseUnit(EUnitType UnitToSpawn)
 {
 	UE_LOG(	LogTemp, Warning, TEXT("SpawnBaseUnit") );
-	Server_SpawnBaseUnit(UnitToSpawn, Grid, BaseRef, PlayerStateRef->PlayerTeam);
+	Server_SpawnBaseUnit(UnitToSpawn, Grid, BaseRef, PlayerTeam);
 }
 
 void ACustomPlayerController::Server_EndTurn_Implementation()
