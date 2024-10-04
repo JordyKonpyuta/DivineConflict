@@ -5,6 +5,7 @@
 #include "EnumsList.h"
 #include "CustomPlayerController.h"
 #include "CustomPlayerState.h"
+#include "Net/UnrealNetwork.h"
 
 void ACustomGameState::AssignPlayerTurns()
 {
@@ -33,6 +34,12 @@ void ACustomGameState::AssignPlayerTurns()
 	// Problème : le Broadcast ne s'effectue que sur le serveur. 
 	OnTurnSwitchDelegate.Broadcast();
 }
+void ACustomGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(ACustomGameState, Turn);
+}
 
 void ACustomGameState::BeginPlay()
 {
@@ -51,6 +58,7 @@ void ACustomGameState::BeginPlay()
 
 void ACustomGameState::SwitchPlayerTurn()
 {
+	Turn++;
 
 	for(APlayerState* CurrentPlayerState : PlayerArray)
 	{
@@ -60,7 +68,6 @@ void ACustomGameState::SwitchPlayerTurn()
 			CurrentCustomPlayerState->bIsActiveTurn = !CurrentCustomPlayerState->bIsActiveTurn;
 			CurrentCustomPlayerState->SetIsReadyToSwitchTurn(false);
 			CurrentCustomPlayerState->OnRep_bIsActiveTurn();
-
 		}
 	}
 
@@ -79,6 +86,7 @@ void ACustomGameState::CheckSwitchPlayerTurn()
 	}
 	if(PlayerReadyCount == PlayerArray.Num())
 	{
+		Turn++;
 		for(APlayerState* CurrentPlayerState : PlayerArray)
 		{
 			ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState);
@@ -87,6 +95,7 @@ void ACustomGameState::CheckSwitchPlayerTurn()
 				CurrentCustomPlayerState->bIsActiveTurn = !CurrentCustomPlayerState->bIsActiveTurn;
 				CurrentCustomPlayerState->SetIsReadyToSwitchTurn(false);
 				CurrentCustomPlayerState->OnRep_bIsActiveTurn();
+				
 				// Timer to switch turns                                                           
 				GetWorld()->GetTimerManager().ClearTimer(TurnTimerHandle);
 				GetWorld()->GetTimerManager().SetTimer(TurnTimerHandle,	this,	&ACustomGameState::BeginTimer,	TurnTimerLength,	true);

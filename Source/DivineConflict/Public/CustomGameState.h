@@ -40,6 +40,8 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Delegate")
 	FOnTurnSwitchDelegate OnTurnSwitchDelegate;
 
+	UPROPERTY(Blueprintable,Replicated, BlueprintReadWrite, Category = "Turns")
+	int Turn = 0;
 	
 private:
 	virtual void BeginPlay() override;
