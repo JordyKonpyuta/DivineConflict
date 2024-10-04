@@ -152,6 +152,44 @@ void ACustomPlayerController::SelectModeAttackBuilding()
 	PlayerAction = EDC_ActionPlayer::AttackBuilding;
 }
 
+/*
+void ACustomPlayerController::ControllerInteraction()
+{
+	if(!PlayerStateRef)
+	{
+		PlayerStateRef = Cast<ACustomPlayerState>(PlayerState);
+	}
+
+	if (Grid != nullptr)
+	{
+		FIntPoint PlayerPositionInGrid = Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation());
+		switch (PlayerAction)
+		{
+		case EDC_ActionPlayer::None:
+			if(Grid->GetGridData()->Find(PlayerPositionInGrid) != nullptr) 
+			{
+				if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile != nullptr && !PlayerStateRef->bIsActiveTurn) // Passive Turn ; Selecting a Building
+				{
+					
+				}
+			}
+			break;
+		case EDC_ActionPlayer::AttackBuilding:
+			break;
+		case EDC_ActionPlayer::AttackUnit:
+			break;
+		case EDC_ActionPlayer::MoveUnit:
+			break;
+		case EDC_ActionPlayer::SelectBuilding:
+			break;
+		case EDC_ActionPlayer::SpellCast:
+			break;
+		default:
+		}
+	}
+}
+*/
+
 void ACustomPlayerController::ControllerInteraction()
 {
 	if(!PlayerStateRef)
@@ -198,7 +236,7 @@ void ACustomPlayerController::ControllerInteraction()
 					}
 					else if(Grid->GridData.Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
 					{
-						if(!Grid->GridData.Find(PlayerPositionInGrid)->UnitOnTile->GetIsSelected() && PlayerStateRef->bIsActiveTurn/* && Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() == PlayerTeam*/) // Unit
+						if(!Grid->GridData.Find(PlayerPositionInGrid)->UnitOnTile->GetIsSelected() && PlayerStateRef->bIsActiveTurn && Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() == PlayerTeam) // Unit
 						{
 							UnitRef = Grid->GridData.Find(PlayerPositionInGrid)->UnitOnTile;
 							CameraPlayerRef->SetCustomPlayerController(this);
@@ -602,16 +640,6 @@ void ACustomPlayerController::SetIsReady(bool bR)
 	IsReady = bR;
 }
 
-bool ACustomPlayerController::GetIsDead()
-{
-	return IsDead;
-}
-
-void ACustomPlayerController::SetIsDead(bool bD)
-{
-	IsDead = bD;
-}
-
 void ACustomPlayerController::SetPlayerAction(EDC_ActionPlayer PA)
 {
 	PlayerAction = PA;
@@ -624,6 +652,7 @@ void ACustomPlayerController::DoActions_Implementation()
 		switch(Action.UnitAction)
 		{
 		case EDC_ActionPlayer::AttackBuilding:
+			Action.Unit->AttackUnit(Action.Unit->UnitToAttackRef);
 			break;
 		case EDC_ActionPlayer::AttackUnit:
 			Action.Unit->AttackUnit(Action.Unit->UnitToAttackRef);

@@ -11,10 +11,8 @@
 #include "GridInfo.h"
 #include "GridVisual.h"
 #include "Tower.h"
-#include "Chaos/ChaosGameplayEventDispatcher.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
-#include "Preferences/UnrealEdKeyBindings.h"
 
 
 // Sets default values
@@ -530,26 +528,45 @@ void AUnit::SetBuffTank(bool bt)
 
 void AUnit::PrepareMove(TArray<FIntPoint> NewPos)
 {
-	FutureMovement = NewPos;
-	FutureMovementPos = FutureMovement.Last();
-	PlayerControllerRef->AllPlayerActions.Add(FStructActions(this, EDC_ActionPlayer::MoveUnit));
+	if (PlayerControllerRef->CurrentPA > 0)
+	{
+		FutureMovement = NewPos;
+		FutureMovementPos = FutureMovement.Last();
+		PlayerControllerRef->AllPlayerActions.Add(FStructActions(this, EDC_ActionPlayer::MoveUnit));
+		PlayerControllerRef->CurrentPA--;
+	}
 }
 
 void AUnit::PrepareAttackUnit(FIntPoint AttackPos)
 {
-	if (Grid->GetGridData()->Find(AttackPos)->UnitOnTile)
+	if (Grid->GetGridData()->Find(AttackPos)->UnitOnTile && PlayerControllerRef->CurrentPA > 0)
 	{
 		UnitToAttackRef = Grid->GetGridData()->Find(AttackPos)->UnitOnTile;
 		PlayerControllerRef->AllPlayerActions.Add(FStructActions(this, EDC_ActionPlayer::AttackUnit));
+		PlayerControllerRef->CurrentPA--;
 	}
 }
 
 void AUnit::PrepareAttackBuilding(FIntPoint AttackPos)
 {
-	if (Grid->GetGridData()->Find(AttackPos)->BuildingOnTile)
+	if (Grid->GetGridData()->Find(AttackPos)->BuildingOnTile && PlayerControllerRef->CurrentPA > 0)
 	{
 		BuildingToAttackRef = Grid->GetGridData()->Find(AttackPos)->BuildingOnTile;
-		PlayerControllerRef->AllPlayerActions.Add(FStructActions(this, EDC_ActionPlayer::AttackBuilding));
+		if (BuildingToAttackRef->UnitRef && (BuildingToAttackRef->UnitRef->GetUnitTeam() != PlayerControllerRef->GetPlayerTeam()))
+		{
+			UnitToAttackRef = BuildingToAttackRef->UnitRef;
+			PlayerControllerRef->AllPlayerActions.Add(FStructActions(this, EDC_ActionPlayer::AttackBuilding));
+			PlayerControllerRef->CurrentPA--;
+		}
+	}
+}
+
+void AUnit::PrepareSpecial(FIntPoint SpecialPos)
+{
+	if (Grid->GetGridData()->Find(SpecialPos)->UnitOnTile && PlayerControllerRef->CurrentPA > 1)
+	{
+		UsedSpecial = true;
+		PlayerControllerRef->CurrentPA--;
 	}
 }
 

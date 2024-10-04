@@ -161,7 +161,6 @@ void ABase::CheckIfDead()
 	if (Health <= 0)
 	{
 		Health = 0;
-		PlayerControllerRef->SetIsDead(true);
 		OnDeath();
 		
 	}

@@ -111,9 +111,6 @@ protected:
 	bool IsReady = false;
 
 	UPROPERTY()
-	bool IsDead = false;
-
-	UPROPERTY()
 	EDC_ActionPlayer PlayerAction = EDC_ActionPlayer::None;
 
 	UPROPERTY()
@@ -179,12 +176,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetIsReady(bool bR);
-
-	UFUNCTION(BlueprintCallable)
-	bool GetIsDead();
-
-	UFUNCTION(BlueprintCallable)
-	void SetIsDead(bool bD);
 
 	UFUNCTION()
 	void SetPlayerAction(EDC_ActionPlayer PA);

@@ -190,6 +190,9 @@ public:
 	
 	UPROPERTY()
 	ABuilding* BuildingToAttackRef;
+
+	UPROPERTY()
+	bool UsedSpecial;
 	
 	
 	
@@ -306,4 +309,7 @@ public:
 
 	UFUNCTION()
 	void PrepareAttackBuilding(FIntPoint AttackPos);
+
+	UFUNCTION()
+	void PrepareSpecial(FIntPoint SpecialPos);
 };
