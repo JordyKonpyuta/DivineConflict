@@ -168,17 +168,120 @@ void ACustomPlayerController::ControllerInteraction()
 		case EDC_ActionPlayer::None:
 			if(Grid->GetGridData()->Find(PlayerPositionInGrid) != nullptr) 
 			{
-				if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile != nullptr && !PlayerStateRef->bIsActiveTurn) // Passive Turn ; Selecting a Building
+				// Passive Turn ; Selecting a Building //
+				if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile != nullptr && !PlayerStateRef->bIsActiveTurn) 
 				{
-					
+					if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == PlayerStateRef->PlayerTeam) // Check if it's your building
+					{
+						BuildingRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile;
+						AllCurrentSpawnPoints = BuildingRef->AllSpawnLoc;
+						AllCurrentSpawnPoints += BuildingRef->SpawnLocRef;
+						for (FIntPoint BuildingIndex : BuildingRef->SpawnLocRef)
+						{
+							Grid->GridVisual->addStateToTile(BuildingIndex, EDC_TileState::Selected);
+						}
+						DisplayWidgetBuilding();
+					}
 				}
+				// Building, Active Turn //
+				else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile != nullptr && PlayerStateRef->bIsActiveTurn)
+				{
+					if (	Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == PlayerTeam
+						&&  Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->GarrisonFull
+					   )
+					{
+						BuildingRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile;
+						AllCurrentSpawnPoints = BuildingRef->AllSpawnLoc;
+						AllCurrentSpawnPoints += BuildingRef->SpawnLocRef;
+						for (FIntPoint BuildingIndex : BuildingRef->SpawnLocRef)
+						{
+							Grid->GridVisual->addStateToTile(BuildingIndex, EDC_TileState::Selected);
+						}
+						DisplayWidgetBuilding();
+					}
+				}
+				// Unit
+				else if (Grid->GridData.Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
+				{
+					if(!Grid->GridData.Find(PlayerPositionInGrid)->UnitOnTile->GetIsSelected() && PlayerStateRef->bIsActiveTurn && Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() == PlayerTeam) // Unit
+					{
+						UnitRef = Grid->GridData.Find(PlayerPositionInGrid)->UnitOnTile;
+						CameraPlayerRef->SetCustomPlayerController(this);
+						IInteractInterface::Execute_Interact(Grid->GridData.Find(PlayerPositionInGrid)->UnitOnTile, this);
+						DisplayWidget();
+					}
+				}
+				// Base
+				else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile != nullptr && !PlayerStateRef->bIsActiveTurn)
+				{
+					if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile->PlayerOwner == PlayerTeam)
+					{
+						{
+							BaseRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile;
+							BaseRef->IsSelected = true;
+							BaseRef->VisualSpawn();
+							DisplayWidgetBase();
+						}
+					}
+				}
+				// Tower
+				else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile != nullptr && PlayerStateRef->bIsActiveTurn)
+				{
+					TowerRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile;
+					TowerRef->IsSelected = true;
+					DisplayWidgetTower();
+				}
+				break;
 			}
 			break;
 		case EDC_ActionPlayer::AttackBuilding:
 			break;
 		case EDC_ActionPlayer::AttackUnit:
+			if (UnitRef)
+			{
+				// Are we attacking a Unit?
+				if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile)
+				{
+					if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile->GetPlayerOwner() != UnitRef->GetPlayerOwner())
+					{
+						UnitRef->PrepareAttackUnit(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()));
+					}
+				}
+				// Are we attacking a Building?
+				else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BuildingOnTile)
+				{
+					if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BuildingOnTile->GarrisonFull)
+						if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BuildingOnTile->UnitRef->GetPlayerOwner() != UnitRef->GetPlayerOwner())
+						{
+							UnitRef->PrepareAttackBuilding(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()));
+						}
+				}
+				// Are we attacking a Base?
+				else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BaseOnTile)
+				{
+					if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BaseOnTile->PlayerOwner != UnitRef->GetPlayerOwner())
+					{
+						
+					}
+				}
+			}
 			break;
 		case EDC_ActionPlayer::MoveUnit:
+			if (UnitRef)
+			{
+				for(FIntPoint Index : PathReachable)
+				{
+					Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Reachable);
+				}
+				UnitRef->SetIsSelected(false);
+				UnitRef->PrepareMove(PathReachable);
+				PathReachable.Empty();
+				CameraPlayerRef->IsMovingUnit = false;
+				CameraPlayerRef->Path.Empty();
+				UpdateUi();
+					
+				PlayerAction = EDC_ActionPlayer::None;
+			}
 			break;
 		case EDC_ActionPlayer::SelectBuilding:
 			break;
@@ -187,8 +290,8 @@ void ACustomPlayerController::ControllerInteraction()
 		default:
 		}
 	}
-}
-*/
+}*/
+
 
 void ACustomPlayerController::ControllerInteraction()
 {

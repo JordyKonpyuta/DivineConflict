@@ -561,6 +561,15 @@ void AUnit::PrepareAttackBuilding(FIntPoint AttackPos)
 	}
 }
 
+void AUnit::PrepareAttackBase(FIntPoint AttackPos)
+{
+	if (Grid->GetGridData()->Find(AttackPos)->BaseOnTile && PlayerControllerRef->CurrentPA > 1)
+	{
+		EnemyBase = Grid->GetGridData()->Find(AttackPos)->BaseOnTile;
+		PlayerControllerRef->CurrentPA--;
+	}
+}
+
 void AUnit::PrepareSpecial(FIntPoint SpecialPos)
 {
 	if (Grid->GetGridData()->Find(SpecialPos)->UnitOnTile && PlayerControllerRef->CurrentPA > 1)
