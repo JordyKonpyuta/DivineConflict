@@ -497,7 +497,7 @@ void ACustomPlayerController::Server_SpawnBaseUnit_Implementation(EUnitType Unit
 	{
 		UE_LOG( LogTemp, Warning, TEXT("Server_SpawnBaseUnit") );
 		UE_LOG( LogTemp, Warning, TEXT("AllSpawnLoc: %d"), BaseToSpawn->AllSpawnLoc.Num() );
-		FIntPoint SpawnLoc;
+		FIntPoint SpawnLoc = FIntPoint(-999,-999);
 		for (FIntPoint Index : BaseToSpawn->AllSpawnLoc)
 		{
 			if (GridSer->GetGridData()->Find(Index)->UnitOnTile == nullptr)
@@ -506,19 +506,12 @@ void ACustomPlayerController::Server_SpawnBaseUnit_Implementation(EUnitType Unit
 				break;
 			}
 		}
-		
-		//if (PlayerStateRef->CurrentUnitCount < PlayerStateRef->MaxUnitCount)
-		//{
-		//if (PlayerStateRef->GetGoldPoints() >= 0 && PlayerStateRef->GetStonePoints() >= 0 && PlayerStateRef->GetWoodPoints() >= 0)
-		//{
-		//PlayerStateRef->ChangeGoldPoints(0, false);
-		//PlayerStateRef->ChangeStonePoints(0, false);
-		//PlayerStateRef->ChangeWoodPoints(0, false);
-		//PlayerStateRef->SetUnits(PlayerStateRef->CurrentUnitCount + 1);
-		SpawnUnit(UnitToSpawn, SpawnLoc);
-		GridSer->GetGridData()->Find(SpawnLoc)->UnitOnTile->SetPlayerOwner(PlayerOwner);
-		GridSer->GridVisual->RemoveStateFromTile(SpawnLoc, EDC_TileState::Spawnable);
-
+		if(SpawnLoc != FIntPoint(-999,-999))
+		{
+			SpawnUnit(UnitToSpawn, SpawnLoc);
+			GridSer->GetGridData()->Find(SpawnLoc)->UnitOnTile->SetPlayerOwner(PlayerOwner);
+			GridSer->GridVisual->RemoveStateFromTile(SpawnLoc, EDC_TileState::Spawnable);
+		}
 	}
 }
 

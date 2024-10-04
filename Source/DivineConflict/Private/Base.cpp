@@ -59,8 +59,8 @@ void ABase::BeginPlay()
 		else if (PlayerOwner == EPlayer::P_Hell) Ratio = 1;
 			
 		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, 0));
-		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, -1*Ratio));
 		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(0, 1*Ratio));
+		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, -1*Ratio));
 		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 1*Ratio));
 	}
 }
@@ -83,8 +83,8 @@ void ABase::VisualSpawn()
 	else if (PlayerOwner == EPlayer::P_Hell) Ratio = 1;
 			
 	AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, 0));
-	AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, -1*Ratio));
 	AllSpawnLoc.Add(GetGridPosition() + FIntPoint(0, 1*Ratio));
+	AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, -1*Ratio));
 	AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 1*Ratio));
 	
 	for (FIntPoint i : AllSpawnLoc)
