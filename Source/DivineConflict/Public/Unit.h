@@ -178,6 +178,18 @@ public:
 
 	UFUNCTION()
 	void NewTurn();
+
+	UPROPERTY()
+	TArray<FIntPoint> FutureMovement;
+
+	UPROPERTY()
+	FIntPoint FutureMovementPos;
+
+	UPROPERTY()
+	AUnit* UnitToAttackRef;
+	
+	UPROPERTY()
+	ABuilding* BuildingToAttackRef;
 	
 	
 	
@@ -285,5 +297,13 @@ public:
 
 	UFUNCTION()
 	void SetBuffTank(bool bt);
-	
+
+	UFUNCTION()
+	void PrepareMove(TArray<FIntPoint> NewPos);
+
+	UFUNCTION()
+	void PrepareAttackUnit(FIntPoint AttackPos);
+
+	UFUNCTION()
+	void PrepareAttackBuilding(FIntPoint AttackPos);
 };

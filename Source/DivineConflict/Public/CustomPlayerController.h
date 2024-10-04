@@ -35,6 +35,18 @@ enum class EDC_ActionPlayer : uint8
 	SelectBuilding UMETA(DisplayNmae = "SelectBuilding"),
 };
 
+USTRUCT()
+struct FStructActions
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	AUnit* Unit;
+
+	UPROPERTY()
+	EDC_ActionPlayer UnitAction;
+};
+
 UCLASS()
 class DIVINECONFLICT_API ACustomPlayerController : public APlayerController , public IInteractInterface
 {
@@ -74,6 +86,12 @@ public:
 	TArray<AUnit*> Units;
 	
 	TArray<FIntPoint> AllCurrentSpawnPoints;
+
+	UPROPERTY(Replicated)
+	TArray<FStructActions> AllPlayerActions;
+
+	UFUNCTION(Server, Reliable)
+	void DoActions();
 	
 protected:
 
@@ -109,8 +127,6 @@ protected:
 
 	UFUNCTION()
 	void FindReachableTiles();
-
-	
 
 
 

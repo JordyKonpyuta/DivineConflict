@@ -623,3 +623,25 @@ void ACustomPlayerController::SetPlayerAction(EDC_ActionPlayer PA)
 {
 	PlayerAction = PA;
 }
+
+void ACustomPlayerController::DoActions_Implementation()
+{
+	for (FStructActions Action : AllPlayerActions)
+	{
+		switch(Action.UnitAction)
+		{
+		case EDC_ActionPlayer::AttackBuilding:
+			break;
+		case EDC_ActionPlayer::AttackUnit:
+			Action.Unit->AttackUnit(Action.Unit->UnitToAttackRef);
+			break;
+		case EDC_ActionPlayer::MoveUnit:
+			Action.Unit->Move(Action.Unit->FutureMovement);
+			break;
+		case EDC_ActionPlayer::SpellCast:
+			break;
+		default:
+			break;
+		}
+	}
+}

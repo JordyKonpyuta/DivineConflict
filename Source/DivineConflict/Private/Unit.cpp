@@ -528,6 +528,31 @@ void AUnit::SetBuffTank(bool bt)
 	bBuffTank = bt;
 }
 
+void AUnit::PrepareMove(TArray<FIntPoint> NewPos)
+{
+	FutureMovement = NewPos;
+	FutureMovementPos = FutureMovement.Last();
+	PlayerControllerRef->AllPlayerActions.Add(FStructActions(this, EDC_ActionPlayer::MoveUnit));
+}
+
+void AUnit::PrepareAttackUnit(FIntPoint AttackPos)
+{
+	if (Grid->GetGridData()->Find(AttackPos)->UnitOnTile)
+	{
+		UnitToAttackRef = Grid->GetGridData()->Find(AttackPos)->UnitOnTile;
+		PlayerControllerRef->AllPlayerActions.Add(FStructActions(this, EDC_ActionPlayer::AttackUnit));
+	}
+}
+
+void AUnit::PrepareAttackBuilding(FIntPoint AttackPos)
+{
+	if (Grid->GetGridData()->Find(AttackPos)->BuildingOnTile)
+	{
+		BuildingToAttackRef = Grid->GetGridData()->Find(AttackPos)->BuildingOnTile;
+		PlayerControllerRef->AllPlayerActions.Add(FStructActions(this, EDC_ActionPlayer::AttackBuilding));
+	}
+}
+
 void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProps) const{
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
