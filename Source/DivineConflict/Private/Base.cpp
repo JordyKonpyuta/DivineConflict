@@ -36,16 +36,24 @@ void ABase::BeginPlay()
 	Super::BeginPlay();
 
 	SetMesh();
-
+	// Get PlayerController
 	TArray<AActor*> FoundActor;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(),ACustomPlayerController::StaticClass(),FoundActor);
 	for(AActor* Actor : FoundActor)
 	{
 		PlayerControllerRef = Cast<ACustomPlayerController>(Actor);
 	}
-
-	PlayerStateRef = PlayerControllerRef->GetPlayerState<ACustomPlayerState>();
-
+	// Get PlayerState
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(),ACustomPlayerState::StaticClass(),FoundActor);
+	for(AActor* CurrentActor : FoundActor)
+    {
+		ACustomPlayerState* PlayerState = Cast<ACustomPlayerState>(CurrentActor);
+        if (PlayerState->PlayerTeam == PlayerOwner)
+        {
+            PlayerStateRef = PlayerState;
+        }
+    }
+	// Get Grid
 	if (Grid)
 	{
 	
@@ -74,8 +82,6 @@ void ABase::Tick(float DeltaTime)
 
 void ABase::VisualSpawn()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("Update Visual"));
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("AllSpawnLoc : " + FString::FromInt(AllSpawnLoc.Num())));
 	AllSpawnLoc.Empty();
 	int Ratio = 0;
 
@@ -173,17 +179,19 @@ void ABase::TakeDamage(int Damage)
 	CheckIfDead();
 }
 
-// UPGRADE
+// UPGRADE MaxUnitCount
 void ABase::Upgrade()
 {
-	if (PlayerStateRef->GetWoodPoints() >= WoodCostUpgrade && PlayerStateRef->GetStonePoints() >= StoneCostUpgrade && PlayerStateRef->GetGoldPoints() >= GoldCostUpgrade)
-	{
-		if (PlayerStateRef->MaxUnitCount < 15)
+	if(PlayerStateRef)
+		// Check if player has enough resources
+		if (PlayerStateRef->GetWoodPoints() >= WoodCostUpgrade && PlayerStateRef->GetStonePoints() >= StoneCostUpgrade && PlayerStateRef->GetGoldPoints() >= GoldCostUpgrade)
 		{
-			PlayerStateRef->MaxUnitCount += 5;
-			SetCostsUpgrade(GoldCostUpgrade += 10, StoneCostUpgrade += 10, WoodCostUpgrade += 10);
+			if (PlayerStateRef->MaxUnitCount < 15)
+			{
+				PlayerStateRef->MaxUnitCount += 5;
+				SetCostsUpgrade(GoldCostUpgrade += 10, StoneCostUpgrade += 10, WoodCostUpgrade += 10);
+			}
 		}
-	}
 }
 
 
