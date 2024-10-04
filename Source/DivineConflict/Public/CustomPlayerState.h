@@ -71,6 +71,9 @@ public:
 
 	UPROPERTY()
 	bool bIsReadyToSiwtchTurn = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Game")
+	bool bIsDead = false;
 	
 private:
 	virtual void BeginPlay() override;

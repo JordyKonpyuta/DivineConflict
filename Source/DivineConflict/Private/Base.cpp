@@ -161,6 +161,7 @@ void ABase::CheckIfDead()
 	if (Health <= 0)
 	{
 		Health = 0;
+		PlayerStateRef->bIsDead = true;
 		OnDeath();
 		
 	}

@@ -42,6 +42,12 @@ public:
 
 	UPROPERTY(Blueprintable,Replicated, BlueprintReadWrite, Category = "Turns")
 	int Turn = 0;
+
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Game")
+	ACustomPlayerState* Winner = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Game")
+	ACustomPlayerState* Loser = nullptr;
 	
 private:
 	virtual void BeginPlay() override;
@@ -70,6 +76,9 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastSwitchPlayerTurn();
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	void MulticastVictoryScreen();
 	
 private:
 };

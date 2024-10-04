@@ -55,6 +55,7 @@ void ACustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(ACustomPlayerState, GoldBuildingOwned);
 	DOREPLIFETIME(ACustomPlayerState, CurrentUnitCount);
 	DOREPLIFETIME(ACustomPlayerState, MaxUnitCount);
+	DOREPLIFETIME(ACustomPlayerState, bIsDead);
 
 }
 
