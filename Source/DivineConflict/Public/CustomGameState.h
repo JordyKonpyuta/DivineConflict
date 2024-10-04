@@ -26,7 +26,7 @@ public:
 	TArray<ACustomPlayerController*> PlayerControllers;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timer", meta = (AllowPrivateAccess = "true"))
-	int TurnTimerLength = 10;
+	int TurnTimerLength = 90;
 
 	UPROPERTY(EditAnywhere, NotBlueprintable, Category = "Timer", meta = (AllowPrivateAccess = "true"))
 	int LoadingTimer = 2;

@@ -25,7 +25,12 @@ void ACustomPlayerState::OnRep_bIsActiveTurn()
 		NewTurnBegin();
 	}
 	if(Cast<ACustomPlayerController>(GetPlayerController()))
+	{
 		Cast<ACustomPlayerController>(GetPlayerController())->UpdateUi();
+		Cast<ACustomPlayerController>(GetPlayerController())->UpdateUITimer(90);
+	}
+		
+	
 }
 
 void ACustomPlayerState::OnRep_PlayerTeam()

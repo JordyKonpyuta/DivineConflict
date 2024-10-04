@@ -452,6 +452,10 @@ void ACustomPlayerController::EndTurn()
 	Server_EndTurn();
 }
 
+void ACustomPlayerController::UpdateUITimer_Implementation(int TimeLeft)
+{
+}
+
 void ACustomPlayerController::AssignPlayerPosition()
 {
 	if(!PlayerStateRef)
@@ -514,16 +518,7 @@ void ACustomPlayerController::Server_SpawnBaseUnit_Implementation(EUnitType Unit
 		SpawnUnit(UnitToSpawn, SpawnLoc);
 		GridSer->GetGridData()->Find(SpawnLoc)->UnitOnTile->SetPlayerOwner(PlayerOwner);
 		GridSer->GridVisual->RemoveStateFromTile(SpawnLoc, EDC_TileState::Spawnable);
-		//}
-		//else
-		//{
-		//Grid->GridVisual->RemoveStateFromTile(SpawnLoc, EDC_TileState::Spawnable);
-		//}
-		//}
-		//else
-		//{
-		//Grid->GridVisual->RemoveStateFromTile(SpawnLoc, EDC_TileState::Spawnable);
-		//}
+
 	}
 }
 

@@ -216,6 +216,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateUi();
 
+	UFUNCTION(BlueprintNativeEvent)
+	void UpdateUITimer(int TimeLeft);
+	
 	UFUNCTION()
 	void AssignPlayerPosition();
 };
