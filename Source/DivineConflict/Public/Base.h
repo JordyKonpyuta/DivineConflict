@@ -88,8 +88,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetGridPosition(FIntPoint GridP);
 
-	UFUNCTION(BlueprintCallable)
-	void CheckIfDead();
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	void MulticastCheckIfDead();
 	UFUNCTION(BlueprintNativeEvent)
 	void SetMesh();
 

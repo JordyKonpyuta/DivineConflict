@@ -39,8 +39,8 @@ void ACustomGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME(ACustomGameState, Turn);
-	DOREPLIFETIME(ACustomGameState, Winner);
-	DOREPLIFETIME(ACustomGameState, Loser);
+	DOREPLIFETIME(ACustomGameState, PWinner);
+	DOREPLIFETIME(ACustomGameState, PLoser);
 }
 
 void ACustomGameState::BeginPlay()
@@ -126,14 +126,14 @@ void ACustomGameState::AssignTurnOrder()
 		);
 }
 
-void ACustomGameState::MulticastVictoryScreen_Implementation()
+void ACustomGameState::MulticastVictoryScreen_Implementation(EPlayer Loser)
 {
 	for (APlayerState* PlayerState : PlayerArray)
 	{
 		if (ACustomPlayerState* CustomPlayerState = Cast<ACustomPlayerState>(PlayerState))
         {
-            if (CustomPlayerState->bIsDead) Loser = CustomPlayerState;
-            else Winner = CustomPlayerState;
+            if (CustomPlayerState->PlayerTeam == Loser) PLoser = CustomPlayerState;
+            else PWinner = CustomPlayerState;
         }
 	}
 }

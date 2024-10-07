@@ -36,23 +36,6 @@ void ABase::BeginPlay()
 	Super::BeginPlay();
 
 	SetMesh();
-	// Get PlayerController
-	TArray<AActor*> FoundActor;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(),ACustomPlayerController::StaticClass(),FoundActor);
-	for(AActor* Actor : FoundActor)
-	{
-		PlayerControllerRef = Cast<ACustomPlayerController>(Actor);
-	}
-	// Get PlayerState
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(),ACustomPlayerState::StaticClass(),FoundActor);
-	for(AActor* CurrentActor : FoundActor)
-    {
-		ACustomPlayerState* PlayerState = Cast<ACustomPlayerState>(CurrentActor);
-        if (PlayerState->PlayerTeam == PlayerOwner)
-        {
-            PlayerStateRef = PlayerState;
-        }
-    }
 	// Get Grid
 	if (Grid)
 	{
@@ -71,6 +54,7 @@ void ABase::BeginPlay()
 		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, -1*Ratio));
 		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 1*Ratio));
 	}
+	
 }
 
 // Called every frame
@@ -156,15 +140,12 @@ void ABase::SetGridPosition(FIntPoint GridP)
 }
 
 // IF DEAD, END GAME
-void ABase::CheckIfDead()
+void ABase::MulticastCheckIfDead_Implementation()
 {
 	if (Health <= 0)
 	{
-		Health = 0;
-		PlayerStateRef->bIsDead = true;
 		OnDeath();
-		
-	}
+	}	
 }
 
 void ABase::SetMesh_Implementation()
@@ -176,7 +157,7 @@ void ABase::SetMesh_Implementation()
 void ABase::TakeDamage(int Damage)
 {
 	Health -= Damage;
-	CheckIfDead();
+	MulticastCheckIfDead();
 }
 
 // UPGRADE MaxUnitCount
@@ -193,7 +174,6 @@ void ABase::Upgrade()
 			}
 		}
 }
-
 
 
 // FUNCTION FOR UI
