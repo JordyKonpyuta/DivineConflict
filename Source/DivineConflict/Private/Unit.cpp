@@ -12,6 +12,7 @@
 #include "GridVisual.h"
 #include "Tower.h"
 #include "Kismet/GameplayStatics.h"
+#include "Math/TransformCalculus3D.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -34,7 +35,20 @@ AUnit::AUnit()
 	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture_DEBUG/M_NeutralPlayer.M_NeutralPlayer'")).Object);
 	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HeavenPlayer.Mi_HeavenPlayer'")).Object);
 	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HellPlayer.Mi_HellPlayer'")).Object);
-	
+
+	MaterialToGhosts = ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture/M_Ghosts.M_Ghosts'")).Object;
+
+	GhostsMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ghosts Mesh"));
+	GhostsMesh->SetStaticMesh(UnitMesh->GetStaticMesh());
+	GhostsMesh->SetMaterial(0, MaterialToGhosts);
+	GhostsMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	GhostsMesh->SetVisibility(false);
+
+	GhostsFinaleLocationMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ghosts Finale Location Mesh"));
+	GhostsFinaleLocationMesh->SetStaticMesh(UnitMesh->GetStaticMesh());
+	GhostsFinaleLocationMesh->SetMaterial(0, MaterialToGhosts);
+	GhostsFinaleLocationMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	GhostsFinaleLocationMesh->SetVisibility(false);
 	
 }
 
@@ -45,7 +59,7 @@ bool AUnit::Interact_Implementation(ACustomPlayerController* PlayerController)
 	PlayerControllerRef = PlayerController;
 	//PlayerControllerRef->CameraPlayerRef->IsMovingUnit = true;
 	//DisplayWidget();
-	
+
 
 	
 	return true;
@@ -99,7 +113,8 @@ void AUnit::BeginPlay()
     {
 		SetGrid();
     }
-	
+	GhostsMesh->SetStaticMesh(UnitMesh->GetStaticMesh());
+	GhostsFinaleLocationMesh->SetStaticMesh(UnitMesh->GetStaticMesh());
 }
 
 void AUnit::SetGrid()
@@ -127,11 +142,54 @@ void AUnit::NotifyActorOnClicked(FKey ButtonPressed)
 	SetIsSelected(true);
 }
 
+void AUnit::InitGhosts_Implementation()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Init Ghosts"));
+	GhostsMesh->SetVisibility(true);
+	GhostsMesh->SetWorldLocation(GetActorLocation());
+	GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovementPos));
+	GhostsFinaleLocationMesh->SetVisibility(true);
+	bIsGhosts = true;
+}
+
+void AUnit::MoveGhosts(float DeltaTime)
+{
+
+	Server_MoveGhosts(DeltaTime, FutureMovement);
+}
+
+void AUnit::Server_MoveGhosts_Implementation(float DeltaTime ,const TArray<FIntPoint> &PathToFollowGhost)
+{
+	if(bIsGhosts)
+		MoveGhostsMulticast(DeltaTime, PathToFollowGhost);
+}
+
+void AUnit::MoveGhostsMulticast_Implementation(float DeltaTime,const TArray<FIntPoint> &PathToFollowGhost)
+{
+	if(PathToFollowGhost.Num() == 0)
+	{
+		return;
+	}
+	GhostsMesh->SetWorldLocation(UKismetMathLibrary::VInterpTo_Constant(GhostsMesh->GetComponentLocation(), Grid->ConvertIndexToLocation(PathToFollowGhost[CurrentIndexGhost]), DeltaTime, 70.0f));
+	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, TEXT("Move Ghosts"));
+	if(GhostsMesh->GetComponentLocation() == Grid->ConvertIndexToLocation(PathToFollowGhost[CurrentIndexGhost]))
+	{
+		CurrentIndexGhost++;
+		if(PathToFollowGhost.Num() == CurrentIndexGhost)
+		{
+			CurrentIndexGhost = 0;
+			GhostsMesh->SetWorldLocation(GetActorLocation());
+			GhostsFinaleLocationMesh->SetVisibility(true);
+		}
+	}
+}
+
 // Called every frame
 void AUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	MoveGhosts(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -528,13 +586,10 @@ void AUnit::SetBuffTank(bool bt)
 
 void AUnit::PrepareMove(TArray<FIntPoint> NewPos)
 {
-	if (PlayerControllerRef->CurrentPA > 0)
-	{
 		FutureMovement = NewPos;
 		FutureMovementPos = FutureMovement.Last();
-		PlayerControllerRef->AllPlayerActions.Add(FStructActions(this, EDC_ActionPlayer::MoveUnit));
-		PlayerControllerRef->CurrentPA--;
-	}
+		InitGhosts();
+		//PlayerControllerRef->AllPlayerActions.Add(FStructActions(this, EDC_ActionPlayer::MoveUnit));
 }
 
 void AUnit::PrepareAttackUnit(FIntPoint AttackPos)
@@ -589,4 +644,5 @@ void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProp
 	DOREPLIFETIME(AUnit, IsGarrison);
 	DOREPLIFETIME(AUnit, PM);
 	DOREPLIFETIME(AUnit, bBuffTank);
+	DOREPLIFETIME(AUnit, bIsGhosts);
 }

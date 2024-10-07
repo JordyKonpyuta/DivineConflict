@@ -8,6 +8,7 @@
 #include "InteractInterface.h"
 #include "Unit.generated.h"
 
+
 class ABase;
 class AGrid;
 class UStaticMeshComponent;
@@ -52,12 +53,21 @@ public:
 	UPROPERTY()
 	TArray<UMaterialInterface*> AllMaterials;
 
+	UPROPERTY()
+	UMaterialInterface* MaterialToGhosts;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Unit", Replicated, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* UnitMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
+	UStaticMeshComponent* GhostsMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
+	UStaticMeshComponent* GhostsFinaleLocationMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Category = "Unit")
 	EPlayer PlayerOwner = EPlayer::P_Neutral;
@@ -131,7 +141,26 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Unit")
 	bool bBuffTank = false;
 
+	UPROPERTY(Replicated)
+	bool bIsGhosts = false;
 	
+	UPROPERTY()
+	float DeltaTimeGhosts = 0.0f;
+
+	UPROPERTY()
+	int CurrentIndexGhost = 0;
+
+	UFUNCTION(Client,Reliable)
+	void InitGhosts();
+
+    UFUNCTION()
+	void MoveGhosts(float DeltaTime);
+
+	UFUNCTION(Server,Reliable)
+	void Server_MoveGhosts(float DeltaTime ,const TArray<FIntPoint> &PathToFollowGhost);
+
+	UFUNCTION(NetMulticast,Reliable)
+	void MoveGhostsMulticast(float DeltaTime,const TArray<FIntPoint> &PathToFollowGhost);
 
 public:
 	
