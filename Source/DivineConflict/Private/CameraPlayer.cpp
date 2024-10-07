@@ -53,7 +53,6 @@ void ACameraPlayer::BeginPlay()
 void ACameraPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
 
 	CameraBoom->SetWorldRotation(FRotator(UKismetMathLibrary::FInterpTo(CameraBoom->GetComponentRotation().Pitch,TargetRotationPitch.Pitch, DeltaTime, 20.0f),
 		UKismetMathLibrary::RInterpTo(CameraBoom->GetComponentRotation(),TargetRotationYaw,DeltaTime,10).Yaw,0));
@@ -199,6 +198,8 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 			FullMoveDirection.Z = (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
 			CustomPlayerController->Grid->GridVisual->addStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection), EDC_TileState::Hovered);
 		}
+
+		CustomPlayerController->VerifyBuildInteraction();
 	}
 }
 

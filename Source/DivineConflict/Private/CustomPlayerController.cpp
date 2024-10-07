@@ -29,6 +29,8 @@
 void ACustomPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UpdateWidget3D(false, false);
 	
 	CameraPlayerRef = Cast<ACameraPlayer>(GetPawn());
 	
@@ -93,6 +95,11 @@ void ACustomPlayerController::FindReachableTiles()
 			}
 		}
 	
+}
+
+void ACustomPlayerController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 }
 
 void ACustomPlayerController::OnRep_PlayerTeam()
@@ -595,6 +602,46 @@ void ACustomPlayerController::EndTurn()
 
 void ACustomPlayerController::UpdateUITimer_Implementation(int TimeLeft)
 {
+}
+
+void ACustomPlayerController::UpdateWidget3D_Implementation(bool bInteractive, bool bVisibility)
+{
+}
+
+
+// Display Widget 3D on camera depending if item is interactive or not
+
+void ACustomPlayerController::VerifyBuildInteraction()
+{
+	if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile != nullptr)
+	{
+		if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile->GetPlayerOwner() == PlayerTeam && PlayerStateRef->bIsActiveTurn)
+		{
+			UpdateWidget3D(true, true);
+		}
+		else UpdateWidget3D(false, true);
+	}
+
+	else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BaseOnTile != nullptr)
+	{
+		if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BaseOnTile->PlayerOwner == PlayerTeam && !PlayerStateRef->bIsActiveTurn)
+		{
+			UpdateWidget3D(true, true);
+		}
+		else UpdateWidget3D(false, true);
+	}
+
+	else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TowerOnTile != nullptr)
+	{
+		if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TowerOnTile->GetPlayerOwner() == PlayerTeam && PlayerStateRef->bIsActiveTurn)
+		{
+			UpdateWidget3D(true, true);
+		}
+		else UpdateWidget3D(false, true);
+	}
+
+	else UpdateWidget3D(false, false);
+	
 }
 
 void ACustomPlayerController::AssignPlayerPosition()

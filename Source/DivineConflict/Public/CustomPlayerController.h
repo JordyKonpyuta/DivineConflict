@@ -130,6 +130,9 @@ protected:
 public:
 
 	UFUNCTION()
+	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION()
 	void OnRep_PlayerTeam();
 
 	UFUNCTION(BlueprintCallable)
@@ -222,9 +225,13 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateUi();
-
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateUITimer(int TimeLeft);
+	UFUNCTION(BlueprintNativeEvent)
+	void UpdateWidget3D(bool bInteractive, bool bVisibility);
+
+	UFUNCTION(BlueprintCallable)
+	void VerifyBuildInteraction();
 	
 	UFUNCTION()
 	void AssignPlayerPosition();
