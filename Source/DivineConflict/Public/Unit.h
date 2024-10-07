@@ -177,7 +177,10 @@ public:
 	void Server_AddOnGrid();
 
 	UFUNCTION( BlueprintCallable,NetMulticast,Reliable)
-	void Move(const TArray<FIntPoint>& PathToFollow);
+	void Move(const TArray<FIntPoint> &PathToFollow);
+
+	UFUNCTION()
+	void TakeDamage(int Damage);
 
 	UFUNCTION(BlueprintCallable)
 	void AttackUnit(AUnit* UnitToAttack);

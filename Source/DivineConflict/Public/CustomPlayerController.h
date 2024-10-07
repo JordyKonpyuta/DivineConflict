@@ -89,9 +89,9 @@ public:
 
 	UPROPERTY(Replicated)
 	TArray<FStructActions> AllPlayerActions;
-
+/*
 	UFUNCTION(Server, Reliable)
-	void DoActions();
+	void DoActions();*/
 	
 protected:
 
@@ -209,7 +209,7 @@ public:
 	void Multicast_SpawnUnit(AUnit* UnitSpawned,AGrid* GridSpawned, ACustomPlayerState* PlayerStatRef);
 
 	UFUNCTION(Server, Reliable)
-	void ServerMoveUnit(const TArray<FIntPoint> &PathToMove , const AUnit* UnitToMove);
+	void ServerMoveUnit(const TArray<FIntPoint> &Path, const AUnit* UnitToMove);
 
 	UFUNCTION(Server, Reliable)
 	void Server_SpawnBaseUnit(EUnitType UnitToSpawn,AGrid* GridSer, ABase* BaseToSpawn, EPlayer PlayerOwner);
@@ -222,6 +222,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_EndTurn();
+
+	UFUNCTION()
+	void ActionEndTurn();
 
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateUi();

@@ -104,6 +104,10 @@ void ATower::AttackUnit(AUnit* UnitToAttack)
 {
 	UnitToAttack->SetCurrentHealth(UnitToAttack->GetCurrentHealth() - Attack);
 	SetCanAttack(false);
+	if(UnitToAttack->GetCurrentHealth() <= 0)
+	{
+		GetWorld()->DestroyActor(UnitToAttack);
+	}
 }
 
 void ATower::UpdateVisuals()

@@ -28,6 +28,7 @@ void ACustomPlayerState::OnRep_bIsActiveTurn()
 	{
 		Cast<ACustomPlayerController>(GetPlayerController())->UpdateUi();
 		Cast<ACustomPlayerController>(GetPlayerController())->UpdateUITimer(90);
+		Cast<ACustomPlayerController>(GetPlayerController())->ActionEndTurn();
 	}
 		
 	

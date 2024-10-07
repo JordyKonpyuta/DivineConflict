@@ -205,14 +205,18 @@ void AUnit::Server_AddOnGrid_Implementation()
 	Grid->GridInfo->AddUnitInGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
 }
 
-void AUnit::Move_Implementation(const TArray<FIntPoint>& PathIn)
+void AUnit::Move_Implementation(const TArray<FIntPoint> &PathIn)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit moved"));
+	GhostsMesh->SetVisibility(false);
+	GhostsFinaleLocationMesh->SetVisibility(false);
+	bIsGhosts = false;
 	bool bJustBecameGarrison = false;
 	Path.Empty();
 	Path = PathIn;
 	if (Path.Num()!=-1)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit Path Ready"));
 		for(FIntPoint index : Path)
 		{
 			if (index == Path.Last() && Grid->GetGridData()->Find(index)->UnitOnTile)
@@ -283,39 +287,37 @@ void AUnit::Move_Implementation(const TArray<FIntPoint>& PathIn)
 			BuildingRef = nullptr;
 		}
 	}
+	if(PlayerControllerRef != nullptr)
+    {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Next Action"));
+        PlayerControllerRef->ActionEndTurn();
+    }
 }
 
 
+void AUnit::TakeDamage(int Damage)
+{
+GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UNIT TAKE DAMAGE"));
+	if(bBuffTank && (Damage-(Defense+1)) > 0)
+	{
+		CurrentHealth -= (Damage-(Defense+1));
+	}
+	else if((Damage-Defense) > 0)
+		CurrentHealth -= (Damage-Defense);
+}
+
 void AUnit::AttackUnit(AUnit* UnitToAttack)
 {
+
 	if(UnitToAttack == nullptr || Grid == nullptr || UnitToAttack == this)
 	{
 		return;
 	}
-	if (UnitToAttack->GetBuffTank())
-	{
-		if(UnitToAttack->GetAttack()-(GetDefense()+1)  > 0)
-			SetCurrentHealth(GetCurrentHealth()-( UnitToAttack->GetAttack()-(GetDefense()+1 )));
-	}
-	else
-	{
-		if(UnitToAttack->GetAttack()- GetDefense() > 0)
-			SetCurrentHealth( GetCurrentHealth() - (UnitToAttack->GetAttack()- GetDefense()));
-	}
-	if(GetBuffTank())
-	{
-		if(GetAttack()- UnitToAttack->GetDefense() > 0)
-			UnitToAttack->SetCurrentHealth( UnitToAttack->GetCurrentHealth() - (GetAttack()- UnitToAttack->GetDefense()));
-	}
-	else 
-	{
-		if(GetAttack()- UnitToAttack->GetDefense() > 0)
-			UnitToAttack->SetCurrentHealth( UnitToAttack->GetCurrentHealth() - (GetAttack()- UnitToAttack->GetDefense()));
-	}
+	UnitToAttack->TakeDamage(GetAttack());
 
-	
+	TakeDamage(UnitToAttack->GetAttack());
 
-	if(UnitToAttack->GetCurrentHealth() < 1)
+		if(UnitToAttack->GetCurrentHealth() < 1)
 	{
 		Path.Add(UnitToAttack->GetIndexPosition());
 		Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
@@ -335,7 +337,7 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 			GetWorld()->DestroyActor(this);
 		}
 		else
-		Move(Path);
+			Move(Path);
 	}
 	if(GetCurrentHealth() < 1)
 	{
@@ -594,11 +596,9 @@ void AUnit::PrepareMove(TArray<FIntPoint> NewPos)
 
 void AUnit::PrepareAttackUnit(FIntPoint AttackPos)
 {
-	if (Grid->GetGridData()->Find(AttackPos)->UnitOnTile && PlayerControllerRef->CurrentPA > 0)
+	if (Grid->GetGridData()->Find(AttackPos)->UnitOnTile)
 	{
 		UnitToAttackRef = Grid->GetGridData()->Find(AttackPos)->UnitOnTile;
-		PlayerControllerRef->AllPlayerActions.Add(FStructActions(this, EDC_ActionPlayer::AttackUnit));
-		PlayerControllerRef->CurrentPA--;
 	}
 }
 
@@ -645,4 +645,5 @@ void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProp
 	DOREPLIFETIME(AUnit, PM);
 	DOREPLIFETIME(AUnit, bBuffTank);
 	DOREPLIFETIME(AUnit, bIsGhosts);
+
 }
