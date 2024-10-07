@@ -38,8 +38,8 @@ public:
 	UPROPERTY()
 	ACustomGameState* GameStateRef;
 
-	UPROPERTY(Blueprintable, EditAnywhere, BlueprintReadWrite, Category = "Building")
-	UStaticMeshComponent* StaticMeshBuilding;
+	UPROPERTY(Blueprintable, VisibleAnywhere, BlueprintReadWrite, Category = "Building")
+	USkeletalMeshComponent* StaticMeshBuilding;
 
 	UPROPERTY(Blueprintable, EditAnywhere, BlueprintReadWrite, Category = "Building")
 	UStaticMeshComponent* StaticMeshPlane;

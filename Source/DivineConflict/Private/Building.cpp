@@ -22,19 +22,18 @@ ABuilding::ABuilding()
 	SetReplicates(true);
 	
 	// Add and name a static mesh
-	StaticMeshBuilding = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Building Appearance"));
-
-	
 	SceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
 	RootComponent = SceneComp;
+	
+	StaticMeshBuilding = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Building Appearance"));
+	StaticMeshBuilding->SetupAttachment(RootComponent);
+	StaticMeshBuilding->SetIsReplicated(true);
 
 	StaticMeshBuilding->SetCollisionResponseToAllChannels(ECR_Ignore);
 
 	StaticMeshPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Plane StaticMesh"));
     StaticMeshPlane->SetHiddenInGame(true);
 	StaticMeshPlane->SetupAttachment(RootComponent);
-	StaticMeshBuilding->SetupAttachment(RootComponent);
-	StaticMeshBuilding->SetIsReplicated(true);
 
 	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture_DEBUG/M_NeutralPlayer.M_NeutralPlayer'")).Object);
 	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HeavenPlayer.Mi_HeavenPlayer'")).Object);
