@@ -635,7 +635,7 @@ void ACustomPlayerController::ServerMoveUnit_Implementation(const TArray<FIntPoi
 	
 	if(UnitRefServer)
 	{
-		RefUnit->Move(Path);
+		RefUnit->InitializeFullMove(Path);
 		UnitRef = nullptr;
 	}
 }

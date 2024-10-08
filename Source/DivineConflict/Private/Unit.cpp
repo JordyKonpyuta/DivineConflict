@@ -12,7 +12,10 @@
 #include "GridVisual.h"
 #include "Tower.h"
 #include "Kismet/GameplayStatics.h"
-#include "Math/TransformCalculus3D.h"
+#include <chrono>
+#include <thread>
+
+#include "VectorTypes.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -211,7 +214,7 @@ void AUnit::Move_Implementation(const TArray<FIntPoint> &PathIn)
 	GhostsMesh->SetVisibility(false);
 	GhostsFinaleLocationMesh->SetVisibility(false);
 	bIsGhosts = false;
-	bool bJustBecameGarrison = false;
+	bJustBecameGarrison = false;
 	Path.Empty();
 	Path = PathIn;
 	if (Path.Num()!=-1)
@@ -399,6 +402,133 @@ void AUnit::NewTurn()
 	bIsClimbing = false;
 	SetBuffTank(false);
 	
+}
+
+
+
+		
+
+
+
+void AUnit::UnitMoveAnim_Implementation()
+{
+	// Monte
+	if (MoveSequencePos == 0)
+	{
+		SetActorLocation(GetActorLocation() + FVector(0,0,50));
+		MoveSequencePos++;
+	}
+
+	// Déplacement
+	else if (MoveSequencePos == 1)
+	{
+		SetActorLocation(Grid->ConvertIndexToLocation(PathToCross[PathToCrossPosition]) + FVector(0,0,50));
+		Grid->GridVisual->RemoveStateFromTile(PathToCross[PathToCrossPosition], EDC_TileState::Pathfinding);
+
+		// If you cross a building
+		if (Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile)
+		{
+			// If the building is empty
+			if (Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile->GarrisonFull != true)
+			{
+				SetActorLocation(Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile->GetActorLocation());
+				Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile->UnitRef = this;
+				Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile->GarrisonFull = true;
+
+				Grid->GridVisual->RemoveStateFromTile(PathToCross[PathToCrossPosition], EDC_TileState::Pathfinding);
+				SetIsGarrison(true);
+				bJustBecameGarrison = true;
+				BuildingRef = Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile;
+				if (PlayerControllerRef->PlayerStateRef != nullptr)
+				{
+					BuildingRef->SwitchOwner(PlayerControllerRef->PlayerStateRef);
+				}
+			}
+			// If the building is full
+			else
+			{
+				if (this != Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile->UnitRef)
+				{
+					for(FIntPoint Superindex : Path)
+					{
+						Grid->GridVisual->RemoveStateFromTile(Superindex, EDC_TileState::Pathfinding);
+					}
+					Grid->GridVisual->RemoveStateFromTile(PathToCross[PathToCrossPosition], EDC_TileState::Pathfinding);
+				}
+			}
+		}
+
+		// If you cross a tower
+		else if (Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->TowerOnTile)
+		{
+			if (Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->TowerOnTile->IsGarrisoned == false)
+			{
+				SetActorLocation(Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->TowerOnTile->GetActorLocation());
+				Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->TowerOnTile->UnitInGarrison = this;
+				Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->TowerOnTile->IsGarrisoned = true;
+
+				Grid->GridVisual->RemoveStateFromTile(PathToCross[PathToCrossPosition], EDC_TileState::Pathfinding);
+				SetIsGarrison(true);
+				bJustBecameGarrison = true;
+			}
+		}
+
+		// If is last move
+		if (PathToCross[PathToCrossPosition] == PathToCross.Last())
+		{
+			Grid->GridVisual->RemoveStateFromTile(PathToCross[PathToCrossPosition], EDC_TileState::Pathfinding);
+			Grid->GridInfo->Multi_setUnitIndexOnGrid(PathToCross[PathToCrossPosition],this);
+			PathToCross.Empty();
+			PathToCrossPosition = 0;
+
+		}
+
+		// EndTurn
+		if(PlayerControllerRef != nullptr)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Next Action"));
+			PlayerControllerRef->ActionEndTurn();
+		}
+		MoveSequencePos++;
+	}
+
+	// Descend
+	else if (MoveSequencePos == 2)
+	{
+		SetActorLocation(GetActorLocation() + FVector(0,0,-50));
+		PathToCrossPosition++;
+		MoveSequencePos = 0;
+		if (PathToCross.IsEmpty())
+		{
+			GetWorldTimerManager().ClearTimer(MoveTimerHandle);
+		}
+	}
+}
+
+void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
+{
+	// Initialisation
+	PathToCross = FullMove;
+	GhostsMesh->SetVisibility(false);
+	GhostsFinaleLocationMesh->SetVisibility(false);
+	bIsGhosts = false;
+	bJustBecameGarrison = false;
+	MoveSequencePos = 0;
+
+	if (IsGarrison && !bJustBecameGarrison)
+	{
+		BuildingRef->UnitRef = nullptr;
+		BuildingRef->GarrisonFull = false;
+		IsGarrison = false;
+		BuildingRef = nullptr;
+	}
+		
+	GetWorld()->GetTimerManager().SetTimer(
+		MoveTimerHandle, 
+		this,
+		&AUnit::UnitMoveAnim,
+		0.3,
+		true);
 }
 
 int AUnit::GetAttack()
@@ -645,5 +775,9 @@ void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProp
 	DOREPLIFETIME(AUnit, PM);
 	DOREPLIFETIME(AUnit, bBuffTank);
 	DOREPLIFETIME(AUnit, bIsGhosts);
+	DOREPLIFETIME(AUnit, PathToCross);
+	DOREPLIFETIME(AUnit, PathToCrossPosition);
+	DOREPLIFETIME(AUnit, bJustBecameGarrison);
+	DOREPLIFETIME(AUnit, MoveSequencePos);
 
 }

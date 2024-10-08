@@ -228,7 +228,26 @@ public:
 
 	UPROPERTY()
 	bool UsedSpecial;
+
+	UPROPERTY(Replicated)
+	TArray<FIntPoint> PathToCross;
+
+	UPROPERTY(Replicated)
+	int PathToCrossPosition = 0;
+
+	FTimerHandle MoveTimerHandle;
+
+	UPROPERTY(Replicated)
+	int MoveSequencePos = 0;
+
+	UPROPERTY(Replicated)
+	bool bJustBecameGarrison = false;
+
+	UFUNCTION()
+	void InitializeFullMove(TArray <FIntPoint> FullMove);
 	
+	UFUNCTION(BlueprintCallable,NetMulticast,Reliable)
+	void UnitMoveAnim();
 	
 	
 
