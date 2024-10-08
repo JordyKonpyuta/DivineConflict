@@ -302,7 +302,7 @@ void ACustomPlayerController::ControllerInteraction()
 					Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Reachable);
 				}
 				UnitRef->SetIsSelected(false);
-				ServerMoveUnit(CameraPlayerRef->Path,UnitRef);
+				Server_PrepareMoveUnit(CameraPlayerRef->Path,UnitRef);
 				PathReachable.Empty();
 				CameraPlayerRef->IsMovingUnit = false;
 				CameraPlayerRef->Path.Empty();
@@ -484,7 +484,7 @@ void ACustomPlayerController::EndTurn()
 
 void ACustomPlayerController::ActionEndTurn()
 {
-/*
+
 	if(IsLocalController())
 	{
 		if(PlayerStateRef == nullptr)
@@ -492,26 +492,27 @@ void ACustomPlayerController::ActionEndTurn()
 
 		if(!PlayerStateRef->bIsActiveTurn)
 		{
+			
 			if(AllPlayerActions.Num() > 0)
 			{
+				AUnit* UnitToMove = AllPlayerActions[0].Unit;
 				switch (AllPlayerActions[0].UnitAction)
 				{
 				case EDC_ActionPlayer::MoveUnit:
 					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("MoveUnit"));
-					//ServerMoveUnit(AllPlayerActions[0].Unit);
+					AllPlayerActions.RemoveAt(0);
+					ServerMoveUnit(UnitToMove);
 					break;
 				case EDC_ActionPlayer::AttackUnit:
-					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackUnit"));
-					AllPlayerActions[0].Unit->AttackUnit(AllPlayerActions[0].Unit);
+					//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackUnit"));
+					//AllPlayerActions[0].Unit->AttackUnit(AllPlayerActions[0].Unit);
 					break;
 				default:
 					break;
 				}
 			}
-			AllPlayerActions.RemoveAt(0);
 		}
-			
-	}*/
+	}
 }
 
 void ACustomPlayerController::UpdateUITimer_Implementation(int TimeLeft)
@@ -617,30 +618,41 @@ void ACustomPlayerController::Server_SpawnBaseUnit_Implementation(EUnitType Unit
 	}
 }
 
+void ACustomPlayerController::ServerMoveUnit_Implementation(const AUnit* UnitToMove)
+{
+	AUnit* RefUnit = const_cast<AUnit*>(UnitToMove);
+	
+	if(UnitToMove)
+	{
+		RefUnit->MoveUnitEndTurn();
+		UnitRef = nullptr;
+	}
+}
+
 void ACustomPlayerController::SpawnBaseUnit(EUnitType UnitToSpawn)
 {
 	UE_LOG(	LogTemp, Warning, TEXT("SpawnBaseUnit") );
 	Server_SpawnBaseUnit(UnitToSpawn, Grid, BaseRef, PlayerTeam);
 }
 
+void ACustomPlayerController::Server_PrepareMoveUnit_Implementation(const TArray<FIntPoint>& Path,
+	const AUnit* UnitToMove)
+{
+	AUnit *UnitRefServer = const_cast<AUnit*>(UnitToMove);
+	if(UnitRefServer)
+	{
+		UnitRefServer->Multi_PrepareMove(Path);
+		
+	}
+}
+
+
+
 void ACustomPlayerController::Server_EndTurn_Implementation()
 {
 	PlayerStateRef->SetIsReadyToSwitchTurn(true);
 	Cast<ACustomGameState>(GetWorld()->GetGameState())->CheckSwitchPlayerTurn();
 }
-
-void ACustomPlayerController::ServerMoveUnit_Implementation(const TArray<FIntPoint> &Path, const AUnit* UnitRefServer)
-{
-	AUnit* RefUnit = const_cast<AUnit*>(UnitRefServer);
-	
-	if(UnitRefServer)
-	{
-		RefUnit->InitializeFullMove(Path);
-		UnitRef = nullptr;
-	}
-}
-
-
 /*void ACustomPlayerController::DisplayWidgetEndGame_Implementation()
 {
 }*/

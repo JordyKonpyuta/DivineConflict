@@ -216,7 +216,7 @@ void AUnit::Move_Implementation(const TArray<FIntPoint> &PathIn)
 	bIsGhosts = false;
 	bJustBecameGarrison = false;
 	Path.Empty();
-	Path = PathIn;
+	Path = FutureMovement;
 	if (Path.Num()!=-1)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit Path Ready"));
@@ -297,6 +297,16 @@ void AUnit::Move_Implementation(const TArray<FIntPoint> &PathIn)
     }
 }
 
+
+void AUnit::Server_Move_Implementation(const TArray<FIntPoint>& PathToFollow)
+{
+	Move(PathToFollow);
+}
+
+void AUnit::MoveUnitEndTurn()
+{
+	Server_Move(FutureMovement);
+}
 
 void AUnit::TakeDamage(int Damage)
 {
@@ -716,13 +726,14 @@ void AUnit::SetBuffTank(bool bt)
 	bBuffTank = bt;
 }
 
-void AUnit::PrepareMove(TArray<FIntPoint> NewPos)
+void AUnit::Multi_PrepareMove_Implementation(const TArray<FIntPoint>& NewPos)
 {
-		FutureMovement = NewPos;
-		FutureMovementPos = FutureMovement.Last();
-		InitGhosts();
-		//PlayerControllerRef->AllPlayerActions.Add(FStructActions(this, EDC_ActionPlayer::MoveUnit));
+	FutureMovement = NewPos;
+	FutureMovementPos = FutureMovement.Last();
+	InitGhosts();
+	//PlayerControllerRef->AllPlayerActions.Add(FStructActions(this, EDC_ActionPlayer::MoveUnit));
 }
+
 
 void AUnit::PrepareAttackUnit(FIntPoint AttackPos)
 {
@@ -779,5 +790,6 @@ void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProp
 	DOREPLIFETIME(AUnit, PathToCrossPosition);
 	DOREPLIFETIME(AUnit, bJustBecameGarrison);
 	DOREPLIFETIME(AUnit, MoveSequencePos);
+	DOREPLIFETIME(AUnit, FutureMovement);
 
 }

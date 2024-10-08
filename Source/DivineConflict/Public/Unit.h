@@ -9,6 +9,7 @@
 #include "Unit.generated.h"
 
 
+class ABuilding;
 class ABase;
 class AGrid;
 class UStaticMeshComponent;
@@ -180,6 +181,12 @@ public:
 	void Move(const TArray<FIntPoint> &PathToFollow);
 
 	UFUNCTION()
+	void MoveUnitEndTurn();
+
+	UFUNCTION(Server,Reliable)
+	void Server_Move(const TArray<FIntPoint> &PathToFollow);
+
+	UFUNCTION()
 	void TakeDamage(int Damage);
 
 	UFUNCTION(BlueprintCallable)
@@ -211,7 +218,7 @@ public:
 	UFUNCTION()
 	void NewTurn();
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TArray<FIntPoint> FutureMovement;
 
 	UPROPERTY()
@@ -355,8 +362,8 @@ public:
 	UFUNCTION()
 	void SetBuffTank(bool bt);
 
-	UFUNCTION()
-	void PrepareMove(TArray<FIntPoint> NewPos);
+	UFUNCTION(NetMulticast,Reliable)
+	void Multi_PrepareMove(const TArray<FIntPoint> &NewPos);
 
 	UFUNCTION()
 	void PrepareAttackUnit(FIntPoint AttackPos);

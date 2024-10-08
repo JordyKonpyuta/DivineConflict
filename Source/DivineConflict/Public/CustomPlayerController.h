@@ -209,13 +209,16 @@ public:
 	void Multicast_SpawnUnit(AUnit* UnitSpawned,AGrid* GridSpawned, ACustomPlayerState* PlayerStatRef);
 
 	UFUNCTION(Server, Reliable)
-	void ServerMoveUnit(const TArray<FIntPoint> &Path, const AUnit* UnitToMove);
+	void ServerMoveUnit(const AUnit* UnitToMove);
 
 	UFUNCTION(Server, Reliable)
 	void Server_SpawnBaseUnit(EUnitType UnitToSpawn,AGrid* GridSer, ABase* BaseToSpawn, EPlayer PlayerOwner);
 	
 	UFUNCTION(BlueprintCallable)
 	void SpawnBaseUnit(EUnitType UnitToSpawn);
+
+	UFUNCTION(Server, Reliable)
+	void Server_PrepareMoveUnit(const TArray<FIntPoint> &Path, const AUnit* UnitToMove);
 	
 	UFUNCTION()
 	void EndTurn();
