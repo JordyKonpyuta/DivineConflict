@@ -139,13 +139,18 @@ void ABase::SetGridPosition(FIntPoint GridP)
 	GridPosition = GridP;
 }
 
-// IF DEAD, END GAME
-void ABase::MulticastCheckIfDead_Implementation()
+void ABase::ServerCheckIfDead_Implementation()
 {
 	if (Health <= 0)
 	{
 		OnDeath();
 	}	
+}
+
+// IF DEAD, END GAME
+void ABase::MulticastCheckIfDead_Implementation()
+{
+	ServerCheckIfDead();
 }
 
 void ABase::SetMesh_Implementation()

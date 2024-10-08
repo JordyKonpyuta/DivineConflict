@@ -77,6 +77,8 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastSwitchPlayerTurn();
 
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void ServerVictoryScreen(EPlayer Loser);
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void MulticastVictoryScreen(EPlayer Loser);
 	
