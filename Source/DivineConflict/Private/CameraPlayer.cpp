@@ -170,10 +170,11 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 		}
 		if (IsMovingUnit)
 		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("IsMovingUnit"));
 			//print IsMovingUnit
 			TArray<FIntPoint> AllReachable = CustomPlayerController->GetPathReachable();
 
-			if (AllReachable.Contains(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection)) && UnitMovingCurrentMovNumber > 0)
+			if (AllReachable.Contains(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection)) && Path.Num() < CustomPlayerController->UnitRef->GetPM())
 			{
 				Path.AddUnique(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection));
 				CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection), EDC_TileState::Hovered);

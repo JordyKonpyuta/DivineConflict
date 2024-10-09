@@ -78,6 +78,12 @@ void AUnit::SetGrid(AGrid* NewGrid)
 	Grid = NewGrid;
 }
 
+void AUnit::Destroyed()
+{
+	Grid->GridInfo->RemoveUnitInGrid(this);
+	Super::Destroyed();
+}
+
 // Called when the game starts or when spawned
 void AUnit::BeginPlay()
 {
@@ -111,6 +117,8 @@ void AUnit::BeginPlay()
 			UnitMesh->SetMaterial(0, AllMaterials[0]);
 			break;
 		}
+		FTimerHandle timerTestOnTower;
+		GetWorld()->GetTimerManager().SetTimer(timerTestOnTower, this, &AUnit::testOnTower, 2.0f, false);
 	}
 	else 
     {
@@ -118,6 +126,8 @@ void AUnit::BeginPlay()
     }
 	GhostsMesh->SetStaticMesh(UnitMesh->GetStaticMesh());
 	GhostsFinaleLocationMesh->SetStaticMesh(UnitMesh->GetStaticMesh());
+
+
 }
 
 void AUnit::SetGrid()
@@ -136,6 +146,23 @@ void AUnit::SetGrid()
 		FTimerHandle TimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AUnit::SetGrid, 0.2f, false);
 		
+	}
+}
+
+void AUnit::testOnTower()
+{
+	if(Grid)
+	{
+		if(Grid->GetGridData()->Find(IndexPosition) != nullptr)
+		{
+			if ( Grid->GetGridData()->Find(IndexPosition)->TowerOnTile)
+			{
+				Grid->GetGridData()->Find(IndexPosition)->TowerOnTile->UnitInGarrison = this;
+				Grid->GetGridData()->Find(IndexPosition)->TowerOnTile->IsGarrisoned = true;
+				TowerRef = Grid->GetGridData()->Find(IndexPosition)->TowerOnTile;
+			}
+
+		}
 	}
 }
 
@@ -192,7 +219,8 @@ void AUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	MoveGhosts(DeltaTime);
+	if(HasAuthority())
+		MoveGhosts(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -349,13 +377,13 @@ void AUnit::AttackUnit()
 			UnitToAttack->BuildingRef->GarrisonFull = false;
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Unit Got Killed and removed")));
 		}
-		GetWorld()->DestroyActor(UnitToAttack);
+		UnitToAttack->Destroyed();
 		if(GetCurrentHealth() < 1)
 		{
 			Grid->GridInfo->RemoveUnitInGrid(this);
 			Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
 			PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
-			GetWorld()->DestroyActor(this);
+			Destroyed();
 		}
 		else
 			Move(FutureMovement);
@@ -365,7 +393,7 @@ void AUnit::AttackUnit()
 		Grid->GridInfo->RemoveUnitInGrid(this);
 		Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
 		PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
-		GetWorld()->DestroyActor(this);
+		Destroyed();
 	}
 
 
@@ -483,6 +511,7 @@ void AUnit::UnitMoveAnim_Implementation()
 				SetActorLocation(Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->TowerOnTile->GetActorLocation());
 				Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->TowerOnTile->UnitInGarrison = this;
 				Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->TowerOnTile->IsGarrisoned = true;
+				TowerRef = Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->TowerOnTile;
 
 				Grid->GridVisual->RemoveStateFromTile(PathToCross[PathToCrossPosition], EDC_TileState::Pathfinding);
 				SetIsGarrison(true);
@@ -537,8 +566,16 @@ void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 
 	if (IsGarrison && !bJustBecameGarrison)
 	{
-		BuildingRef->UnitRef = nullptr;
-		BuildingRef->GarrisonFull = false;
+		if(BuildingRef)
+		{
+			BuildingRef->UnitRef = nullptr;
+			BuildingRef->GarrisonFull = false;
+		}
+		if(TowerRef)
+		{
+			TowerRef->UnitInGarrison = nullptr;
+			TowerRef->IsGarrisoned = false;
+		}
 		IsGarrison = false;
 		BuildingRef = nullptr;
 	}

@@ -105,7 +105,8 @@ void ATower::AttackUnit()
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UnitToAttack : " + FString::FromInt(UnitToAttack->GetCurrentHealth())));
 	if(UnitToAttack->GetCurrentHealth() <= 0)
 	{
-		GetWorld()->DestroyActor(UnitToAttack);
+		UnitToAttack->Destroy();
+		UnitToAttack = nullptr;
 	}
 	if(PlayerController)
 		PlayerController->ActionEndTurn();

@@ -13,6 +13,7 @@ class ABuilding;
 class ABase;
 class AGrid;
 class UStaticMeshComponent;
+class ATower;
 class ACustomPlayerController;
 
 UENUM(BlueprintType)
@@ -56,6 +57,9 @@ public:
 
 	UPROPERTY()
 	UMaterialInterface* MaterialToGhosts;
+
+	UFUNCTION()
+	void Destroyed() override;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -81,6 +85,8 @@ protected:
 	
 	void SetGrid();
 
+	UFUNCTION()
+	void testOnTower();
 	
 
 	virtual void NotifyActorOnClicked(FKey ButtonPressed) override;
@@ -126,6 +132,9 @@ protected:
 
 	UPROPERTY()
 	ABuilding* BuildingRef = nullptr;
+
+	UPROPERTY()
+	ATower* TowerRef = nullptr;
 
 	UPROPERTY()
 	FString Name = "";
