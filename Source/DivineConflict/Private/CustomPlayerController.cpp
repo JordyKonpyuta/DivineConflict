@@ -258,7 +258,7 @@ void ACustomPlayerController::ControllerInteraction()
 					if (Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() != PlayerStateRef->PlayerTeam)
 					{
 						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackUnit"));
-						UnitRef->AttackUnit(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile);
+						UnitRef->PrepareAttackUnit(PlayerPositionInGrid);
 						AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::AttackUnit));
 					}
 				}
@@ -271,7 +271,7 @@ void ACustomPlayerController::ControllerInteraction()
 						if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BuildingOnTile->GarrisonFull)
 						{
 							GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackBuilding"));
-							UnitRef->AttackUnit(Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef);
+							UnitRef->PrepareAttackUnit(PlayerPositionInGrid);
 							AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::AttackUnit));
 						}
 					}
@@ -495,17 +495,18 @@ void ACustomPlayerController::ActionEndTurn()
 			
 			if(AllPlayerActions.Num() > 0)
 			{
-				AUnit* UnitToMove = AllPlayerActions[0].Unit;
+				AUnit* UnitAction = AllPlayerActions[0].Unit;
 				switch (AllPlayerActions[0].UnitAction)
 				{
 				case EDC_ActionPlayer::MoveUnit:
 					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("MoveUnit"));
 					AllPlayerActions.RemoveAt(0);
-					ServerMoveUnit(UnitToMove);
+					ServerMoveUnit(UnitAction);
 					break;
 				case EDC_ActionPlayer::AttackUnit:
-					//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackUnit"));
-					//AllPlayerActions[0].Unit->AttackUnit(AllPlayerActions[0].Unit);
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackUnit"));
+					AllPlayerActions.RemoveAt(0);
+					UnitAction->AttackUnit();				
 					break;
 				default:
 					break;

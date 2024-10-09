@@ -97,7 +97,7 @@ protected:
 	UPROPERTY()
 	int Defense = 0;
 	
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated,VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
 	int CurrentHealth = 0;
 	
 	UPROPERTY()
@@ -193,7 +193,7 @@ public:
 	void TakeDamage(int Damage);
 
 	UFUNCTION(BlueprintCallable)
-	void AttackUnit(AUnit* UnitToAttack);
+	void AttackUnit();
 
 	UFUNCTION(BlueprintCallable)
 	void AttackBase(ABase* BaseToAttack);

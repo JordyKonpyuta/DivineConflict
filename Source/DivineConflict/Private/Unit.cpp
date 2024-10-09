@@ -327,9 +327,9 @@ GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UNIT TAKE DAMAGE"
 		CurrentHealth -= (Damage-Defense);
 }
 
-void AUnit::AttackUnit(AUnit* UnitToAttack)
+void AUnit::AttackUnit()
 {
-
+	AUnit* UnitToAttack = UnitToAttackRef; 
 	if(UnitToAttack == nullptr || Grid == nullptr || UnitToAttack == this)
 	{
 		return;
@@ -338,9 +338,9 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 
 	TakeDamage(UnitToAttack->GetAttack());
 
-		if(UnitToAttack->GetCurrentHealth() < 1)
+	if(UnitToAttack->GetCurrentHealth() < 1)
 	{
-		Path.Add(UnitToAttack->GetIndexPosition());
+		FutureMovement.Insert(UnitToAttack->GetIndexPosition(), 0);
 		Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
 		PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
 		if (UnitToAttack->BuildingRef)
@@ -358,7 +358,7 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 			GetWorld()->DestroyActor(this);
 		}
 		else
-			Move(Path);
+			Move(FutureMovement);
 	}
 	if(GetCurrentHealth() < 1)
 	{
@@ -495,12 +495,7 @@ void AUnit::UnitMoveAnim_Implementation()
 
 		}
 
-		// EndTurn
-		if(PlayerControllerRef != nullptr)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Next Action"));
-			PlayerControllerRef->ActionEndTurn();
-		}
+
 		MoveSequencePos++;
 	}
 
@@ -513,6 +508,14 @@ void AUnit::UnitMoveAnim_Implementation()
 		if (PathToCross.IsEmpty())
 		{
 			GetWorldTimerManager().ClearTimer(MoveTimerHandle);
+
+			// EndTurn
+			if(PlayerControllerRef != nullptr)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Next Action"));
+				FutureMovement.Empty();
+				PlayerControllerRef->ActionEndTurn();
+			}
 		}
 	}
 }
@@ -733,6 +736,7 @@ void AUnit::Multi_PrepareMove_Implementation(const TArray<FIntPoint>& NewPos)
 	FutureMovement = NewPos;
 	FutureMovementPos = FutureMovement.Last();
 	InitGhosts();
+	Grid->GridInfo->Server_setUnitIndexOnGrid(IndexPosition,this);
 	//PlayerControllerRef->AllPlayerActions.Add(FStructActions(this, EDC_ActionPlayer::MoveUnit));
 }
 
