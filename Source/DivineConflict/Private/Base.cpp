@@ -160,8 +160,8 @@ void ABase::MulticastCheckIfDead_Implementation()
 {
 	if (Health <= 0)
 	{
-		//OnDeath();
-		GetWorld()->GetGameState<ACustomGameState>()->ServerVictoryScreen(PlayerOwner);
+		if (PlayerStateRef->bIsInTutorial) OnDeath();
+		else GetWorld()->GetGameState<ACustomGameState>()->ServerVictoryScreen(PlayerOwner);
 	}	
 }
 

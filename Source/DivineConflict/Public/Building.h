@@ -96,6 +96,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Player")
 	void SwitchOwner(ACustomPlayerState* NewOwner);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void Tutorial();
 	
 protected:
 

@@ -189,6 +189,7 @@ void ABuilding::SwitchOwner(ACustomPlayerState* NewOwner)
 	{
 	case EPlayer::P_Hell:
 	StaticMeshBuilding->SetMaterial(0, AllMaterials[2]);
+		if (OwnerPlayerState->bIsInTutorial == true && GarrisonFull) Tutorial();
 		break;
 	case EPlayer::P_Heaven:
 	StaticMeshBuilding->SetMaterial(0, AllMaterials[1]);
@@ -198,6 +199,10 @@ void ABuilding::SwitchOwner(ACustomPlayerState* NewOwner)
 		break;
 	}
 	OwnerPlayerState = NewOwner;
+}
+
+void ABuilding::Tutorial_Implementation()
+{
 }
 
 // Check if Player is currently passive; will be used to spawn the HUD
