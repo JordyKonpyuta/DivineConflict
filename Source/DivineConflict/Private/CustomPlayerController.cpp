@@ -258,8 +258,8 @@ void ACustomPlayerController::ControllerInteraction()
 			{
 				if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() != PlayerStateRef->PlayerTeam)
 				{
-					TowerRef->AttackUnit(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile);
-					//AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::AttackUnit));
+					TowerRef->PreprareAttack(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile);
+					AllPlayerActions.Add(FStructActions(TowerRef, EDC_ActionPlayer::AttackBuilding));
 				}
 			}
 			break;
@@ -516,9 +516,13 @@ void ACustomPlayerController::ActionEndTurn()
 			
 			if(AllPlayerActions.Num() > 0)
 			{
-				AUnit* UnitAction = AllPlayerActions[0].Unit;
-				UnitAction->HasActed = false;
-				UnitAction->HasMoved = false;
+				AUnit* UnitAction = Cast<AUnit>( AllPlayerActions[0].ActorRef);
+				ATower* TowerAction = Cast<ATower>( AllPlayerActions[0].ActorRef);
+				if(UnitAction)
+				{
+					UnitAction->HasActed = false;
+					UnitAction->HasMoved = false;
+				}
 				switch (AllPlayerActions[0].UnitAction)
 				{
 				case EDC_ActionPlayer::MoveUnit:
@@ -530,6 +534,14 @@ void ACustomPlayerController::ActionEndTurn()
 					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackUnit"));
 					AllPlayerActions.RemoveAt(0);
 					UnitAction->AttackUnit();
+					break;
+				case EDC_ActionPlayer::AttackBuilding:
+					AllPlayerActions.RemoveAt(0);
+					if(TowerAction)
+					{
+						UE_LOG( LogTemp, Warning, TEXT("TowerRef") );
+						TowerAction->AttackUnit();
+					}
 					break;
 				default:
 					break;

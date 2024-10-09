@@ -46,7 +46,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
-	int Attack = 10;
+	int Attack = 5;
 
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadOnly, Category = "Bool")
 	bool CanAttack = true;
@@ -58,9 +58,19 @@ protected:
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadOnly, Category = "Grid")
 	FIntPoint GridPosition = FIntPoint(-999, -999);
 
+
+
+
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UPROPERTY(Replicated)
+	AUnit* UnitToAttack = nullptr;
+
+	UPROPERTY(Replicated)
+	FIntPoint UnitToAttackPosition = FIntPoint(-999, -999);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bool")
 	bool IsSelected = false;
@@ -79,11 +89,14 @@ public:
 	void SetCanAttack(bool NewCanAttack);
 
 	UFUNCTION(BlueprintCallable)
-	void AttackUnit(AUnit* UnitToAttack);
+	void AttackUnit();
 	UFUNCTION(BlueprintCallable)
 	void UpdateVisuals();
 
 	FIntPoint GetGridPosition();
 
 	void SetGridPosition(FIntPoint NewGridPosition);
+
+	UFUNCTION()
+	void PreprareAttack(AUnit* UnitAttack);
 };

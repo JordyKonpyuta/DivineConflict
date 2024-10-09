@@ -41,7 +41,7 @@ struct FStructActions
 	GENERATED_BODY()
 
 	UPROPERTY()
-	AUnit* Unit;
+	AActor* ActorRef;
 
 	UPROPERTY()
 	EDC_ActionPlayer UnitAction;
@@ -71,7 +71,7 @@ public:
 	int CurrentPA = 10;
 	
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Ref", meta = (AllowPrivate = "true"))
 	AUnit* UnitRef = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
 	ABase* BaseRef = nullptr;

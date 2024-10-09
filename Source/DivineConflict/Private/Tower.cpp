@@ -35,6 +35,8 @@ void ATower::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 	DOREPLIFETIME(ATower, PlayerOwner);
 	DOREPLIFETIME(ATower, Mesh);
 	DOREPLIFETIME(ATower, GridPosition);
+	DOREPLIFETIME(ATower, UnitToAttack);
+	DOREPLIFETIME(ATower, UnitToAttackPosition);
 }
 
 void ATower::SetMesh_Implementation()
@@ -50,16 +52,11 @@ void ATower::BeginPlay()
 
 	if(Grid)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Grid is not null"));
 		Grid->GridInfo->addTowerOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
-				
-
 		// Set Reachable Tiles for Attack
 		TilesInRange = Grid->GridPath->FindPath(GridPosition,FIntPoint(-999,-999),true,4,false);
 	}
 
-	
-	
 }
 
 // Called every frame
@@ -100,14 +97,18 @@ void ATower::SetCanAttack(bool NewCanAttack)
 	CanAttack = NewCanAttack;
 }
 
-void ATower::AttackUnit(AUnit* UnitToAttack)
+void ATower::AttackUnit()
 {
+
 	UnitToAttack->SetCurrentHealth(UnitToAttack->GetCurrentHealth() - Attack);
 	SetCanAttack(false);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UnitToAttack : " + FString::FromInt(UnitToAttack->GetCurrentHealth())));
 	if(UnitToAttack->GetCurrentHealth() <= 0)
 	{
 		GetWorld()->DestroyActor(UnitToAttack);
 	}
+	if(PlayerController)
+		PlayerController->ActionEndTurn();
 }
 
 void ATower::UpdateVisuals()
@@ -137,5 +138,15 @@ void ATower::SetGridPosition(FIntPoint NewGridPosition)
 {
 	GridPosition = NewGridPosition;
 }
+
+void ATower::PreprareAttack(AUnit* UnitAttack)
+{
+	UnitToAttack = UnitAttack;
+	UnitToAttackPosition = UnitAttack->GetIndexPosition();
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("unitToAttackPosition : " + UnitToAttackPosition.ToString()));
+	IsSelected = false;
+	UpdateVisuals();
+}
+
 
 
