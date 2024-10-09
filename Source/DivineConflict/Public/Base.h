@@ -48,7 +48,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ref", meta = (AllowPrivate = "true"))
 	ACustomPlayerState* PlayerStateRef;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Controller")

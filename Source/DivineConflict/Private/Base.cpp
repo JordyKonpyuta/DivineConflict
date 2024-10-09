@@ -9,6 +9,7 @@
 #include "GridInfo.h"
 #include "CustomPlayerState.h"
 #include "GridVisual.h"
+#include "SNegativeActionButton.h"
 #include "Unit.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -36,6 +37,14 @@ void ABase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 void ABase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	for (int i = 0; i < GetWorld()->GetGameState<ACustomGameState>()->PlayerArray.Num(); i++)
+	{
+		if (GetWorld()->GetGameState<ACustomGameState>()->PlayerArray[i]->GetPlayerController()->GetPlayerState<ACustomPlayerState>()->PlayerTeam == PlayerOwner)
+		{
+			PlayerStateRef = GetWorld()->GetGameState<ACustomGameState>()->PlayerArray[i]->GetPlayerController()->GetPlayerState<ACustomPlayerState>();
+		}
+	}
 
 	SetMesh();
 	// Get Grid
@@ -178,9 +187,14 @@ void ABase::Upgrade()
 			if (PlayerStateRef->MaxUnitCount < 15)
 			{
 				PlayerStateRef->MaxUnitCount += 5;
+				PlayerStateRef->ChangeWoodPoints(WoodCostUpgrade, false);
+				PlayerStateRef->ChangeStonePoints(StoneCostUpgrade, false);
+				PlayerStateRef->ChangeGoldPoints(GoldCostUpgrade, false);
 				SetCostsUpgrade(GoldCostUpgrade += 10, StoneCostUpgrade += 10, WoodCostUpgrade += 10);
 			}
 		}
+
+	else UE_LOG( LogTemp, Warning, TEXT("Player State Ref is NULL"));
 }
 
 

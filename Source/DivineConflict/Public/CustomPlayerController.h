@@ -229,7 +229,7 @@ public:
 	UFUNCTION()
 	void ActionEndTurn();
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void UpdateUi();
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateUITimer(int TimeLeft);
