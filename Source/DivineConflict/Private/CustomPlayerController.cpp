@@ -104,7 +104,6 @@ void ACustomPlayerController::Tick(float DeltaTime)
 
 void ACustomPlayerController::OnRep_PlayerTeam()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("OnRep_PlayerTeam"));
 	AssignPlayerPosition();
 }
 
@@ -119,7 +118,21 @@ void ACustomPlayerController::SelectModeMovement()
 void ACustomPlayerController::SelectModeAttack()
 {
 	PlayerAction = EDC_ActionPlayer::AttackUnit;
-	PathReachable = Grid->GridPath->FindTileNeighbors(UnitRef->GetIndexPosition());
+
+
+	if (UnitRef->HasMoved)
+	{
+		PathReachable = Grid->GridPath->FindTileNeighbors(
+			Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()));
+		CameraPlayerRef->FullMoveDirection.X = UnitRef->GetFinalGhostMesh()->GetComponentLocation().X;
+		CameraPlayerRef->FullMoveDirection.Y = UnitRef->GetFinalGhostMesh()->GetComponentLocation().Y;
+		CameraPlayerRef->FullMoveDirection.Z = (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
+
+	} else
+	{
+		PathReachable = Grid->GridPath->FindTileNeighbors(UnitRef->GetIndexPosition());
+	}
+	
 	for(FIntPoint Index : PathReachable)
     {
         Grid->GridVisual->addStateToTile(Index, EDC_TileState::Attacked);

@@ -410,6 +410,11 @@ void AUnit::SpecialUnit(AUnit* UnitToAttack)
 {
 }
 
+UStaticMeshComponent* AUnit::GetFinalGhostMesh()
+{
+	return GhostsFinaleLocationMesh;
+}
+
 void AUnit::SpecialBase(ABase* BaseToAttack)
 {
 }

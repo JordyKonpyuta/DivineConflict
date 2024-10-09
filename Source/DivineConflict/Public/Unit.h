@@ -215,6 +215,8 @@ public:
 	
 	virtual void SpecialUnit(AUnit* UnitToAttack);
 
+	UFUNCTION()
+	UStaticMeshComponent* GetFinalGhostMesh();
 	
 	virtual void SpecialBase(ABase *BaseToAttack);
 
