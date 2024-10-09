@@ -253,6 +253,12 @@ public:
 	UPROPERTY(Replicated)
 	bool bJustBecameGarrison = false;
 
+	UPROPERTY(Blueprintable, BlueprintReadOnly)
+	bool HasMoved = false;
+
+	UPROPERTY(Blueprintable, BlueprintReadOnly)
+	bool HasActed = false;
+
 	UFUNCTION()
 	void InitializeFullMove(TArray <FIntPoint> FullMove);
 	

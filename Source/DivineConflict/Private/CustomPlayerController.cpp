@@ -202,6 +202,7 @@ void ACustomPlayerController::ControllerInteraction()
 						{
 							UnitRef = Grid->GridData.Find(PlayerPositionInGrid)->UnitOnTile;
 							CameraPlayerRef->SetCustomPlayerController(this);
+							CameraPlayerRef->UnitMovingCurrentMovNumber = UnitRef->GetPM();
 							IInteractInterface::Execute_Interact(Grid->GridData.Find(PlayerPositionInGrid)->UnitOnTile, this);
 							DisplayWidget();
 						}
@@ -252,64 +253,71 @@ void ACustomPlayerController::ControllerInteraction()
 		case EDC_ActionPlayer::AttackUnit:
 			if (UnitRef)
 			{
-				// Are we attacking a Unit?
-				if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile)
-				{
-					if (Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() != PlayerStateRef->PlayerTeam)
+				if (!UnitRef->HasActed){
+					// Are we attacking a Unit?
+					if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile)
 					{
-						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackUnit"));
-						UnitRef->PrepareAttackUnit(PlayerPositionInGrid);
-						AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::AttackUnit));
-					}
-				}
-				// Are we attacking a Building?
-				else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BuildingOnTile)
-				{
-					if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BuildingOnTile->PlayerOwner != PlayerStateRef->PlayerTeam)
-					{
-						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackBuilding"));
-						if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BuildingOnTile->GarrisonFull)
+						if (Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() != PlayerStateRef->PlayerTeam)
 						{
-							GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackBuilding"));
+							GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackUnit"));
 							UnitRef->PrepareAttackUnit(PlayerPositionInGrid);
 							AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::AttackUnit));
 						}
 					}
-				}
-				// Are we attacking a Base?
-				else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BaseOnTile)
-				{
-					if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BaseOnTile->PlayerOwner != UnitRef->GetPlayerOwner())
+					// Are we attacking a Building?
+					else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BuildingOnTile)
 					{
-						UnitRef->AttackBase(Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile);
+						if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BuildingOnTile->PlayerOwner != PlayerStateRef->PlayerTeam)
+						{
+							GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackBuilding"));
+							if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BuildingOnTile->GarrisonFull)
+							{
+								GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackBuilding"));
+								UnitRef->PrepareAttackUnit(PlayerPositionInGrid);
+								AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::AttackUnit));
+							}
+						}
 					}
+					// Are we attacking a Base?
+					else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BaseOnTile)
+					{
+						if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BaseOnTile->PlayerOwner != UnitRef->GetPlayerOwner())
+						{
+							UnitRef->AttackBase(Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile);
+						}
+					}
+					for(FIntPoint Index : PathReachable)
+					{
+						Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Attacked);
+					}
+					PathReachable.Empty();
+					UnitRef->SetIsSelected(false);
+					UnitRef->HasActed = true;
+					UnitRef = nullptr;
+					PlayerAction = EDC_ActionPlayer::None;
 				}
-				for(FIntPoint Index : PathReachable)
-				{
-					Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Attacked);
-				}
-				PathReachable.Empty();
-				UnitRef->SetIsSelected(false);
-				UnitRef = nullptr;
-				PlayerAction = EDC_ActionPlayer::None;
 			}
 			break;
 		case EDC_ActionPlayer::MoveUnit:
 			if (UnitRef)
 			{
-				for(FIntPoint Index : PathReachable)
+				if (!UnitRef->HasMoved)
 				{
-					Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Reachable);
-				}
-				UnitRef->SetIsSelected(false);
-				Server_PrepareMoveUnit(CameraPlayerRef->Path,UnitRef);
-				PathReachable.Empty();
-				CameraPlayerRef->IsMovingUnit = false;
-				CameraPlayerRef->Path.Empty();
-				AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::MoveUnit));
-				UpdateUi();
+					for(FIntPoint Index : PathReachable)
+					{
+						Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Reachable);
+					}
+					UnitRef->SetIsSelected(false);
+					Server_PrepareMoveUnit(CameraPlayerRef->Path,UnitRef);
+					PathReachable.Empty();
+					CameraPlayerRef->IsMovingUnit = false;
+					CameraPlayerRef->Path.Empty();
+					AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::MoveUnit));
+					UnitRef->HasMoved = true;
+					UpdateUi();
 					
-				PlayerAction = EDC_ActionPlayer::None;
+					PlayerAction = EDC_ActionPlayer::None;
+				}
 			}
 			break;
 		case EDC_ActionPlayer::SelectBuilding:
@@ -496,6 +504,8 @@ void ACustomPlayerController::ActionEndTurn()
 			if(AllPlayerActions.Num() > 0)
 			{
 				AUnit* UnitAction = AllPlayerActions[0].Unit;
+				UnitAction->HasActed = false;
+				UnitAction->HasMoved = false;
 				switch (AllPlayerActions[0].UnitAction)
 				{
 				case EDC_ActionPlayer::MoveUnit:
@@ -506,7 +516,7 @@ void ACustomPlayerController::ActionEndTurn()
 				case EDC_ActionPlayer::AttackUnit:
 					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackUnit"));
 					AllPlayerActions.RemoveAt(0);
-					UnitAction->AttackUnit();				
+					UnitAction->AttackUnit();
 					break;
 				default:
 					break;

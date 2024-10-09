@@ -173,13 +173,14 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 			//print IsMovingUnit
 			TArray<FIntPoint> AllReachable = CustomPlayerController->GetPathReachable();
 
-			if (AllReachable.Contains(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection)))
+			if (AllReachable.Contains(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection)) && UnitMovingCurrentMovNumber > 0)
 			{
 				Path.AddUnique(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection));
 				CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection), EDC_TileState::Hovered);
 				FullMoveDirection = OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0);
 				FullMoveDirection.Z = (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
 				CustomPlayerController->Grid->GridVisual->addStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection), EDC_TileState::Pathfinding);
+				UnitMovingCurrentMovNumber--;
 			}
 		}
 		else if (IsSpawningUnit)
@@ -239,6 +240,12 @@ void ACameraPlayer::PathRemove(const FInputActionValue& Value)
 	}
 	CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(Path.Last(), EDC_TileState::Pathfinding);
 	Path.RemoveAt(Path.Num() - 1);
+	if (!Path.IsEmpty())
+	{
+		UnitMovingCurrentMovNumber++;
+		FullMoveDirection.X = Path.Last().X * 100;
+		FullMoveDirection.Y = Path.Last().Y * 100;
+	}
 
 	if(Path.Num() == 0)
 	{

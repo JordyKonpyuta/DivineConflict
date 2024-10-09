@@ -56,7 +56,9 @@ public:
 	
 	FTimerHandle RepeatMoveTimer;
 	FTimerDelegate RepeatMoveTimerDelegate;
-	
+
+	UPROPERTY()
+	int UnitMovingCurrentMovNumber;
 	
 	// Sets default values for this pawn's properties
 	ACameraPlayer();
