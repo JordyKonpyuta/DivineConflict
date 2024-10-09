@@ -210,6 +210,7 @@ void ACameraPlayer::RotateCamera(const FInputActionValue& Value)
 	FVector2d Input = Value.Get<FVector2d>();
 
 	TargetRotationYaw = FRotator(0,TargetRotationYaw.Yaw + UKismetMathLibrary::SignOfFloat(Input.X)*-90, 0);
+	RotateWidget(UKismetMathLibrary::SignOfFloat(Input.X));
 }
 
 void ACameraPlayer::RotateCameraPitch(const FInputActionValue& Value)
@@ -251,6 +252,10 @@ void ACameraPlayer::PathRemove(const FInputActionValue& Value)
 		return;
 	}
 	SetActorLocation(FVector( Path.Last().X * 100,Path.Last().Y*100, GetActorLocation().Z));
+}
+
+void ACameraPlayer::RotateWidget_Implementation(float Value)
+{
 }
 
 void ACameraPlayer::PathClear()

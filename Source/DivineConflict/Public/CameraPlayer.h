@@ -112,6 +112,9 @@ public:
 
 	void PathRemove(const FInputActionValue& Value);
 
+	UFUNCTION(BlueprintNativeEvent)
+	void RotateWidget(float Value);
+
 	
 
 	void PathClear();

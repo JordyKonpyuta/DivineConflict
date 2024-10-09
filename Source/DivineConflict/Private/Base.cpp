@@ -2,6 +2,8 @@
 
 
 #include "Base.h"
+
+#include "CustomGameState.h"
 #include "CustomPlayerController.h"
 #include "Grid.h"
 #include "GridInfo.h"
@@ -141,16 +143,17 @@ void ABase::SetGridPosition(FIntPoint GridP)
 
 void ABase::ServerCheckIfDead_Implementation()
 {
-	if (Health <= 0)
-	{
-		OnDeath();
-	}	
+	MulticastCheckIfDead();
 }
 
 // IF DEAD, END GAME
 void ABase::MulticastCheckIfDead_Implementation()
 {
-	ServerCheckIfDead();
+	if (Health <= 0)
+	{
+		//OnDeath();
+		GetWorld()->GetGameState<ACustomGameState>()->ServerVictoryScreen(PlayerOwner);
+	}	
 }
 
 void ABase::SetMesh_Implementation()
@@ -162,7 +165,7 @@ void ABase::SetMesh_Implementation()
 void ABase::TakeDamage(int Damage)
 {
 	Health -= Damage;
-	MulticastCheckIfDead();
+	ServerCheckIfDead();
 }
 
 // UPGRADE MaxUnitCount

@@ -81,6 +81,12 @@ public:
 	void ServerVictoryScreen(EPlayer Loser);
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void MulticastVictoryScreen(EPlayer Loser);
+	UFUNCTION(BlueprintNativeEvent)
+	void DisplayWidget();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastDisplayWidget();
+	UFUNCTION(Server, Reliable)
+	void ServerDisplayWidget();
 	
 private:
 };

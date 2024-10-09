@@ -126,9 +126,24 @@ void ACustomGameState::AssignTurnOrder()
 		);
 }
 
+void ACustomGameState::ServerDisplayWidget_Implementation()
+{
+	MulticastDisplayWidget();
+}
+
+void ACustomGameState::MulticastDisplayWidget_Implementation()
+{
+	DisplayWidget();
+}
+
+void ACustomGameState::DisplayWidget_Implementation()
+{
+}
+
 void ACustomGameState::ServerVictoryScreen_Implementation(EPlayer Loser)
 {
 	MulticastVictoryScreen(Loser);
+	ServerDisplayWidget();
 }
 
 void ACustomGameState::MulticastVictoryScreen_Implementation(EPlayer Loser)
