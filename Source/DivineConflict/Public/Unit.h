@@ -190,7 +190,7 @@ public:
 	void Move(const TArray<FIntPoint> &PathToFollow);
 
 	UFUNCTION()
-	void MoveUnitEndTurn();
+	virtual void MoveUnitEndTurn();
 
 	UFUNCTION(NetMulticast,Reliable)
 	void Multi_HiddeGhosts();
@@ -275,7 +275,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable,NetMulticast,Reliable)
 	void UnitMoveAnim();
-	
+
+	UPROPERTY()
+	bool bIsCommandeerBuffed = false;
 	
 
 	// Getter for units stats

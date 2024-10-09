@@ -5,6 +5,7 @@
 
 #include "Grid.h"
 #include "GridPath.h"
+#include "IContentBrowserSingleton.h"
 #include "UObject/ConstructorHelpers.h"
 
 void AUnit_Child_Leader::BeginPlay()
@@ -41,8 +42,6 @@ AUnit_Child_Leader::AUnit_Child_Leader()
 		{
 			UnitIconParadise = IconTexObject.Object;
 		}
-
-	
 }
 
 void AUnit_Child_Leader::Special()
@@ -59,4 +58,52 @@ void AUnit_Child_Leader::Special()
 			//Grid->GetGridData()->Find(Tile)->UnitOnTile->SetBuffLeader(true);
 		}
 	}
+}
+
+void AUnit_Child_Leader::PushBuff()
+{
+	TArray<AUnit*> TempAllUnitsToCheck;
+	TArray<AUnit*> OldUnitsSave = AllUnitsToBuff;
+
+	// Check all units two cases around
+	if (Grid)
+	{
+		for (FIntPoint CurrentLoc : Grid->GridPath->FindPath(Grid->ConvertLocationToIndex(GetActorLocation()), FIntPoint(-999,-999), true, 3, false))
+		{
+			if(Grid->GetGridData()->Find(CurrentLoc)->UnitOnTile)
+			{
+				TempAllUnitsToCheck.AddUnique(Grid->GetGridData()->Find(CurrentLoc)->UnitOnTile);
+			}
+		}
+	}
+
+	// Remove all units that aren't close enough from the buffed units' array
+	for (AUnit* TempUnit : OldUnitsSave)
+	{
+		if (!TempAllUnitsToCheck.Find(TempUnit))
+		{
+			AllUnitsToBuff.RemoveSingleSwap(TempUnit);
+			bIsCommandeerBuffed = false;
+		}
+	}
+
+	// Apply buff
+	if (!TempAllUnitsToCheck.IsEmpty())
+	{
+		for (AUnit* Unit : TempAllUnitsToCheck)
+		{
+			if (PlayerOwner == Unit->GetPlayerOwner())
+			{
+				Unit->bIsCommandeerBuffed = true;
+				AllUnitsToBuff.AddUnique(this);
+			}
+		}
+	}
+}
+
+void AUnit_Child_Leader::MoveUnitEndTurn()
+{
+	Super::MoveUnitEndTurn();
+
+	PushBuff();
 }

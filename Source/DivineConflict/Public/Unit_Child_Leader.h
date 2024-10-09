@@ -20,4 +20,11 @@ public:
 	AUnit_Child_Leader();
 
 	void Special() override;
+
+	UPROPERTY()
+	TArray<AUnit*> AllUnitsToBuff;
+
+	void PushBuff();
+
+	void MoveUnitEndTurn() override;
 };

@@ -362,9 +362,22 @@ void AUnit::AttackUnit()
 	{
 		return;
 	}
-	UnitToAttack->TakeDamage(GetAttack());
+	
+	if (PlayerOwner == EPlayer::P_Hell && bIsCommandeerBuffed)
+	{
+		UnitToAttack->TakeDamage(GetAttack() + 1);
+	} else
+	{
+		UnitToAttack->TakeDamage(GetAttack());
+	}
 
-	TakeDamage(UnitToAttack->GetAttack());
+	if (UnitToAttack->PlayerOwner == EPlayer::P_Hell && UnitToAttack->bIsCommandeerBuffed)
+	{
+		TakeDamage(UnitToAttack->GetAttack() + 1);
+	} else
+	{
+		TakeDamage(UnitToAttack->GetAttack());
+	}
 
 	if(UnitToAttack->GetCurrentHealth() < 1)
 	{
