@@ -305,7 +305,15 @@ void AUnit::Server_Move_Implementation(const TArray<FIntPoint>& PathToFollow)
 
 void AUnit::MoveUnitEndTurn()
 {
-	Server_Move(FutureMovement);
+	Multi_HiddeGhosts();
+	InitializeFullMove(FutureMovement);
+}
+
+void AUnit::Multi_HiddeGhosts_Implementation()
+{
+	GhostsMesh->SetVisibility(false);
+	GhostsFinaleLocationMesh->SetVisibility(false);
+	bIsGhosts = false;
 }
 
 void AUnit::TakeDamage(int Damage)
@@ -413,12 +421,6 @@ void AUnit::NewTurn()
 	SetBuffTank(false);
 	
 }
-
-
-
-		
-
-
 
 void AUnit::UnitMoveAnim_Implementation()
 {

@@ -183,6 +183,9 @@ public:
 	UFUNCTION()
 	void MoveUnitEndTurn();
 
+	UFUNCTION(NetMulticast,Reliable)
+	void Multi_HiddeGhosts();
+
 	UFUNCTION(Server,Reliable)
 	void Server_Move(const TArray<FIntPoint> &PathToFollow);
 

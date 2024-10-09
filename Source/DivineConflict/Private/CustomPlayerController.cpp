@@ -510,6 +510,7 @@ void ACustomPlayerController::ActionEndTurn()
 				default:
 					break;
 				}
+			
 			}
 		}
 	}
