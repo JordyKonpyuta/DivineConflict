@@ -33,211 +33,26 @@ class DIVINECONFLICT_API AUnit : public APawn , public IInteractInterface
 
 	
 
-
+	// UPROPERTIES
 public:
 	// Sets default values for this pawn's properties
 	AUnit();
-
-	virtual bool Interact_Implementation(ACustomPlayerController* PlayerController) override;
-
-	UPROPERTY( EditAnywhere, BlueprintReadOnly ,Category = "Unit")
-	AGrid* Grid;
-
-	UFUNCTION()
-	void interaction(ACustomPlayerController *PlayerController);
-
-	UFUNCTION(BlueprintCallable)
-	void SetGrid(AGrid* NewGrid);
-
-	UPROPERTY(BlueprintReadOnly)
-	EUnitName UnitName;
+	
+	// ----------------------------
+	// Materials
 
 	UPROPERTY()
 	TArray<UMaterialInterface*> AllMaterials;
 
 	UPROPERTY()
 	UMaterialInterface* MaterialToGhosts;
-
-	UFUNCTION()
-	void Destroyed() override;
 	
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Unit", Replicated, meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* UnitMesh;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
-	UStaticMeshComponent* GhostsMesh;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
-	UStaticMeshComponent* GhostsFinaleLocationMesh;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Category = "Unit")
-	EPlayer PlayerOwner = EPlayer::P_Neutral;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Unit")
-	bool bIsClimbing = false;
+	// ----------------------------
+	// References
 	
-	UPROPERTY()
-	ACustomPlayerController* PlayerControllerRef;
+	UPROPERTY( EditAnywhere, BlueprintReadOnly ,Category = "Unit")
+	AGrid* Grid;
 	
-	void SetGrid();
-
-	UFUNCTION()
-	void testOnTower();
-	
-
-	virtual void NotifyActorOnClicked(FKey ButtonPressed) override;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Texture")
-	UTexture2D* UnitIconParadise;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Texture")
-	UTexture2D* UnitIconHell;
-	
-	// Units stats
-	UPROPERTY()
-	int Attack = 0;
-	
-	UPROPERTY()
-	int Defense = 0;
-	
-	UPROPERTY(Replicated,VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
-	int CurrentHealth = 0;
-	
-	UPROPERTY()
-	int MaxHealth = 0;
-	
-	UPROPERTY()
-	int MovementCost = 0;
-	
-	UPROPERTY()
-	int AttackCost = 0;
-	
-	UPROPERTY()
-	int SpellCost = 0;
-
-	UPROPERTY()
-	bool IsSelected = false;
-
-	UPROPERTY()
-	bool IsHell = false;
-
-	UPROPERTY()
-	int TotalDamagesInflicted = 0;
-
-	UPROPERTY(Replicated)
-	bool IsGarrison = false;
-
-	UPROPERTY()
-	ABuilding* BuildingRef = nullptr;
-
-	UPROPERTY()
-	ATower* TowerRef = nullptr;
-
-	UPROPERTY()
-	FString Name = "";
-
-	UPROPERTY(Replicated)
-	int PM = 0;
-
-	UPROPERTY()
-	FIntPoint IndexPosition = FIntPoint(-999, -999);
-
-	UPROPERTY()
-	TArray<FIntPoint> Path;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Unit")
-	bool bBuffTank = false;
-
-	UPROPERTY(Replicated)
-	bool bIsGhosts = false;
-	
-	UPROPERTY()
-	float DeltaTimeGhosts = 0.0f;
-
-	UPROPERTY()
-	int CurrentIndexGhost = 0;
-
-	UFUNCTION(Client,Reliable)
-	void InitGhosts();
-
-    UFUNCTION()
-	void MoveGhosts(float DeltaTime);
-
-	UFUNCTION(Server,Reliable)
-	void Server_MoveGhosts(float DeltaTime ,const TArray<FIntPoint> &PathToFollowGhost);
-
-	UFUNCTION(NetMulticast,Reliable)
-	void MoveGhostsMulticast(float DeltaTime,const TArray<FIntPoint> &PathToFollowGhost);
-
-public:
-	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitType")
-	TArray<int> UnitCost;
-
-	UFUNCTION(Server,Reliable)
-	void Server_AddOnGrid();
-
-	UFUNCTION( BlueprintCallable,NetMulticast,Reliable)
-	void Move(const TArray<FIntPoint> &PathToFollow);
-
-	UFUNCTION()
-	virtual void MoveUnitEndTurn();
-
-	UFUNCTION(NetMulticast,Reliable)
-	void Multi_HiddeGhosts();
-
-	UFUNCTION(Server,Reliable)
-	void Server_Move(const TArray<FIntPoint> &PathToFollow);
-
-	UFUNCTION()
-	void TakeDamage(int Damage);
-
-	UFUNCTION(BlueprintCallable)
-	void AttackUnit();
-
-	UFUNCTION(BlueprintCallable)
-	void AttackBase(ABase* BaseToAttack);
-
-	UFUNCTION(BlueprintCallable)
-	virtual void Special();
-
-	UFUNCTION(BlueprintCallable)
-	bool GetIsGarrison();
-
-	UFUNCTION(BlueprintCallable)
-	void SetIsGarrison(bool bG);
-
-	UFUNCTION(BlueprintCallable)
-	ABuilding* GetBuildingRef();
-
-	UFUNCTION(BlueprintCallable)
-	void SetBuildingRef(ABuilding* Building);
-	
-	virtual void SpecialUnit(AUnit* UnitToAttack);
-
-	UFUNCTION()
-	UStaticMeshComponent* GetFinalGhostMesh();
-	
-	virtual void SpecialBase(ABase *BaseToAttack);
-
-	UFUNCTION()
-	void NewTurn();
-
-	UPROPERTY(Replicated)
-	TArray<FIntPoint> FutureMovement;
-
-	UPROPERTY()
-	FIntPoint FutureMovementPos;
-
 	UPROPERTY()
 	AUnit* UnitToAttackRef;
 	
@@ -247,19 +62,24 @@ public:
 	UPROPERTY()
 	ABase* EnemyBase;
 
-	UPROPERTY()
-	bool UsedSpecial;
+	// ----------------------------
+	// Enums
 
-	UPROPERTY(Replicated)
-	TArray<FIntPoint> PathToCross;
+	UPROPERTY(BlueprintReadOnly)
+	EUnitName UnitName;
 
-	UPROPERTY(Replicated)
-	int PathToCrossPosition = 0;
+	// ----------------------------
+	// Timer Handles
 
 	FTimerHandle MoveTimerHandle;
 
-	UPROPERTY(Replicated)
-	int MoveSequencePos = 0;
+	FTimerHandle UnitAttackAnimTimer;
+
+	// ----------------------------
+	// Booleans
+	
+	UPROPERTY()
+	bool UsedSpecial;
 
 	UPROPERTY(Replicated)
 	bool bJustBecameGarrison = false;
@@ -270,123 +90,215 @@ public:
 	UPROPERTY(Blueprintable, BlueprintReadOnly)
 	bool HasActed = false;
 
+	// ----------------------------
+	// Ints
+	
+	UPROPERTY(Replicated)
+	int PathToCrossPosition = 0;
+
+	UPROPERTY(Replicated)
+	int MoveSequencePos = 0;
+
+	// ----------------------------
+	// Movement FIntPoints
+
+	UPROPERTY()
+	FIntPoint FutureMovementPos;
+	
+	UPROPERTY(Replicated)
+	TArray<FIntPoint> FutureMovement;
+	
+	UPROPERTY(Replicated)
+	TArray<FIntPoint> PathToCross;
+	
+
+	// ----------------------------
+	// Unit Spawn FIntPoints
+	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitType")
+	TArray<int> UnitCost;
+	
+	// ----------------------------
+	// ----------------------------
+protected:
+	// Overrides
+	
+	virtual void BeginPlay() override;
+	
+	virtual void NotifyActorOnClicked(FKey ButtonPressed) override;
+	
+	// ----------------------------
+	// Meshes
+
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Unit", Replicated, meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* UnitMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
+	UStaticMeshComponent* GhostsMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
+	UStaticMeshComponent* GhostsFinaleLocationMesh;
+
+	// ----------------------------
+	// Textures
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Texture")
+	UTexture2D* UnitIconParadise;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Texture")
+	UTexture2D* UnitIconHell;
+	
+	// ----------------------------
+	// References
+	
+	UPROPERTY()
+	ACustomPlayerController* PlayerControllerRef;
+
+	UPROPERTY()
+	ABuilding* BuildingRef = nullptr;
+
+	UPROPERTY()
+	ATower* TowerRef = nullptr;
+
+	// ----------------------------
+	// Enums
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Category = "Unit")
+	EPlayer PlayerOwner = EPlayer::P_Neutral;
+
+	// ----------------------------
+	// Booleans
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Unit")
+	bool bIsClimbing = false;
+
+	UPROPERTY()
+	bool IsSelected = false;
+
+	UPROPERTY(Replicated)
+	bool IsGarrison = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Unit")
+	bool bBuffTank = false;
+
+	UPROPERTY(Replicated)
+	bool bIsGhosts = false;
+
+	UPROPERTY()
+	bool bIsCommandeerBuffed = false;
+	
+	// ----------------------------
+	// Units stats
+	
+	UPROPERTY(Replicated,VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
+	int CurrentHealth = 0;
+	
+	UPROPERTY()
+	int MaxHealth = 0;
+
+	UPROPERTY(Replicated)
+	int PM = 0;
+	
+	UPROPERTY()
+	int Attack = 0;
+	
+	UPROPERTY()
+	int Defense = 0;
+
+	UPROPERTY()
+	FString Name = "";
+
+	// ----------------------------
+	// Position in Grid
+
+	UPROPERTY()
+	FIntPoint IndexPosition = FIntPoint(-999, -999);
+
+	UPROPERTY()
+	TArray<FIntPoint> Path;
+
+	// ----------------------------
+	// Ghosts
+	
+	UPROPERTY()
+	float DeltaTimeGhosts = 0.0f;
+
+	UPROPERTY()
+	int CurrentIndexGhost = 0;
+
+	
+	// ----------------------------
+	// ----------------------------
+	// ----------------------------
+	// UFUNCTIONS
+public:
+
+	// Overrides
+	
+	UFUNCTION()
+	void Destroyed() override;
+	
+	virtual void Tick(float DeltaTime) override;
+
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual bool Interact_Implementation(ACustomPlayerController* PlayerController) override;
+	
+	// ----------------------------
+	// Interactions
+	
+	UFUNCTION()
+	void interaction(ACustomPlayerController *PlayerController);
+	
+	// ----------------------------
+	// Turn Switch
+	
+	UFUNCTION()
+	void NewTurn();
+	
+	// ----------------------------
+	// Grid
+	
+	UFUNCTION(Server,Reliable)
+	void Server_AddOnGrid();
+
+	UFUNCTION(BlueprintCallable)
+	void SetGrid(AGrid* NewGrid);
+
+	// ----------------------------
+	// Prepare Moves
+	
+	UFUNCTION(NetMulticast,Reliable)
+	void Multi_PrepareMove(const TArray<FIntPoint> &NewPos);
+	
+	// ----------------------------
+	// Movement
+
+	UFUNCTION( BlueprintCallable,NetMulticast,Reliable)
+	void Move(const TArray<FIntPoint> &PathToFollow);
+	
+	UFUNCTION(Server,Reliable)
+	void Server_Move(const TArray<FIntPoint> &PathToFollow);
+
 	UFUNCTION()
 	void InitializeFullMove(TArray <FIntPoint> FullMove);
 	
 	UFUNCTION(BlueprintCallable,NetMulticast,Reliable)
 	void UnitMoveAnim();
-
-	UPROPERTY()
-	bool bIsCommandeerBuffed = false;
 	
-
-	// Getter for units stats
-	UFUNCTION(BlueprintCallable)
-	int GetAttack();
-
-	UFUNCTION(BlueprintCallable)
-	int GetDefense();
-
-	UFUNCTION(BlueprintCallable)
-	int GetCurrentHealth();
-
-	UFUNCTION(BlueprintCallable)
-	int GetMaxHealth();
-
-	UFUNCTION(BlueprintCallable)
-	int GetMovementCost();
-
-	UFUNCTION(BlueprintCallable)
-	int GetAttackCost();
-
-	UFUNCTION(BlueprintCallable)
-	int GetSpellCost();
-
-	UFUNCTION(BlueprintCallable)
-	bool GetIsSelected();
-
-	UFUNCTION(BlueprintCallable)
-	bool GetIsHell();
-	
-	UFUNCTION(BluePrintCallable)
-	EPlayer GetUnitTeam();
-
-	UFUNCTION(BlueprintCallable)
-	int GetTotalDamageInflicted();
-
-	UFUNCTION(BlueprintCallable)
-	FString GetName();
-
-	UFUNCTION(BlueprintCallable)
-	int GetPM();
-
 	UFUNCTION()
-	FIntPoint GetIndexPosition();
+	virtual void MoveUnitEndTurn();
 
-	UFUNCTION()
-	EPlayer GetPlayerOwner();
-
-	UFUNCTION()
-	bool GetIsClimbing();
-
-	UFUNCTION()
-	bool GetBuffTank();
-
-	// Setter for units stats
-	UFUNCTION(BlueprintCallable)
-	void SetAttack(int a);
-
-	UFUNCTION(BlueprintCallable)
-	void SetDefense(int d);
-
-	UFUNCTION(BlueprintCallable)
-	void SetCurrentHealth(int ch);
-
-	UFUNCTION(BlueprintCallable)
-	void SetMaxHealth(int mh);
-
-	UFUNCTION(BlueprintCallable)
-	void SetMovementCost(int mc);
-
-	UFUNCTION(BlueprintCallable)
-	void SetAttackCost(int ac);
-
-	UFUNCTION(BlueprintCallable)
-	void SetSpellCost(int sc);
-
-	UFUNCTION(BlueprintCallable)
-	void SetIsSelected(bool s);
-
-	UFUNCTION(BlueprintCallable)
-	void SetIsHell(bool h);
-
-	UFUNCTION(BluePrintCallable)
-	void SetUnitTeam(EPlayer PO);
-
-	UFUNCTION(BlueprintCallable)
-	void SetTotalDamageInflicted(int tdi);
-
-	UFUNCTION(BlueprintCallable)
-	void SetName(FString n);
-
-	UFUNCTION(BlueprintCallable)
-	void SetPM(int p);
-
-	UFUNCTION()
-	void SetIndexPosition(FIntPoint ip);
-
-	UFUNCTION(BlueprintCallable)
-	void SetPlayerOwner(EPlayer po);
-
-	UFUNCTION()
-	void SetIsClimbing(bool ic);
-
-	UFUNCTION()
-	void SetBuffTank(bool bt);
+	// ----------------------------
+	// Ghosts
 
 	UFUNCTION(NetMulticast,Reliable)
-	void Multi_PrepareMove(const TArray<FIntPoint> &NewPos);
+	void Multi_HiddeGhosts();
+	
+	UFUNCTION()
+	UStaticMeshComponent* GetFinalGhostMesh();
 
+	// ----------------------------
+	// Prepare Attacks
+	
 	UFUNCTION()
 	void PrepareAttackUnit(FIntPoint AttackPos);
 
@@ -396,6 +308,171 @@ public:
 	UFUNCTION()
 	void PrepareAttackBase(FIntPoint AttackPos);
 
+	// ----------------------------
+	// Attack
+
 	UFUNCTION()
-	void PrepareSpecial(FIntPoint SpecialPos);
+	void TakeDamage(int Damage);
+
+	UFUNCTION(BlueprintCallable)
+	void AttackUnit();
+
+	UFUNCTION(BlueprintCallable)
+	void AttackBase(ABase* BaseToAttack);
+	
+	UFUNCTION()
+	void AnimAttack();
+	
+	// ----------------------------
+	// Prepare Specials
+
+	UFUNCTION()
+	virtual void PrepareSpecial(FIntPoint SpecialPos);
+
+	// ----------------------------
+	// Special
+
+	UFUNCTION(BlueprintCallable)
+	virtual void Special();
+	
+	virtual void SpecialUnit(AUnit* UnitToAttack);
+	
+	virtual void SpecialBase(ABase *BaseToAttack);
+
+
+	
+	
+	// ----------------------------
+	// GETTERS //
+
+	// References
+	UFUNCTION(BlueprintCallable)
+	ABuilding* GetBuildingRef();
+	
+	// Int
+	UFUNCTION(BlueprintCallable)
+	int GetMaxHealth();
+	
+	UFUNCTION(BlueprintCallable)
+	int GetCurrentHealth();
+
+	UFUNCTION(BlueprintCallable)
+	int GetPM();
+	
+	UFUNCTION(BlueprintCallable)
+	int GetAttack();
+
+	UFUNCTION(BlueprintCallable)
+	int GetDefense();
+
+	// Bool
+	UFUNCTION(BlueprintCallable)
+	bool GetIsSelected();
+
+	UFUNCTION()
+	bool GetIsClimbing();
+
+	UFUNCTION()
+	bool GetBuffTank();
+
+	UFUNCTION(BlueprintCallable)
+	bool GetIsGarrison();
+
+	UFUNCTION()
+	bool GetIsCommandeerBuffed();
+
+	// Enums
+	UFUNCTION(BluePrintCallable)
+	EPlayer GetUnitTeam();
+
+	UFUNCTION()
+	EPlayer GetPlayerOwner();
+
+	// String
+	UFUNCTION(BlueprintCallable)
+	FString GetName();
+
+	// FIntPoint
+	UFUNCTION()
+	FIntPoint GetIndexPosition();
+
+	// ----------------------------
+	// SETTERS //
+
+	// References
+	UFUNCTION(BlueprintCallable)
+	void SetBuildingRef(ABuilding* Building);
+	
+	// Int
+	UFUNCTION(BlueprintCallable)
+	void SetMaxHealth(int mh);
+	
+	UFUNCTION(BlueprintCallable)
+	void SetCurrentHealth(int ch);
+	
+	UFUNCTION(BlueprintCallable)
+	void SetPM(int p);
+	
+	UFUNCTION(BlueprintCallable)
+	void SetAttack(int a);
+
+	UFUNCTION(BlueprintCallable)
+	void SetDefense(int d);
+	
+	// Bool
+	UFUNCTION(BlueprintCallable)
+	void SetIsSelected(bool s);
+	
+	UFUNCTION(BlueprintCallable)
+	void SetIsGarrison(bool bG);
+
+	UFUNCTION()
+	void SetIsClimbing(bool ic);
+
+	UFUNCTION()
+	void SetBuffTank(bool bt);
+
+	UFUNCTION()
+	void SetIsCommandeerBuffed(bool bC);
+
+	// Enums
+	UFUNCTION(BluePrintCallable)
+	void SetUnitTeam(EPlayer PO);
+
+	UFUNCTION(BlueprintCallable)
+	void SetPlayerOwner(EPlayer po);
+
+	// Fstring
+	UFUNCTION(BlueprintCallable)
+	void SetName(FString n);
+
+	// FIntPoint
+	UFUNCTION()
+	void SetIndexPosition(FIntPoint ip);
+	
+	// ----------------------------
+	// ----------------------------
+protected:
+
+	// Movement
+
+	UFUNCTION(Client,Reliable)
+	void InitGhosts();
+
+	UFUNCTION()
+	void MoveGhosts(float DeltaTime);
+
+	UFUNCTION(Server,Reliable)
+	void Server_MoveGhosts(float DeltaTime ,const TArray<FIntPoint> &PathToFollowGhost);
+
+	UFUNCTION(NetMulticast,Reliable)
+	void MoveGhostsMulticast(float DeltaTime,const TArray<FIntPoint> &PathToFollowGhost);
+
+	// ----------------------------
+	// Initial tests
+	
+	UFUNCTION()
+	void testOnTower();
+	
+	void SetGrid();
 };

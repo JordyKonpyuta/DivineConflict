@@ -83,7 +83,7 @@ void AUnit_Child_Leader::PushBuff()
 		if (!TempAllUnitsToCheck.Find(TempUnit))
 		{
 			AllUnitsToBuff.RemoveSingleSwap(TempUnit);
-			bIsCommandeerBuffed = false;
+			SetIsCommandeerBuffed(false);
 		}
 	}
 
@@ -94,7 +94,7 @@ void AUnit_Child_Leader::PushBuff()
 		{
 			if (PlayerOwner == Unit->GetPlayerOwner())
 			{
-				Unit->bIsCommandeerBuffed = true;
+				Unit->SetIsCommandeerBuffed(true);
 				AllUnitsToBuff.AddUnique(this);
 			}
 		}

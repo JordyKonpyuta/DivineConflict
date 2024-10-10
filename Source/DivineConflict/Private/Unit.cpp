@@ -2,7 +2,6 @@
 
 
 #include "Unit.h"
-
 #include "Base.h"
 #include "Building.h"
 #include "CustomPlayerController.h"
@@ -12,14 +11,10 @@
 #include "GridVisual.h"
 #include "Tower.h"
 #include "Kismet/GameplayStatics.h"
-#include <chrono>
-#include <thread>
-
-#include "VectorTypes.h"
 #include "Net/UnrealNetwork.h"
 
+// INITIALISATIONS
 
-// Sets default values
 AUnit::AUnit()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -55,36 +50,6 @@ AUnit::AUnit()
 	
 }
 
-bool AUnit::Interact_Implementation(ACustomPlayerController* PlayerController)
-{
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Interact unit"));
-	PlayerControllerRef = PlayerController;
-	//PlayerControllerRef->CameraPlayerRef->IsMovingUnit = true;
-	//DisplayWidget();
-
-
-	
-	return true;
-}
-
-
-void AUnit::interaction(ACustomPlayerController* PlayerController)
-{
-}
-
-void AUnit::SetGrid(AGrid* NewGrid)
-{
-	Grid = NewGrid;
-}
-
-void AUnit::Destroyed()
-{
-	Grid->GridInfo->RemoveUnitInGrid(this);
-	Super::Destroyed();
-}
-
-// Called when the game starts or when spawned
 void AUnit::BeginPlay()
 {
 	Super::BeginPlay();
@@ -130,6 +95,53 @@ void AUnit::BeginPlay()
 
 }
 
+void AUnit::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if(HasAuthority())
+		MoveGhosts(DeltaTime);
+}
+
+void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProps) const{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AUnit, UnitMesh);
+	DOREPLIFETIME(AUnit, PlayerOwner);
+	DOREPLIFETIME(AUnit, bIsClimbing);
+	DOREPLIFETIME(AUnit, CurrentHealth);
+	DOREPLIFETIME(AUnit, IsGarrison);
+	DOREPLIFETIME(AUnit, PM);
+	DOREPLIFETIME(AUnit, bBuffTank);
+	DOREPLIFETIME(AUnit, bIsGhosts);
+	DOREPLIFETIME(AUnit, PathToCross);
+	DOREPLIFETIME(AUnit, PathToCrossPosition);
+	DOREPLIFETIME(AUnit, bJustBecameGarrison);
+	DOREPLIFETIME(AUnit, MoveSequencePos);
+	DOREPLIFETIME(AUnit, FutureMovement);
+
+}
+
+// ----------------------------
+// Initial Tests
+
+void AUnit::testOnTower()
+{
+	if(Grid)
+	{
+		if(Grid->GetGridData()->Find(IndexPosition) != nullptr)
+		{
+			if ( Grid->GetGridData()->Find(IndexPosition)->TowerOnTile)
+			{
+				Grid->GetGridData()->Find(IndexPosition)->TowerOnTile->UnitInGarrison = this;
+				Grid->GetGridData()->Find(IndexPosition)->TowerOnTile->IsGarrisoned = true;
+				TowerRef = Grid->GetGridData()->Find(IndexPosition)->TowerOnTile;
+			}
+
+		}
+	}
+}
+
 void AUnit::SetGrid()
 {
 	//get the grid
@@ -149,78 +161,13 @@ void AUnit::SetGrid()
 	}
 }
 
-void AUnit::testOnTower()
+// ----------------------------
+// Overriden & Not in any category
+
+void AUnit::Destroyed()
 {
-	if(Grid)
-	{
-		if(Grid->GetGridData()->Find(IndexPosition) != nullptr)
-		{
-			if ( Grid->GetGridData()->Find(IndexPosition)->TowerOnTile)
-			{
-				Grid->GetGridData()->Find(IndexPosition)->TowerOnTile->UnitInGarrison = this;
-				Grid->GetGridData()->Find(IndexPosition)->TowerOnTile->IsGarrisoned = true;
-				TowerRef = Grid->GetGridData()->Find(IndexPosition)->TowerOnTile;
-			}
-
-		}
-	}
-}
-
-void AUnit::NotifyActorOnClicked(FKey ButtonPressed)
-{
-	Super::NotifyActorOnClicked(ButtonPressed);
-	SetIsSelected(true);
-}
-
-void AUnit::InitGhosts_Implementation()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Init Ghosts"));
-	GhostsMesh->SetVisibility(true);
-	GhostsMesh->SetWorldLocation(GetActorLocation());
-	GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovementPos));
-	GhostsFinaleLocationMesh->SetVisibility(true);
-	bIsGhosts = true;
-}
-
-void AUnit::MoveGhosts(float DeltaTime)
-{
-
-	Server_MoveGhosts(DeltaTime, FutureMovement);
-}
-
-void AUnit::Server_MoveGhosts_Implementation(float DeltaTime ,const TArray<FIntPoint> &PathToFollowGhost)
-{
-	if(bIsGhosts)
-		MoveGhostsMulticast(DeltaTime, PathToFollowGhost);
-}
-
-void AUnit::MoveGhostsMulticast_Implementation(float DeltaTime,const TArray<FIntPoint> &PathToFollowGhost)
-{
-	if(PathToFollowGhost.Num() == 0)
-	{
-		return;
-	}
-	GhostsMesh->SetWorldLocation(UKismetMathLibrary::VInterpTo_Constant(GhostsMesh->GetComponentLocation(), Grid->ConvertIndexToLocation(PathToFollowGhost[CurrentIndexGhost]), DeltaTime, 70.0f));
-	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, TEXT("Move Ghosts"));
-	if(GhostsMesh->GetComponentLocation() == Grid->ConvertIndexToLocation(PathToFollowGhost[CurrentIndexGhost]))
-	{
-		CurrentIndexGhost++;
-		if(PathToFollowGhost.Num() == CurrentIndexGhost)
-		{
-			CurrentIndexGhost = 0;
-			GhostsMesh->SetWorldLocation(GetActorLocation());
-			GhostsFinaleLocationMesh->SetVisibility(true);
-		}
-	}
-}
-
-// Called every frame
-void AUnit::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	if(HasAuthority())
-		MoveGhosts(DeltaTime);
+	Grid->GridInfo->RemoveUnitInGrid(this);
+	Super::Destroyed();
 }
 
 // Called to bind functionality to input
@@ -230,11 +177,73 @@ void AUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+void AUnit::NotifyActorOnClicked(FKey ButtonPressed)
+{
+	Super::NotifyActorOnClicked(ButtonPressed);
+	SetIsSelected(true);
+}
+
+
+// ----------------------------
+// Interactions
+
+bool AUnit::Interact_Implementation(ACustomPlayerController* PlayerController)
+{
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Interact unit"));
+	PlayerControllerRef = PlayerController;
+	//PlayerControllerRef->CameraPlayerRef->IsMovingUnit = true;
+	//DisplayWidget();
+
+
+	
+	return true;
+}
+
+void AUnit::interaction(ACustomPlayerController* PlayerController)
+{
+}
+
+// ----------------------------
+// Turn Switch
+
+void AUnit::NewTurn()
+{
+	SetIsSelected(false);
+	bIsClimbing = false;
+	SetBuffTank(false);
+	
+}
+
+
+// ----------------------------
+// Grid
+
 void AUnit::Server_AddOnGrid_Implementation()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Unit Add on grid"));
 	Grid->GridInfo->AddUnitInGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
 }
+
+void AUnit::SetGrid(AGrid* NewGrid)
+{
+	Grid = NewGrid;
+}
+
+// ----------------------------
+// Prepare Moves
+
+void AUnit::Multi_PrepareMove_Implementation(const TArray<FIntPoint>& NewPos)
+{
+	FutureMovement = NewPos;
+	FutureMovementPos = FutureMovement.Last();
+	InitGhosts();
+	Grid->GridInfo->Server_setUnitIndexOnGrid(IndexPosition,this);
+	//PlayerControllerRef->AllPlayerActions.Add(FStructActions(this, EDC_ActionPlayer::MoveUnit));
+}
+
+// ----------------------------
+// Movements
 
 void AUnit::Move_Implementation(const TArray<FIntPoint> &PathIn)
 {
@@ -325,147 +334,43 @@ void AUnit::Move_Implementation(const TArray<FIntPoint> &PathIn)
     }
 }
 
-
 void AUnit::Server_Move_Implementation(const TArray<FIntPoint>& PathToFollow)
 {
 	Move(PathToFollow);
 }
 
-void AUnit::MoveUnitEndTurn()
+void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 {
-	Multi_HiddeGhosts();
-	InitializeFullMove(FutureMovement);
-}
-
-void AUnit::Multi_HiddeGhosts_Implementation()
-{
+	// Initialisation
+	PathToCross = FullMove;
 	GhostsMesh->SetVisibility(false);
 	GhostsFinaleLocationMesh->SetVisibility(false);
 	bIsGhosts = false;
-}
+	bJustBecameGarrison = false;
+	MoveSequencePos = 0;
 
-void AUnit::TakeDamage(int Damage)
-{
-GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UNIT TAKE DAMAGE"));
-	if(bBuffTank && (Damage-(Defense+1)) > 0)
+	if (IsGarrison && !bJustBecameGarrison)
 	{
-		CurrentHealth -= (Damage-(Defense+1));
-	}
-	else if((Damage-Defense) > 0)
-		CurrentHealth -= (Damage-Defense);
-}
-
-void AUnit::AttackUnit()
-{
-	AUnit* UnitToAttack = UnitToAttackRef; 
-	if(UnitToAttack == nullptr || Grid == nullptr || UnitToAttack == this)
-	{
-		return;
-	}
-	
-	if (PlayerOwner == EPlayer::P_Hell && bIsCommandeerBuffed)
-	{
-		UnitToAttack->TakeDamage(GetAttack() + 1);
-	} else
-	{
-		UnitToAttack->TakeDamage(GetAttack());
-	}
-
-	if (UnitToAttack->PlayerOwner == EPlayer::P_Hell && UnitToAttack->bIsCommandeerBuffed)
-	{
-		TakeDamage(UnitToAttack->GetAttack() + 1);
-	} else
-	{
-		TakeDamage(UnitToAttack->GetAttack());
-	}
-
-	if(UnitToAttack->GetCurrentHealth() < 1)
-	{
-		FutureMovement.Insert(UnitToAttack->GetIndexPosition(), 0);
-		Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
-		PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
-		if (UnitToAttack->BuildingRef)
+		if(BuildingRef)
 		{
-			UnitToAttack->BuildingRef->UnitRef = nullptr;
-			UnitToAttack->BuildingRef->GarrisonFull = false;
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Unit Got Killed and removed")));
+			BuildingRef->UnitRef = nullptr;
+			BuildingRef->GarrisonFull = false;
 		}
-		UnitToAttack->Destroyed();
-		if(GetCurrentHealth() < 1)
+		if(TowerRef)
 		{
-			Grid->GridInfo->RemoveUnitInGrid(this);
-			Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
-			PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
-			Destroyed();
+			TowerRef->UnitInGarrison = nullptr;
+			TowerRef->IsGarrisoned = false;
 		}
-		else
-			Move(FutureMovement);
+		IsGarrison = false;
+		BuildingRef = nullptr;
 	}
-	if(GetCurrentHealth() < 1)
-	{
-		Grid->GridInfo->RemoveUnitInGrid(this);
-		Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
-		PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
-		Destroyed();
-	}
-
-
-}
-
-void AUnit::AttackBase(ABase* BaseToAttack)
-{
-	if(BaseToAttack == nullptr || Grid == nullptr)
-	{
-		return;
-	}
-	BaseToAttack->TakeDamage(/*GetAttack()*/100);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("health Base: ") + FString::FromInt(BaseToAttack->GetHealth()));
-}
-
-void AUnit::Special()
-{
-	
-}
-
-bool AUnit::GetIsGarrison()
-{
-	return IsGarrison;
-}
-
-void AUnit::SetIsGarrison(bool bG)
-{
-	IsGarrison = bG;
-}
-
-ABuilding* AUnit::GetBuildingRef()
-{
-	return BuildingRef;
-}
-
-void AUnit::SetBuildingRef(ABuilding* Building)
-{
-	BuildingRef = Building;
-}
-
-void AUnit::SpecialUnit(AUnit* UnitToAttack)
-{
-}
-
-UStaticMeshComponent* AUnit::GetFinalGhostMesh()
-{
-	return GhostsFinaleLocationMesh;
-}
-
-void AUnit::SpecialBase(ABase* BaseToAttack)
-{
-}
-
-void AUnit::NewTurn()
-{
-	SetIsSelected(false);
-	bIsClimbing = false;
-	SetBuffTank(false);
-	
+		
+	GetWorld()->GetTimerManager().SetTimer(
+		MoveTimerHandle, 
+		this,
+		&AUnit::UnitMoveAnim,
+		0.3,
+		true);
 }
 
 void AUnit::UnitMoveAnim_Implementation()
@@ -567,234 +472,71 @@ void AUnit::UnitMoveAnim_Implementation()
 	}
 }
 
-void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
+void AUnit::MoveUnitEndTurn()
 {
-	// Initialisation
-	PathToCross = FullMove;
+	Multi_HiddeGhosts();
+	InitializeFullMove(FutureMovement);
+}
+
+// ----------------------------
+// Ghosts
+
+void AUnit::Multi_HiddeGhosts_Implementation()
+{
 	GhostsMesh->SetVisibility(false);
 	GhostsFinaleLocationMesh->SetVisibility(false);
 	bIsGhosts = false;
-	bJustBecameGarrison = false;
-	MoveSequencePos = 0;
+}
 
-	if (IsGarrison && !bJustBecameGarrison)
+UStaticMeshComponent* AUnit::GetFinalGhostMesh()
+{
+	return GhostsFinaleLocationMesh;
+}
+
+void AUnit::InitGhosts_Implementation()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Init Ghosts"));
+	GhostsMesh->SetVisibility(true);
+	GhostsMesh->SetWorldLocation(GetActorLocation());
+	GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovementPos));
+	GhostsFinaleLocationMesh->SetVisibility(true);
+	bIsGhosts = true;
+}
+
+void AUnit::MoveGhosts(float DeltaTime)
+{
+
+	Server_MoveGhosts(DeltaTime, FutureMovement);
+}
+
+void AUnit::Server_MoveGhosts_Implementation(float DeltaTime ,const TArray<FIntPoint> &PathToFollowGhost)
+{
+	if(bIsGhosts)
+		MoveGhostsMulticast(DeltaTime, PathToFollowGhost);
+}
+
+void AUnit::MoveGhostsMulticast_Implementation(float DeltaTime,const TArray<FIntPoint> &PathToFollowGhost)
+{
+	if(PathToFollowGhost.Num() == 0)
 	{
-		if(BuildingRef)
-		{
-			BuildingRef->UnitRef = nullptr;
-			BuildingRef->GarrisonFull = false;
-		}
-		if(TowerRef)
-		{
-			TowerRef->UnitInGarrison = nullptr;
-			TowerRef->IsGarrisoned = false;
-		}
-		IsGarrison = false;
-		BuildingRef = nullptr;
+		return;
 	}
-		
-	GetWorld()->GetTimerManager().SetTimer(
-		MoveTimerHandle, 
-		this,
-		&AUnit::UnitMoveAnim,
-		0.3,
-		true);
-}
-
-int AUnit::GetAttack()
-{
-	return Attack;
-}
-
-int AUnit::GetDefense()
-{
-	return Defense;
-}
-
-int AUnit::GetCurrentHealth()
-{
-	return CurrentHealth;
-}
-
-int AUnit::GetMaxHealth()
-{
-	return MaxHealth;
-}
-
-int AUnit::GetMovementCost()
-{
-	return MovementCost;
-}
-
-int AUnit::GetAttackCost()
-{
-	return AttackCost;
-}
-
-int AUnit::GetSpellCost()
-{
-	return SpellCost;
-}
-
-bool AUnit::GetIsSelected()
-{
-	return IsSelected;
-}
-
-bool AUnit::GetIsHell()
-{
-	return IsHell;
-}
-
-EPlayer AUnit::GetUnitTeam()
-{
-	return PlayerOwner;
-}
-
-void AUnit::SetAttack(int a)
-{
-	Attack = a;
-}
-
-void AUnit::SetDefense(int d)
-{
-	Defense = d;
-}
-
-void AUnit::SetCurrentHealth(int ch)
-{
-	CurrentHealth = ch;
-}
-
-void AUnit::SetMaxHealth(int mh)
-{
-	MaxHealth = mh;
-}
-
-void AUnit::SetMovementCost(int mc)
-{
-	MovementCost = mc;
-}
-
-void AUnit::SetAttackCost(int ac)
-{
-	AttackCost = ac;
-}
-
-void AUnit::SetSpellCost(int sc)
-{
-	SpellCost = sc;
-}
-
-void AUnit::SetIsSelected(bool s)
-{
-	IsSelected = s;
-}
-
-void AUnit::SetIsHell(bool h)
-{
-	IsHell = h;
-}
-
-void AUnit::SetUnitTeam(EPlayer PO)
-{
-	PlayerOwner = PO;
-}
-
-int AUnit::GetTotalDamageInflicted()
-{
-	return TotalDamagesInflicted;
-}
-
-FString AUnit::GetName()
-{
-	return Name;
-}
-
-int AUnit::GetPM()
-{
-	return PM;
-}
-
-
-FIntPoint AUnit::GetIndexPosition()
-{
-	return IndexPosition;
-}
-
-EPlayer AUnit::GetPlayerOwner()
-{
-	return PlayerOwner;
-}
-
-bool AUnit::GetIsClimbing()
-{
-	return bIsClimbing;
-}
-
-bool AUnit::GetBuffTank()
-{
-	return bBuffTank;
-}
-
-void AUnit::SetTotalDamageInflicted(int tdi)
-{
-	TotalDamagesInflicted = tdi;
-}
-
-void AUnit::SetName(FString n)
-{
-	Name = n;
-}
-
-void AUnit::SetPM(int p)
-{
-	PM = p;
-}
-
-
-void AUnit::SetIndexPosition(FIntPoint ip)
-{
-	IndexPosition = ip;
-}
-
-void AUnit::SetPlayerOwner(EPlayer po)
-{
-	PlayerOwner = po;
-	
-	switch (PlayerOwner)
+	GhostsMesh->SetWorldLocation(UKismetMathLibrary::VInterpTo_Constant(GhostsMesh->GetComponentLocation(), Grid->ConvertIndexToLocation(PathToFollowGhost[CurrentIndexGhost]), DeltaTime, 70.0f));
+	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, TEXT("Move Ghosts"));
+	if(GhostsMesh->GetComponentLocation() == Grid->ConvertIndexToLocation(PathToFollowGhost[CurrentIndexGhost]))
 	{
-	case EPlayer::P_Hell:
-		UnitMesh->SetMaterial(0, AllMaterials[2]);
-		break;
-	case EPlayer::P_Heaven:
-		UnitMesh->SetMaterial(0, AllMaterials[1]);
-		break;
-	case EPlayer::P_Neutral:
-		UnitMesh->SetMaterial(0, AllMaterials[0]);
-		break;
+		CurrentIndexGhost++;
+		if(PathToFollowGhost.Num() == CurrentIndexGhost)
+		{
+			CurrentIndexGhost = 0;
+			GhostsMesh->SetWorldLocation(GetActorLocation());
+			GhostsFinaleLocationMesh->SetVisibility(true);
+		}
 	}
 }
 
-void AUnit::SetIsClimbing(bool ic)
-{
-	bIsClimbing = ic;
-}
-
-void AUnit::SetBuffTank(bool bt)
-{
-	bBuffTank = bt;
-}
-
-void AUnit::Multi_PrepareMove_Implementation(const TArray<FIntPoint>& NewPos)
-{
-	FutureMovement = NewPos;
-	FutureMovementPos = FutureMovement.Last();
-	InitGhosts();
-	Grid->GridInfo->Server_setUnitIndexOnGrid(IndexPosition,this);
-	//PlayerControllerRef->AllPlayerActions.Add(FStructActions(this, EDC_ActionPlayer::MoveUnit));
-}
-
+// ----------------------------
+// Prepare Attacks
 
 void AUnit::PrepareAttackUnit(FIntPoint AttackPos)
 {
@@ -827,6 +569,94 @@ void AUnit::PrepareAttackBase(FIntPoint AttackPos)
 	}
 }
 
+// ----------------------------
+// Attack
+
+void AUnit::TakeDamage(int Damage)
+{
+GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UNIT TAKE DAMAGE"));
+	if(bBuffTank && (Damage-(Defense+1)) > 0)
+	{
+		CurrentHealth -= (Damage-(Defense+1));
+	}
+	else if((Damage-Defense) > 0)
+		CurrentHealth -= (Damage-Defense);
+}
+
+void AUnit::AttackUnit()
+{
+	AUnit* UnitToAttack = UnitToAttackRef; 
+	if(UnitToAttack == nullptr || Grid == nullptr || UnitToAttack == this)
+	{
+		return;
+	}
+	
+	if (PlayerOwner == EPlayer::P_Hell && bIsCommandeerBuffed)
+	{
+		UnitToAttack->TakeDamage(GetAttack() + 1);
+	} else
+	{
+		UnitToAttack->TakeDamage(GetAttack());
+	}
+
+	if (UnitToAttack->PlayerOwner == EPlayer::P_Hell && UnitToAttack->bIsCommandeerBuffed)
+	{
+		TakeDamage(UnitToAttack->GetAttack() + 1);
+	} else
+	{
+		TakeDamage(UnitToAttack->GetAttack());
+	}
+
+	if(UnitToAttack->GetCurrentHealth() < 1)
+	{
+		FutureMovement.Insert(UnitToAttack->GetIndexPosition(), 0);
+		Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
+		PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
+		if (UnitToAttack->BuildingRef)
+		{
+			UnitToAttack->BuildingRef->UnitRef = nullptr;
+			UnitToAttack->BuildingRef->GarrisonFull = false;
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Unit Got Killed and removed")));
+		}
+		UnitToAttack->Destroyed();
+		if(GetCurrentHealth() < 1)
+		{
+			Grid->GridInfo->RemoveUnitInGrid(this);
+			Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
+			PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
+			Destroyed();
+		}
+		else
+			Move(FutureMovement);
+	}
+	if(GetCurrentHealth() < 1)
+	{
+		Grid->GridInfo->RemoveUnitInGrid(this);
+		Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
+		PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
+		Destroyed();
+	}
+
+
+}
+
+void AUnit::AttackBase(ABase* BaseToAttack)
+{
+	if(BaseToAttack == nullptr || Grid == nullptr)
+	{
+		return;
+	}
+	BaseToAttack->TakeDamage(/*GetAttack()*/100);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("health Base: ") + FString::FromInt(BaseToAttack->GetHealth()));
+}
+
+void AUnit::AnimAttack()
+{
+}
+
+// ----------------------------
+// Prepare Specials
+
 void AUnit::PrepareSpecial(FIntPoint SpecialPos)
 {
 	if (Grid->GetGridData()->Find(SpecialPos)->UnitOnTile && PlayerControllerRef->CurrentPA > 1)
@@ -836,21 +666,202 @@ void AUnit::PrepareSpecial(FIntPoint SpecialPos)
 	}
 }
 
-void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProps) const{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+// ----------------------------
+// Specials
 
-	DOREPLIFETIME(AUnit, UnitMesh);
-	DOREPLIFETIME(AUnit, PlayerOwner);
-	DOREPLIFETIME(AUnit, bIsClimbing);
-	DOREPLIFETIME(AUnit, CurrentHealth);
-	DOREPLIFETIME(AUnit, IsGarrison);
-	DOREPLIFETIME(AUnit, PM);
-	DOREPLIFETIME(AUnit, bBuffTank);
-	DOREPLIFETIME(AUnit, bIsGhosts);
-	DOREPLIFETIME(AUnit, PathToCross);
-	DOREPLIFETIME(AUnit, PathToCrossPosition);
-	DOREPLIFETIME(AUnit, bJustBecameGarrison);
-	DOREPLIFETIME(AUnit, MoveSequencePos);
-	DOREPLIFETIME(AUnit, FutureMovement);
-
+void AUnit::Special()
+{
+	
 }
+
+void AUnit::SpecialUnit(AUnit* UnitToAttack)
+{
+}
+
+void AUnit::SpecialBase(ABase* BaseToAttack)
+{
+}
+
+// ----------------------------
+// GETTERS
+
+// References
+ABuilding* AUnit::GetBuildingRef()
+{
+	return BuildingRef;
+}
+
+// Int
+int AUnit::GetMaxHealth()
+{
+	return MaxHealth;
+}
+
+int AUnit::GetCurrentHealth()
+{
+	return CurrentHealth;
+}
+
+int AUnit::GetPM()
+{
+	return PM;
+}
+
+int AUnit::GetAttack()
+{
+	return Attack;
+}
+
+int AUnit::GetDefense()
+{
+	return Defense;
+}
+
+// Bool
+bool AUnit::GetIsSelected()
+{
+	return IsSelected;
+}
+
+bool AUnit::GetIsClimbing()
+{
+	return bIsClimbing;
+}
+
+bool AUnit::GetBuffTank()
+{
+	return bBuffTank;
+}
+
+bool AUnit::GetIsGarrison()
+{
+	return IsGarrison;
+}
+
+bool AUnit::GetIsCommandeerBuffed()
+{
+	return bIsCommandeerBuffed;
+}
+
+// Enums
+EPlayer AUnit::GetUnitTeam()
+{
+	return PlayerOwner;
+}
+
+EPlayer AUnit::GetPlayerOwner()
+{
+	return PlayerOwner;
+}
+
+// String
+FString AUnit::GetName()
+{
+	return Name;
+}
+
+// FIntPoint
+FIntPoint AUnit::GetIndexPosition()
+{
+	return IndexPosition;
+}
+
+// ----------------------------
+// SETTERS
+
+// References
+void AUnit::SetBuildingRef(ABuilding* Building)
+{
+	BuildingRef = Building;
+}
+
+// Int
+void AUnit::SetMaxHealth(int mh)
+{
+	MaxHealth = mh;
+}
+
+void AUnit::SetCurrentHealth(int ch)
+{
+	CurrentHealth = ch;
+}
+
+void AUnit::SetPM(int p)
+{
+	PM = p;
+}
+
+void AUnit::SetAttack(int a)
+{
+	Attack = a;
+}
+
+void AUnit::SetDefense(int d)
+{
+	Defense = d;
+}
+
+// Bool
+void AUnit::SetIsSelected(bool s)
+{
+	IsSelected = s;
+}
+
+void AUnit::SetIsGarrison(bool bG)
+{
+	IsGarrison = bG;
+}
+
+void AUnit::SetIsClimbing(bool ic)
+{
+	bIsClimbing = ic;
+}
+
+void AUnit::SetBuffTank(bool bt)
+{
+	bBuffTank = bt;
+}
+
+void AUnit::SetIsCommandeerBuffed(bool bC)
+{
+	bIsCommandeerBuffed = bC;
+}
+
+// Enums
+void AUnit::SetUnitTeam(EPlayer PO)
+{
+	PlayerOwner = PO;
+}
+
+void AUnit::SetPlayerOwner(EPlayer po)
+{
+	PlayerOwner = po;
+	
+	switch (PlayerOwner)
+	{
+	case EPlayer::P_Hell:
+		UnitMesh->SetMaterial(0, AllMaterials[2]);
+		break;
+	case EPlayer::P_Heaven:
+		UnitMesh->SetMaterial(0, AllMaterials[1]);
+		break;
+	case EPlayer::P_Neutral:
+		UnitMesh->SetMaterial(0, AllMaterials[0]);
+		break;
+	}
+}
+
+// FString
+void AUnit::SetName(FString n)
+{
+	Name = n;
+}
+
+// FIntPoint
+void AUnit::SetIndexPosition(FIntPoint ip)
+{
+	IndexPosition = ip;
+}
+
+// ----------------------------
+// Messy Hell (We need to put this in the correct Sections!)
