@@ -14,6 +14,13 @@ void ACustomPlayerState::BeginPlay()
 	GameStateRef = GetWorld()->GetGameState<ACustomGameState>();
 
 	GameStateRef->AllPlayerStates.Add(this);
+
+	if (bIsInTutorial)
+	{
+		GoldPoints = 20;
+		StonePoints = 20;
+		WoodPoints = 20;
+	}
 	
 }
 
