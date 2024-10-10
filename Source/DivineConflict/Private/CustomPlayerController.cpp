@@ -39,9 +39,9 @@ void ACustomPlayerController::BeginPlay()
 		CameraPlayerRef->SetCustomPlayerController(this);
 	}
 	setGrid();
-
+	
 	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACustomPlayerController::AssignPlayerPosition, 2.2f, false);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACustomPlayerController::AssignPlayerPosition, 2.f, false);
 }
 
 void ACustomPlayerController::GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const
@@ -353,6 +353,30 @@ void ACustomPlayerController::ControllerInteraction()
 			PlayerAction = EDC_ActionPlayer::None;
 			break;
 		case EDC_ActionPlayer::SpellCast:
+			if(UnitRef)
+			{
+				if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
+				{
+					if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() != UnitRef->GetPlayerOwner())
+					{
+						UnitRef->PrepareSpecial(PlayerPositionInGrid);
+						AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::SpellCast));
+					}
+					if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile)
+					{
+						UnitRef->PrepareSpecial(PlayerPositionInGrid);
+						AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::SpellCast));
+					}
+				}
+				for(FIntPoint Index : PathReachable)
+				{
+					Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Attacked);
+				}
+				PathReachable.Empty();
+				UnitRef->SetIsSelected(false);
+				UnitRef = nullptr;
+				PlayerAction = EDC_ActionPlayer::None;
+			}
 			break;
 		default:
 			break;
@@ -543,6 +567,10 @@ void ACustomPlayerController::ActionEndTurn()
 						TowerAction->AttackUnit();
 					}
 					break;
+				case EDC_ActionPlayer::SpellCast:
+                        AllPlayerActions.RemoveAt(0);
+                        UnitAction->Special();
+                        break;
 				default:
 					break;
 				}

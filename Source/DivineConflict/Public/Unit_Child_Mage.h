@@ -16,12 +16,17 @@ class DIVINECONFLICT_API AUnit_Child_Mage : public AUnit
 
 protected:
 	virtual void BeginPlay() override;
+	
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	AUnit* UnitToAttack = nullptr;
+
+	UPROPERTY(Replicated)
+	ABase* BaseToAttack = nullptr;
 
 public:
 	AUnit_Child_Mage();
 
-	void SpecialUnit(AUnit* UnitToAttack) override;
+	virtual void Special() override;
 
-	void SpecialBase(ABase* BaseToAttack) override;
-	
+	virtual void PrepareSpecial(FIntPoint SpecialPos) override;
 };
