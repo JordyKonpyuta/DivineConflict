@@ -72,6 +72,9 @@ public:
 	AUnit* UnitRef = nullptr;
 
 	UPROPERTY()
+	AUnit* UnitSpawned = nullptr;
+
+	UPROPERTY()
 	TArray<UMaterialInterface*> AllMaterials;
 	
 protected:
@@ -99,6 +102,12 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void Tutorial();
+
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	void BuildingAction();
+
+	UFUNCTION()
+	void BuildingPreAction(AUnit* UnitSp);
 	
 protected:
 

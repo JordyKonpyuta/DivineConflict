@@ -201,6 +201,27 @@ void ABuilding::SwitchOwner(ACustomPlayerState* NewOwner)
 	OwnerPlayerState = NewOwner;
 }
 
+void ABuilding::BuildingAction()
+{
+	if(UnitSpawned)
+	{
+		UnitSpawned->GetFinalGhostMesh()->SetVisibility(false);
+
+		UnitSpawned = nullptr;
+	}
+}
+
+void ABuilding::BuildingPreAction(AUnit* UnitSp)
+{
+	if(UnitSp)
+	{
+		UnitSpawned = UnitSp;
+		UnitSpawned->GetFinalGhostMesh()->SetVisibility(true);
+
+	}
+}
+
+
 void ABuilding::Tutorial_Implementation()
 {
 }

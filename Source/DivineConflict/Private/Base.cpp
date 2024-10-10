@@ -170,6 +170,26 @@ void ABase::SetMesh_Implementation()
 }
 
 
+void ABase::BaseAction()
+{
+	if(UnitSpawned)
+	{
+		UnitSpawned->GetFinalGhostMesh()->SetVisibility(false);
+
+		UnitSpawned = nullptr;
+	}
+}
+
+void ABase::BasePreAction(AUnit* UnitSp)
+{
+	if(UnitSp)
+	{
+		UnitSpawned = UnitSp;
+		UnitSpawned->GetFinalGhostMesh()->SetVisibility(true);
+		
+	}
+}
+
 // TAKE DAMAGE
 void ABase::TakeDamage(int Damage)
 {

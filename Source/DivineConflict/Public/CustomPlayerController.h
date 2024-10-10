@@ -47,6 +47,18 @@ struct FStructActions
 	EDC_ActionPlayer UnitAction;
 };
 
+USTRUCT()
+struct FStructPassive
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	AActor* ActorRef;
+
+	UPROPERTY()
+	EDC_ActionPlayer BuildingAction;
+};
+
 UCLASS()
 class DIVINECONFLICT_API ACustomPlayerController : public APlayerController , public IInteractInterface
 {
@@ -89,6 +101,9 @@ public:
 
 	UPROPERTY(Replicated)
 	TArray<FStructActions> AllPlayerActions;
+
+	UPROPERTY(Replicated)
+	TArray<FStructPassive> AllPlayerPassive;
 /*
 	UFUNCTION(Server, Reliable)
 	void DoActions();*/

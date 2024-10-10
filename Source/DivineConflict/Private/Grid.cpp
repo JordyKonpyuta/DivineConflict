@@ -129,7 +129,7 @@ void AGrid::SpawnGrid()
 				
 				GridData.Add(TileIndex, TileData);
 				//SetGridDataReplicated(FGRidData(GridData));
-	            AddInstance(FIntPoint(X, Y), FTransform3d(FVector(X * 100, Y * 100, HitResult.ImpactPoint.Z)));
+	            AddInstance(FIntPoint(X, Y), FTransform3d(FVector(X * 100, Y * 100, HitResult.ImpactPoint.Z+1)));
 
 		
 			}

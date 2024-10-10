@@ -44,6 +44,9 @@ protected:
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Grid")
 	FIntPoint GridPosition= FIntPoint(-999,-999);
 
+	UPROPERTY()
+	AUnit* UnitSpawned;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -94,6 +97,12 @@ public:
 	void MulticastCheckIfDead();
 	UFUNCTION(BlueprintNativeEvent)
 	void SetMesh();
+
+	UFUNCTION()
+	void BaseAction();
+
+	UFUNCTION()
+	void BasePreAction(AUnit* UnitSp);
 
 	// FUNCTIONS FOR UI
 	UFUNCTION(BlueprintNativeEvent)

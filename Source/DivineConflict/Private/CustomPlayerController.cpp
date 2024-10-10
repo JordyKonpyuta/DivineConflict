@@ -384,32 +384,6 @@ void ACustomPlayerController::ControllerInteraction()
 	}
 }
 
-/*
-void ACustomPlayerController::ControllerInteraction()
-			case EDC_ActionPlayer::SpellCast:
-				//Spell();
-				if(UnitRef)
-				{
-					if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile != nullptr)
-					{
-						if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile->GetPlayerOwner() != UnitRef->GetPlayerOwner())
-							UnitRef->SpecialUnit(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->UnitOnTile);
-						if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BaseOnTile)
-							UnitRef->SpecialBase(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BaseOnTile);
-					}
-					for(FIntPoint Index : PathReachable)
-					{
-						Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Attacked);
-					}
-					PathReachable.Empty();
-					UnitRef->SetIsSelected(false);
-					UnitRef = nullptr;
-					PlayerAction = EDC_ActionPlayer::None;
-				}
-				break;
-
-}*/
-
 TArray<FIntPoint> ACustomPlayerController::GetPathReachable()
 {
 	return PathReachable;
@@ -453,9 +427,20 @@ void ACustomPlayerController::Multicast_SpawnUnit_Implementation(AUnit* UnitSpaw
 	{
 		UnitSpawned->Grid = Grid;
 		UnitSpawned->SetPlayerOwner(PlayerStateRef->PlayerTeam);
-	}
+		if(BuildingRef)
+		{
+			BuildingRef->BuildingPreAction(UnitSpawned);
+			AllPlayerPassive.Add(FStructPassive(BuildingRef, EDC_ActionPlayer::SelectBuilding));
+		}
+			
+		if(BaseRef)
+		{
+			BaseRef->BasePreAction(UnitSpawned);
+			AllPlayerPassive.Add(FStructPassive(BaseRef, EDC_ActionPlayer::SelectBuilding));
+		}
+			
 		
-	
+	}
 }
 
 void ACustomPlayerController::Server_SpawnUnit_Implementation(EUnitType UnitToSpawn, FIntPoint SpawnChosen)
@@ -557,7 +542,7 @@ void ACustomPlayerController::ActionEndTurn()
 				case EDC_ActionPlayer::AttackUnit:
 					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackUnit"));
 					AllPlayerActions.RemoveAt(0);
-					UnitAction->AttackUnit();
+					UnitAction->AnimAttack();
 					break;
 				case EDC_ActionPlayer::AttackBuilding:
 					AllPlayerActions.RemoveAt(0);
@@ -577,7 +562,24 @@ void ACustomPlayerController::ActionEndTurn()
 			
 			}
 		}
+		else
+		{
+			if(!AllPlayerPassive.IsEmpty())
+			{
+				if(ABuilding *BuildingAction = Cast<ABuilding>(AllPlayerPassive[0].ActorRef))
+                {
+                    BuildingAction->BuildingAction();
+                    AllPlayerPassive.RemoveAt(0);
+                }
+				else if(ABase *BaseAction = Cast<ABase>(AllPlayerPassive[0].ActorRef))
+                {
+                    BaseAction->BaseAction();
+                    AllPlayerPassive.RemoveAt(0);
+                }
+			}
+		}
 	}
+
 }
 
 void ACustomPlayerController::UpdateUITimer_Implementation(int TimeLeft)
@@ -660,11 +662,9 @@ void ACustomPlayerController::UpdateUi_Implementation()
 
 void ACustomPlayerController::Server_SpawnBaseUnit_Implementation(EUnitType UnitToSpawn,AGrid* GridSer, ABase* BaseToSpawn, EPlayer PlayerOwner)
 {
-	UE_LOG( LogTemp, Warning, TEXT("Server_SpawnBaseUnit") );
+
 	if (GridSer != nullptr)
 	{
-		UE_LOG( LogTemp, Warning, TEXT("Server_SpawnBaseUnit") );
-		UE_LOG( LogTemp, Warning, TEXT("AllSpawnLoc: %d"), BaseToSpawn->AllSpawnLoc.Num() );
 		FIntPoint SpawnLoc = FIntPoint(-999,-999);
 		for (FIntPoint Index : BaseToSpawn->AllSpawnLoc)
 		{
