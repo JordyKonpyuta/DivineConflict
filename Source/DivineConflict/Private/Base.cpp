@@ -36,12 +36,15 @@ void ABase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	for (int i = 0; i < GetWorld()->GetGameState<ACustomGameState>()->PlayerArray.Num(); i++)
+	for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState<ACustomGameState>()->PlayerArray)
 	{
-		if (GetWorld()->GetGameState<ACustomGameState>()->PlayerArray[i]->GetPlayerController()->GetPlayerState<ACustomPlayerState>()->PlayerTeam == PlayerOwner)
-		{
-			PlayerStateRef = GetWorld()->GetGameState<ACustomGameState>()->PlayerArray[i]->GetPlayerController()->GetPlayerState<ACustomPlayerState>();
-		}
+		if (ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
+        {
+            if (CurrentCustomPlayerState->PlayerTeam == PlayerOwner)
+            {
+                PlayerStateRef = CurrentCustomPlayerState;
+            }
+        }
 	}
 
 	SetMesh();
