@@ -166,7 +166,8 @@ void AUnit::SetGrid()
 
 void AUnit::Destroyed()
 {
-	Grid->GridInfo->RemoveUnitInGrid(this);
+	if(Grid)
+		Grid->GridInfo->RemoveUnitInGrid(this);
 	Super::Destroyed();
 }
 
