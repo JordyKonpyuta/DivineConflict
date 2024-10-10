@@ -76,6 +76,9 @@ public:
 
 	UPROPERTY()
 	TArray<UMaterialInterface*> AllMaterials;
+
+	UPROPERTY()
+	bool bHasSpawned = false;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -86,6 +89,7 @@ protected:
 
 	UPROPERTY()
 	FIntPoint GridPosition = FIntPoint(0, 0);
+
 	
 public:	
 	// Called every frame

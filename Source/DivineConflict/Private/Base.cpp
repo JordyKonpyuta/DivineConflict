@@ -9,9 +9,7 @@
 #include "GridInfo.h"
 #include "CustomPlayerState.h"
 #include "GridVisual.h"
-#include "SNegativeActionButton.h"
 #include "Unit.h"
-#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values
@@ -171,23 +169,25 @@ void ABase::SetMesh_Implementation()
 
 
 void ABase::BaseAction()
-{
+{/*
 	if(UnitSpawned)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("BaseAction"));
 		UnitSpawned->GetFinalGhostMesh()->SetVisibility(false);
-
+		UnitSpawned->GetStaticMesh()->SetVisibility(true);
 		UnitSpawned = nullptr;
-	}
+	}*/
 }
 
 void ABase::BasePreAction(AUnit* UnitSp)
-{
+{/*
 	if(UnitSp)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("BasePreAction"));
 		UnitSpawned = UnitSp;
 		UnitSpawned->GetFinalGhostMesh()->SetVisibility(true);
-		
-	}
+		UnitSpawned->GetStaticMesh()->SetVisibility(false);
+	}*/
 }
 
 // TAKE DAMAGE

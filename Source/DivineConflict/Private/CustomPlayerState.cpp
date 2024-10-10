@@ -149,9 +149,9 @@ void ACustomPlayerState::SetUnits(int UnitNumber)
 
 void ACustomPlayerState::NewTurnBegin()
 {
-	ChangeWoodPoints(5 + (WoodBuildingOwned * 15), true);
-	ChangeStonePoints(4 + (StoneBuildingOwned * 15), true);
-	ChangeGoldPoints(2 + (GoldBuildingOwned * 15), true);
+	ChangeWoodPoints(20 + (WoodBuildingOwned * 15), true);
+	ChangeStonePoints(20 + (StoneBuildingOwned * 15), true);
+	ChangeGoldPoints(20 + (GoldBuildingOwned * 15), true);
 
 
 		MaxActionPoints = 10 + (GotCentralBuilding * UKismetMathLibrary::Clamp(TurnPassed, 0, 5));

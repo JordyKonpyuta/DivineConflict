@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Base.h"
+#include "Building.h"
 #include "CustomPlayerState.h"
 #include "EnumsList.h"
 #include "Grid.h"
@@ -85,13 +87,13 @@ public:
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Ref", meta = (AllowPrivate = "true"))
 	AUnit* UnitRef = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly,Replicated , Category = "Ref", meta = (AllowPrivate = "true"))
 	ABase* BaseRef = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
 	ATower* TowerRef = nullptr;
 	
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Replicated, Category = "Input", meta = (AllowPrivate = "true"))
 	ABuilding* BuildingRef = nullptr;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
@@ -215,13 +217,13 @@ public:
 	TArray<FIntPoint> PrepareSpawnArea(TArray<FIntPoint> AllSpawnArea, FIntPoint BaseTile);
 	
 	UFUNCTION(Blueprintable)
-	bool SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen);
+	bool SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen, ABase* BaseToSpawn, ABuilding* BuildingToSpawn);
 
 	UFUNCTION(Server, Reliable)
-	void Server_SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen);
+	void Server_SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen, ABase* BaseToSpawn, ABuilding* BuildingToSpawn);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_SpawnUnit(AUnit* UnitSpawned,AGrid* GridSpawned, ACustomPlayerState* PlayerStatRef);
+	void Multicast_SpawnUnit(AUnit* UnitSpawned,AGrid* GridSpawned, ACustomPlayerState* PlayerStatRef, ABase* BaseSpawned, ABuilding* BuildingSpawned);
 
 	UFUNCTION(Server, Reliable)
 	void ServerMoveUnit(const AUnit* UnitToMove);

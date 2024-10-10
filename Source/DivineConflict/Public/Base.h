@@ -3,12 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CustomPlayerController.h"
 #include "GameFramework/Actor.h"
 #include "EnumsList.h"
 #include "Base.generated.h"
 
-class APlayerController;
+class ACustomPlayerController;
 class ACustomPlayerState;
 class AGrid;
 class AUnit;

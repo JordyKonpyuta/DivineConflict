@@ -48,6 +48,8 @@ void ACustomPlayerController::GetLifetimeReplicatedProps( TArray<FLifetimeProper
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ACustomPlayerController, PlayerTeam);
+	DOREPLIFETIME(ACustomPlayerController, BaseRef);
+	DOREPLIFETIME(ACustomPlayerController, BuildingRef);
 
 }
 
@@ -197,7 +199,7 @@ void ACustomPlayerController::ControllerInteraction()
 				
 				if(PlayerStateRef->bIsActiveTurn)
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 5.f,FColor::Blue,TEXT("ActifTurn"));
+					//Active Turn
 					if(Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile)
 					{
 						if(Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile->GetPlayerOwner() == PlayerStateRef->PlayerTeam)
@@ -220,9 +222,21 @@ void ACustomPlayerController::ControllerInteraction()
 							DisplayWidget();
 						}
 					}
+					else if(Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile)
+					{
+						if(Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef && Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == PlayerStateRef->PlayerTeam)
+						{
+                                UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef;
+                                CameraPlayerRef->SetCustomPlayerController(this);
+                                CameraPlayerRef->UnitMovingCurrentMovNumber = UnitRef->GetPM();
+                                IInteractInterface::Execute_Interact(Grid->GridData.Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef, this);
+                                DisplayWidget();
+						}
+					}
 				}
 				else
 				{
+					//PassiveTurn
 					GEngine->AddOnScreenDebugMessage(-1, 5.f,FColor::Blue,TEXT("PassiveTurn"));
 					if(Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile)
 					{
@@ -247,6 +261,7 @@ void ACustomPlayerController::ControllerInteraction()
 							BaseRef->IsSelected = true;
 							BaseRef->VisualSpawn();
 							DisplayWidgetBase();
+							GEngine->AddOnScreenDebugMessage(-1, 5.f,FColor::Blue,TEXT("BaseRef : " + BaseRef->GetName()));
 						}
 					}
 					
@@ -342,7 +357,7 @@ void ACustomPlayerController::ControllerInteraction()
 			{
 				if (Grid->GetGridData()->Find(PlayerPositionInGrid)->TilePosition == SpawnIndex)
 				{
-					if (SpawnUnit(BuildingRef->UnitProduced, SpawnIndex))
+					if (SpawnUnit(BuildingRef->UnitProduced, SpawnIndex,nullptr, BuildingRef))
 					{
 						PlayerStateRef->SetUnits(GetPlayerState<ACustomPlayerState>()->GetUnits() + 1);
 						PlayerAction = EDC_ActionPlayer::None;
@@ -415,36 +430,39 @@ TArray<FIntPoint> ACustomPlayerController::PrepareSpawnArea(TArray<FIntPoint> Al
 	return TrueSpawnArea;
 }
 
-bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen)
+bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen,ABase* BaseToSpawn, ABuilding* BuildingToSpawn)
 {
-	Server_SpawnUnit(UnitToSpawn, SpawnChosen);
+	Server_SpawnUnit(UnitToSpawn, SpawnChosen, BaseToSpawn, BuildingToSpawn);
 	return Grid->GetGridData()->Find(SpawnChosen)->UnitOnTile != nullptr;
 }
 
-void ACustomPlayerController::Multicast_SpawnUnit_Implementation(AUnit* UnitSpawned,AGrid* GridSpawned, ACustomPlayerState* PlayerStatRef)
+void ACustomPlayerController::Multicast_SpawnUnit_Implementation(AUnit* UnitSpawned,AGrid* GridSpawned, ACustomPlayerState* PlayerStatRef,  ABase* BaseSpawned, ABuilding* BuildingSpawned)
 {
 	if(UnitSpawned)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("UnitSpawned"));
 		UnitSpawned->Grid = Grid;
 		UnitSpawned->SetPlayerOwner(PlayerStateRef->PlayerTeam);
-		if(BuildingRef)
+		if(BuildingSpawned)
 		{
 			BuildingRef->BuildingPreAction(UnitSpawned);
 			AllPlayerPassive.Add(FStructPassive(BuildingRef, EDC_ActionPlayer::SelectBuilding));
 		}
 			
-		if(BaseRef)
+		if(BaseSpawned)
 		{
-			BaseRef->BasePreAction(UnitSpawned);
-			AllPlayerPassive.Add(FStructPassive(BaseRef, EDC_ActionPlayer::SelectBuilding));
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BaseRef"));
+			BaseSpawned->BasePreAction(UnitSpawned);
+			AllPlayerPassive.Add(FStructPassive(BaseSpawned, EDC_ActionPlayer::SelectBuilding));
 		}
 			
 		
 	}
 }
 
-void ACustomPlayerController::Server_SpawnUnit_Implementation(EUnitType UnitToSpawn, FIntPoint SpawnChosen)
+void ACustomPlayerController::Server_SpawnUnit_Implementation(EUnitType UnitToSpawn, FIntPoint SpawnChosen , ABase* BaseToSpawn, ABuilding* BuildingToSpawn)
 {
+
 	TArray<int> CostOfSpawn;
 	switch (UnitToSpawn)
 	{
@@ -479,31 +497,27 @@ void ACustomPlayerController::Server_SpawnUnit_Implementation(EUnitType UnitToSp
 		{
 		case EUnitType::U_Warrior:
 			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
-			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStateRef);
+			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStateRef, BaseToSpawn, BuildingToSpawn);
 			
 			break;
 		case EUnitType::U_Mage:
 			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Mage>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
-			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStateRef);
+			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStateRef, BaseToSpawn, BuildingToSpawn);
 			break;
 		case EUnitType::U_Tank:
 			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Tank>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
-			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStateRef);
+			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStateRef, BaseToSpawn, BuildingToSpawn);
 			break;
 		case EUnitType::U_Leader:
 			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Leader>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
-			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStateRef);
+			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStateRef, BaseToSpawn, BuildingToSpawn);
 			break;
 		default:
 			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
-			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStateRef);
+			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStateRef, BaseToSpawn, BuildingToSpawn);
 			break;
 		}
-
-
-		
 	}
-
 }
 
 void ACustomPlayerController::EndTurn()
@@ -573,6 +587,7 @@ void ACustomPlayerController::ActionEndTurn()
                 }
 				else if(ABase *BaseAction = Cast<ABase>(AllPlayerPassive[0].ActorRef))
                 {
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BaseAction"));
                     BaseAction->BaseAction();
                     AllPlayerPassive.RemoveAt(0);
                 }
@@ -662,7 +677,7 @@ void ACustomPlayerController::UpdateUi_Implementation()
 
 void ACustomPlayerController::Server_SpawnBaseUnit_Implementation(EUnitType UnitToSpawn,AGrid* GridSer, ABase* BaseToSpawn, EPlayer PlayerOwner)
 {
-
+	GEngine->AddOnScreenDebugMessage( -1, 5.f, FColor::Green, TEXT("BaseToSpawn : " + BaseToSpawn->GetName()));
 	if (GridSer != nullptr)
 	{
 		FIntPoint SpawnLoc = FIntPoint(-999,-999);
@@ -676,7 +691,7 @@ void ACustomPlayerController::Server_SpawnBaseUnit_Implementation(EUnitType Unit
 		}
 		if(SpawnLoc != FIntPoint(-999,-999))
 		{
-			SpawnUnit(UnitToSpawn, SpawnLoc);
+			SpawnUnit(UnitToSpawn, SpawnLoc, BaseToSpawn, nullptr);
 			GridSer->GetGridData()->Find(SpawnLoc)->UnitOnTile->SetPlayerOwner(PlayerOwner);
 			GridSer->GridVisual->RemoveStateFromTile(SpawnLoc, EDC_TileState::Spawnable);
 		}

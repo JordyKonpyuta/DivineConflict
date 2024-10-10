@@ -206,8 +206,9 @@ void ABuilding::BuildingAction()
 	if(UnitSpawned)
 	{
 		UnitSpawned->GetFinalGhostMesh()->SetVisibility(false);
-
+		UnitSpawned->GetStaticMesh()->SetVisibility(true);
 		UnitSpawned = nullptr;
+		bHasSpawned = false;
 	}
 }
 
@@ -215,9 +216,11 @@ void ABuilding::BuildingPreAction(AUnit* UnitSp)
 {
 	if(UnitSp)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("BuildingPreAction"));
 		UnitSpawned = UnitSp;
 		UnitSpawned->GetFinalGhostMesh()->SetVisibility(true);
-
+		UnitSpawned->GetStaticMesh()->SetVisibility(false);
+		bHasSpawned = true;
 	}
 }
 
