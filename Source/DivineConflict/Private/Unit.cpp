@@ -609,7 +609,6 @@ void AUnit::AttackUnit()
 
 	if(UnitToAttack->GetCurrentHealth() < 1)
 	{
-		FutureMovement.Insert(UnitToAttack->GetIndexPosition(), 0);
 		Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
 		PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
 		if (UnitToAttack->BuildingRef)
@@ -617,6 +616,11 @@ void AUnit::AttackUnit()
 			UnitToAttack->BuildingRef->UnitRef = nullptr;
 			UnitToAttack->BuildingRef->GarrisonFull = false;
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Unit Got Killed and removed")));
+			if(GetCurrentHealth() < 1)
+			{
+				FutureMovement.Insert(UnitToAttack->GetIndexPosition(), 0);
+				Move(FutureMovement);
+			}
 		}
 		UnitToAttack->Destroyed();
 		if(GetCurrentHealth() < 1)
@@ -626,8 +630,6 @@ void AUnit::AttackUnit()
 			PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
 			Destroyed();
 		}
-		else
-			Move(FutureMovement);
 	}
 	if(GetCurrentHealth() < 1)
 	{
@@ -652,6 +654,26 @@ void AUnit::AttackBase(ABase* BaseToAttack)
 
 void AUnit::AnimAttack()
 {
+	if (!bBeganAttack)
+	{
+		UnitLocationInWorld = UnitMesh->GetComponentLocation();
+		SetActorLocation(FVector(
+			(UnitLocationInWorld.X + UnitToAttackRef->UnitMesh->GetComponentLocation().X) / 2,
+			(UnitLocationInWorld.Y + UnitToAttackRef->UnitMesh->GetComponentLocation().Y) / 2,
+			(UnitLocationInWorld.Z + UnitToAttackRef->UnitMesh->GetComponentLocation().Z) / 2));
+		GetWorld()->GetTimerManager().SetTimer(
+			MoveTimerHandle, 
+			this,
+			&AUnit::AnimAttack,
+			0.2,
+			false);
+		AttackUnit();
+		bBeganAttack = true;
+	} else
+	{
+		SetActorLocation(UnitLocationInWorld);
+		bBeganAttack = false;
+	}
 }
 
 // ----------------------------
@@ -684,6 +706,12 @@ void AUnit::SpecialBase(ABase* BaseToAttack)
 
 // ----------------------------
 // GETTERS
+
+// Static Meshes
+UStaticMeshComponent* AUnit::GetStaticMesh()
+{
+	return UnitMesh;
+}
 
 // References
 ABuilding* AUnit::GetBuildingRef()

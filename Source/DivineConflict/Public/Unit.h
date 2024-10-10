@@ -184,6 +184,9 @@ protected:
 
 	UPROPERTY()
 	bool bIsCommandeerBuffed = false;
+
+	UPROPERTY()
+	bool bBeganAttack = false;
 	
 	// ----------------------------
 	// Units stats
@@ -205,6 +208,9 @@ protected:
 
 	UPROPERTY()
 	FString Name = "";
+
+	UPROPERTY()
+	FVector UnitLocationInWorld;
 
 	// ----------------------------
 	// Position in Grid
@@ -345,6 +351,10 @@ public:
 	// ----------------------------
 	// GETTERS //
 
+	// StaticMesh
+	UFUNCTION()
+	UStaticMeshComponent* GetStaticMesh();
+	
 	// References
 	UFUNCTION(BlueprintCallable)
 	ABuilding* GetBuildingRef();

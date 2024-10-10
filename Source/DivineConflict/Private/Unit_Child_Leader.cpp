@@ -54,7 +54,6 @@ void AUnit_Child_Leader::Special()
 	{
 		if(Grid->GetGridData()->Find(Tile)->UnitOnTile  && Grid->GetGridData()->Find(Tile)->UnitOnTile != this && Grid->GetGridData()->Find(Tile)->UnitOnTile->GetPlayerOwner() == GetPlayerOwner())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Buff Leader"));
 			//Grid->GetGridData()->Find(Tile)->UnitOnTile->SetBuffLeader(true);
 		}
 	}
@@ -96,6 +95,8 @@ void AUnit_Child_Leader::PushBuff()
 			{
 				Unit->SetIsCommandeerBuffed(true);
 				AllUnitsToBuff.AddUnique(this);
+				
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Applied Buff"));
 			}
 		}
 	}
@@ -106,4 +107,5 @@ void AUnit_Child_Leader::MoveUnitEndTurn()
 	Super::MoveUnitEndTurn();
 
 	PushBuff();
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Post-Move Buff"));
 }
