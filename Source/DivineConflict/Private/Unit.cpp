@@ -647,10 +647,11 @@ void AUnit::AttackUnit()
 
 }
 
-void AUnit::AttackBase(ABase* BaseToAttack)
+void AUnit::AttackBase_Implementation(ABase* BaseToAttack)
 {
 	if(BaseToAttack == nullptr || Grid == nullptr)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("BaseToAttack is null"));
 		return;
 	}
 	BaseToAttack->TakeDamage(/*GetAttack()*/100);

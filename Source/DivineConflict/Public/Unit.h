@@ -323,7 +323,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AttackUnit();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void AttackBase(ABase* BaseToAttack);
 	
 	UFUNCTION()

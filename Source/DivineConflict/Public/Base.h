@@ -68,6 +68,9 @@ public:
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Enum")
 	EPlayer PlayerOwner = EPlayer::P_Neutral;
 
+	UFUNCTION()
+	void SetPlayerState();
+
 	
 
 	// Getter
@@ -91,9 +94,9 @@ public:
 	void SetGridPosition(FIntPoint GridP);
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
-	void ServerCheckIfDead();
+	void ServerCheckIfDead(int H);
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	void MulticastCheckIfDead();
+	void MulticastCheckIfDead(int h);
 	UFUNCTION(BlueprintNativeEvent)
 	void SetMesh();
 

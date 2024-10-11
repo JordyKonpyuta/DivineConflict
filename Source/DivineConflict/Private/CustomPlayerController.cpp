@@ -310,7 +310,8 @@ void ACustomPlayerController::ControllerInteraction()
 					{
 						if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BaseOnTile->PlayerOwner != UnitRef->GetPlayerOwner())
 						{
-							UnitRef->AttackBase(Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile);
+							AttackBase(Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile, UnitRef);
+							AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::None));
 						}
 					}
 					for(FIntPoint Index : PathReachable)
@@ -431,6 +432,11 @@ TArray<FIntPoint> ACustomPlayerController::PrepareSpawnArea(TArray<FIntPoint> Al
 		}
 	}
 	return TrueSpawnArea;
+}
+
+void ACustomPlayerController::AttackBase_Implementation(ABase* BaseToAttack, AUnit* UnitAttacking)
+{
+	UnitAttacking->AttackBase(BaseToAttack);
 }
 
 bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen,ABase* BaseToSpawn, ABuilding* BuildingToSpawn)

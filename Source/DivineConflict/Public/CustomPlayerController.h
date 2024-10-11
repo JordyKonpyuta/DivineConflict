@@ -10,6 +10,7 @@
 #include "Grid.h"
 #include "GameFramework/PlayerController.h"
 #include "InteractInterface.h"
+#include "Unit.h"
 #include "CustomPlayerController.generated.h"
 
 class ABuilding;
@@ -215,6 +216,9 @@ public:
 
 	UFUNCTION(NotBlueprintable)
 	TArray<FIntPoint> PrepareSpawnArea(TArray<FIntPoint> AllSpawnArea, FIntPoint BaseTile);
+
+	UFUNCTION(Server, Reliable)
+	void AttackBase(ABase* BaseToAttack,AUnit* UnitAttacking);
 	
 	UFUNCTION(Blueprintable)
 	bool SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen, ABase* BaseToSpawn, ABuilding* BuildingToSpawn);

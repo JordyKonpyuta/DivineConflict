@@ -109,6 +109,20 @@ void ABase::VisualSpawn()
 	}
 }
 
+void ABase::SetPlayerState()
+{
+	for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState<ACustomGameState>()->PlayerArray)
+	{
+		if (ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
+		{
+			if (CurrentCustomPlayerState->PlayerTeam == PlayerOwner)
+			{
+				PlayerStateRef = CurrentCustomPlayerState;
+			}
+		}
+	}
+}
+
 int ABase::GetHealth()
 {
 	return Health;
@@ -151,25 +165,35 @@ void ABase::SetGridPosition(FIntPoint GridP)
 	GridPosition = GridP;
 }
 
-void ABase::ServerCheckIfDead_Implementation()
+void ABase::ServerCheckIfDead_Implementation(int H)
 {
-	MulticastCheckIfDead();
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Base Health : %d"), H));
+	MulticastCheckIfDead(H);
 }
 
 // IF DEAD, END GAME
-void ABase::MulticastCheckIfDead_Implementation()
+void ABase::MulticastCheckIfDead_Implementation(int H)
 {
-	if (Health <= 0)
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Base Health : %d"), H));
+	if (H <= 0)
 	{
-		if (PlayerStateRef->bIsInTutorial) OnDeath();
-		else GetWorld()->GetGameState<ACustomGameState>()->ServerVictoryScreen(PlayerOwner);
+		UE_LOG(LogTemp, Warning, TEXT("Base is Dead"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Base is Dead"));
+		if(!PlayerStateRef)
+			SetPlayerState();
+		
+		if(PlayerStateRef)
+		{
+			UE_LOG( LogTemp, Warning, TEXT("PlayerStateRef is not NULL"));
+			if (PlayerStateRef->bIsInTutorial) OnDeath();
+			else GetWorld()->GetGameState<ACustomGameState>()->ServerVictoryScreen(PlayerOwner);
+		}
 	}	
 }
 
 void ABase::SetMesh_Implementation()
 {
 }
-
 
 void ABase::BaseAction()
 {/*
@@ -197,7 +221,8 @@ void ABase::BasePreAction(AUnit* UnitSp)
 void ABase::TakeDamage(int Damage)
 {
 	Health -= Damage;
-	ServerCheckIfDead();
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Base Health : %d"), Health));
+	ServerCheckIfDead(Health);
 }
 
 // UPGRADE MaxUnitCount
