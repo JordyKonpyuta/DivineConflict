@@ -523,6 +523,9 @@ void AUnit::MoveGhostsMulticast_Implementation(float DeltaTime,const TArray<FInt
 	{
 		return;
 	}
+	if(PathToFollowGhost.Num() <= CurrentIndexGhost)
+		CurrentIndexGhost = 0;
+	
 	GhostsMesh->SetWorldLocation(UKismetMathLibrary::VInterpTo_Constant(GhostsMesh->GetComponentLocation(), Grid->ConvertIndexToLocation(PathToFollowGhost[CurrentIndexGhost]), DeltaTime, 70.0f));
 	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, TEXT("Move Ghosts"));
 	if(GhostsMesh->GetComponentLocation() == Grid->ConvertIndexToLocation(PathToFollowGhost[CurrentIndexGhost]))
