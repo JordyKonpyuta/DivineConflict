@@ -477,6 +477,7 @@ void AUnit::MoveUnitEndTurn()
 {
 	Multi_HiddeGhosts();
 	InitializeFullMove(FutureMovement);
+	FutureMovement.Empty();
 }
 
 // ----------------------------
