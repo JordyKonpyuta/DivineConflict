@@ -287,7 +287,6 @@ void ACustomPlayerController::ControllerInteraction()
 					{
 						if (Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() != PlayerStateRef->PlayerTeam)
 						{
-							GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackUnit"));
 							UnitRef->PrepareAttackUnit(PlayerPositionInGrid);
 							AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::AttackUnit));
 						}
@@ -335,13 +334,17 @@ void ACustomPlayerController::ControllerInteraction()
 					{
 						Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Reachable);
 					}
-					UnitRef->SetIsSelected(false);
-					Server_PrepareMoveUnit(CameraPlayerRef->Path,UnitRef);
+
+					if (CameraPlayerRef->Path.Num() > 1)
+					{
+						UnitRef->SetIsSelected(false);
+						Server_PrepareMoveUnit(CameraPlayerRef->Path,UnitRef);
+						AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::MoveUnit));
+						UnitRef->HasMoved = true;
+					}
 					PathReachable.Empty();
 					CameraPlayerRef->IsMovingUnit = false;
 					CameraPlayerRef->Path.Empty();
-					AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::MoveUnit));
-					UnitRef->HasMoved = true;
 					UpdateUi();
 					
 					PlayerAction = EDC_ActionPlayer::None;
@@ -719,11 +722,10 @@ void ACustomPlayerController::Server_PrepareMoveUnit_Implementation(const TArray
 	const AUnit* UnitToMove)
 {
 	AUnit *UnitRefServer = const_cast<AUnit*>(UnitToMove);
-	if(UnitRefServer)
-	{
-		UnitRefServer->Multi_PrepareMove(Path);
+	
+	UnitRefServer->Multi_PrepareMove(Path);
 		
-	}
+	
 }
 
 
