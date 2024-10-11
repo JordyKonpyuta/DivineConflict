@@ -519,7 +519,7 @@ void AUnit::Server_MoveGhosts_Implementation(float DeltaTime ,const TArray<FIntP
 
 void AUnit::MoveGhostsMulticast_Implementation(float DeltaTime,const TArray<FIntPoint> &PathToFollowGhost)
 {
-	if(PathToFollowGhost.Num() == 0)
+	if(PathToFollowGhost.IsEmpty())
 	{
 		return;
 	}
