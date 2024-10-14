@@ -328,7 +328,7 @@ public:
 	void TakeDamage(int Damage);
 
 	UFUNCTION(BlueprintCallable)
-	void AttackUnit();
+	void AttackUnit(AUnit* UnitToAttack);
 
 	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void AttackBase(ABase* BaseToAttack);

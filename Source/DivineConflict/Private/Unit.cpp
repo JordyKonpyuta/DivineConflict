@@ -588,9 +588,9 @@ GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UNIT TAKE DAMAGE"
 		CurrentHealth -= (Damage-Defense);
 }
 
-void AUnit::AttackUnit()
+void AUnit::AttackUnit(AUnit* UnitToAttack)
 {
-	AUnit* UnitToAttack = UnitToAttackRef; 
+	//AUnit* UnitToAttack = UnitToAttackRef; 
 	if(UnitToAttack == nullptr || Grid == nullptr || UnitToAttack == this)
 	{
 		return;
@@ -673,7 +673,7 @@ void AUnit::AnimAttack()
 			&AUnit::AnimAttack,
 			0.2,
 			false);
-		AttackUnit();
+		AttackUnit(UnitToAttackRef);
 		bBeganAttack = true;
 	} else
 	{

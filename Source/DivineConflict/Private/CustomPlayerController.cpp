@@ -288,7 +288,7 @@ void ACustomPlayerController::ControllerInteraction()
 						if (Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() != PlayerStateRef->PlayerTeam)
 						{
 							UnitRef->PrepareAttackUnit(PlayerPositionInGrid);
-							AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::AttackUnit));
+							AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::AttackUnit, Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile));
 						}
 					}
 					// Are we attacking a Building?
@@ -301,7 +301,7 @@ void ACustomPlayerController::ControllerInteraction()
 							{
 								GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackBuilding"));
 								UnitRef->PrepareAttackUnit(PlayerPositionInGrid);
-								AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::AttackUnit));
+								AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::AttackUnit, Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef));
 							}
 						}
 					}
@@ -439,6 +439,11 @@ void ACustomPlayerController::AttackBase_Implementation(ABase* BaseToAttack, AUn
 	UnitAttacking->AttackBase(BaseToAttack);
 }
 
+void ACustomPlayerController::ServerAttackUnit_Implementation(AUnit* UnitToAttack, AUnit* UnitAttacking)
+{
+	UnitToAttack->AttackUnit(UnitAttacking);
+}
+
 bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen,ABase* BaseToSpawn, ABuilding* BuildingToSpawn)
 {
 	Server_SpawnUnit(UnitToSpawn, SpawnChosen, BaseToSpawn, BuildingToSpawn);
@@ -564,8 +569,9 @@ void ACustomPlayerController::ActionEndTurn()
 					break;
 				case EDC_ActionPlayer::AttackUnit:
 					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackUnit"));
+					ServerAttackUnit(UnitAction, AllPlayerActions[0].UnitAttacking);
 					AllPlayerActions.RemoveAt(0);
-					UnitAction->AnimAttack();
+					
 					break;
 				case EDC_ActionPlayer::AttackBuilding:
 					AllPlayerActions.RemoveAt(0);

@@ -48,6 +48,9 @@ struct FStructActions
 
 	UPROPERTY()
 	EDC_ActionPlayer UnitAction;
+
+	UPROPERTY()
+	AUnit* UnitAttacking;
 };
 
 USTRUCT()
@@ -219,6 +222,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void AttackBase(ABase* BaseToAttack,AUnit* UnitAttacking);
+
+	UFUNCTION(Server, Reliable)
+	void ServerAttackUnit(AUnit* UnitToAttack, AUnit* UnitAttacking);
 	
 	UFUNCTION(Blueprintable)
 	bool SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen, ABase* BaseToSpawn, ABuilding* BuildingToSpawn);
