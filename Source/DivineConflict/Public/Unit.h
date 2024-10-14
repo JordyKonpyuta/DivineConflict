@@ -9,6 +9,7 @@
 #include "Unit.generated.h"
 
 
+class UWidgetDamage2;
 class ABuilding;
 class ABase;
 class AGrid;
@@ -37,6 +38,12 @@ class DIVINECONFLICT_API AUnit : public APawn , public IInteractInterface
 public:
 	// Sets default values for this pawn's properties
 	AUnit();
+	
+	// ----------------------------
+	// Components
+
+	UPROPERTY()
+	UWidgetDamage2* DamageWidget;
 	
 	// ----------------------------
 	// Materials
