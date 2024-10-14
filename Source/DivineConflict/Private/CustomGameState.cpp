@@ -3,7 +3,6 @@
 
 #include "CustomGameState.h"
 #include "EnumsList.h"
-#include "CustomPlayerController.h"
 #include "CustomPlayerState.h"
 #include "Net/UnrealNetwork.h"
 

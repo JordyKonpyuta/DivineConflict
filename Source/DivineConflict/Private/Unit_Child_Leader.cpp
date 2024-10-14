@@ -5,7 +5,6 @@
 
 #include "Grid.h"
 #include "GridPath.h"
-#include "IContentBrowserSingleton.h"
 #include "UObject/ConstructorHelpers.h"
 
 void AUnit_Child_Leader::BeginPlay()

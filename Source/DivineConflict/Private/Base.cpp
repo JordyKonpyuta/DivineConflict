@@ -9,7 +9,6 @@
 #include "GridInfo.h"
 #include "CustomPlayerState.h"
 #include "GridVisual.h"
-#include "Unit.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values

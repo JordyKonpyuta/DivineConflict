@@ -2,11 +2,6 @@
 
 
 #include "CameraPlayer.h"
-
-#include <string>
-
-#include "Building.h"
-#include "CustomGameState.h"
 #include "CustomPlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
@@ -14,7 +9,6 @@
 #include "GridPath.h"
 #include "GridVisual.h"
 #include "Unit.h"
-#include "Components/ArrowComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/SpringArmComponent.h"
 

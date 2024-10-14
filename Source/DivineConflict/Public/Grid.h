@@ -6,7 +6,6 @@
 #include "F_DC_TileData.h"
 #include "GameFramework/Actor.h"
 #include "InteractInterface.h"
-#include "Grid/FDC_GridData.h"
 #include "Grid.generated.h"
 
 
