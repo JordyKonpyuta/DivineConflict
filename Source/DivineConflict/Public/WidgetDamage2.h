@@ -28,4 +28,6 @@ public:
 
 protected:
 	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
+	void NativeConstruct() override;
 };

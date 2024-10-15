@@ -11,5 +11,11 @@ void UWidgetDamage2::ChangeTextDmg_Implementation(int Dmg)
 void UWidgetDamage2::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
+
 	
+}
+
+void UWidgetDamage2::NativeConstruct()
+{
+	Super::NativeConstruct();
 }

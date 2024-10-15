@@ -4,6 +4,7 @@
 #include "Unit.h"
 #include "Base.h"
 #include "Building.h"
+#include "CameraPlayer.h"
 #include "CustomPlayerController.h"
 #include "CustomPlayerState.h"
 #include "Grid.h"
@@ -95,11 +96,12 @@ void AUnit::BeginPlay()
     }
 	GhostsMesh->SetStaticMesh(UnitMesh->GetStaticMesh());
 	GhostsFinaleLocationMesh->SetStaticMesh(UnitMesh->GetStaticMesh());
-
+	
 	if (DamageWidgetComponent)
 	{
-		
+		DamageWidgetComponent->AttachToComponent(UnitMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName(TEXT("DamageWidgetComponent")));
 	}
+	
 
 }
 
@@ -109,6 +111,16 @@ void AUnit::Tick(float DeltaTime)
 		
 	if(HasAuthority())
 		MoveGhosts(DeltaTime);
+
+	/*
+	if (DamageWidgetComponent && PlayerControllerRef)
+	{
+		if (PlayerControllerRef->CameraPlayerRef)
+		{
+			DamageWidgetComponent->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerControllerRef->CameraPlayerRef->GetActorLocation()));
+		} 
+	}
+	*/
 }
 
 void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProps) const{
