@@ -454,23 +454,24 @@ void ACustomPlayerController::Multicast_SpawnUnit_Implementation(AUnit* UnitSpaw
 {
 	if(UnitSpawned)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("UnitSpawned"));
 		UnitSpawned->Grid = Grid;
-		UnitSpawned->SetPlayerOwner(PlayerStateRef->PlayerTeam);
+		
 		if(BuildingSpawned)
 		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BuildingSpawned"));
+			UnitSpawned->SetPlayerOwner(BuildingSpawned->PlayerOwner);
 			BuildingRef->BuildingPreAction(UnitSpawned);
 			AllPlayerPassive.Add(FStructPassive(BuildingRef, EDC_ActionPlayer::SelectBuilding));
 		}
 			
 		if(BaseSpawned)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BaseRef"));
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BaseSpawned"));
+			UnitSpawned->SetPlayerOwner(BaseSpawned->PlayerOwner);
 			BaseSpawned->BasePreAction(UnitSpawned);
 			AllPlayerPassive.Add(FStructPassive(BaseSpawned, EDC_ActionPlayer::SelectBuilding));
 		}
-			
-		
+
 	}
 }
 
@@ -707,7 +708,6 @@ void ACustomPlayerController::Server_SpawnBaseUnit_Implementation(EUnitType Unit
 		if(SpawnLoc != FIntPoint(-999,-999))
 		{
 			SpawnUnit(UnitToSpawn, SpawnLoc, BaseToSpawn, nullptr);
-			GridSer->GetGridData()->Find(SpawnLoc)->UnitOnTile->SetPlayerOwner(PlayerOwner);
 			GridSer->GridVisual->RemoveStateFromTile(SpawnLoc, EDC_TileState::Spawnable);
 		}
 	}
