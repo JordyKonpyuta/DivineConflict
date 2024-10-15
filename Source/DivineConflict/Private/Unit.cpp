@@ -88,7 +88,7 @@ void AUnit::BeginPlay()
 			break;
 		}
 		FTimerHandle timerTestOnTower;
-		GetWorld()->GetTimerManager().SetTimer(timerTestOnTower, this, &AUnit::testOnTower, 2.0f, false);
+		GetWorld()->GetTimerManager().SetTimer(timerTestOnTower, this, &AUnit::testOnTower, 1.0f, false);
 	}
 	else 
     {
@@ -170,6 +170,7 @@ void AUnit::SetGrid()
 	{
 		Grid = Cast<AGrid>(FoundActors);
 		Grid->GridInfo->AddUnitInGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+		testOnTower();
 	}
 	else
 	{
@@ -835,7 +836,7 @@ EPlayer AUnit::GetPlayerOwner()
 }
 
 // String
-FString AUnit::GetName()
+FString AUnit::GetNameUnit()
 {
 	return Name;
 }

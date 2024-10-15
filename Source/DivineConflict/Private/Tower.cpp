@@ -16,13 +16,7 @@ ATower::ATower()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	TArray<AActor*> FoundActor;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(),ACustomPlayerController::StaticClass(),FoundActor);
-	for(AActor* Actor : FoundActor)
-	{
-		PlayerController = Cast<ACustomPlayerController>(Actor);
-	}
-
+	
 }
 
 void ATower::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -97,20 +91,21 @@ void ATower::SetCanAttack(bool NewCanAttack)
 	CanAttack = NewCanAttack;
 }
 
-void ATower::AttackUnit()
+void ATower::AttackUnit(AUnit* UnitToAttacking, ACustomPlayerController* PlayerControllerAttacking)
 {
 
-	UnitToAttack->SetCurrentHealth(UnitToAttack->GetCurrentHealth() - Attack);
+	UnitToAttacking->SetCurrentHealth(UnitToAttacking->GetCurrentHealth() - Attack);
 	SetCanAttack(false);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UnitToAttack : " + FString::FromInt(UnitToAttack->GetCurrentHealth())));
-	if(UnitToAttack->GetCurrentHealth() <= 0)
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UnitToAttack : " + FString::FromInt(UnitToAttacking->GetCurrentHealth())));
+	if(UnitToAttacking->GetCurrentHealth() < 1)
 	{
-		UnitToAttack->Destroy();
-		UnitToAttack = nullptr;
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UnitToAttack Destroyed"));
+		UnitToAttacking->Server_DestroyUnit();
+		UnitToAttacking = nullptr;
 	}
-	if(PlayerController)
-		PlayerController->ActionEndTurn();
+	
 }
+
 
 void ATower::UpdateVisuals()
 {

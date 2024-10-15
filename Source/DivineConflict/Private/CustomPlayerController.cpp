@@ -206,6 +206,7 @@ void ACustomPlayerController::ControllerInteraction()
 						{
 							TowerRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile;
 							TowerRef->IsSelected = true;
+							TowerRef->PlayerController = this;
 							DisplayWidgetTower();
 						}
 					}
@@ -274,7 +275,8 @@ void ACustomPlayerController::ControllerInteraction()
 				if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() != PlayerStateRef->PlayerTeam)
 				{
 					TowerRef->PreprareAttack(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile);
-					AllPlayerActions.Add(FStructActions(TowerRef, EDC_ActionPlayer::AttackBuilding));
+					AllPlayerActions.Add(FStructActions(TowerRef, EDC_ActionPlayer::AttackBuilding, Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile));
+					PlayerAction = EDC_ActionPlayer::None;
 				}
 			}
 			break;
@@ -444,6 +446,11 @@ void ACustomPlayerController::ServerAttackUnit_Implementation(AUnit* UnitToAttac
 	UnitToAttack->AttackUnit(UnitAttacking);
 }
 
+void ACustomPlayerController::ServerAttackBuilding_Implementation(ATower* TowerToAttack, AUnit* UnitAttacking)
+{
+	TowerToAttack->AttackUnit(UnitAttacking,this);
+}
+
 bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen,ABase* BaseToSpawn, ABuilding* BuildingToSpawn)
 {
 	Server_SpawnUnit(UnitToSpawn, SpawnChosen, BaseToSpawn, BuildingToSpawn);
@@ -543,7 +550,7 @@ void ACustomPlayerController::EndTurn()
 
 void ACustomPlayerController::ActionEndTurn()
 {
-
+	GEngine->AddOnScreenDebugMessage( -1,5.f,FColor::Emerald,TEXT("ActionEndTurn"));
 	if(IsLocalController())
 	{
 		if(PlayerStateRef == nullptr)
@@ -551,7 +558,9 @@ void ACustomPlayerController::ActionEndTurn()
 
 		if(!PlayerStateRef->bIsActiveTurn)
 		{
+			FTimerHandle TimerActiveEndTurn;
 			
+			GEngine->AddOnScreenDebugMessage( -1,5.f,FColor::Emerald,TEXT("AllPlayerAction lenght : ") + FString::FromInt(AllPlayerActions.Num()));
 			if(AllPlayerActions.Num() > 0)
 			{
 				AUnit* UnitAction = Cast<AUnit>( AllPlayerActions[0].ActorRef);
@@ -571,16 +580,18 @@ void ACustomPlayerController::ActionEndTurn()
 				case EDC_ActionPlayer::AttackUnit:
 					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackUnit"));
 					ServerAttackUnit(UnitAction, AllPlayerActions[0].UnitAttacking);
+					GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::ActionEndTurn, 0.5f, false);
 					AllPlayerActions.RemoveAt(0);
 					
 					break;
 				case EDC_ActionPlayer::AttackBuilding:
-					AllPlayerActions.RemoveAt(0);
 					if(TowerAction)
 					{
 						UE_LOG( LogTemp, Warning, TEXT("TowerRef") );
-						TowerAction->AttackUnit();
+						ServerAttackBuilding(TowerAction, AllPlayerActions[0].UnitAttacking);
+						GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::ActionEndTurn, 0.5f, false);
 					}
+					AllPlayerActions.RemoveAt(0);
 					break;
 				case EDC_ActionPlayer::SpellCast:
                         AllPlayerActions.RemoveAt(0);
@@ -589,7 +600,6 @@ void ACustomPlayerController::ActionEndTurn()
 				default:
 					break;
 				}
-			
 			}
 		}
 		else

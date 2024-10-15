@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CustomPlayerController.h"
 #include "EnumsList.h"
 #include "Grid.h"
 #include "GridVisual.h"
@@ -89,7 +90,8 @@ public:
 	void SetCanAttack(bool NewCanAttack);
 
 	UFUNCTION(BlueprintCallable)
-	void AttackUnit();
+	void AttackUnit(AUnit* UnitAttacking, ACustomPlayerController* PlayerControllerAttacking);
+	
 	UFUNCTION(BlueprintCallable)
 	void UpdateVisuals();
 

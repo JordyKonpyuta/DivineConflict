@@ -225,6 +225,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerAttackUnit(AUnit* UnitToAttack, AUnit* UnitAttacking);
+
+	UFUNCTION(Server, Reliable)
+	void ServerAttackBuilding(ATower* BuildingTowerToAttack, AUnit* UnitAttacking);
 	
 	UFUNCTION(Blueprintable)
 	bool SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen, ABase* BaseToSpawn, ABuilding* BuildingToSpawn);
