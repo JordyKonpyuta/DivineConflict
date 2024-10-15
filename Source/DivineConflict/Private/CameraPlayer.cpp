@@ -164,7 +164,6 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 		}
 		if (IsMovingUnit)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("IsMovingUnit"));
 			//print IsMovingUnit
 			TArray<FIntPoint> AllReachable = CustomPlayerController->GetPathReachable();
 

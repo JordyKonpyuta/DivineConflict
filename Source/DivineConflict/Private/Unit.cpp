@@ -421,11 +421,16 @@ void AUnit::UnitMoveAnim_Implementation()
 			// If the building is empty
 			if (Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile->GarrisonFull != true)
 			{
+				// Set Unit's visual Location
 				SetActorLocation(Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile->GetActorLocation());
+				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 50));
 				Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile->UnitRef = this;
 				Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile->GarrisonFull = true;
 
+				// Remove Pathfinding Artifacts
 				Grid->GridVisual->RemoveStateFromTile(PathToCross[PathToCrossPosition], EDC_TileState::Pathfinding);
+
+				// Set all necessary values
 				SetIsGarrison(true);
 				bJustBecameGarrison = true;
 				BuildingRef = Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile;
@@ -439,19 +444,19 @@ void AUnit::UnitMoveAnim_Implementation()
 			{
 				if (this != Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile->UnitRef)
 				{
-					for(FIntPoint Superindex : Path)
+					for(const FIntPoint SuperIndex : Path)
 					{
-						Grid->GridVisual->RemoveStateFromTile(Superindex, EDC_TileState::Pathfinding);
+						Grid->GridVisual->RemoveStateFromTile(SuperIndex, EDC_TileState::Pathfinding);
 					}
 					Grid->GridVisual->RemoveStateFromTile(PathToCross[PathToCrossPosition], EDC_TileState::Pathfinding);
 
-					for (FIntPoint AnFIntPoint : PathToCross)
+					for (const FIntPoint AnFIntPoint : PathToCross)
 					{
 						Grid->GridVisual->RemoveStateFromTile(AnFIntPoint, EDC_TileState::Pathfinding);
 					}
 				}
 			}
-			FIntPoint EarlyLastPath = PathToCross[PathToCrossPosition - 1];
+			FIntPoint EarlyLastPath = Grid->ConvertLocationToIndex(GetActorLocation());
 			PathToCross.Empty();
 			PathToCross.Add(EarlyLastPath);
 			PathToCrossPosition = 0;

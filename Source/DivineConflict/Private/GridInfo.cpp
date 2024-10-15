@@ -38,14 +38,14 @@ void UGridInfo::Multi_setUnitIndexOnGrid_Implementation(const FIntPoint GridPosi
 	//TMap<FIntPoint,FDC_TileData> GridDataRef = Grid->GetGridData();
 	if(GridPosition != UnitRef->GetIndexPosition())
 	{
-		FDC_TileData* PerviousIndex = Grid->GetGridData()->Find(UnitRef->GetIndexPosition());
+		FDC_TileData* PreviousIndex = Grid->GetGridData()->Find(UnitRef->GetIndexPosition());
 		
-		if(PerviousIndex != nullptr)
+		if(PreviousIndex != nullptr)
 		{
-			if(PerviousIndex->UnitOnTile == Unit)
+			if(PreviousIndex->UnitOnTile == Unit)
 			{
-				Grid->GetGridData()->Add(PerviousIndex->TilePosition, FDC_TileData(PerviousIndex->TilePosition, PerviousIndex->TileType, PerviousIndex->TileTransform, PerviousIndex->TileState, nullptr, PerviousIndex->BuildingOnTile , PerviousIndex->BaseOnTile, PerviousIndex->TowerOnTile));
-				Grid->GridData.Add(PerviousIndex->TilePosition, FDC_TileData(PerviousIndex->TilePosition, PerviousIndex->TileType, PerviousIndex->TileTransform, PerviousIndex->TileState, nullptr, PerviousIndex->BuildingOnTile , PerviousIndex->BaseOnTile, PerviousIndex->TowerOnTile));
+				Grid->GetGridData()->Add(PreviousIndex->TilePosition, FDC_TileData(PreviousIndex->TilePosition, PreviousIndex->TileType, PreviousIndex->TileTransform, PreviousIndex->TileState, nullptr, PreviousIndex->BuildingOnTile , PreviousIndex->BaseOnTile, PreviousIndex->TowerOnTile));
+				Grid->GridData.Add(PreviousIndex->TilePosition, FDC_TileData(PreviousIndex->TilePosition, PreviousIndex->TileType, PreviousIndex->TileTransform, PreviousIndex->TileState, nullptr, PreviousIndex->BuildingOnTile , PreviousIndex->BaseOnTile, PreviousIndex->TowerOnTile));
 			}
 		}
 		UnitRef->SetIndexPosition(GridPosition);
