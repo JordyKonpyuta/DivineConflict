@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "EnumsList.h"
 #include "InteractInterface.h"
+#include "Components/WidgetComponent.h"
 #include "Unit.generated.h"
 
 
@@ -43,7 +44,7 @@ public:
 	// Components
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Widget")
-	UWidgetDamage2* DamageWidget;
+	UWidgetComponent* DamageWidgetComponent;
 	
 	// ----------------------------
 	// Materials

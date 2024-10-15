@@ -49,7 +49,9 @@ AUnit::AUnit()
 	GhostsFinaleLocationMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	GhostsFinaleLocationMesh->SetVisibility(false);
 
-	DamageWidget = ConstructorHelpers::FObjectFinder<UWidgetDamage2>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Core/Blueprints/Widget/Units/WBP_WidgetDamage.WBP_WidgetDamage'")).Object;
+	DamageWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetDamage"));
+	static ConstructorHelpers::FClassFinder<UWidgetDamage2> classWidgetDamage(TEXT("/Game/Core/Blueprints/Widget/Units/WBP_WidgetDamage"));
+	if (classWidgetDamage.Succeeded()) DamageWidgetComponent->SetWidgetClass(classWidgetDamage.Class);
 }
 
 void AUnit::BeginPlay()
@@ -94,7 +96,7 @@ void AUnit::BeginPlay()
 	GhostsMesh->SetStaticMesh(UnitMesh->GetStaticMesh());
 	GhostsFinaleLocationMesh->SetStaticMesh(UnitMesh->GetStaticMesh());
 
-	if (DamageWidget)
+	if (DamageWidgetComponent)
 	{
 		
 	}
