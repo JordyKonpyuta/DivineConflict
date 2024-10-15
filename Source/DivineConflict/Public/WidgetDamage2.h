@@ -25,4 +25,7 @@ private:
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void ChangeTextDmg(int Dmg);
+
+protected:
+	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 };
