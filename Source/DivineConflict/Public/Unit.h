@@ -248,6 +248,9 @@ public:
 	
 	UFUNCTION()
 	void Destroyed() override;
+
+	UFUNCTION(Server,Reliable)
+	void Server_DestroyUnit();
 	
 	virtual void Tick(float DeltaTime) override;
 
@@ -406,8 +409,8 @@ public:
 	EPlayer GetPlayerOwner();
 
 	// String
-	UFUNCTION(BlueprintCallable)
-	FString GetName();
+/*	UFUNCTION(BlueprintCallable)
+	FString GetName();*/
 
 	// FIntPoint
 	UFUNCTION()

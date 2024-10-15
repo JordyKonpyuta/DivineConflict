@@ -177,9 +177,15 @@ void AUnit::SetGrid()
 
 void AUnit::Destroyed()
 {
-	if(Grid)
-		Grid->GridInfo->RemoveUnitInGrid(this);
+		
 	Super::Destroyed();
+}
+
+void AUnit::Server_DestroyUnit_Implementation()
+{
+	Grid->GridInfo->RemoveUnitInGrid(this);
+	Destroyed();
+	GetWorld()->DestroyActor(this);
 }
 
 // Called to bind functionality to input
@@ -601,7 +607,8 @@ GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UNIT TAKE DAMAGE"
 
 void AUnit::AttackUnit(AUnit* UnitToAttack)
 {
-	//AUnit* UnitToAttack = UnitToAttackRef; 
+	//AUnit* UnitToAttack = UnitToAttackRef;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("UnitToAttack : ") + UnitToAttack->GetName());
 	if(UnitToAttack == nullptr || Grid == nullptr || UnitToAttack == this)
 	{
 		return;
@@ -626,7 +633,7 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 	if(UnitToAttack->GetCurrentHealth() < 1)
 	{
 		Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
-		PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
+		//PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
 		if (UnitToAttack->BuildingRef)
 		{
 			UnitToAttack->BuildingRef->UnitRef = nullptr;
@@ -638,21 +645,21 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 				Move(FutureMovement);
 			}
 		}
-		UnitToAttack->Destroyed();
-		if(GetCurrentHealth() < 1)
+		UnitToAttack->Server_DestroyUnit();
+		/*if(GetCurrentHealth() < 1)
 		{
 			Grid->GridInfo->RemoveUnitInGrid(this);
 			Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
-			PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
+			//PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
 			Destroyed();
-		}
+		}*/
 	}
 	if(GetCurrentHealth() < 1)
 	{
 		Grid->GridInfo->RemoveUnitInGrid(this);
 		Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
-		PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
-		Destroyed();
+		//PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
+		Server_DestroyUnit();
 	}
 
 
@@ -800,10 +807,12 @@ EPlayer AUnit::GetPlayerOwner()
 }
 
 // String
+/*
 FString AUnit::GetName()
 {
 	return Name;
 }
+*/
 
 // FIntPoint
 FIntPoint AUnit::GetIndexPosition()
