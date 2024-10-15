@@ -629,7 +629,7 @@ GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UNIT TAKE DAMAGE"
 	if(bBuffTank && (Damage-(Defense+1)) > 0)
 	{
 		CurrentHealth -= (Damage-(Defense+1));
-		if (DamageWidgetComponent){Cast<UWidgetDamage2>(DamageWidgetComponent)->ChangeTextDmg}
+		//if (DamageWidgetComponent){Cast<UWidgetDamage2>(DamageWidgetComponent)->ChangeTextDmg}
 	}
 	else if((Damage-Defense) > 0)
 		CurrentHealth -= (Damage-Defense);
