@@ -412,7 +412,7 @@ void AUnit::UnitMoveAnim_Implementation()
 	// Déplacement
 	else if (MoveSequencePos == 1)
 	{
-		SetActorLocation(Grid->ConvertIndexToLocation(PathToCross[PathToCrossPosition]) + FVector(0,0,50));
+		bool WillMove = true;
 		Grid->GridVisual->RemoveStateFromTile(PathToCross[PathToCrossPosition], EDC_TileState::Pathfinding);
 
 		// If you cross a building
@@ -444,6 +444,16 @@ void AUnit::UnitMoveAnim_Implementation()
 						Grid->GridVisual->RemoveStateFromTile(Superindex, EDC_TileState::Pathfinding);
 					}
 					Grid->GridVisual->RemoveStateFromTile(PathToCross[PathToCrossPosition], EDC_TileState::Pathfinding);
+
+					for (FIntPoint AnFIntPoint : PathToCross)
+					{
+						Grid->GridVisual->RemoveStateFromTile(AnFIntPoint, EDC_TileState::Pathfinding);
+					}
+					FIntPoint EarlyLastPath = PathToCross[PathToCrossPosition - 1];
+					PathToCross.Empty();
+					PathToCross.Add(EarlyLastPath);
+					PathToCrossPosition = 0;
+					WillMove = false;
 				}
 			}
 		}
@@ -463,6 +473,10 @@ void AUnit::UnitMoveAnim_Implementation()
 				bJustBecameGarrison = true;
 			}
 		}
+
+		if (WillMove)
+			SetActorLocation(Grid->ConvertIndexToLocation(PathToCross[PathToCrossPosition]) + FVector(0,0,50));
+		
 
 		// If is last move
 		if (PathToCross[PathToCrossPosition] == PathToCross.Last())
