@@ -106,12 +106,7 @@ void AUnit::BeginPlay()
 void AUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (DamageWidget)
-	{
 		
-	}
-	
 	if(HasAuthority())
 		MoveGhosts(DeltaTime);
 }
@@ -809,12 +804,11 @@ EPlayer AUnit::GetPlayerOwner()
 }
 
 // String
-/*
 FString AUnit::GetName()
 {
 	return Name;
 }
-*/
+
 
 // FIntPoint
 FIntPoint AUnit::GetIndexPosition()

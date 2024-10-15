@@ -410,8 +410,8 @@ public:
 	EPlayer GetPlayerOwner();
 
 	// String
-/*	UFUNCTION(BlueprintCallable)
-	FString GetName();*/
+	UFUNCTION(BlueprintCallable)
+	FString GetName();
 
 	// FIntPoint
 	UFUNCTION()
