@@ -12,6 +12,7 @@
 #include "GridVisual.h"
 #include "Tower.h"
 #include "WidgetDamage2.h"
+#include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
@@ -112,15 +113,14 @@ void AUnit::Tick(float DeltaTime)
 	if(HasAuthority())
 		MoveGhosts(DeltaTime);
 
-	/*
+	
 	if (DamageWidgetComponent && PlayerControllerRef)
 	{
 		if (PlayerControllerRef->CameraPlayerRef)
 		{
-			DamageWidgetComponent->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerControllerRef->CameraPlayerRef->GetActorLocation()));
+			DamageWidgetComponent->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetTargetLocation(), PlayerControllerRef->CameraPlayerRef->FollowCamera->GetComponentLocation()));
 		} 
 	}
-	*/
 }
 
 void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProps) const{
@@ -629,6 +629,7 @@ GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UNIT TAKE DAMAGE"
 	if(bBuffTank && (Damage-(Defense+1)) > 0)
 	{
 		CurrentHealth -= (Damage-(Defense+1));
+		if (DamageWidgetComponent){Cast<UWidgetDamage2>(DamageWidgetComponent)->ChangeTextDmg}
 	}
 	else if((Damage-Defense) > 0)
 		CurrentHealth -= (Damage-Defense);
