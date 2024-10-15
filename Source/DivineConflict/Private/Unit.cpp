@@ -429,7 +429,7 @@ void AUnit::UnitMoveAnim_Implementation()
 				SetIsGarrison(true);
 				bJustBecameGarrison = true;
 				BuildingRef = Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile;
-				if (PlayerControllerRef->PlayerStateRef != nullptr)
+				if (PlayerControllerRef->PlayerStateRef)
 				{
 					BuildingRef->SwitchOwner(PlayerControllerRef->PlayerStateRef);
 				}
@@ -449,13 +449,13 @@ void AUnit::UnitMoveAnim_Implementation()
 					{
 						Grid->GridVisual->RemoveStateFromTile(AnFIntPoint, EDC_TileState::Pathfinding);
 					}
-					FIntPoint EarlyLastPath = PathToCross[PathToCrossPosition - 1];
-					PathToCross.Empty();
-					PathToCross.Add(EarlyLastPath);
-					PathToCrossPosition = 0;
-					WillMove = false;
 				}
 			}
+			FIntPoint EarlyLastPath = PathToCross[PathToCrossPosition - 1];
+			PathToCross.Empty();
+			PathToCross.Add(EarlyLastPath);
+			PathToCrossPosition = 0;
+			WillMove = false;
 		}
 
 		// If you cross a tower

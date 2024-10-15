@@ -189,7 +189,7 @@ void ABuilding::SwitchOwner(ACustomPlayerState* NewOwner)
 	{
 	case EPlayer::P_Hell:
 	StaticMeshBuilding->SetMaterial(0, AllMaterials[2]);
-		if (OwnerPlayerState->bIsInTutorial == true && GarrisonFull) Tutorial();
+		if (NewOwner->bIsInTutorial == true && GarrisonFull) Tutorial();
 		break;
 	case EPlayer::P_Heaven:
 	StaticMeshBuilding->SetMaterial(0, AllMaterials[1]);
