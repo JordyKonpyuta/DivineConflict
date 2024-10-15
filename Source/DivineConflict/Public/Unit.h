@@ -42,7 +42,7 @@ public:
 	// ----------------------------
 	// Components
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Widget")
 	UWidgetDamage2* DamageWidget;
 	
 	// ----------------------------

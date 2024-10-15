@@ -10,6 +10,7 @@
 #include "GridInfo.h"
 #include "GridVisual.h"
 #include "Tower.h"
+#include "WidgetDamage2.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
@@ -47,7 +48,8 @@ AUnit::AUnit()
 	GhostsFinaleLocationMesh->SetMaterial(0, MaterialToGhosts);
 	GhostsFinaleLocationMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	GhostsFinaleLocationMesh->SetVisibility(false);
-	
+
+	DamageWidget = ConstructorHelpers::FObjectFinder<UWidgetDamage2>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Core/Blueprints/Widget/Units/WBP_WidgetDamage.WBP_WidgetDamage'")).Object;
 }
 
 void AUnit::BeginPlay()
@@ -92,6 +94,10 @@ void AUnit::BeginPlay()
 	GhostsMesh->SetStaticMesh(UnitMesh->GetStaticMesh());
 	GhostsFinaleLocationMesh->SetStaticMesh(UnitMesh->GetStaticMesh());
 
+	if (DamageWidget)
+	{
+		
+	}
 
 }
 
@@ -99,6 +105,11 @@ void AUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (DamageWidget)
+	{
+		
+	}
+	
 	if(HasAuthority())
 		MoveGhosts(DeltaTime);
 }

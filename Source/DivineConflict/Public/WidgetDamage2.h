@@ -24,5 +24,5 @@ private:
 // UFUNCTIONS
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void ChangeTextDmg();
+	void ChangeTextDmg(int Dmg);
 };

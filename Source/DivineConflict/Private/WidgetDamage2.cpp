@@ -3,7 +3,7 @@
 
 #include "WidgetDamage2.h"
 
-void UWidgetDamage2::ChangeTextDmg_Implementation()
+void UWidgetDamage2::ChangeTextDmg_Implementation(int Dmg)
 {
 	return;
 }
