@@ -242,6 +242,14 @@ void ACameraPlayer::PathRemove(const FInputActionValue& Value)
 	if (Path.Num() == 0)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Path Remove: Empty"));
+		if (IsAttacking) {
+			IsAttacking = false;
+			for(FIntPoint Point : CustomPlayerController->GetPathReachable())
+			{
+				CustomPlayerController->SetPlayerAction(EDC_ActionPlayer::None);
+				CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(Point, EDC_TileState::Attacked);
+			}
+		}
 		return;
 	}
 	CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(Path.Last(), EDC_TileState::Pathfinding);
