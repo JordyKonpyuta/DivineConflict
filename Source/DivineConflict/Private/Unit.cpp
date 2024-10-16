@@ -51,9 +51,10 @@ AUnit::AUnit()
 	GhostsFinaleLocationMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	GhostsFinaleLocationMesh->SetVisibility(false);
 
-	DamageWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetDamage"));
+	// Widget Damage
+	/*DamageWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetDamage"));
 	static ConstructorHelpers::FClassFinder<UWidgetDamage2> classWidgetDamage(TEXT("/Game/Core/Blueprints/Widget/Units/WBP_WidgetDamage"));
-	if (classWidgetDamage.Succeeded()) DamageWidgetComponent->SetWidgetClass(classWidgetDamage.Class);
+	if (classWidgetDamage.Succeeded()) DamageWidgetComponent->SetWidgetClass(classWidgetDamage.Class);*/
 }
 
 void AUnit::BeginPlay()
@@ -113,14 +114,14 @@ void AUnit::Tick(float DeltaTime)
 	if(HasAuthority())
 		MoveGhosts(DeltaTime);
 
-	
-	if (DamageWidgetComponent && PlayerControllerRef)
+	// Widget Damage
+	/*if (DamageWidgetComponent && PlayerControllerRef)
 	{
 		if (PlayerControllerRef->CameraPlayerRef)
 		{
 			DamageWidgetComponent->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetTargetLocation(), PlayerControllerRef->CameraPlayerRef->FollowCamera->GetComponentLocation()));
 		} 
-	}
+	}*/
 }
 
 void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProps) const{
@@ -625,11 +626,16 @@ void AUnit::PrepareAttackBase(FIntPoint AttackPos)
 
 void AUnit::TakeDamage(int Damage)
 {
-GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UNIT TAKE DAMAGE"));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UNIT TAKE DAMAGE"));
 	if(bBuffTank && (Damage-(Defense+1)) > 0)
 	{
 		CurrentHealth -= (Damage-(Defense+1));
-		//if (DamageWidgetComponent){Cast<UWidgetDamage2>(DamageWidgetComponent)->ChangeTextDmg}
+		/*if (DamageWidgetComponent != nullptr){
+			if (dynamic_cast<UWidgetDamage2*>(DamageWidgetComponent))
+			{
+				Cast<UWidgetDamage2>(DamageWidgetComponent)->ChangeTextDmg(Damage-(Defense+1));
+			}
+		}*/
 	}
 	else if((Damage-Defense) > 0)
 		CurrentHealth -= (Damage-Defense);
