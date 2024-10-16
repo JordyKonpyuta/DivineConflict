@@ -605,6 +605,7 @@ void ACustomPlayerController::ActionEndTurn()
 						UE_LOG( LogTemp, Warning, TEXT("TowerRef") );
 						ServerAttackBuilding(TowerAction, AllPlayerActions[0].UnitAttacking);
 						GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::ActionEndTurn, 0.5f, false);
+						TowerAction = nullptr;
 					}
 					if(BaseAction)
                     {
@@ -621,6 +622,10 @@ void ACustomPlayerController::ActionEndTurn()
 				default:
 					break;
 				}
+			}else
+			{
+				AllPlayerActions.Empty();
+				GetWorld()->GetTimerManager().ClearTimer(TimerActiveEndTurn);
 			}
 		}
 		else
