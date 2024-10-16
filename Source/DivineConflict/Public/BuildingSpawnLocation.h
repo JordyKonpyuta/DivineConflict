@@ -14,37 +14,53 @@ class DIVINECONFLICT_API UBuildingSpawnLocation : public UActorComponent
 {
 	GENERATED_BODY()
 
+	//UPROPERTIES
 public:	
-	// Sets default values for this component's properties
-	UBuildingSpawnLocation();
-
+	// ----------------------------
+	// References
 	UPROPERTY(NotBlueprintable)
 	ABuilding* BuildingRef;
 
 	UPROPERTY(Blueprintable, BlueprintReadOnly, Category="Refs")
 	AGrid* GridRef;
 	
+	// ----------------------------
+	// Spawn
 	UPROPERTY(Blueprintable, EditAnywhere, Category="Grid")
 	TArray<bool>ArraySpawnableIndex;
 
 	
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+	// ----------------------------
+	// Grid Reader
 	
 	UPROPERTY(NotBlueprintable)
 	int GridInstance;
-	
-	UPROPERTY(NotBlueprintable)
-	FIntPoint CurrentTileIndex;
 
+	// UFUNCTIONS
 public:	
-	// Called every frame
+	// ----------------------------
+	// Initialisation
+	
+	UBuildingSpawnLocation();
+	
+	// ----------------------------
+	// Overrides
+	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	
+	// ----------------------------
+	// Grid Colors
+	
 	UFUNCTION(Blueprintable, BlueprintCallable)
 	void SpawnGridColors(TArray<FIntPoint> AllSpawnLocationIndex);
 	
 	UFUNCTION(Blueprintable, BlueprintCallable)
 	void DeSpawnGridColors(TArray<FIntPoint> AllSpawnLocationIndex);
+
+private:
+	
+	// ----------------------------
+	// Overrides
+	virtual void BeginPlay() override;
 };

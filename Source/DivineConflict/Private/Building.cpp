@@ -13,7 +13,8 @@
 #include "Unit_Child_Mage.h"
 #include "Unit_Child_Tank.h"
 
-// Sets default values
+	// ----------------------------
+	// Initialisation
 ABuilding::ABuilding()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -42,12 +43,8 @@ ABuilding::ABuilding()
 
 }
 
-bool ABuilding::Interact_Implementation(ACustomPlayerController* PlayerController)
-{
-	PlayerControllerRef = PlayerController;
-	return true;
-}
-
+	// ----------------------------
+	// Overrides
 // Called when the game starts or when spawned
 void ABuilding::BeginPlay()
 {
@@ -159,6 +156,139 @@ void ABuilding::BeginPlay()
 	}
 }
 
+// Called every frame
+void ABuilding::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+}
+
+bool ABuilding::Interact_Implementation(ACustomPlayerController* PlayerController)
+{
+	PlayerControllerRef = PlayerController;
+	return true;
+}
+	
+	// ----------------------------
+	// Check Tutorial
+void ABuilding::Tutorial_Implementation()
+{
+}
+
+	// ----------------------------
+	// Prepare Actions
+void ABuilding::BuildingPreAction(AUnit* UnitSp)
+{
+	if(UnitSp)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("BuildingPreAction"));
+		UnitSpawned = UnitSp;
+		UnitSpawned->GetFinalGhostMesh()->SetVisibility(true);
+		UnitSpawned->GetStaticMesh()->SetVisibility(false);
+		bHasSpawned = true;
+	}
+}
+
+	// ----------------------------
+	// Actions
+void ABuilding::BuildingAction()
+{
+	if(UnitSpawned)
+	{
+		UnitSpawned->GetFinalGhostMesh()->SetVisibility(false);
+		UnitSpawned->GetStaticMesh()->SetVisibility(true);
+		UnitSpawned = nullptr;
+		bHasSpawned = false;
+	}
+}
+
+	// ----------------------------
+	// Spawn
+// Make a unit spawn in a specific point
+void ABuilding::SpawnUnitFromBuilding_Implementation(const FIntPoint &SpawnLocation, const TArray<int> &Cost)
+{
+	if (Cost.Num() != 3)
+	{
+		PlayerControllerRef->SetPlayerAction(EDC_ActionPlayer::None);
+	}
+	if (PlayerControllerRef->PlayerStateRef->WoodPoints <= Cost[0] && PlayerControllerRef->PlayerStateRef->StonePoints <= Cost[1] && PlayerControllerRef->PlayerStateRef->GoldPoints <= Cost[2])
+	{
+		AUnit* UnitToSpawn = nullptr;
+		switch (UnitProduced)
+		{
+		case EUnitType::U_Warrior:
+			UnitToSpawn = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
+			break;
+		case EUnitType::U_Mage:
+			UnitToSpawn =GetWorld()->SpawnActor<AUnit_Child_Mage>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
+			break;
+		case EUnitType::U_Tank:
+			UnitToSpawn =GetWorld()->SpawnActor<AUnit_Child_Tank>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
+			break;
+		default:
+			UnitToSpawn =GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
+		}
+		UnitToSpawn->SetUnitTeam(PlayerOwner);
+	}
+}
+
+	// ----------------------------
+	// Garrison
+void ABuilding::removeUnitRef()
+{
+	UnitRef = nullptr;
+	GarrisonFull = false;
+}
+	
+	// ----------------------------
+	// Handling Turns
+// Check if Player is currently passive; will be used to spawn the HUD
+bool ABuilding::IsPlayerPassive(ACustomPlayerController* PlayerController)
+{
+	return PlayerController->GetIsInActiveTurn();
+}
+
+void ABuilding::OnTurnChanged()
+{
+	if (UnitRef && OwnerPlayerState)
+	{
+		if (OwnerPlayerState->bIsActiveTurn == false)
+		{
+			if (UnitRef->GetCurrentHealth() + 3 > UnitRef->GetMaxHealth())
+			{
+				UnitRef->SetCurrentHealth(UnitRef->GetMaxHealth());
+			}
+			else
+			{
+				UnitRef->SetCurrentHealth(UnitRef->GetCurrentHealth() + 3);
+			}
+		}
+	}
+}
+
+	// ----------------------------
+	// GETTERS
+// Grid Position
+FIntPoint ABuilding::GetGridPosition()
+{
+	return GridPosition;
+}
+
+// Type
+EBuildingList ABuilding::GetBuildingList()
+{
+	return BuildingList;
+}
+
+	// ----------------------------
+	// SETTERS
+// Grid Position
+void ABuilding::SetGridPosition(FIntPoint GridP)
+{
+	GridPosition = GridP;
+}
+
+// Owner & Type
 void ABuilding::SwitchOwner(ACustomPlayerState* NewOwner)
 {
 	switch (BuildingList)
@@ -199,113 +329,4 @@ void ABuilding::SwitchOwner(ACustomPlayerState* NewOwner)
 		break;
 	}
 	OwnerPlayerState = NewOwner;
-}
-
-void ABuilding::BuildingAction()
-{
-	if(UnitSpawned)
-	{
-		UnitSpawned->GetFinalGhostMesh()->SetVisibility(false);
-		UnitSpawned->GetStaticMesh()->SetVisibility(true);
-		UnitSpawned = nullptr;
-		bHasSpawned = false;
-	}
-}
-
-void ABuilding::BuildingPreAction(AUnit* UnitSp)
-{
-	if(UnitSp)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("BuildingPreAction"));
-		UnitSpawned = UnitSp;
-		UnitSpawned->GetFinalGhostMesh()->SetVisibility(true);
-		UnitSpawned->GetStaticMesh()->SetVisibility(false);
-		bHasSpawned = true;
-	}
-}
-
-
-void ABuilding::Tutorial_Implementation()
-{
-}
-
-// Check if Player is currently passive; will be used to spawn the HUD
-bool ABuilding::IsPlayerPassive(ACustomPlayerController* PlayerController)
-{
-	return PlayerController->GetIsInActiveTurn();
-}
-
-// Make a unit spawn in a specific point
-void ABuilding::SpawnUnitFromBuilding_Implementation(const FIntPoint &SpawnLocation, const TArray<int> &Cost)
-{
-	if (Cost.Num() != 3)
-	{
-		PlayerControllerRef->SetPlayerAction(EDC_ActionPlayer::None);
-	}
-	if (PlayerControllerRef->PlayerStateRef->WoodPoints <= Cost[0] && PlayerControllerRef->PlayerStateRef->StonePoints <= Cost[1] && PlayerControllerRef->PlayerStateRef->GoldPoints <= Cost[2])
-	{
-		AUnit* UnitToSpawn = nullptr;
-		switch (UnitProduced)
-		{
-		case EUnitType::U_Warrior:
-			UnitToSpawn = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
-			break;
-		case EUnitType::U_Mage:
-			UnitToSpawn =GetWorld()->SpawnActor<AUnit_Child_Mage>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
-			break;
-		case EUnitType::U_Tank:
-			UnitToSpawn =GetWorld()->SpawnActor<AUnit_Child_Tank>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
-			break;
-		default:
-			UnitToSpawn =GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
-		}
-		UnitToSpawn->SetUnitTeam(PlayerOwner);
-	}
-}
-
-void ABuilding::removeUnitRef()
-{
-	UnitRef = nullptr;
-	GarrisonFull = false;
-}
-
-void ABuilding::OnTurnChanged()
-{
-	if (UnitRef && OwnerPlayerState)
-	{
-		if (OwnerPlayerState->bIsActiveTurn == false)
-		{
-			if (UnitRef->GetCurrentHealth() + 3 > UnitRef->GetMaxHealth())
-			{
-				UnitRef->SetCurrentHealth(UnitRef->GetMaxHealth());
-			}
-			else
-			{
-				UnitRef->SetCurrentHealth(UnitRef->GetCurrentHealth() + 3);
-			}
-		}
-	}
-}
-
-
-// Called every frame
-void ABuilding::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-FIntPoint ABuilding::GetGridPosition()
-{
-	return GridPosition;
-}
-
-void ABuilding::SetGridPosition(FIntPoint GridP)
-{
-	GridPosition = GridP;
-}
-
-EBuildingList ABuilding::GetBuildingList()
-{
-	return BuildingList;
 }

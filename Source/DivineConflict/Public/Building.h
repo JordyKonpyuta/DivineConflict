@@ -20,23 +20,10 @@ class DIVINECONFLICT_API ABuilding : public AActor, public IInteractInterface
 {
 	GENERATED_BODY()
 
-public:	
-	// Sets default values for this actor's properties
-	ABuilding();
-
-	virtual bool Interact_Implementation(ACustomPlayerController* PlayerController) override;
-	
-	UPROPERTY(Blueprintable, BlueprintReadOnly)
-	UBuildingSpawnLocation* BuildingSpawnLocationRef;
-	
-	UPROPERTY(Blueprintable)
-	ACustomPlayerController* PlayerControllerRef;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Player")
-	ACustomPlayerState* OwnerPlayerState;
-
-	UPROPERTY()
-	ACustomGameState* GameStateRef;
+	// UPROPERTIES
+public:
+	// ----------------------------
+	// Components
 
 	UPROPERTY(Blueprintable, VisibleAnywhere, BlueprintReadWrite, Category = "Building")
 	USkeletalMeshComponent* StaticMeshBuilding;
@@ -46,86 +33,165 @@ public:
 
 	UPROPERTY(Blueprintable, BlueprintReadWrite, Category = "Building")
 	USceneComponent* SceneComp;
+	
+	// ----------------------------
+	// Materials
+
+	UPROPERTY()
+	TArray<UMaterialInterface*> AllMaterials;
+	
+	// ----------------------------
+	// References
+
+	// Player
+	UPROPERTY(Blueprintable)
+	ACustomPlayerController* PlayerControllerRef;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Player")
+	ACustomPlayerState* OwnerPlayerState;
+
+	UPROPERTY()
+	ACustomGameState* GameStateRef;
+	
+	// Units
+	UPROPERTY(Blueprintable, BlueprintReadOnly)
+	UBuildingSpawnLocation* BuildingSpawnLocationRef;
+
+	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitSelection")
+	AUnit* UnitRef = nullptr;
+
+	// Grid
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player")
+	AGrid* Grid;
+	
+	// Spawn
+	UPROPERTY()
+	AUnit* UnitSpawned = nullptr;
+	
+	// ----------------------------
+	// Enumerators
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Player")
 	EPlayer PlayerOwner = EPlayer::P_Neutral;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player")
-	AGrid* Grid;
-
+	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitType")
+	EUnitType UnitProduced;
+	
+	// ----------------------------
+	// Tile Management
+	
 	UPROPERTY(Blueprintable, BlueprintReadOnly, Category="Grid")
 	TArray<FIntPoint>AllSpawnLoc;
 
 	UPROPERTY(Blueprintable, BlueprintReadOnly, Category="Grid")
 	TArray<FIntPoint> SpawnLocRef;
 
-	UPROPERTY(Blueprintable, BlueprintReadOnly, Category="Grid")
-	FVector UnitPosition;
-
-	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitType")
-	EUnitType UnitProduced;
+	// ----------------------------
+	// Garrison
 
 	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitSelection")
 	bool GarrisonFull = false;
+	
+	UPROPERTY(Blueprintable, BlueprintReadOnly, Category="Grid")
+	FVector UnitPosition;
 
-	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitSelection")
-	AUnit* UnitRef = nullptr;
-
-	UPROPERTY()
-	AUnit* UnitSpawned = nullptr;
-
-	UPROPERTY()
-	TArray<UMaterialInterface*> AllMaterials;
+	// ----------------------------
+	// Spawn
 
 	UPROPERTY()
 	bool bHasSpawned = false;
 	
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	// ----------------------------
+	// UnitType
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building")
 	EBuildingList BuildingList;
 
+	// ----------------------------
+	// Unit Position
+	
 	UPROPERTY()
 	FIntPoint GridPosition = FIntPoint(0, 0);
 
-	
+	// UFUNCTIONS
 public:	
-	// Called every frame
+	// ----------------------------
+	// Initialisation
+
+	ABuilding();
+	
+	// ----------------------------
+	// Overrides
+	
 	virtual void Tick(float DeltaTime) override;
+	
+	virtual bool Interact_Implementation(ACustomPlayerController* PlayerController) override;
 
-	FIntPoint GetGridPosition();
-
-	void SetGridPosition(FIntPoint GridPosition);
-
-	EBuildingList GetBuildingList();
-
-	UFUNCTION(BlueprintCallable, Category = "Player")
-	void SwitchOwner(ACustomPlayerState* NewOwner);
+	// ----------------------------
+	// Check Tutorial
 
 	UFUNCTION(BlueprintNativeEvent)
 	void Tutorial();
-
-	UFUNCTION(BlueprintCallable, Category = "Player")
-	void BuildingAction();
+	
+	// ----------------------------
+	// Prepare Actions
 
 	UFUNCTION()
 	void BuildingPreAction(AUnit* UnitSp);
+
+	// ----------------------------
+	// Actions
+
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	void BuildingAction();
+	
+
+	// ----------------------------
+	// GETTERS
+
+	// Grid Position
+	UFUNCTION()
+	FIntPoint GetGridPosition();
+
+	// Type
+	UFUNCTION()
+	EBuildingList GetBuildingList();
+
+	// ----------------------------
+	// SETTERS
+
+	// Grid Position
+	void SetGridPosition(FIntPoint GridPosition);
+
+	// Owner & Type
+	UFUNCTION(BlueprintCallable, Category = "Player")
+	void SwitchOwner(ACustomPlayerState* NewOwner);
 	
 protected:
-
-	UFUNCTION(Blueprintable, Category = "Player")
-	bool IsPlayerPassive(ACustomPlayerController* PlayerController);
+	// ----------------------------
+	// Override
+	virtual void BeginPlay() override;
+	
+	// ----------------------------
+	// Spawn
 	
 	// Cost takes three arguments, in order : wood, stone, gold
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Player")
 	void SpawnUnitFromBuilding(const FIntPoint &SpawnLocation, const TArray<int> &Cost);
-
+	
+	// ----------------------------
+	// Garrison
+	
 	UFUNCTION(BlueprintCallable, Category = "Unit")
 	void removeUnitRef();
+	
+	// ----------------------------
+	// Handling Turns
+	
+	UFUNCTION(Blueprintable, Category = "Player")
+	bool IsPlayerPassive(ACustomPlayerController* PlayerController);
 
 	UFUNCTION()
 	void OnTurnChanged();
-	
 };

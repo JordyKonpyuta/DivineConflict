@@ -10,8 +10,10 @@
 #include "CustomPlayerState.h"
 #include "GridVisual.h"
 #include "Net/UnrealNetwork.h"
-
-// Sets default values
+	
+	// ----------------------------
+	// INITIALISATIONS
+// Constructor
 ABase::ABase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -19,6 +21,7 @@ ABase::ABase()
 
 }
 
+// Replicated properties
 void ABase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -50,7 +53,6 @@ void ABase::BeginPlay()
 	// Get Grid
 	if (Grid)
 	{
-	
 		// Grid : Building
 		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
 
@@ -74,6 +76,11 @@ void ABase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+
+	
+	// ----------------------------
+	// Spawn Visuals
 
 void ABase::VisualSpawn()
 {
@@ -108,61 +115,68 @@ void ABase::VisualSpawn()
 	}
 }
 
-void ABase::SetPlayerState()
+	// ----------------------------
+	// Upgrade
+
+void ABase::Upgrade()
 {
-	for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState<ACustomGameState>()->PlayerArray)
-	{
-		if (ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
-		{
-			if (CurrentCustomPlayerState->PlayerTeam == PlayerOwner)
+	if(PlayerStateRef)
+		// Check if player has enough resources
+			if (PlayerStateRef->GetWoodPoints() >= WoodCostUpgrade && PlayerStateRef->GetStonePoints() >= StoneCostUpgrade && PlayerStateRef->GetGoldPoints() >= GoldCostUpgrade)
 			{
-				PlayerStateRef = CurrentCustomPlayerState;
+				if (PlayerStateRef->MaxUnitCount < 15)
+				{
+					PlayerStateRef->MaxUnitCount += 5;
+					PlayerStateRef->ChangeWoodPoints(WoodCostUpgrade, false);
+					PlayerStateRef->ChangeStonePoints(StoneCostUpgrade, false);
+					PlayerStateRef->ChangeGoldPoints(GoldCostUpgrade, false);
+					SetCostsUpgrade(GoldCostUpgrade += 10, StoneCostUpgrade += 10, WoodCostUpgrade += 10);
+				}
 			}
-		}
-	}
+
+			else UE_LOG( LogTemp, Warning, TEXT("Player State Ref is NULL"));
 }
 
-int ABase::GetHealth()
-{
-	return Health;
+	// ----------------------------
+	// Prepare Actions
+
+void ABase::BasePreAction(AUnit* UnitSp)
+{/*
+	if(UnitSp)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("BasePreAction"));
+		UnitSpawned = UnitSp;
+		UnitSpawned->GetFinalGhostMesh()->SetVisibility(true);
+		UnitSpawned->GetStaticMesh()->SetVisibility(false);
+	}*/
 }
 
-int ABase::GetGoldCostUpgrade()
-{
-	return GoldCostUpgrade;
+	// ----------------------------
+	// Actions
+
+void ABase::BaseAction()
+{/*
+	if(UnitSpawned)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("BaseAction"));
+		UnitSpawned->GetFinalGhostMesh()->SetVisibility(false);
+		UnitSpawned->GetStaticMesh()->SetVisibility(true);
+		UnitSpawned = nullptr;
+	}*/
 }
 
-int ABase::GetStoneCostUpgrade()
+	// ----------------------------
+	// Take Damage
+
+void ABase::TakeDamage(int Damage)
 {
-	return StoneCostUpgrade;
+	Health -= Damage;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Base Health : %d"), Health));
+	ServerCheckIfDead(Health);
 }
 
-int ABase::GetWoodCostUpgrade()
-{
-	return WoodCostUpgrade;
-}
-
-FIntPoint ABase::GetGridPosition()
-{
-	return GridPosition;
-}
-
-void ABase::SetHealth(int h)
-{
-	Health = h;
-}
-
-void ABase::SetCostsUpgrade(int g, int s, int w)
-{
-	GoldCostUpgrade = g;
-	StoneCostUpgrade = s;
-	WoodCostUpgrade = w;
-}
-
-void ABase::SetGridPosition(FIntPoint GridP)
-{
-	GridPosition = GridP;
-}
+	// ----------------------------
+	// Check Death
 
 void ABase::ServerCheckIfDead_Implementation(int H)
 {
@@ -170,7 +184,6 @@ void ABase::ServerCheckIfDead_Implementation(int H)
 	MulticastCheckIfDead(H);
 }
 
-// IF DEAD, END GAME
 void ABase::MulticastCheckIfDead_Implementation(int H)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Base Health : %d"), H));
@@ -190,63 +203,83 @@ void ABase::MulticastCheckIfDead_Implementation(int H)
 	}	
 }
 
-void ABase::SetMesh_Implementation()
-{
-}
+	// ----------------------------
+	// UI
 
-void ABase::BaseAction()
-{/*
-	if(UnitSpawned)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("BaseAction"));
-		UnitSpawned->GetFinalGhostMesh()->SetVisibility(false);
-		UnitSpawned->GetStaticMesh()->SetVisibility(true);
-		UnitSpawned = nullptr;
-	}*/
-}
-
-void ABase::BasePreAction(AUnit* UnitSp)
-{/*
-	if(UnitSp)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("BasePreAction"));
-		UnitSpawned = UnitSp;
-		UnitSpawned->GetFinalGhostMesh()->SetVisibility(true);
-		UnitSpawned->GetStaticMesh()->SetVisibility(false);
-	}*/
-}
-
-// TAKE DAMAGE
-void ABase::TakeDamage(int Damage)
-{
-	Health -= Damage;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Base Health : %d"), Health));
-	ServerCheckIfDead(Health);
-}
-
-// UPGRADE MaxUnitCount
-void ABase::Upgrade()
-{
-	if(PlayerStateRef)
-		// Check if player has enough resources
-		if (PlayerStateRef->GetWoodPoints() >= WoodCostUpgrade && PlayerStateRef->GetStonePoints() >= StoneCostUpgrade && PlayerStateRef->GetGoldPoints() >= GoldCostUpgrade)
-		{
-			if (PlayerStateRef->MaxUnitCount < 15)
-			{
-				PlayerStateRef->MaxUnitCount += 5;
-				PlayerStateRef->ChangeWoodPoints(WoodCostUpgrade, false);
-				PlayerStateRef->ChangeStonePoints(StoneCostUpgrade, false);
-				PlayerStateRef->ChangeGoldPoints(GoldCostUpgrade, false);
-				SetCostsUpgrade(GoldCostUpgrade += 10, StoneCostUpgrade += 10, WoodCostUpgrade += 10);
-			}
-		}
-
-	else UE_LOG( LogTemp, Warning, TEXT("Player State Ref is NULL"));
-}
-
-
-// FUNCTION FOR UI
 void ABase::OnDeath_Implementation()
 {
 }
 
+	// ----------------------------
+	// GETTERS
+
+// Stats
+int ABase::GetHealth()
+{
+	return Health;
+}
+
+// Costs
+int ABase::GetGoldCostUpgrade()
+{
+	return GoldCostUpgrade;
+}
+
+int ABase::GetStoneCostUpgrade()
+{
+	return StoneCostUpgrade;
+}
+
+int ABase::GetWoodCostUpgrade()
+{
+	return WoodCostUpgrade;
+}
+
+// Index Position
+FIntPoint ABase::GetGridPosition()
+{
+	return GridPosition;
+}
+
+	// ----------------------------
+	// SETTERS
+
+// Components
+void ABase::SetMesh_Implementation()
+{
+}
+
+// Stats
+void ABase::SetHealth(int h)
+{
+	Health = h;
+}
+
+// Player State
+void ABase::SetPlayerState()
+{
+	for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState<ACustomGameState>()->PlayerArray)
+	{
+		if (ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
+		{
+			if (CurrentCustomPlayerState->PlayerTeam == PlayerOwner)
+			{
+				PlayerStateRef = CurrentCustomPlayerState;
+			}
+		}
+	}
+}
+
+// Costs
+void ABase::SetCostsUpgrade(int g, int s, int w)
+{
+	GoldCostUpgrade = g;
+	StoneCostUpgrade = s;
+	WoodCostUpgrade = w;
+}
+
+// Index Position
+void ABase::SetGridPosition(FIntPoint GridP)
+{
+	GridPosition = GridP;
+}
