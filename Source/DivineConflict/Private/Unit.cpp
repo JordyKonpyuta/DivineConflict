@@ -141,6 +141,7 @@ void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProp
 	DOREPLIFETIME(AUnit, bJustBecameGarrison);
 	DOREPLIFETIME(AUnit, MoveSequencePos);
 	DOREPLIFETIME(AUnit, FutureMovement);
+	DOREPLIFETIME(AUnit, HasActed)
 
 }
 

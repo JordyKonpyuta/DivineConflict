@@ -95,7 +95,7 @@ public:
 	UPROPERTY(Blueprintable, BlueprintReadOnly)
 	bool HasMoved = false;
 
-	UPROPERTY(Blueprintable, BlueprintReadOnly)
+	UPROPERTY(Blueprintable, BlueprintReadOnly, Replicated)
 	bool HasActed = false;
 
 	// ----------------------------
