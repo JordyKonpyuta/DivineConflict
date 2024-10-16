@@ -9,6 +9,7 @@
 #include "CustomPlayerState.h"
 #include "Grid.h"
 #include "GridInfo.h"
+#include "GridPath.h"
 #include "GridVisual.h"
 #include "Tower.h"
 #include "WidgetDamage2.h"
@@ -661,54 +662,56 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 		return;
 	}
 	
-	if (PlayerOwner == EPlayer::P_Hell && bIsCommandeerBuffed)
+	if (Grid->GridPath->FindTileNeighbors(UnitToAttack->GetIndexPosition()).Contains(GetIndexPosition()))
 	{
-		UnitToAttack->TakeDamage(GetAttack() + 1);
-	} else
-	{
-		UnitToAttack->TakeDamage(GetAttack());
-	}
-
-	if (UnitToAttack->PlayerOwner == EPlayer::P_Hell && UnitToAttack->bIsCommandeerBuffed)
-	{
-		TakeDamage(UnitToAttack->GetAttack() + 1);
-	} else
-	{
-		TakeDamage(UnitToAttack->GetAttack());
-	}
-
-	if(UnitToAttack->GetCurrentHealth() < 1)
-	{
-		Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
-		//PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
-		if (UnitToAttack->BuildingRef)
+		if (PlayerOwner == EPlayer::P_Hell && bIsCommandeerBuffed)
 		{
-			UnitToAttack->BuildingRef->UnitRef = nullptr;
-			UnitToAttack->BuildingRef->GarrisonFull = false;
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Unit Got Killed and removed")));
-			if(GetCurrentHealth() < 1)
-			{
-				FutureMovement.Insert(UnitToAttack->GetIndexPosition(), 0);
-				Move(FutureMovement);
-			}
+			UnitToAttack->TakeDamage(GetAttack() + 1);
+		} else
+		{
+			UnitToAttack->TakeDamage(GetAttack());
 		}
-		UnitToAttack->Server_DestroyUnit();
-		/*if(GetCurrentHealth() < 1)
+
+		if (UnitToAttack->PlayerOwner == EPlayer::P_Hell && UnitToAttack->bIsCommandeerBuffed)
+		{
+			TakeDamage(UnitToAttack->GetAttack() + 1);
+		} else
+		{
+			TakeDamage(UnitToAttack->GetAttack());
+		}
+
+		if(UnitToAttack->GetCurrentHealth() < 1)
+		{
+			Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
+			//PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
+			if (UnitToAttack->BuildingRef)
+			{
+				UnitToAttack->BuildingRef->UnitRef = nullptr;
+				UnitToAttack->BuildingRef->GarrisonFull = false;
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Unit Got Killed and removed")));
+				if(GetCurrentHealth() < 1)
+				{
+					FutureMovement.Insert(UnitToAttack->GetIndexPosition(), 0);
+					Move(FutureMovement);
+				}
+			}
+			UnitToAttack->Server_DestroyUnit();
+			/*if(GetCurrentHealth() < 1)
+			{
+				Grid->GridInfo->RemoveUnitInGrid(this);
+				Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
+				//PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
+				Destroyed();
+			}*/
+		}
+		if(GetCurrentHealth() < 1)
 		{
 			Grid->GridInfo->RemoveUnitInGrid(this);
 			Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
 			//PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
-			Destroyed();
-		}*/
+			Server_DestroyUnit();
+		}
 	}
-	if(GetCurrentHealth() < 1)
-	{
-		Grid->GridInfo->RemoveUnitInGrid(this);
-		Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
-		//PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
-		Server_DestroyUnit();
-	}
-
 
 }
 

@@ -677,11 +677,16 @@ void ACustomPlayerController::UpdateWidget3D_Implementation(bool bInteractive, b
 
 void ACustomPlayerController::VerifyBuildInteraction()
 {
+	if (PlayerStateRef == nullptr)
+    {
+        PlayerStateRef = Cast<ACustomPlayerState>(PlayerState);
+    }
+	
 	if (PlayerAction == EDC_ActionPlayer::None)
 	{
 		if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile != nullptr)
 		{
-			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile->GetPlayerOwner() == PlayerTeam && PlayerStateRef->bIsActiveTurn)
+			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile->GetPlayerOwner() == PlayerStateRef->PlayerTeam && PlayerStateRef->bIsActiveTurn)
 			{
 				UpdateWidget3D(true, true);
 			}
@@ -690,7 +695,7 @@ void ACustomPlayerController::VerifyBuildInteraction()
 
 		else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BaseOnTile != nullptr)
 		{
-			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BaseOnTile->PlayerOwner == PlayerTeam && !PlayerStateRef->bIsActiveTurn)
+				if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BaseOnTile->PlayerOwner == PlayerStateRef->PlayerTeam && !PlayerStateRef->bIsActiveTurn)
 			{
 				UpdateWidget3D(true, true);
 			}
@@ -699,12 +704,14 @@ void ACustomPlayerController::VerifyBuildInteraction()
 
 		else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TowerOnTile != nullptr)
 		{
-			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TowerOnTile->GetPlayerOwner() == PlayerTeam && PlayerStateRef->bIsActiveTurn)
+			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TowerOnTile->GetPlayerOwner() == PlayerStateRef->PlayerTeam && PlayerStateRef->bIsActiveTurn)
 			{
 				UpdateWidget3D(true, true);
 			}
 			else UpdateWidget3D(false, true);
 		}
+
+		else UpdateWidget3D(false, false);
 	}
 	else UpdateWidget3D(false, false);
 }
