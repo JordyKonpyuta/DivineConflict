@@ -166,8 +166,11 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 		{
 			//print IsMovingUnit
 			TArray<FIntPoint> AllReachable = CustomPlayerController->GetPathReachable();
-
-			if (AllReachable.Contains(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection)) && Path.Num() < CustomPlayerController->UnitRef->GetPM()+1)
+				
+			if (AllReachable.Contains(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection))
+				&& Path.Num() < CustomPlayerController->UnitRef->GetPM()+1
+				&& CustomPlayerController->Grid->GridPath->IsValidHeigh(CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection)),CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection)))
+				)
 			{
 				Path.AddUnique(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection));
 				CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection), EDC_TileState::Hovered);
