@@ -312,8 +312,8 @@ void ACustomPlayerController::ControllerInteraction()
 					{
 						if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BaseOnTile->PlayerOwner != UnitRef->GetPlayerOwner())
 						{
-							AttackBase(Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile, UnitRef);
-							AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::None));
+							//AttackBase(Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile, UnitRef);
+							AllPlayerActions.Add(FStructActions(Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile, EDC_ActionPlayer::AttackBuilding,UnitRef));
 						}
 					}
 					for(FIntPoint Index : PathReachable)
@@ -438,17 +438,32 @@ TArray<FIntPoint> ACustomPlayerController::PrepareSpawnArea(TArray<FIntPoint> Al
 
 void ACustomPlayerController::AttackBase_Implementation(ABase* BaseToAttack, AUnit* UnitAttacking)
 {
-	UnitAttacking->AttackBase(BaseToAttack);
+	if(BaseToAttack && UnitAttacking)
+		UnitAttacking->AttackBase(BaseToAttack);
+	else
+	{
+		ActionEndTurn();
+	}
 }
 
 void ACustomPlayerController::ServerAttackUnit_Implementation(AUnit* UnitToAttack, AUnit* UnitAttacking)
 {
-	UnitToAttack->AttackUnit(UnitAttacking);
+	if(UnitToAttack && UnitAttacking)
+		UnitToAttack->AttackUnit(UnitAttacking);
+	else
+	{
+		ActionEndTurn();
+	}
 }
 
 void ACustomPlayerController::ServerAttackBuilding_Implementation(ATower* TowerToAttack, AUnit* UnitAttacking)
 {
-	TowerToAttack->AttackUnit(UnitAttacking,this);
+	if(TowerToAttack && UnitAttacking)
+		TowerToAttack->AttackUnit(UnitAttacking,this);
+	else
+	{
+		ActionEndTurn();
+	}
 }
 
 bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen,ABase* BaseToSpawn, ABuilding* BuildingToSpawn)
@@ -560,11 +575,11 @@ void ACustomPlayerController::ActionEndTurn()
 		{
 			FTimerHandle TimerActiveEndTurn;
 			
-			GEngine->AddOnScreenDebugMessage( -1,5.f,FColor::Emerald,TEXT("AllPlayerAction lenght : ") + FString::FromInt(AllPlayerActions.Num()));
 			if(AllPlayerActions.Num() > 0)
 			{
 				AUnit* UnitAction = Cast<AUnit>( AllPlayerActions[0].ActorRef);
 				ATower* TowerAction = Cast<ATower>( AllPlayerActions[0].ActorRef);
+				ABase* BaseAction = Cast<ABase>( AllPlayerActions[0].ActorRef);
 				if(UnitAction)
 				{
 					UnitAction->HasActed = false;
@@ -591,6 +606,12 @@ void ACustomPlayerController::ActionEndTurn()
 						ServerAttackBuilding(TowerAction, AllPlayerActions[0].UnitAttacking);
 						GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::ActionEndTurn, 0.5f, false);
 					}
+					if(BaseAction)
+                    {
+                        UE_LOG( LogTemp, Warning, TEXT("BaseRef") );
+                        AttackBase(BaseAction, AllPlayerActions[0].UnitAttacking);
+                        GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::ActionEndTurn, 0.5f, false);
+                    }
 					AllPlayerActions.RemoveAt(0);
 					break;
 				case EDC_ActionPlayer::SpellCast:
