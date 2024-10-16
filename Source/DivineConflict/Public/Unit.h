@@ -336,6 +336,9 @@ public:
 
 	UFUNCTION(BlueprintCallable,Server,Reliable)
 	void AttackBase(ABase* BaseToAttack);
+
+	UFUNCTION(BlueprintCallable,Server,Reliable)
+	void AttackBuilding(ABuilding* BuildingToAttack);
 	
 	UFUNCTION()
 	void AnimAttack();

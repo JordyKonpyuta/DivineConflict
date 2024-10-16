@@ -230,7 +230,10 @@ public:
 	void ServerAttackUnit(AUnit* UnitToAttack, AUnit* UnitAttacking);
 
 	UFUNCTION(Server, Reliable)
-	void ServerAttackBuilding(ATower* BuildingTowerToAttack, AUnit* UnitAttacking);
+	void ServerAttackBuilding(ABuilding* BuildingToAttack, AUnit* UnitAttacking);
+
+	UFUNCTION(Server, Reliable)
+	void ServerAttackTower(ATower* TowerToAttack, AUnit* UnitAttacking);
 	
 	UFUNCTION(Blueprintable)
 	bool SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen, ABase* BaseToSpawn, ABuilding* BuildingToSpawn);

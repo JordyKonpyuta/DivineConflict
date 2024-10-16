@@ -303,12 +303,10 @@ void ACustomPlayerController::ControllerInteraction()
 					{
 						if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BuildingOnTile->PlayerOwner != PlayerStateRef->PlayerTeam)
 						{
-							GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackBuilding"));
 							if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BuildingOnTile->GarrisonFull)
 							{
-								GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackBuilding"));
-								UnitRef->PrepareAttackUnit(PlayerPositionInGrid);
-								AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::AttackUnit, Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef));
+								//UnitRef->PrepareAttackBuilding(PlayerPositionInGrid);
+								AllPlayerActions.Add(FStructActions(Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile, EDC_ActionPlayer::AttackBuilding, UnitRef));
 							}
 						}
 					}
@@ -470,10 +468,22 @@ void ACustomPlayerController::ServerAttackUnit_Implementation(AUnit* UnitToAttac
 	}
 }
 
-void ACustomPlayerController::ServerAttackBuilding_Implementation(ATower* TowerToAttack, AUnit* UnitAttacking)
+void ACustomPlayerController::ServerAttackBuilding_Implementation(ABuilding* BuildingToAttack, AUnit* UnitAttacking)
+{
+	if(BuildingToAttack && UnitAttacking)
+		UnitAttacking->AttackBuilding(BuildingToAttack);
+	else
+	{
+		ActionEndTurn();
+	}
+}
+
+void ACustomPlayerController::ServerAttackTower_Implementation(ATower* TowerToAttack, AUnit* UnitAttacking)
 {
 	if(TowerToAttack && UnitAttacking)
+	{
 		TowerToAttack->AttackUnit(UnitAttacking,this);
+	}
 	else
 	{
 		ActionEndTurn();
@@ -594,6 +604,7 @@ void ACustomPlayerController::ActionEndTurn()
 			{
 				AUnit* UnitAction = Cast<AUnit>( AllPlayerActions[0].ActorRef);
 				ATower* TowerAction = Cast<ATower>( AllPlayerActions[0].ActorRef);
+				ABuilding* BuildingAction = Cast<ABuilding>( AllPlayerActions[0].ActorRef);
 				ABase* BaseAction = Cast<ABase>( AllPlayerActions[0].ActorRef);
 				if(UnitAction)
 				{
@@ -612,13 +623,12 @@ void ACustomPlayerController::ActionEndTurn()
 					ServerAttackUnit(UnitAction, AllPlayerActions[0].UnitAttacking);
 					GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::ActionEndTurn, 0.5f, false);
 					AllPlayerActions.RemoveAt(0);
-					
 					break;
 				case EDC_ActionPlayer::AttackBuilding:
 					if(TowerAction)
 					{
 						UE_LOG( LogTemp, Warning, TEXT("TowerRef") );
-						ServerAttackBuilding(TowerAction, AllPlayerActions[0].UnitAttacking);
+						ServerAttackTower(TowerAction, AllPlayerActions[0].UnitAttacking);
 						GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::ActionEndTurn, 0.5f, false);
 						TowerAction = nullptr;
 					}
@@ -628,6 +638,13 @@ void ACustomPlayerController::ActionEndTurn()
                         AttackBase(BaseAction, AllPlayerActions[0].UnitAttacking);
                         GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::ActionEndTurn, 0.5f, false);
                     }
+					if (BuildingAction)
+					{
+						UE_LOG( LogTemp, Warning, TEXT("BuildingRef") );
+						ServerAttackBuilding(BuildingAction, AllPlayerActions[0].UnitAttacking);
+						GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::ActionEndTurn, 0.5f, false);
+						BuildingAction = nullptr;
+					}
 					AllPlayerActions.RemoveAt(0);
 					break;
 				case EDC_ActionPlayer::SpellCast:

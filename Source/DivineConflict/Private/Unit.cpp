@@ -621,7 +621,7 @@ void AUnit::PrepareAttackBuilding(FIntPoint AttackPos)
 	if (Grid->GetGridData()->Find(AttackPos)->BuildingOnTile && PlayerControllerRef->CurrentPA > 0)
 	{
 		BuildingToAttackRef = Grid->GetGridData()->Find(AttackPos)->BuildingOnTile;
-		if (BuildingToAttackRef->UnitRef && (BuildingToAttackRef->UnitRef->GetUnitTeam() != PlayerControllerRef->GetPlayerTeam()))
+		if (BuildingToAttackRef->UnitRef && (BuildingToAttackRef->UnitRef->GetUnitTeam() != PlayerControllerRef->PlayerStateRef->PlayerTeam))
 		{
 			UnitToAttackRef = BuildingToAttackRef->UnitRef;
 			PlayerControllerRef->AllPlayerActions.Add(FStructActions(this, EDC_ActionPlayer::AttackBuilding));
@@ -667,8 +667,8 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 	{
 		return;
 	}
-	
-	if (Grid->GridPath->FindTileNeighbors(UnitToAttack->GetIndexPosition()).Contains(GetIndexPosition()))
+	if (Grid->GridPath->FindTileNeighbors(GetIndexPosition()).Contains(UnitToAttack->GetIndexPosition())
+		|| Grid->GetGridData()->Find(UnitToAttack->GetIndexPosition())->BuildingOnTile)
 	{
 		if (PlayerOwner == EPlayer::P_Hell && bIsCommandeerBuffed)
 		{
@@ -730,6 +730,17 @@ void AUnit::AttackBase_Implementation(ABase* BaseToAttack)
 	}
 	BaseToAttack->TakeDamage(/*GetAttack()*/100);
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("health Base: ") + FString::FromInt(BaseToAttack->GetHealth()));
+}
+
+void AUnit::AttackBuilding_Implementation(ABuilding* BuildingToAttack)
+{
+	if (BuildingToAttack == nullptr || Grid == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("BuildingToAttack is null"));
+		return;
+	}
+	UnitToAttackRef = BuildingToAttack->UnitRef;
+	AnimAttack();
 }
 
 void AUnit::AnimAttack()
