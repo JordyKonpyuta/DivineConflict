@@ -41,12 +41,12 @@ FLinearColor UGridVisual::GetColorFromState(TArray<EDC_TileState> TileState)
 						return FLinearColor(0,0,1,1);
 					case EDC_TileState::Hovered:
 						return FLinearColor(0,1,0,1);
+					case EDC_TileState::Attacked:
+						return FLinearColor(1,0,1,1);
 					case EDC_TileState::Pathfinding:
 						return FLinearColor(1,0,0,1);
 					case EDC_TileState::Reachable:
 						return FLinearColor(1,1,0,1);
-					case EDC_TileState::Attacked:
-						return FLinearColor(1,0,1,1);
 					case EDC_TileState::Spawnable:
 						return FLinearColor(0,0.35,0,1);
 					case EDC_TileState::NotSpawnable:

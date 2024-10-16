@@ -188,6 +188,17 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 				CustomPlayerController->Grid->GridVisual->addStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection), EDC_TileState::Hovered);
 			}
 		}
+		else if (IsAttacking)
+		{
+			TArray<FIntPoint> AllReachable = CustomPlayerController->GetPathReachable();
+			if (AllReachable.Contains(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection)))
+			{
+				CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection), EDC_TileState::Hovered);
+				FullMoveDirection = OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0);
+				FullMoveDirection.Z = (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
+				CustomPlayerController->Grid->GridVisual->addStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection), EDC_TileState::Hovered);
+			}
+		}
 		else
 		{
 			CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection), EDC_TileState::Hovered);
@@ -205,7 +216,7 @@ void ACameraPlayer::RotateCamera(const FInputActionValue& Value)
 	FVector2d Input = Value.Get<FVector2d>();
 
 	TargetRotationYaw = FRotator(0,TargetRotationYaw.Yaw + UKismetMathLibrary::SignOfFloat(Input.X)*-90, 0);
-	RotateWidget(UKismetMathLibrary::SignOfFloat(Input.X));
+	RotateWidget(UKismetMathLibrary::SignOfFloat(Input.X), GetActorLocation().Y);
 }
 
 void ACameraPlayer::RotateCameraPitch(const FInputActionValue& Value)
@@ -213,6 +224,7 @@ void ACameraPlayer::RotateCameraPitch(const FInputActionValue& Value)
 	FVector2d Input = Value.Get<FVector2d>();
 	
 	TargetRotationPitch = FRotator(UKismetMathLibrary::Clamp(TargetRotationPitch.Pitch + Input.Y, -75.0f, -20.0f),0, 0);
+	RotateWidget(0, UKismetMathLibrary::SignOfFloat(Input.Y));
 }
 
 void ACameraPlayer::ZoomCamera( const FInputActionValue& Value)
@@ -255,7 +267,7 @@ void ACameraPlayer::PathRemove(const FInputActionValue& Value)
 	SetActorLocation(FVector( Path.Last().X * 100,Path.Last().Y*100, GetActorLocation().Z));
 }
 
-void ACameraPlayer::RotateWidget_Implementation(float Value)
+void ACameraPlayer::RotateWidget_Implementation(float ValueX, float ValueY)
 {
 }
 

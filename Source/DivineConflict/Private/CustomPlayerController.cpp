@@ -120,6 +120,8 @@ void ACustomPlayerController::SelectModeMovement()
 void ACustomPlayerController::SelectModeAttack()
 {
 	PlayerAction = EDC_ActionPlayer::AttackUnit;
+	CameraPlayerRef->IsAttacking = true;
+	
 
 
 	if (UnitRef->HasMoved)
@@ -135,10 +137,13 @@ void ACustomPlayerController::SelectModeAttack()
 		PathReachable = Grid->GridPath->FindTileNeighbors(UnitRef->GetIndexPosition());
 	}
 	
+	
 	for(FIntPoint Index : PathReachable)
     {
         Grid->GridVisual->addStateToTile(Index, EDC_TileState::Attacked);
     }
+	
+	PathReachable.Add(UnitRef->GetIndexPosition());
 }
 
 void ACustomPlayerController::SelectModeSpecial()
@@ -324,6 +329,7 @@ void ACustomPlayerController::ControllerInteraction()
 					UnitRef->SetIsSelected(false);
 					UnitRef->HasActed = true;
 					UnitRef = nullptr;
+					CameraPlayerRef->IsAttacking = false;
 					PlayerAction = EDC_ActionPlayer::None;
 				}
 			}
@@ -336,6 +342,10 @@ void ACustomPlayerController::ControllerInteraction()
 					for(FIntPoint Index : PathReachable)
 					{
 						Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Reachable);
+					}
+					for(FIntPoint Index : CameraPlayerRef->Path)
+					{
+						Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Pathfinding);
 					}
 
 					if (CameraPlayerRef->Path.Num() > 1)
@@ -662,35 +672,36 @@ void ACustomPlayerController::UpdateWidget3D_Implementation(bool bInteractive, b
 
 void ACustomPlayerController::VerifyBuildInteraction()
 {
-	if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile != nullptr)
+	if (PlayerAction == EDC_ActionPlayer::None)
 	{
-		if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile->GetPlayerOwner() == PlayerTeam && PlayerStateRef->bIsActiveTurn)
+		if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile != nullptr)
 		{
-			UpdateWidget3D(true, true);
+			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile->GetPlayerOwner() == PlayerTeam && PlayerStateRef->bIsActiveTurn)
+			{
+				UpdateWidget3D(true, true);
+			}
+			else UpdateWidget3D(false, true);
 		}
-		else UpdateWidget3D(false, true);
-	}
 
-	else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BaseOnTile != nullptr)
-	{
-		if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BaseOnTile->PlayerOwner == PlayerTeam && !PlayerStateRef->bIsActiveTurn)
+		else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BaseOnTile != nullptr)
 		{
-			UpdateWidget3D(true, true);
+			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BaseOnTile->PlayerOwner == PlayerTeam && !PlayerStateRef->bIsActiveTurn)
+			{
+				UpdateWidget3D(true, true);
+			}
+			else UpdateWidget3D(false, true);
 		}
-		else UpdateWidget3D(false, true);
-	}
 
-	else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TowerOnTile != nullptr)
-	{
-		if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TowerOnTile->GetPlayerOwner() == PlayerTeam && PlayerStateRef->bIsActiveTurn)
+		else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TowerOnTile != nullptr)
 		{
-			UpdateWidget3D(true, true);
+			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TowerOnTile->GetPlayerOwner() == PlayerTeam && PlayerStateRef->bIsActiveTurn)
+			{
+				UpdateWidget3D(true, true);
+			}
+			else UpdateWidget3D(false, true);
 		}
-		else UpdateWidget3D(false, true);
 	}
-
 	else UpdateWidget3D(false, false);
-	
 }
 
 void ACustomPlayerController::AssignPlayerPosition()

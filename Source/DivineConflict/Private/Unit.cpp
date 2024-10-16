@@ -489,7 +489,6 @@ void AUnit::UnitMoveAnim_Implementation()
 		if (PathToCross[PathToCrossPosition] == PathToCross.Last())
 		{
 			Grid->GridVisual->RemoveStateFromTile(PathToCross[PathToCrossPosition], EDC_TileState::Pathfinding);
-			Grid->GridInfo->Multi_setUnitIndexOnGrid(PathToCross[PathToCrossPosition],this);
 			PathToCross.Empty();
 			PathToCrossPosition = 0;
 
@@ -549,6 +548,9 @@ void AUnit::InitGhosts_Implementation()
 	GhostsMesh->SetWorldLocation(GetActorLocation());
 	GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovementPos));
 	GhostsFinaleLocationMesh->SetVisibility(true);
+
+	// Set ghost's position as unit's position on grid
+	Grid->GridInfo->Server_setUnitIndexOnGrid(FutureMovementPos, this);
 	bIsGhosts = true;
 }
 
