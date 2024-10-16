@@ -433,6 +433,10 @@ void ACustomPlayerController::DisplayWidgetTower_Implementation()
 {
 }
 
+void ACustomPlayerController::HiddeWidget_Implementation()
+{
+}
+
 TArray<FIntPoint> ACustomPlayerController::PrepareSpawnArea(TArray<FIntPoint> AllSpawnArea, FIntPoint BaseTile)
 {
 	TArray<FIntPoint> TrueSpawnArea;
@@ -578,6 +582,7 @@ void ACustomPlayerController::ActionEndTurn()
 	GEngine->AddOnScreenDebugMessage( -1,5.f,FColor::Emerald,TEXT("ActionEndTurn"));
 	if(IsLocalController())
 	{
+		HiddeWidget();
 		if(PlayerStateRef == nullptr)
 			PlayerStateRef = Cast<ACustomPlayerState>(PlayerState);
 

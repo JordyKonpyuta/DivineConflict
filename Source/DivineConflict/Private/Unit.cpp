@@ -267,7 +267,7 @@ void AUnit::Multi_PrepareMove_Implementation(const TArray<FIntPoint>& NewPos)
 	FutureMovement = NewPos;
 	FutureMovementPos = FutureMovement.Last();
 	InitGhosts();
-	Grid->GridInfo->Server_setUnitIndexOnGrid(IndexPosition,this);
+	//Grid->GridInfo->Server_setUnitIndexOnGrid(IndexPosition,this);
 	//PlayerControllerRef->AllPlayerActions.Add(FStructActions(this, EDC_ActionPlayer::MoveUnit));
 }
 
@@ -481,19 +481,28 @@ void AUnit::UnitMoveAnim_Implementation()
 			}
 		}
 
-		if (WillMove)
-			SetActorLocation(Grid->ConvertIndexToLocation(PathToCross[PathToCrossPosition]) + FVector(0,0,50));
+		
+		
 		
 
 		// If is last move
 		if (PathToCross[PathToCrossPosition] == PathToCross.Last())
 		{
-			Grid->GridVisual->RemoveStateFromTile(PathToCross[PathToCrossPosition], EDC_TileState::Pathfinding);
+			if(Grid->GetGridData()->Find(PathToCross.Last())->UnitOnTile)
+			{
+				UE_LOG( LogTemp, Warning, TEXT("Unit moved to last position"));
+				Grid->GridInfo->Multi_setUnitIndexOnGrid(PathToCross.Last(), this);
+				WillMove = false;
+			}
+			UE_LOG( LogTemp, Warning, TEXT("Unit moved to last position"));
+			//Grid->GridVisual->RemoveStateFromTile(PathToCross[PathToCrossPosition], EDC_TileState::Pathfinding);
 			PathToCross.Empty();
 			PathToCrossPosition = 0;
-
+			
 		}
-
+		UE_LOG( LogTemp, Warning, TEXT("WillMove : %d"), WillMove);
+		if (WillMove)
+			SetActorLocation(Grid->ConvertIndexToLocation(PathToCross[PathToCrossPosition]) + FVector(0,0,50));
 
 		MoveSequencePos++;
 	}
@@ -550,7 +559,7 @@ void AUnit::InitGhosts_Implementation()
 	GhostsFinaleLocationMesh->SetVisibility(true);
 
 	// Set ghost's position as unit's position on grid
-	Grid->GridInfo->Server_setUnitIndexOnGrid(FutureMovementPos, this);
+	//Grid->GridInfo->Server_setUnitIndexOnGrid(FutureMovementPos, this);
 	bIsGhosts = true;
 }
 
