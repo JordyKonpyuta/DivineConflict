@@ -110,11 +110,15 @@ void ATower::AttackUnit(AUnit* UnitToAttacking, ACustomPlayerController* PlayerC
 void ATower::UpdateVisuals()
 {
 	if (IsSelected)
-	for (FIntPoint Tile : TilesInRange)
 	{
+		PlayerController->SetPathReachable(TilesInRange);
+		for (FIntPoint Tile : TilesInRange)
+		{
 			// Highlight Tiles
 			Grid->GridVisual->addStateToTile(Tile, EDC_TileState::Attacked);
-	} else
+		}
+	}
+	else
 	{
 		for (FIntPoint Tile : TilesInRange)
 		{
