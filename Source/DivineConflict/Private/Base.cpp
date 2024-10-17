@@ -31,6 +31,8 @@ void ABase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 	DOREPLIFETIME(ABase, WoodCostUpgrade);
 	DOREPLIFETIME(ABase, GridPosition);
 	DOREPLIFETIME(ABase, AllSpawnLoc);
+	DOREPLIFETIME(ABase, PlayerOwner);
+	DOREPLIFETIME(ABase, MaxHealth);
 }
 
 // Called when the game starts or when spawned
@@ -143,13 +145,14 @@ void ABase::Upgrade()
 		// Check if player has enough resources
 			if (PlayerStateRef->GetWoodPoints() >= WoodCostUpgrade && PlayerStateRef->GetStonePoints() >= StoneCostUpgrade && PlayerStateRef->GetGoldPoints() >= GoldCostUpgrade)
 			{
-				if (PlayerStateRef->MaxUnitCount < 15)
+				if (PlayerStateRef->MaxUnitCount < 15 && Level < MaxLevel)
 				{
 					PlayerStateRef->MaxUnitCount += 5;
 					PlayerStateRef->ChangeWoodPoints(WoodCostUpgrade, false);
 					PlayerStateRef->ChangeStonePoints(StoneCostUpgrade, false);
 					PlayerStateRef->ChangeGoldPoints(GoldCostUpgrade, false);
 					SetCostsUpgrade(GoldCostUpgrade += 10, StoneCostUpgrade += 10, WoodCostUpgrade += 10);
+					Level++;
 				}
 			}
 

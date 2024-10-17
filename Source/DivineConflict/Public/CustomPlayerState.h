@@ -130,7 +130,77 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Turn")
 	void NewTurnBegin();
+
+	// GETTERS FOR UNITS SPAWN COSTS
+
+
+	// Mage
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Units")
+	int GetMageWoodCost();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Units")
+	int GetMageStoneCost();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Units")
+	int GetMageGoldCost();
+
+	// Tank
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Units")
+	int GetTankWoodCost();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Units")
+	int GetTankStoneCost();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Units")
+	int GetTankGoldCost();
+
+	// Warrior
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Units")
+	int GetWarriorWoodCost();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Units")
+	int GetWarriorStoneCost();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Units")
+	int GetWarriorGoldCost();
+
+	// Leader
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Units")
+	int GetLeaderWoodCost();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Units")
+	int GetLeaderStoneCost();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Units")
+	int GetLeaderGoldCost();
 	
-private:
+protected:
+
+	// SPAWN COSTS FOR UNITS
+
+	// Mage
+	UPROPERTY()
+	int MageWoodCost = 20;
+	UPROPERTY()
+	int MageStoneCost = 0;
+	UPROPERTY()
+	int MageGoldCost = 10;
+
+	// Tank
+	UPROPERTY()
+	int TankWoodCost = 10;
+	UPROPERTY()
+	int TankStoneCost = 20;
+	UPROPERTY()
+	int TankGoldCost = 0;
+
+	// Warrior
+	UPROPERTY()
+	int WarriorWoodCost = 0;
+	UPROPERTY()
+	int WarriorStoneCost = 10;
+	UPROPERTY()
+	int WarriorGoldCost = 20;
+
+
+	// Leader
+	UPROPERTY()
+	int LeaderWoodCost = 30;
+	UPROPERTY()
+	int LeaderStoneCost = 30;
+	UPROPERTY()
+	int LeaderGoldCost = 30;
 
 };

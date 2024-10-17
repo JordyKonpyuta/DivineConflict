@@ -75,6 +75,14 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
 	int Health = 200;
+
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
+	int MaxHealth = Health;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	int Level = 1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	int MaxLevel = 3;
 	
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
 	int GoldCostUpgrade = 20;
@@ -142,17 +150,17 @@ public:
 	// GETTERS
 
 	// Stats
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int GetHealth();
 
 	// Costs
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int GetGoldCostUpgrade();
 	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int GetStoneCostUpgrade();
 	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int GetWoodCostUpgrade();
 
 	// Index Position

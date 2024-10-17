@@ -159,3 +159,63 @@ void ACustomPlayerState::NewTurnBegin()
 		//PlayerControllerRef->CurrentPA = CurrentPA;
 
 }
+
+int ACustomPlayerState::GetMageWoodCost()
+{
+	return MageWoodCost;
+}
+
+int ACustomPlayerState::GetMageStoneCost()
+{
+	return MageStoneCost;
+}
+
+int ACustomPlayerState::GetMageGoldCost()
+{
+	return MageGoldCost;
+}
+
+int ACustomPlayerState::GetTankWoodCost()
+{
+	return TankWoodCost;
+}
+
+int ACustomPlayerState::GetTankStoneCost()
+{
+	return TankStoneCost;
+}
+
+int ACustomPlayerState::GetTankGoldCost()
+{
+	return TankGoldCost;
+}
+
+int ACustomPlayerState::GetWarriorWoodCost()
+{
+	return WarriorWoodCost;
+}
+
+int ACustomPlayerState::GetWarriorStoneCost()
+{
+	return WarriorStoneCost;
+}
+
+int ACustomPlayerState::GetWarriorGoldCost()
+{
+	return WarriorGoldCost;
+}
+
+int ACustomPlayerState::GetLeaderWoodCost()
+{
+	return LeaderWoodCost;
+}
+
+int ACustomPlayerState::GetLeaderStoneCost()
+{
+	return LeaderStoneCost;
+}
+
+int ACustomPlayerState::GetLeaderGoldCost()
+{
+	return LeaderGoldCost;
+}
