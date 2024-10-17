@@ -358,8 +358,15 @@ public:
 	virtual void SpecialUnit(AUnit* UnitToAttack);
 	
 	virtual void SpecialBase(ABase *BaseToAttack);
+	
+	// ----------------------------
+	// Cancel Actions
 
+	void CancelMove();
 
+	void CancelAttack();
+
+	void CancelSpecial();
 	
 	
 	// ----------------------------

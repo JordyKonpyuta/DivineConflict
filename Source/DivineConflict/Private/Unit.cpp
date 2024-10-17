@@ -794,6 +794,26 @@ void AUnit::SpecialUnit(AUnit* UnitToAttack)
 void AUnit::SpecialBase(ABase* BaseToAttack)
 {
 }
+	
+// ----------------------------
+// Cancel Actions
+
+void AUnit::CancelMove()
+{
+	HasMoved = false;
+	Multi_HiddeGhosts();
+	FutureMovement.Empty();
+}
+
+void AUnit::CancelAttack()
+{
+	HasActed = false;
+}
+
+void AUnit::CancelSpecial()
+{
+	HasActed = false;
+}
 
 // ----------------------------
 // GETTERS
