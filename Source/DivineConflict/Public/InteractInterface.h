@@ -22,9 +22,17 @@ class DIVINECONFLICT_API IInteractInterface
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
+	// UPROPERTIES
 public:
 
+protected:
+
+	// UFUNCTIONS
+public:
+	// ----------------------------
+	// Master Interaction
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = Interface)
 	bool Interact(ACustomPlayerController *PlayerController);
+
+protected:
 };

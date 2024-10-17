@@ -12,34 +12,54 @@ class DIVINECONFLICT_API ASpawner : public AActor
 {
 	GENERATED_BODY()
 
+	// UPROPERTIES
+public:	
+	// ----------------------------
+	// Components
+
 	UPROPERTY(VisibleAnywhere, Category = "Spawner", meta = (AllowPrivate = "true"))
 	UStaticMeshComponent* SpawnerMesh;
 	
-public:	
-	// Sets default values for this actor's properties
-	ASpawner();
+	// ----------------------------
+	// References
 
 	UPROPERTY(EditAnywhere, Category = "Spawner")
 	AGrid* Grid;
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
+	// ----------------------------
+	// Position in Grid
+	
 	UPROPERTY()
 	FIntPoint GridPosition = FIntPoint(0, 0);
 
-public:	
-	// Called every frame
+	// UFUNCTIONS
+public:
+	// ----------------------------
+	// Constructor
+	
+	ASpawner();
+	
+	// ----------------------------
+	// Override
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY()
-	bool IsHell = false;
-
-	UFUNCTION()
-	void SetGridPosition(FIntPoint Position);
+	// ----------------------------
+	// Getter
 
 	UFUNCTION()
 	FIntPoint GetGridPosition();
+	
+	// ----------------------------
+	// Setter
+	
+	UFUNCTION()
+	void SetGridPosition(FIntPoint Position);
 
+protected:
+	// ----------------------------
+	// Override
+	
+	virtual void BeginPlay() override;
+	
 };

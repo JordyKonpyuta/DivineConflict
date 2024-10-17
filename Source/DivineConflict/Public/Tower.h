@@ -17,88 +17,140 @@ UCLASS()
 class DIVINECONFLICT_API ATower : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	ATower();
 
+	// UPROPERTIES
+public:	
+
+	// ----------------------------
+	// Component
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Mesh")
 	UStaticMeshComponent* Mesh;
-
-	UFUNCTION(BlueprintNativeEvent)
-	void SetMesh();
-
+	
+	// ----------------------------
+	// References
+	
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Unit")
 	AUnit* UnitInGarrison = nullptr;
-	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Bool")
-	bool IsGarrisoned = false;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	AGrid* Grid;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-	TArray<FIntPoint> TilesInRange;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controller")
 	ACustomPlayerController* PlayerController;
-
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
-	int Attack = 5;
-
-	UPROPERTY(EditAnywhere, Replicated, BlueprintReadOnly, Category = "Bool")
-	bool CanAttack = true;
-
-	UPROPERTY(EditAnywhere, Replicated, BlueprintReadOnly, Category = "Enum")
-	EPlayer PlayerOwner = EPlayer::P_Neutral;
 	
-
-	UPROPERTY(EditAnywhere, Replicated, BlueprintReadOnly, Category = "Grid")
-	FIntPoint GridPosition = FIntPoint(-999, -999);
-
-
-
-
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	UPROPERTY(Replicated)
 	AUnit* UnitToAttack = nullptr;
+
+	
+	// ----------------------------
+	// Garrison
+	
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Bool")
+	bool IsGarrisoned = false;
+
+	// ----------------------------
+	// Can Attack
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bool")
+	bool IsSelected = false;
+	
+	// ----------------------------
+	// Attack
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
+	TArray<FIntPoint> TilesInRange;
 
 	UPROPERTY(Replicated)
 	FIntPoint UnitToAttackPosition = FIntPoint(-999, -999);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bool")
-	bool IsSelected = false;
+protected:
+	// ----------------------------
+	// Stat
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
+	int Attack = 5;
+
+	// ----------------------------
+	// Can Attack
 	
-	UFUNCTION(BlueprintCallable)
-	int GetAttack();
-	UFUNCTION(BlueprintCallable)
-	void SetAttack(int NewAttack);
-	UFUNCTION(BlueprintCallable)
-	EPlayer GetPlayerOwner();
-	UFUNCTION(BlueprintCallable)
-	void SetPlayerOwner(EPlayer NewPlayerOwner);
-	UFUNCTION(BlueprintCallable)
-	bool GetCanAttack();
-	UFUNCTION(BlueprintCallable)
-	void SetCanAttack(bool NewCanAttack);
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadOnly, Category = "Bool")
+	bool CanAttack = true;
 
-	UFUNCTION(BlueprintCallable)
-	void AttackUnit(AUnit* UnitAttacking, ACustomPlayerController* PlayerControllerAttacking);
+	// ----------------------------
+	// Owner
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadOnly, Category = "Enum")
+	EPlayer PlayerOwner = EPlayer::P_Neutral;
 	
-	UFUNCTION(BlueprintCallable)
-	void UpdateVisuals();
+	// ----------------------------
+	// Position
+	
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadOnly, Category = "Grid")
+	FIntPoint GridPosition = FIntPoint(-999, -999);
 
-	FIntPoint GetGridPosition();
 
-	void SetGridPosition(FIntPoint NewGridPosition);
+	// UFUNCTIONS
+public:	
+	// ----------------------------
+	// Constructor
+	
+	ATower();
+	
+	// ----------------------------
+	// Overrides
+	
+	virtual void Tick(float DeltaTime) override;
+	
+	// ----------------------------
+	// Components
+
+	UFUNCTION(BlueprintNativeEvent)
+	void SetMesh();
+	
+	// ----------------------------
+	// Attack
 
 	UFUNCTION()
 	void PreprareAttack(AUnit* UnitAttack);
+
+	UFUNCTION(BlueprintCallable)
+	void AttackUnit(AUnit* UnitAttacking, ACustomPlayerController* PlayerControllerAttacking);
+
+	// ----------------------------
+	// Visuals
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateVisuals();
+	
+	// ----------------------------
+	// GETTERS
+	
+	UFUNCTION(BlueprintCallable)
+	int GetAttack();
+	
+	UFUNCTION(BlueprintCallable)
+	EPlayer GetPlayerOwner();
+	
+	UFUNCTION(BlueprintCallable)
+	bool GetCanAttack();
+	
+	FIntPoint GetGridPosition();
+	
+	// ----------------------------
+	// SETTERS
+	
+	UFUNCTION(BlueprintCallable)
+	void SetAttack(int NewAttack);
+	
+	UFUNCTION(BlueprintCallable)
+	void SetPlayerOwner(EPlayer NewPlayerOwner);
+	
+	UFUNCTION(BlueprintCallable)
+	void SetCanAttack(bool NewCanAttack);
+
+	void SetGridPosition(FIntPoint NewGridPosition);
+
+protected:
+	// ----------------------------
+	// Overrides
+
+	virtual void BeginPlay() override;
 };

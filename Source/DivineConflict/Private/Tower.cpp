@@ -10,7 +10,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
-// Sets default values
+
+	// ----------------------------
+	// Constructor
 ATower::ATower()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -19,25 +21,9 @@ ATower::ATower()
 	
 }
 
-void ATower::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(ATower, UnitInGarrison);
-	DOREPLIFETIME(ATower, IsGarrisoned);
-	DOREPLIFETIME(ATower, Attack);
-	DOREPLIFETIME(ATower, CanAttack);
-	DOREPLIFETIME(ATower, PlayerOwner);
-	DOREPLIFETIME(ATower, Mesh);
-	DOREPLIFETIME(ATower, GridPosition);
-	DOREPLIFETIME(ATower, UnitToAttack);
-	DOREPLIFETIME(ATower, UnitToAttackPosition);
-}
+	// ----------------------------
+	// Overrides
 
-void ATower::SetMesh_Implementation()
-{
-}
-
-// Called when the game starts or when spawned
 void ATower::BeginPlay()
 {
 	Super::BeginPlay();
@@ -53,42 +39,46 @@ void ATower::BeginPlay()
 
 }
 
-// Called every frame
 void ATower::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
-int ATower::GetAttack()
+	// ----------------------------
+	// REPLICATIONS !!!
+
+void ATower::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	return Attack;
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ATower, UnitInGarrison);
+	DOREPLIFETIME(ATower, IsGarrisoned);
+	DOREPLIFETIME(ATower, Attack);
+	DOREPLIFETIME(ATower, CanAttack);
+	DOREPLIFETIME(ATower, PlayerOwner);
+	DOREPLIFETIME(ATower, Mesh);
+	DOREPLIFETIME(ATower, GridPosition);
+	DOREPLIFETIME(ATower, UnitToAttack);
+	DOREPLIFETIME(ATower, UnitToAttackPosition);
 }
 
-void ATower::SetAttack(int NewAttack)
+	// ----------------------------
+	// Components
+
+void ATower::SetMesh_Implementation()
 {
-	Attack = NewAttack;
 }
 
+	// ----------------------------
+	// Attack
 
-EPlayer ATower::GetPlayerOwner()
+void ATower::PreprareAttack(AUnit* UnitAttack)
 {
-	return PlayerOwner;
-}
-
-void ATower::SetPlayerOwner(EPlayer NewPlayerOwner)
-{
-	PlayerOwner = NewPlayerOwner;
-}
-
-bool ATower::GetCanAttack()
-{
-	return CanAttack;
-}
-
-void ATower::SetCanAttack(bool NewCanAttack)
-{
-	CanAttack = NewCanAttack;
+	UnitToAttack = UnitAttack;
+	UnitToAttackPosition = UnitAttack->GetIndexPosition();
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("unitToAttackPosition : " + UnitToAttackPosition.ToString()));
+	IsSelected = false;
+	UpdateVisuals();
 }
 
 void ATower::AttackUnit(AUnit* UnitToAttacking, ACustomPlayerController* PlayerControllerAttacking)
@@ -106,6 +96,8 @@ void ATower::AttackUnit(AUnit* UnitToAttacking, ACustomPlayerController* PlayerC
 	
 }
 
+	// ----------------------------
+	// Visuals
 
 void ATower::UpdateVisuals()
 {
@@ -129,24 +121,48 @@ void ATower::UpdateVisuals()
 	
 }
 
+	// ----------------------------
+	// GETTERS
+
+int ATower::GetAttack()
+{
+	return Attack;
+}
+
+EPlayer ATower::GetPlayerOwner()
+{
+	return PlayerOwner;
+}
+
+bool ATower::GetCanAttack()
+{
+	return CanAttack;
+}
+
 FIntPoint ATower::GetGridPosition()
 {
 	return GridPosition;
+}
+
+	// ----------------------------
+	// SETTERS
+
+void ATower::SetAttack(int NewAttack)
+{
+	Attack = NewAttack;
+}
+
+void ATower::SetPlayerOwner(EPlayer NewPlayerOwner)
+{
+	PlayerOwner = NewPlayerOwner;
+}
+
+void ATower::SetCanAttack(bool NewCanAttack)
+{
+	CanAttack = NewCanAttack;
 }
 
 void ATower::SetGridPosition(FIntPoint NewGridPosition)
 {
 	GridPosition = NewGridPosition;
 }
-
-void ATower::PreprareAttack(AUnit* UnitAttack)
-{
-	UnitToAttack = UnitAttack;
-	UnitToAttackPosition = UnitAttack->GetIndexPosition();
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("unitToAttackPosition : " + UnitToAttackPosition.ToString()));
-	IsSelected = false;
-	UpdateVisuals();
-}
-
-
-

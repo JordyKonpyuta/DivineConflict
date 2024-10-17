@@ -3,7 +3,10 @@
 
 #include "Spawner.h"
 
-// Sets default values
+
+	// ----------------------------
+	// Contructor
+
 ASpawner::ASpawner()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -15,7 +18,9 @@ ASpawner::ASpawner()
 
 }
 
-// Called when the game starts or when spawned
+	// ----------------------------
+	// Overrides
+
 void ASpawner::BeginPlay()
 {
 	Super::BeginPlay();
@@ -28,20 +33,24 @@ void ASpawner::BeginPlay()
 	
 }
 
-// Called every frame
 void ASpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
+	// ----------------------------
+	// Setter
+
 void ASpawner::SetGridPosition(FIntPoint Position)
 {
 	GridPosition = Position;
 }
 
+	// ----------------------------
+	// Getter
+
 FIntPoint ASpawner::GetGridPosition()
 {
 	return GridPosition;
 }
-
