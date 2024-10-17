@@ -3,7 +3,9 @@
 
 #include "Upwall.h"
 
-// Sets default values
+	// ----------------------------
+	// Constructor
+
 AUpwall::AUpwall()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -11,17 +13,17 @@ AUpwall::AUpwall()
 
 }
 
-// Called when the game starts or when spawned
+	// ----------------------------
+	// Overrides
+
 void AUpwall::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-// Called every frame
 void AUpwall::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
-

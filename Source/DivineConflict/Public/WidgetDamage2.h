@@ -16,6 +16,9 @@ class DIVINECONFLICT_API UWidgetDamage2 : public UUserWidget
 	
 // UPROPERTIES
 public:
+	// ----------------------------
+	// Damage
+	
 	UPROPERTY(BlueprintReadOnly)
 	int DamageTaken;
 
@@ -23,11 +26,17 @@ private:
 
 // UFUNCTIONS
 public:
+	// ----------------------------
+	// Damage
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void ChangeTextDmg(int Dmg);
 
 protected:
-	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	// ----------------------------
+	// Overrides
 
 	void NativeConstruct() override;
+	
+	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 };

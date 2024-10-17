@@ -2,31 +2,16 @@
 
 
 #include "Unit_Child_Mage.h"
-
 #include "Base.h"
+#include "CustomPlayerController.h"
 #include "CustomPlayerState.h"
 #include "Grid.h"
 #include "GridInfo.h"
 #include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
 
-void AUnit_Child_Mage::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (Attack == 0)
-		SetAttack(5);
-	if (Defense == 0)
-		SetDefense(2);
-	if (MaxHealth == 0)
-		SetMaxHealth(10);
-	if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
-		SetCurrentHealth(MaxHealth);
-	if (PM == 0)
-		SetPM(4);
-
-	UnitName = EUnitName::Mage;
-}
+	// ----------------------------
+	// Constructor
 
 AUnit_Child_Mage::AUnit_Child_Mage()
 {
@@ -44,6 +29,37 @@ AUnit_Child_Mage::AUnit_Child_Mage()
 	{
 		UnitIconParadise = IconTexObject.Object;
 	}
+}
+
+	// ----------------------------
+	// Replications
+
+void AUnit_Child_Mage::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AUnit_Child_Mage, UnitToAttack);
+	DOREPLIFETIME(AUnit_Child_Mage, BaseToAttack);
+}
+
+	// ----------------------------
+	// Overrides
+
+void AUnit_Child_Mage::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (Attack == 0)
+		SetAttack(5);
+	if (Defense == 0)
+		SetDefense(2);
+	if (MaxHealth == 0)
+		SetMaxHealth(10);
+	if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
+		SetCurrentHealth(MaxHealth);
+	if (PM == 0)
+		SetPM(4);
+
+	UnitName = EUnitName::Mage;
 }
 
 void AUnit_Child_Mage::Special()
@@ -67,7 +83,6 @@ void AUnit_Child_Mage::Special()
 	}
 }
 
-
 void AUnit_Child_Mage::PrepareSpecial(FIntPoint SpecialPos)
 {
 	if(Grid)
@@ -89,13 +104,3 @@ void AUnit_Child_Mage::PrepareSpecial(FIntPoint SpecialPos)
 			}
 		}
 }
-
-void AUnit_Child_Mage::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AUnit_Child_Mage, UnitToAttack);
-	DOREPLIFETIME(AUnit_Child_Mage, BaseToAttack);
-}
-
-
-

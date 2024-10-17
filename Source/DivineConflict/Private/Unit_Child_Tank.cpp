@@ -2,10 +2,35 @@
 
 
 #include "Unit_Child_Tank.h"
-
 #include "Grid.h"
 #include "GridPath.h"
 #include "UObject/ConstructorHelpers.h"
+
+	// ----------------------------
+	// Constructor
+
+AUnit_Child_Tank::AUnit_Child_Tank()
+{
+	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/ange_thank/tank.tank'")).Object);
+	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	
+
+	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjectHell(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Tank_Hell.T_Icon_Tank_Hell'"));
+	if (IconTexObjectHell.Object != NULL)
+	{
+		UnitIconHell = IconTexObjectHell.Object;
+	}
+
+
+	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Tank_Paradise.T_Icon_Tank_Paradise'"));
+	if (IconTexObject.Object != NULL)
+	{
+		UnitIconParadise = IconTexObject.Object;
+	}
+}
+
+	// ----------------------------
+	// Overrides
 
 void AUnit_Child_Tank::BeginPlay()
 {
@@ -23,27 +48,6 @@ void AUnit_Child_Tank::BeginPlay()
 		SetPM(3);
 
 	UnitName = EUnitName::Tank;
-}
-
-AUnit_Child_Tank::AUnit_Child_Tank()
-{
-
-	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/ange_thank/tank.tank'")).Object);
-	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
-	
-
-		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjectHell(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Tank_Hell.T_Icon_Tank_Hell'"));
-		if (IconTexObjectHell.Object != NULL)
-		{
-			UnitIconHell = IconTexObjectHell.Object;
-		}
-
-
-		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Tank_Paradise.T_Icon_Tank_Paradise'"));
-		if (IconTexObject.Object != NULL)
-		{
-			UnitIconParadise = IconTexObject.Object;
-		}
 }
 
 void AUnit_Child_Tank::Special()

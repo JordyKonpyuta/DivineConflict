@@ -3,9 +3,12 @@
 
 #include "WidgetDamage2.h"
 
-void UWidgetDamage2::ChangeTextDmg_Implementation(int Dmg)
+	// ----------------------------
+	// Overrides
+
+void UWidgetDamage2::NativeConstruct()
 {
-	return;
+	Super::NativeConstruct();
 }
 
 void UWidgetDamage2::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -15,7 +18,10 @@ void UWidgetDamage2::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	
 }
 
-void UWidgetDamage2::NativeConstruct()
+	// ----------------------------
+	// Damage
+
+void UWidgetDamage2::ChangeTextDmg_Implementation(int Dmg)
 {
-	Super::NativeConstruct();
+	return;
 }

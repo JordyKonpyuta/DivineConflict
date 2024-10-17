@@ -4,23 +4,8 @@
 #include "Unit_Child_Warrior.h"
 #include "UObject/ConstructorHelpers.h"
 
-void AUnit_Child_Warrior::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (Attack == 0)
-		SetAttack(12);
-	if (Defense == 0)
-		SetDefense(4);
-	if (MaxHealth == 0)
-		SetMaxHealth(11);
-	if (CurrentHealth == 0 or CurrentHealth > MaxHealth )
-		SetCurrentHealth(MaxHealth);
-	if (PM == 0)
-		SetPM(5);
-
-	UnitName = EUnitName::Warrior;
-}
+	// ----------------------------
+	// Constructor
 
 AUnit_Child_Warrior::AUnit_Child_Warrior()
 {
@@ -39,6 +24,27 @@ AUnit_Child_Warrior::AUnit_Child_Warrior()
 			UnitIconParadise = IconTexObj.Object;
 		}
 
+}
+
+	// ----------------------------
+	// Overrides
+
+void AUnit_Child_Warrior::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (Attack == 0)
+		SetAttack(12);
+	if (Defense == 0)
+		SetDefense(4);
+	if (MaxHealth == 0)
+		SetMaxHealth(11);
+	if (CurrentHealth == 0 or CurrentHealth > MaxHealth )
+		SetCurrentHealth(MaxHealth);
+	if (PM == 0)
+		SetPM(5);
+
+	UnitName = EUnitName::Warrior;
 }
 
 void AUnit_Child_Warrior::Special()

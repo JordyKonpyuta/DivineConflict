@@ -15,16 +15,28 @@ UCLASS()
 class DIVINECONFLICT_API AUnit_Child_Warrior : public AUnit
 {
 	GENERATED_BODY()
+
+	// UPROPERTIES
+public:
 	
 protected:
-	virtual void BeginPlay() override;
 
+	// UFUNCTIONS
 public:
+	// ----------------------------
+	// Constructor
+	
 	AUnit_Child_Warrior();
+	
+	// ----------------------------
+	// Overrides
 
 	virtual void Special() override;
 
-
-	//virtual void OnConstruction(const FTransform& Transform) override;
+protected:
+	// ----------------------------
+	// Overrides
+	
+	virtual void BeginPlay() override;
 	
 };

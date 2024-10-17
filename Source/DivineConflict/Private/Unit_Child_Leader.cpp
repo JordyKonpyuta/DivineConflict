@@ -2,28 +2,12 @@
 
 
 #include "Unit_Child_Leader.h"
-
 #include "Grid.h"
 #include "GridPath.h"
 #include "UObject/ConstructorHelpers.h"
 
-void AUnit_Child_Leader::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (Attack == 0)
-		SetAttack(7);
-	if (Defense == 0)
-		SetDefense(0);
-	if (MaxHealth == 0)
-		SetMaxHealth(20);
-	if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
-		SetCurrentHealth(MaxHealth);
-	if (PM == 0)
-		SetPM(3);
-
-	UnitName = EUnitName::Leader;
-}
+	// ----------------------------
+	// Constructor
 
 AUnit_Child_Leader::AUnit_Child_Leader()
 {
@@ -43,6 +27,27 @@ AUnit_Child_Leader::AUnit_Child_Leader()
 		}
 }
 
+	// ----------------------------
+	// Overrides
+
+void AUnit_Child_Leader::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (Attack == 0)
+		SetAttack(7);
+	if (Defense == 0)
+		SetDefense(0);
+	if (MaxHealth == 0)
+		SetMaxHealth(20);
+	if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
+		SetCurrentHealth(MaxHealth);
+	if (PM == 0)
+		SetPM(3);
+
+	UnitName = EUnitName::Leader;
+}
+
 void AUnit_Child_Leader::Special()
 {
 	Super::Special();
@@ -57,6 +62,17 @@ void AUnit_Child_Leader::Special()
 		}
 	}
 }
+
+void AUnit_Child_Leader::MoveUnitEndTurn()
+{
+	Super::MoveUnitEndTurn();
+
+	PushBuff();
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Post-Move Buff"));
+}
+
+	// ----------------------------
+	// Buff
 
 void AUnit_Child_Leader::PushBuff()
 {
@@ -99,12 +115,4 @@ void AUnit_Child_Leader::PushBuff()
 			}
 		}
 	}
-}
-
-void AUnit_Child_Leader::MoveUnitEndTurn()
-{
-	Super::MoveUnitEndTurn();
-
-	PushBuff();
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Post-Move Buff"));
 }

@@ -14,11 +14,26 @@ class DIVINECONFLICT_API AUnit_Child_Tank : public AUnit
 {
 	GENERATED_BODY()
 
-protected:
-	virtual void BeginPlay() override;
-
+	// UPROPERTIES
 public:
+	
+protected:
+
+	// UFUNCTIONS
+public:
+	// ----------------------------
+	// Constructor
+	
 	AUnit_Child_Tank();
+	
+	// ----------------------------
+	// Overrides
 
 	void Special() override;
+
+private:
+	// ----------------------------
+	// Overrides
+	
+	virtual void BeginPlay() override;
 };

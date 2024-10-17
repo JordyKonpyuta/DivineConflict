@@ -10,17 +10,28 @@ UCLASS()
 class DIVINECONFLICT_API AUpwall : public AActor
 {
 	GENERATED_BODY()
+
+	// UPROPERTIES
+public:
 	
-public:	
-	// Sets default values for this actor's properties
-	AUpwall();
-
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
+	// UFUNCTIONS
 public:	
-	// Called every frame
+
+	// ----------------------------
+	// Constructor
+	
+	AUpwall();
+	
+	// ----------------------------
+	// Overrides
+	
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+	// ----------------------------
+	// Overrides
+	
+	virtual void BeginPlay() override;
 };

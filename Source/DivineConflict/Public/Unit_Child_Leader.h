@@ -12,19 +12,36 @@ UCLASS()
 class DIVINECONFLICT_API AUnit_Child_Leader : public AUnit
 {
 	GENERATED_BODY()
-	
-protected:
-	virtual void BeginPlay() override;
 
+	// UPROPERTIES
 public:
-	AUnit_Child_Leader();
-
-	void Special() override;
 
 	UPROPERTY()
 	TArray<AUnit*> AllUnitsToBuff;
+	
+protected:
 
-	void PushBuff();
+	// UFUNCTIONS
+public:
+	// ----------------------------
+	// Constructor
+	
+	AUnit_Child_Leader();
+
+	// ----------------------------
+	// Overrides
+	
+	void Special() override;
 
 	void MoveUnitEndTurn() override;
+	
+	// ----------------------------
+	// Buff
+
+	void PushBuff();
+	
+protected:
+	// ----------------------------
+	// Overrides
+	virtual void BeginPlay() override;
 };
