@@ -19,10 +19,11 @@ UCLASS()
 class DIVINECONFLICT_API ACameraPlayer : public APawn
 {
 	GENERATED_BODY()
-	
+
+	// UPROPERTIES
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivate))
-	ACustomPlayerController* CustomPlayerController;
+	// ----------------------------
+	// Components
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivate))
 	USpringArmComponent* CameraBoom;
@@ -30,6 +31,18 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivate))
 	UCameraComponent* FollowCamera;
 
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
+	USceneComponent* CameraRoot;
+	
+	// ----------------------------
+	// References
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivate))
+	ACustomPlayerController* CustomPlayerController;
+
+	// ----------------------------
+	// Input Actions
+	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
 	UInputAction* AIZoom;
 
@@ -50,91 +63,34 @@ public:
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
 	UInputAction* AIEndTurn;
-
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	USceneComponent* CameraRoot;
+	
+	// ----------------------------
+	// Timers
 	
 	FTimerHandle RepeatMoveTimer;
+	
+	// ----------------------------
+	// Delegates
+	
 	FTimerDelegate RepeatMoveTimerDelegate;
 
-	UPROPERTY()
-	int UnitMovingCurrentMovNumber;
-	
-	// Sets default values for this pawn's properties
-	ACameraPlayer();
-	
+	// ----------------------------
+	// Actions
 
-	
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	void Interaction();
-
-	UPROPERTY()
-	FInputActionValue ValueInput = FInputActionValue();
-
-	UPROPERTY()
-	FVector OldMoveDirection;
-	
-	FRotator TargetRotationPitch=FRotator( -20, 0 ,0 );
-	FRotator TargetRotationYaw=FRotator( 0, 10 ,0 );
-
-public:
-
-	UPROPERTY()
-	FVector FullMoveDirection;
-	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	
-
-	void SetCustomPlayerController(ACustomPlayerController* Cpc);
-
-	UFUNCTION()
-	void RepeatMoveTimerCamera(const FInputActionValue& Value);
-
-	UFUNCTION()
-	void UpdatedMove(const FInputActionValue& Value);
-
-	UFUNCTION()
-	void StopRepeatMoveTimerCamera();
-
-	UFUNCTION()
-	void MoveCamera(/* const FInputActionValue& Value*/);
-
-	void RotateCamera(const FInputActionValue& Value);
-
-	void RotateCameraPitch(const FInputActionValue& Value);
-
-	void ZoomCamera( const FInputActionValue& Value);
-
-	void PathRemove(const FInputActionValue& Value);
-
-	UFUNCTION(BlueprintNativeEvent)
-	void RotateWidget(float ValueX, float ValueY);
-
-	
-
-	void PathClear();
-
-	//void FreeCam();
-
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Variable", meta = (AllowPrivate = "true"))
-	float ZoomCameraSpeed = 15.0f;
-
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Variable", meta = (AllowPrivate = "true"))
-	FRotator SnapRotation;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Variable", meta = (AllowPrivate = "true"))
-	TArray<FIntPoint> Path;
-
+	// MOVEMENT
 	UPROPERTY(VisibleAnywhere , BlueprintReadWrite, Category = "Variable", meta = (AllowPrivate = "true"))
 	bool IsMovingUnit = false;
 
+	UPROPERTY()
+	int UnitMovingCurrentMovNumber;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Variable", meta = (AllowPrivate = "true"))
+	TArray<FIntPoint> Path;
+	
+	UPROPERTY()
+	FVector FullMoveDirection;
+
+	// RESTRICTIONS
 	UPROPERTY(VisibleAnywhere , BlueprintReadWrite, Category = "Variable", meta = (AllowPrivate = "true"))
 	bool IsAttacking = false;
 
@@ -144,4 +100,104 @@ public:
 	UPROPERTY(VisibleAnywhere , BlueprintReadWrite, Category = "Variable", meta = (AllowPrivate = "true"))
 	bool IsSpawningUnit = false;
 
+	
+	// ----------------------------
+	// Camera Movement
+	
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Variable", meta = (AllowPrivate = "true"))
+	float ZoomCameraSpeed = 15.0f;
+
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Variable", meta = (AllowPrivate = "true"))
+	FRotator SnapRotation;
+	
+protected:
+
+	// ----------------------------
+	// Controls
+	
+	UPROPERTY()
+	FInputActionValue ValueInput = FInputActionValue();
+	
+	// ----------------------------
+	// Action - Movement
+
+	UPROPERTY()
+	FVector OldMoveDirection;
+	
+	// ----------------------------
+	// Camera's Rotation
+	
+	FRotator TargetRotationPitch=FRotator( -20, 0 ,0 );
+	FRotator TargetRotationYaw=FRotator( 0, 10 ,0 );
+
+	
+	// UFUNCTIONS
+public:
+	// ----------------------------
+	// Constructor
+
+	ACameraPlayer();
+
+	// ----------------------------
+	// Override
+	
+	virtual void Tick(float DeltaTime) override;
+
+	// ----------------------------
+	// Camera Movement
+
+	// TRUE MOVEMENT
+	UFUNCTION()
+	void UpdatedMove(const FInputActionValue& Value);
+	
+	UFUNCTION()
+	void MoveCamera(/* const FInputActionValue& Value*/);
+
+	void PathRemove(const FInputActionValue& Value);
+
+	void PathClear();
+
+	// TIMER
+	UFUNCTION()
+	void RepeatMoveTimerCamera(const FInputActionValue& Value);
+	UFUNCTION()
+	void StopRepeatMoveTimerCamera();
+	
+	// ----------------------------
+	// Camera Rotation
+
+	void RotateCamera(const FInputActionValue& Value);
+
+	void RotateCameraPitch(const FInputActionValue& Value);
+	
+	// ----------------------------
+	// Camera Zoom
+
+	void ZoomCamera( const FInputActionValue& Value);
+	
+	// ----------------------------
+	// Widget
+
+	UFUNCTION(BlueprintNativeEvent)
+	void RotateWidget(float ValueX, float ValueY);
+	
+	// ----------------------------
+	// Setter
+	
+	void SetCustomPlayerController(ACustomPlayerController* Cpc);
+
+	//void FreeCam();
+
+protected:
+	// ----------------------------
+	// Override
+	
+	virtual void BeginPlay() override;
+	
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+	// ----------------------------
+	// Interactions
+
+	void Interaction();
 };

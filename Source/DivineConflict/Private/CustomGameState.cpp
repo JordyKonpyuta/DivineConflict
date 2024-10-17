@@ -6,6 +6,53 @@
 #include "CustomPlayerState.h"
 #include "Net/UnrealNetwork.h"
 
+	// ----------------------------
+	// Overrides
+
+void ACustomGameState::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Timer to give player their turns
+	if (HasAuthority()){
+		GetWorld()->GetTimerManager().SetTimer(
+			BeginningTimerHandle, 
+			this,
+			&ACustomGameState::AssignTurnOrder,
+			LoadingTimer,
+			false);
+	}
+}
+
+	// ----------------------------
+	// REPLICATIONS !!
+
+void ACustomGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(ACustomGameState, Turn);
+	DOREPLIFETIME(ACustomGameState, PWinner);
+	DOREPLIFETIME(ACustomGameState, PLoser);
+}
+
+	// ----------------------------
+	// Turns
+
+void ACustomGameState::AssignTurnOrder()
+{
+	AssignPlayerTurns();
+
+	// Timer to switch Turns
+	GetWorld()->GetTimerManager().SetTimer(
+		TurnTimerHandle,
+		this,
+		&ACustomGameState::BeginTimer,
+		TurnTimerLength,
+		true
+		);
+}
+
 void ACustomGameState::AssignPlayerTurns()
 {
 
@@ -33,28 +80,10 @@ void ACustomGameState::AssignPlayerTurns()
 	// Problème : le Broadcast ne s'effectue que sur le serveur. 
 	OnTurnSwitchDelegate.Broadcast();
 }
-void ACustomGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	
-	DOREPLIFETIME(ACustomGameState, Turn);
-	DOREPLIFETIME(ACustomGameState, PWinner);
-	DOREPLIFETIME(ACustomGameState, PLoser);
-}
 
-void ACustomGameState::BeginPlay()
+void ACustomGameState::BeginTimer()
 {
-	Super::BeginPlay();
-
-	// Timer to give player their turns
-	if (HasAuthority()){
-		GetWorld()->GetTimerManager().SetTimer(
-			BeginningTimerHandle, 
-			this,
-			&ACustomGameState::AssignTurnOrder,
-			LoadingTimer,
-			false);
-	}
+	SwitchPlayerTurn();
 }
 
 void ACustomGameState::SwitchPlayerTurn()
@@ -72,6 +101,11 @@ void ACustomGameState::SwitchPlayerTurn()
 		}
 	}
 
+}
+
+void ACustomGameState::MulticastSwitchPlayerTurn_Implementation()
+{
+	OnTurnSwitchDelegate.Broadcast();
 }
 
 void ACustomGameState::CheckSwitchPlayerTurn()
@@ -105,29 +139,11 @@ void ACustomGameState::CheckSwitchPlayerTurn()
 	}
 }
 
+	// ----------------------------
+	// Widgets
 
-void ACustomGameState::BeginTimer()
+void ACustomGameState::DisplayWidget_Implementation()
 {
-	SwitchPlayerTurn();
-}
-
-void ACustomGameState::AssignTurnOrder()
-{
-	AssignPlayerTurns();
-
-	// Timer to switch Turns
-	GetWorld()->GetTimerManager().SetTimer(
-		TurnTimerHandle,
-		this,
-		&ACustomGameState::BeginTimer,
-		TurnTimerLength,
-		true
-		);
-}
-
-void ACustomGameState::ServerDisplayWidget_Implementation()
-{
-	MulticastDisplayWidget();
 }
 
 void ACustomGameState::MulticastDisplayWidget_Implementation()
@@ -135,9 +151,13 @@ void ACustomGameState::MulticastDisplayWidget_Implementation()
 	DisplayWidget();
 }
 
-void ACustomGameState::DisplayWidget_Implementation()
+void ACustomGameState::ServerDisplayWidget_Implementation()
 {
+	MulticastDisplayWidget();
 }
+
+	// ----------------------------
+	// End Game
 
 void ACustomGameState::ServerVictoryScreen_Implementation(EPlayer Loser)
 {
@@ -155,9 +175,4 @@ void ACustomGameState::MulticastVictoryScreen_Implementation(EPlayer Loser)
             else PWinner = CustomPlayerState;
         }
 	}
-}
-
-void ACustomGameState::MulticastSwitchPlayerTurn_Implementation()
-{
-	OnTurnSwitchDelegate.Broadcast();
 }

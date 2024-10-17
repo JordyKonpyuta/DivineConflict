@@ -3,7 +3,9 @@
 
 #include "ClimbActor.h"
 
-// Sets default values
+
+// ----------------------------
+// Constructor
 AClimbActor::AClimbActor()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -13,7 +15,9 @@ AClimbActor::AClimbActor()
 
 }
 
-// Called when the game starts or when spawned
+// ----------------------------
+// Overrides
+
 void AClimbActor::BeginPlay()
 {
 	Super::BeginPlay();
@@ -21,10 +25,8 @@ void AClimbActor::BeginPlay()
 	
 }
 
-// Called every frame
 void AClimbActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
-

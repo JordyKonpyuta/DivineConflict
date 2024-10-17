@@ -12,7 +12,9 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/SpringArmComponent.h"
 
-// Sets default values
+	// ----------------------------
+	// Constructor
+
 ACameraPlayer::ACameraPlayer()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -32,7 +34,9 @@ ACameraPlayer::ACameraPlayer()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 }
 
-// Called when the game starts or when spawned
+	// ----------------------------
+	// Overrides
+
 void ACameraPlayer::BeginPlay()
 {
 	Super::BeginPlay();
@@ -43,7 +47,6 @@ void ACameraPlayer::BeginPlay()
 	OldMoveDirection = GetActorLocation();
 }
 
-// Called every frame
 void ACameraPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -81,38 +84,20 @@ void ACameraPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	}
 }
 
+	// ----------------------------
+	// Interactions
+
 void ACameraPlayer::Interaction()
 {
 	CustomPlayerController->ControllerInteraction();
 }
 
-
-void ACameraPlayer::SetCustomPlayerController(ACustomPlayerController* Cpc)
-{
-		CustomPlayerController = Cpc;
-}
-
-void ACameraPlayer::RepeatMoveTimerCamera(const FInputActionValue& Value)
-{
-	ValueInput = Value;
-	MoveCamera();
-	RepeatMoveTimerDelegate.BindUFunction(this, "MoveCamera", Value); 
-	GetWorld()->GetTimerManager().SetTimer(
-		RepeatMoveTimer,
-		RepeatMoveTimerDelegate,
-		0.15, 
-		true,
-		0.15); 
-}
+	// ----------------------------
+	// Camera Movement - TRUE MOVEMENT
 
 void ACameraPlayer::UpdatedMove(const FInputActionValue& Value)
 {
 	ValueInput = Value;
-}
-
-void ACameraPlayer::StopRepeatMoveTimerCamera()
-{
-	GetWorld()->GetTimerManager().ClearTimer(RepeatMoveTimer);
 }
 
 void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
@@ -214,32 +199,6 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 	}
 }
 
-void ACameraPlayer::RotateCamera(const FInputActionValue& Value)
-{
-	FVector2d Input = Value.Get<FVector2d>();
-
-	TargetRotationYaw = FRotator(0,TargetRotationYaw.Yaw + UKismetMathLibrary::SignOfFloat(Input.X)*-90, 0);
-	RotateWidget(UKismetMathLibrary::SignOfFloat(Input.X), GetActorLocation().Y);
-}
-
-void ACameraPlayer::RotateCameraPitch(const FInputActionValue& Value)
-{
-	FVector2d Input = Value.Get<FVector2d>();
-	
-	TargetRotationPitch = FRotator(UKismetMathLibrary::Clamp(TargetRotationPitch.Pitch + Input.Y, -75.0f, -20.0f),0, 0);
-	RotateWidget(0, UKismetMathLibrary::SignOfFloat(Input.Y));
-}
-
-void ACameraPlayer::ZoomCamera( const FInputActionValue& Value)
-{
-	const float Input = Value.Get<float>();
-
-		if (Controller != nullptr)
-		{
-			CameraBoom->TargetArmLength = FMath::Clamp((CameraBoom->TargetArmLength + Input * ZoomCameraSpeed), 750.0f, 2050.0f);
-		}
-}
-
 void ACameraPlayer::PathRemove(const FInputActionValue& Value)
 {
 	if (Path.Num() == 0)
@@ -279,11 +238,75 @@ void ACameraPlayer::PathRemove(const FInputActionValue& Value)
 	SetActorLocation(FVector( Path.Last().X * 100,Path.Last().Y*100, GetActorLocation().Z));
 }
 
+void ACameraPlayer::PathClear()
+{
+	Path.Empty();
+}
+
+	// ----------------------------
+	// Camera Movement - TIMER
+
+void ACameraPlayer::RepeatMoveTimerCamera(const FInputActionValue& Value)
+{
+	ValueInput = Value;
+	MoveCamera();
+	RepeatMoveTimerDelegate.BindUFunction(this, "MoveCamera", Value); 
+	GetWorld()->GetTimerManager().SetTimer(
+		RepeatMoveTimer,
+		RepeatMoveTimerDelegate,
+		0.15, 
+		true,
+		0.15); 
+}
+
+void ACameraPlayer::StopRepeatMoveTimerCamera()
+{
+	GetWorld()->GetTimerManager().ClearTimer(RepeatMoveTimer);
+}
+
+	// ----------------------------
+	// Camera Rotation
+
+void ACameraPlayer::RotateCamera(const FInputActionValue& Value)
+{
+	FVector2d Input = Value.Get<FVector2d>();
+
+	TargetRotationYaw = FRotator(0,TargetRotationYaw.Yaw + UKismetMathLibrary::SignOfFloat(Input.X)*-90, 0);
+	RotateWidget(UKismetMathLibrary::SignOfFloat(Input.X), GetActorLocation().Y);
+}
+
+void ACameraPlayer::RotateCameraPitch(const FInputActionValue& Value)
+{
+	FVector2d Input = Value.Get<FVector2d>();
+	
+	TargetRotationPitch = FRotator(UKismetMathLibrary::Clamp(TargetRotationPitch.Pitch + Input.Y, -75.0f, -20.0f),0, 0);
+	RotateWidget(0, UKismetMathLibrary::SignOfFloat(Input.Y));
+}
+
+	// ----------------------------
+	// Camera Zoom
+
+void ACameraPlayer::ZoomCamera( const FInputActionValue& Value)
+{
+	const float Input = Value.Get<float>();
+
+		if (Controller != nullptr)
+		{
+			CameraBoom->TargetArmLength = FMath::Clamp((CameraBoom->TargetArmLength + Input * ZoomCameraSpeed), 750.0f, 2050.0f);
+		}
+}
+
+	// ----------------------------
+	// Widget
+
 void ACameraPlayer::RotateWidget_Implementation(float ValueX, float ValueY)
 {
 }
 
-void ACameraPlayer::PathClear()
+	// ----------------------------
+	// Setter
+
+void ACameraPlayer::SetCustomPlayerController(ACustomPlayerController* Cpc)
 {
-	Path.Empty();
+		CustomPlayerController = Cpc;
 }

@@ -10,21 +10,33 @@ UCLASS()
 class DIVINECONFLICT_API AClimbActor : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	AClimbActor();
 
+	// UPROPERTIES
+public:	
+	// ----------------------------
+	// Constructor
+	AClimbActor();
+	
+	// ----------------------------
+	// Components
+	
 	UPROPERTY(Blueprintable, BlueprintReadWrite, Category = "Appearance")
 	UStaticMeshComponent* StaticMeshClimbable;
 	
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
+	// UFUNCTIONS
 public:	
-	// Called every frame
+	// ----------------------------
+	// Override
+	
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+	// ----------------------------
+	// Override
+
+	virtual void BeginPlay() override;
+	
 };
