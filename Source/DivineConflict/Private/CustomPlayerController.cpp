@@ -182,6 +182,7 @@ void ACustomPlayerController::SelectModeAttackBuilding()
 	{
 		Grid->GridVisual->addStateToTile(Index, EDC_TileState::Attacked);
 	}
+	CameraPlayerRef->IsTowering = true;
 }
 
 
@@ -283,6 +284,7 @@ void ACustomPlayerController::ControllerInteraction()
 					AllPlayerActions.Add(FStructActions(TowerRef, EDC_ActionPlayer::AttackBuilding, Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile));
 					PlayerAction = EDC_ActionPlayer::None;
 				}
+				CameraPlayerRef->IsTowering = false;
 			}
 			break;
 		case EDC_ActionPlayer::AttackUnit:
@@ -616,6 +618,10 @@ void ACustomPlayerController::ActionEndTurn()
 					AllPlayerActions[0].UnitAttacking->HasActed = false;
 					AllPlayerActions[0].UnitAttacking->HasMoved = false;
 				}
+				if (TowerAction)
+				{
+					TowerAction->SetCanAttack(true);
+				}
 				switch (AllPlayerActions[0].UnitAction)
 				{
 				case EDC_ActionPlayer::MoveUnit:
@@ -766,6 +772,16 @@ void ACustomPlayerController::AssignPlayerPosition()
 	}
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACustomPlayerController::AssignPlayerPosition, 0.2f, false);
+}
+
+void ACustomPlayerController::SetPathReachable(TArray<FIntPoint> NewPath)
+{
+	PathReachable = NewPath;
+}
+
+void ACustomPlayerController::AddToPathReachable(FIntPoint NewPoint)
+{
+	PathReachable.AddUnique(NewPoint);
 }
 
 void ACustomPlayerController::UpdateUi_Implementation()

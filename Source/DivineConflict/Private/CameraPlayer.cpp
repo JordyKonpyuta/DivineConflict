@@ -191,7 +191,7 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 				CustomPlayerController->Grid->GridVisual->addStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection), EDC_TileState::Hovered);
 			}
 		}
-		else if (IsAttacking)
+		else if (IsAttacking || IsTowering)
 		{
 			TArray<FIntPoint> AllReachable = CustomPlayerController->GetPathReachable();
 			if (AllReachable.Contains(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection)))
@@ -245,14 +245,15 @@ void ACameraPlayer::PathRemove(const FInputActionValue& Value)
 	if (Path.Num() == 0)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Path Remove: Empty"));
-		if (IsAttacking) {
-			IsAttacking = false;
-			for(FIntPoint Point : CustomPlayerController->GetPathReachable())
-			{
-				CustomPlayerController->SetPlayerAction(EDC_ActionPlayer::None);
-				CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(Point, EDC_TileState::Attacked);
-			}
+		
+		IsAttacking = false;
+		IsTowering = false;
+		for(FIntPoint Point : CustomPlayerController->GetPathReachable())
+		{
+			CustomPlayerController->SetPlayerAction(EDC_ActionPlayer::None);
+			CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(Point, EDC_TileState::Attacked);
 		}
+		
 		return;
 	}
 	CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(Path.Last(), EDC_TileState::Pathfinding);

@@ -139,6 +139,9 @@ public:
 	bool IsAttacking = false;
 
 	UPROPERTY(VisibleAnywhere , BlueprintReadWrite, Category = "Variable", meta = (AllowPrivate = "true"))
+	bool IsTowering = false;
+
+	UPROPERTY(VisibleAnywhere , BlueprintReadWrite, Category = "Variable", meta = (AllowPrivate = "true"))
 	bool IsSpawningUnit = false;
 
 };

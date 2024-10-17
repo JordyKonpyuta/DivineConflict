@@ -277,4 +277,10 @@ public:
 	
 	UFUNCTION()
 	void AssignPlayerPosition();
+
+	UFUNCTION()
+	void SetPathReachable(TArray<FIntPoint> NewPath);
+
+	UFUNCTION()
+	void AddToPathReachable(FIntPoint NewPoint);
 };
