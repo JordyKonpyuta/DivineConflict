@@ -34,76 +34,137 @@ class DIVINECONFLICT_API UGridPath : public UActorComponent
 {
 	GENERATED_BODY()
 
+		// UPROPERTIES
 public:	
-	// Sets default values for this component's properties
-	UGridPath();
 
+	// ----------------------------
+	// References
+	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
 	AGrid* Grid = nullptr;
 
-	
-
-
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
 
+	// ----------------------------
+	// Pre-Movement
+	
 	UPROPERTY( VisibleAnywhere, Category = "Grid", meta = (AllowPrivate = "true"))
 	FIntPoint StartPoint = FIntPoint(-999	,-999);
+	
 	UPROPERTY( VisibleAnywhere,  Category = "Grid", meta = (AllowPrivate = "true"))
 	FIntPoint EndPoint = FIntPoint(-999, -999);
-	UPROPERTY( VisibleAnywhere, Category = "Grid", meta = (AllowPrivate = "true"))
-	TArray<FIntPoint> Path;
-	UPROPERTY( VisibleAnywhere,  Category = "Grid", meta = (AllowPrivate = "true"))
-	TArray<FIntPoint> DiscoverTileIndex;
-	UPROPERTY(	VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	TArray<int> DiscoverTileSortingCost;
-	UPROPERTY(	VisibleAnywhere,  Category = "Grid", meta = (AllowPrivate = "true"))
-	TArray<FIntPoint> AnalyseTileIndex;
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	TArray<FPathData> CurrentsNeighbors;
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	FPathData CurrentDiscoverTile;
-	UPROPERTY( VisibleAnywhere,  Category = "Grid", meta = (AllowPrivate = "true"))
-	TMap<FIntPoint, FPathData> PathData;
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	FPathData CurrentNeighbors;
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	bool bIsReachable = false;
+	
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
 	int MaxLenght = 0;
+	
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	bool bIsFight = false;
+	bool bIsReachable = false;
+	
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
 	bool bIsEscalation = false;
 	
+	// ----------------------------
+	// Movement
 	
+	UPROPERTY( VisibleAnywhere, Category = "Grid", meta = (AllowPrivate = "true"))
+	TArray<FIntPoint> Path;
 	
-	bool IsInputDataValid(FIntPoint Start, FIntPoint End);
-	void DiscoverTile(FPathData TilePath);
-	int MinimulCostBetweenTwoTile(FIntPoint Index1, FIntPoint Index2);
-	bool AnalyseNextDiscoverTile();
-	TArray<FIntPoint> GeneratePath();
-	FPathData PullCheapestTileOutOfDiscoverList();
-	bool DiscoverNextNeighbors();
-	TArray<FPathData> GetValidTileNeighbors(FIntPoint Index);
-	void InserTileDiscoverList(FPathData TilePath);
-	void ClearGeneratedPath();
+	UPROPERTY( VisibleAnywhere,  Category = "Grid", meta = (AllowPrivate = "true"))
+	TMap<FIntPoint, FPathData> PathData;
 	
+	// ----------------------------
+	// Tiles Check
 	
-
+	UPROPERTY( VisibleAnywhere,  Category = "Grid", meta = (AllowPrivate = "true"))
+	TArray<FIntPoint> DiscoverTileIndex;
+	
+	UPROPERTY(	VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
+	TArray<int> DiscoverTileSortingCost;
+	
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
+	FPathData CurrentDiscoverTile;
+	
+	UPROPERTY(	VisibleAnywhere,  Category = "Grid", meta = (AllowPrivate = "true"))
+	TArray<FIntPoint> AnalyseTileIndex;
+	
+	// ----------------------------
+	// Neighbours
+	
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
+	TArray<FPathData> CurrentsNeighbors;
+	
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
+	FPathData CurrentNeighbors;
+	
+	// UFUNCTIONS
 public:	
-	// Called every frame
+	// ----------------------------
+	// Constructor
+	
+	UGridPath();
+	
+	// ----------------------------
+	// Overrides
+	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+		
+	// ----------------------------
+	// Height Check
+	
 	bool IsValidHeigh(FDC_TileData* IndextestData, FDC_TileData* CurrentIndexData);
+
+	// ----------------------------
+	// Neighbours
+
+	TArray<FIntPoint> FindTileNeighbors(FIntPoint Index);
+	
+	// ----------------------------
+	// Movement
 	
 	UFUNCTION()
 	TArray<FIntPoint> FindPath(FIntPoint Start, FIntPoint End , bool IsReachable, int PathLenght, bool IsEscalation);
 
 	TArray<FIntPoint> NewFindPath(FIntPoint Start, ACustomPlayerController* CustomPlayerController);
-
-	void SetGrid(AGrid* GridRef);
 	
-	TArray<FIntPoint> FindTileNeighbors(FIntPoint Index);
+	// ----------------------------
+	// SETTER
+	void SetGrid(AGrid* GridRef);
+
+protected:
+	// ----------------------------
+	// Override
+	virtual void BeginPlay() override;
+	
+	// ----------------------------
+	// Path
+	
+	TArray<FIntPoint> GeneratePath();
+	
+	void ClearGeneratedPath();
+	
+	// ----------------------------
+	// Tile Discovery (set-up)
+	
+	void DiscoverTile(FPathData TilePath);
+	
+	int MinimulCostBetweenTwoTile(FIntPoint Index1, FIntPoint Index2);
+	
+	void InserTileDiscoverList(FPathData TilePath);
+	
+	bool IsInputDataValid(FIntPoint Start, FIntPoint End);
+
+	// ----------------------------
+	// Tile Discovery (Process)
+	
+	FPathData PullCheapestTileOutOfDiscoverList();
+	
+	bool AnalyseNextDiscoverTile();
+	
+	// ----------------------------
+	// Neighbours
+	
+	bool DiscoverNextNeighbors();
+	
+	TArray<FPathData> GetValidTileNeighbors(FIntPoint Index);
 };
 

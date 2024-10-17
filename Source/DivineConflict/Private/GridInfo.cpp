@@ -9,7 +9,9 @@
 #include "Tower.h"
 #include "Unit.h"
 
-// Sets default values for this component's properties
+	// ----------------------------
+	// Constructor
+
 UGridInfo::UGridInfo()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
@@ -17,6 +19,27 @@ UGridInfo::UGridInfo()
 	PrimaryComponentTick.bCanEverTick = true;
 	// ...
 }
+
+	// ----------------------------
+	// Overrides
+
+void UGridInfo::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// ...
+	
+}
+
+void UGridInfo::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// ...
+}
+
+	// ----------------------------
+	// Unit on Grid
 
 void UGridInfo::AddUnitInGrid(FIntPoint GridPosition, AUnit* Unit)
 {
@@ -30,7 +53,6 @@ void UGridInfo::Multi_setUnitIndexOnGrid_Implementation(const FIntPoint GridPosi
 {
 	if(Grid == nullptr)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Grid is null"));
 		return;
 	}
 
@@ -78,6 +100,9 @@ void UGridInfo::RemoveUnitInGrid(AUnit* Unit)
 	Server_setUnitIndexOnGrid(FIntPoint(-999,-999), Unit);
 }
 
+	// ----------------------------
+	// Building on Grid
+
 void UGridInfo::addBuildingOnGrid(FIntPoint GridPosition, ABuilding* Building)
 {
 	BuildingGrid.Add(Building);
@@ -109,9 +134,11 @@ void UGridInfo::SetBuildingOnGrid(FIntPoint GridPosition, ABuilding* Building)
 	
 }
 
+	// ----------------------------
+	// Base on Grid
+
 void UGridInfo::addBaseOnGrid(FIntPoint GridPosition, ABase* Base)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 50.f, FColor::Silver, TEXT("addBaseOnGrid"));
 	BasesGrid.Add(Base);
 	Multi_SetBaseOnGrid(GridPosition, Base);
 }
@@ -120,7 +147,6 @@ void UGridInfo::SetBaseOnGrid(FIntPoint GridPosition, ABase* Base)
 {
 	if(Grid == nullptr)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Grid is null"));
 		return;
 	}
 	TMap<FIntPoint,FDC_TileData>* GridDataRef = Grid->GetGridData();
@@ -141,15 +167,13 @@ void UGridInfo::SetBaseOnGrid(FIntPoint GridPosition, ABase* Base)
 }
  
 void UGridInfo::Multi_SetBaseOnGrid_Implementation(const FIntPoint GridPosition, const ABase* BaseRef)
-{GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Multi_SetBaseOnGrid"));
+{
 	if(Grid == nullptr)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Grid is null"));
 		return;
 	}
 	TMap<FIntPoint,FDC_TileData>* GridDataRef = Grid->GetGridData();
 	ABase* Base = const_cast<ABase*>(BaseRef);
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Base->GetGridPosition() : " + Base->GetGridPosition().ToString()));
 	//if(GridPosition != Base->GetGridPosition())
 	{
 		FDC_TileData* PreviousIndex = Grid->GetGridData()->Find(Base->GetGridPosition());
@@ -167,18 +191,18 @@ void UGridInfo::Multi_SetBaseOnGrid_Implementation(const FIntPoint GridPosition,
 		if(Base->GetGridPosition() != FIntPoint(-999,-999))
 		{
 			
-			GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Orange, TEXT("Base->GetGridPosition() : " + Base->GetGridPosition().ToString()));
-			GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Orange, TEXT("GridPosition : " + GridPosition.ToString()));
 			FDC_TileData* NewIndex = Grid->GetGridData()->Find(GridPosition);
 			if(NewIndex != nullptr)
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Orange, TEXT("NewIndex is not null"));
 				GridDataRef->Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, NewIndex->BuildingOnTile, Base, NewIndex->TowerOnTile));
 				Grid->GridData.Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, NewIndex->BuildingOnTile, Base, NewIndex->TowerOnTile));
 			}
 		}
 	}
 }
+
+	// ----------------------------
+	// Tower on Grid
 
 void UGridInfo::addTowerOnGrid(FIntPoint GridPosition, ATower* Tower)
 {
@@ -209,27 +233,10 @@ void UGridInfo::SetTowerOnGrid(FIntPoint GridPosition, ATower* Tower)
 	}	
 }
 
-
-// Called when the game starts
-void UGridInfo::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// ...
-	
-}
-
-
-// Called every frame
-void UGridInfo::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
+	// ----------------------------
+	// SETTERS
 
 void UGridInfo::SetGrid(AGrid* GridRef)
 {
 	Grid = GridRef;
 }
-

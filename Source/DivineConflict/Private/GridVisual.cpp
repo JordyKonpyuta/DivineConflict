@@ -4,7 +4,10 @@
 #include "GridVisual.h"
 #include "Grid.h"
 
-// Sets default values for this component's properties
+
+	// ----------------------------
+	// Constructor
+
 UGridVisual::UGridVisual()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
@@ -14,8 +17,9 @@ UGridVisual::UGridVisual()
 	// ...
 }
 
+	// ----------------------------
+	// Overrides
 
-// Called when the game starts
 void UGridVisual::BeginPlay()
 {
 	Super::BeginPlay();
@@ -23,6 +27,16 @@ void UGridVisual::BeginPlay()
 	// ...
 	
 }
+
+void UGridVisual::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// ...
+}
+
+	// ----------------------------
+	// Get Colors
 
 FLinearColor UGridVisual::GetColorFromState(TArray<EDC_TileState> TileState)
 {
@@ -60,6 +74,9 @@ FLinearColor UGridVisual::GetColorFromState(TArray<EDC_TileState> TileState)
 	return FLinearColor(0,0,0,0);
 }
 
+	// ----------------------------
+	// Set Colors
+
 void UGridVisual::UpdateVisuals(FIntPoint Index)
 {
 	
@@ -71,10 +88,8 @@ void UGridVisual::UpdateVisuals(FIntPoint Index)
 	
 }
 
-void UGridVisual::SetGrid(AGrid* GridRef)
-{
-	Grid = GridRef;
-}
+	// ----------------------------
+	// State Modifier
 
 void UGridVisual::addStateToTile(FIntPoint Index, EDC_TileState TileState)
 {
@@ -106,12 +121,10 @@ void UGridVisual::RemoveStateFromTile(FIntPoint Index, EDC_TileState TileState)
 	
 }
 
+	// ----------------------------
+	// SETTER
 
-// Called every frame
-void UGridVisual::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UGridVisual::SetGrid(AGrid* GridRef)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
+	Grid = GridRef;
 }
-

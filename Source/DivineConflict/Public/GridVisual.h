@@ -15,37 +15,59 @@ class DIVINECONFLICT_API UGridVisual : public UActorComponent
 {
 	GENERATED_BODY()
 
+	// UPROPERTIES
 public:	
-	// Sets default values for this component's properties
-	UGridVisual();
 
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
+	// ----------------------------
+	// References
+	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	AGrid* Grid;
+	AGrid* Grid;	
 
-	UFUNCTION()
-	FLinearColor GetColorFromState(TArray<EDC_TileState> TileState);
-
-	UFUNCTION(BlueprintCallable	)
-	void UpdateVisuals(FIntPoint Index);	
-
+	// UFUNCTIONS
 public:	
-	// Called every frame
+	// ----------------------------
+	// Constructor
+	
+	UGridVisual();
+	
+	// ----------------------------
+	// Overrides
+	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	void SetGrid(AGrid* GridRef);
-
+	
+	// ----------------------------
+	// State Modifier
+	
 	UFUNCTION(BlueprintCallable, Blueprintable)
 	void addStateToTile(FIntPoint Index, EDC_TileState TileState);
 	
 	UFUNCTION(BlueprintCallable)
 	void RemoveStateFromTile(FIntPoint Index, EDC_TileState TileState);
+	
+	// ----------------------------
+	// SETTER
+	
+	void SetGrid(AGrid* GridRef);
 
 	
+protected:
+	// ----------------------------
+	// Overrides
 	
+	virtual void BeginPlay() override;
+
+	// ----------------------------
+	// Get Colors
 	
+	UFUNCTION()
+	FLinearColor GetColorFromState(TArray<EDC_TileState> TileState);
+	
+	// ----------------------------
+	// Update Colors
+
+	UFUNCTION(BlueprintCallable	)
+	void UpdateVisuals(FIntPoint Index);
 		
 };

@@ -13,7 +13,9 @@
 #include "Kismet/KismetMathLibrary.h"
 
 
-// Sets default values
+	// ----------------------------
+	// Constructor
+
 AGrid::AGrid()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -66,9 +68,9 @@ AGrid::AGrid()
 	
 }
 
+	// ----------------------------
+	// Overrides
 
-
-// Called when the game starts or when spawned
 void AGrid::BeginPlay()
 {
 	Super::BeginPlay();
@@ -76,23 +78,16 @@ void AGrid::BeginPlay()
 
 }
 
-FHitResult AGrid::TraceHitGround(FVector Location)
+void AGrid::Tick(float DeltaTime)
 {
-	FHitResult HitOut;
-	UKismetSystemLibrary::SphereTraceSingle(GetWorld(), Location + FVector(0, 0, 1000), Location + FVector(0, 0, -1000), 10,
-		ETraceTypeQuery::TraceTypeQuery1, false, TArray<AActor*>(), EDrawDebugTrace::ForDuration, HitOut, true);
-	if (HitOut.bBlockingHit)
-	{
-		if(HitOut.GetActor() != nullptr)
-			UE_LOG(LogTemp, Warning, TEXT("Hit : %s"), *HitOut.GetActor()->GetName());
-		HitOut.bBlockingHit ? DrawDebugPoint(GetWorld(), HitOut.ImpactPoint, 10, FColor::Green, false,
-		1, 0) : DrawDebugPoint(GetWorld(), Location + FVector(0, 0, -1000), 10, FColor::Red, false, 1, 0);
-		return HitOut;
-	}
-		return FHitResult();
+	Super::Tick(DeltaTime);
+
+	
+	
 }
 
-
+	// ----------------------------
+	// Spawn Grid
 
 void AGrid::SpawnGrid()
 {
@@ -144,16 +139,20 @@ void AGrid::SpawnGrid()
 	
 }
 
-
-void AGrid::TestPathfinding()
+FHitResult AGrid::TraceHitGround(FVector Location)
 {
-	TArray<FIntPoint> Path = GridPath->FindPath(FIntPoint	(0, 0), FIntPoint(9, 9), false,2 ,false);
-
-	for(FIntPoint Index : Path)
+	FHitResult HitOut;
+	UKismetSystemLibrary::SphereTraceSingle(GetWorld(), Location + FVector(0, 0, 1000), Location + FVector(0, 0, -1000), 10,
+		ETraceTypeQuery::TraceTypeQuery1, false, TArray<AActor*>(), EDrawDebugTrace::ForDuration, HitOut, true);
+	if (HitOut.bBlockingHit)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Path : %d %d"), Index.X, Index.Y);
-		GridVisual->addStateToTile(Index,EDC_TileState::Reachable);
+		if(HitOut.GetActor() != nullptr)
+			UE_LOG(LogTemp, Warning, TEXT("Hit : %s"), *HitOut.GetActor()->GetName());
+		HitOut.bBlockingHit ? DrawDebugPoint(GetWorld(), HitOut.ImpactPoint, 10, FColor::Green, false,
+		1, 0) : DrawDebugPoint(GetWorld(), Location + FVector(0, 0, -1000), 10, FColor::Red, false, 1, 0);
+		return HitOut;
 	}
+		return FHitResult();
 }
 
 FVector AGrid::SnapVectorToVector(FVector InVector, const FVector InSnapTo)
@@ -161,14 +160,8 @@ FVector AGrid::SnapVectorToVector(FVector InVector, const FVector InSnapTo)
 	return FVector(UKismetMathLibrary::GridSnap_Float(InVector.X, InSnapTo.X), UKismetMathLibrary::GridSnap_Float(InVector.Y, InSnapTo.Y), UKismetMathLibrary::GridSnap_Float(InVector.Z, InSnapTo.Z));
 }
 
-// Called every frame
-void AGrid::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	
-	
-}
+	// ----------------------------
+	// Check Grid Elements
 
 bool AGrid::IsTileWalkable(FIntPoint Index)
 {
@@ -184,9 +177,67 @@ bool AGrid::IsTileTypeWalkable(EDC_TileType Type)
 	
 }
 
-TMap<FIntPoint, FDC_TileData>* AGrid::GetGridData()
+	// ----------------------------
+	// Converts
+
+FIntPoint AGrid::ConvertLocationToIndex(FVector3d Location)
 {
-	return &GridData;
+
+	FVector3d TempLoc = (SnapVectorToVector(Location, TileSize))/TileSize;
+	return FIntPoint(TempLoc.X, TempLoc.Y);
+}
+
+FVector3d AGrid::ConvertIndexToLocation(FIntPoint Index)
+{
+	UE_LOG( LogTemp, Warning, TEXT("Index : %d %d"), Index.X, Index.Y);
+	return GridData.Find(Index)->TileTransform.GetLocation();
+}
+
+
+	// ----------------------------
+	// Instance Editors
+
+int AGrid::AddInstance(FIntPoint Index, FTransform3d Transform)
+{
+	GridMesh->AddInstance(Transform,true);
+
+	return InstanceArray.Add(Index);
+	
+}
+
+void AGrid::RemoveInstance(FIntPoint Index)
+{
+
+	if (InstanceArray.Contains(Index))
+	{
+		GridMesh->RemoveInstance(InstanceArray.Find(Index));
+		InstanceArray.Remove(Index);
+	}
+}
+
+	// ----------------------------
+	// Color
+
+void AGrid::UpdateColor(int I, FLinearColor InColor, float	Alpha)
+{
+	GridMesh->SetCustomDataValue(I, 0, InColor.R);
+	GridMesh->SetCustomDataValue(I, 1, InColor.G);
+	GridMesh->SetCustomDataValue(I, 2, InColor.B);
+	GridMesh->SetCustomDataValue(I, 3, Alpha);
+}
+
+	// ----------------------------
+	// Tests
+
+void AGrid::TestPathfinding()
+{
+	TArray<FIntPoint> Path = GridPath->FindPath(FIntPoint	(0, 0), FIntPoint(9, 9), false,2 ,false);
+
+	for(FIntPoint Index : Path)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Path : %d %d"), Index.X, Index.Y);
+		GridVisual->addStateToTile(Index,EDC_TileState::Reachable);
+	}
 }
 
 void AGrid::TestReachedPath()
@@ -207,46 +258,18 @@ void AGrid::TestReachwithCliming()
 	}
 }
 
+	// ----------------------------
+	// GETTERS
+
+TMap<FIntPoint, FDC_TileData>* AGrid::GetGridData()
+{
+	return &GridData;
+}
+
+	// ----------------------------
+	// SETTERS
+
 void AGrid::SetGridData(TMap<FIntPoint, FDC_TileData> Data)
 {
 	GridData = Data;
-}
-
-FIntPoint AGrid::ConvertLocationToIndex(FVector3d Location)
-{
-
-	FVector3d TempLoc = (SnapVectorToVector(Location, TileSize))/TileSize;
-	return FIntPoint(TempLoc.X, TempLoc.Y);
-}
-
-FVector3d AGrid::ConvertIndexToLocation(FIntPoint Index)
-{
-	UE_LOG( LogTemp, Warning, TEXT("Index : %d %d"), Index.X, Index.Y);
-	return GridData.Find(Index)->TileTransform.GetLocation();
-}
-
-void AGrid::RemoveInstance(FIntPoint Index)
-{
-
-	if (InstanceArray.Contains(Index))
-	{
-		GridMesh->RemoveInstance(InstanceArray.Find(Index));
-		InstanceArray.Remove(Index);
-	}
-}
-
-int AGrid::AddInstance(FIntPoint Index, FTransform3d Transform)
-{
-	GridMesh->AddInstance(Transform,true);
-
-	return InstanceArray.Add(Index);
-	
-}
-
-void AGrid::UpdateColor(int I, FLinearColor InColor, float	Alpha)
-{
-	GridMesh->SetCustomDataValue(I, 0, InColor.R);
-	GridMesh->SetCustomDataValue(I, 1, InColor.G);
-	GridMesh->SetCustomDataValue(I, 2, InColor.B);
-	GridMesh->SetCustomDataValue(I, 3, Alpha);
 }

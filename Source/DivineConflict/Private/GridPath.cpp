@@ -2,13 +2,12 @@
 
 
 #include "GridPath.h"
-
 #include "Building.h"
 #include "Grid.h"
 #include "Unit.h"
 
-
-// Sets default values for this component's properties
+	// ----------------------------
+	// Constructor
 UGridPath::UGridPath()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
@@ -18,8 +17,9 @@ UGridPath::UGridPath()
 	
 }
 
+	// ----------------------------
+	// Overrides
 
-// Called when the game starts
 void UGridPath::BeginPlay()
 {
 	Super::BeginPlay();
@@ -28,17 +28,55 @@ void UGridPath::BeginPlay()
 	
 }
 
-
-TArray<FIntPoint> UGridPath::FindTileNeighbors(FIntPoint Index)
+void UGridPath::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	TArray<FIntPoint> Neighbors;
-	if(Index.X < Grid->GridSize.X-1) Neighbors.Add(FIntPoint(Index.X + 1, Index.Y));
-	if (Index.X > 0){Neighbors.Add(FIntPoint(Index.X - 1, Index.Y));}
-	if(Index.Y < Grid->GridSize.Y-1) Neighbors.Add(FIntPoint(Index.X, Index.Y + 1));
-	if (Index.Y > 0){Neighbors.Add(FIntPoint(Index.X, Index.Y - 1));}
-	
-	
-	return Neighbors;
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// ...
+}
+
+	// ----------------------------
+	// Tile Discovery (Set-Up)
+
+void UGridPath::DiscoverTile(FPathData TilePath)
+{
+	PathData.Add(TilePath.Index, TilePath);
+	InserTileDiscoverList(TilePath);
+}
+
+int UGridPath::MinimulCostBetweenTwoTile(FIntPoint Index1, FIntPoint Index2)
+{
+	return FMath::Abs(Index1.X - Index2.X) + FMath::Abs(Index1.Y - Index2.Y);
+}
+
+void UGridPath::InserTileDiscoverList(FPathData TilePath)
+{
+	int SortingCost = TilePath.MinCostToTarget + TilePath.CostFormStart;
+	if(DiscoverTileSortingCost.Num()==0)
+	{
+		DiscoverTileSortingCost.Add(SortingCost);
+		DiscoverTileIndex.Add(TilePath.Index);
+	}
+	else
+	{
+		if (SortingCost>= DiscoverTileSortingCost[DiscoverTileSortingCost.Num()-1])
+		{
+			DiscoverTileSortingCost.Add(SortingCost);
+			DiscoverTileIndex.Add(TilePath.Index);
+		}
+		else
+		{
+			for(int i = 0; i<DiscoverTileSortingCost.Num();i++)
+			{
+				if(SortingCost<=DiscoverTileSortingCost[i])
+				{
+					DiscoverTileSortingCost.Insert(SortingCost, i);
+					DiscoverTileIndex.Insert(TilePath.Index, i);
+					break;
+				}
+			}
+		}
+	}
 }
 
 bool UGridPath::IsInputDataValid(FIntPoint Start, FIntPoint End)
@@ -74,15 +112,19 @@ bool UGridPath::IsInputDataValid(FIntPoint Start, FIntPoint End)
 	return true;
 }
 
-void UGridPath::DiscoverTile(FPathData TilePath)
-{
-	PathData.Add(TilePath.Index, TilePath);
-	InserTileDiscoverList(TilePath);
-}
+	// ----------------------------
+	// Tile Discovery (Process)
 
-int UGridPath::MinimulCostBetweenTwoTile(FIntPoint Index1, FIntPoint Index2)
+FPathData UGridPath::PullCheapestTileOutOfDiscoverList()
 {
-	return FMath::Abs(Index1.X - Index2.X) + FMath::Abs(Index1.Y - Index2.Y);
+	FIntPoint Index = DiscoverTileIndex[0];
+	DiscoverTileIndex.RemoveAt(0);
+	DiscoverTileSortingCost.RemoveAt(0);
+
+	AnalyseTileIndex.Add(Index);
+	
+	return PathData[Index];
+	
 }
 
 bool UGridPath::AnalyseNextDiscoverTile()
@@ -103,22 +145,16 @@ bool UGridPath::AnalyseNextDiscoverTile()
 	return false;
 }
 
-TArray<FIntPoint> UGridPath::GeneratePath()
+	// ----------------------------
+	// Height Check
+
+bool UGridPath::IsValidHeigh(FDC_TileData* IndextestData, FDC_TileData* CurrentIndexData)
 {
-	return TArray<FIntPoint>();
+	return FMath::Abs(IndextestData->TileTransform.GetLocation().Z - CurrentIndexData->TileTransform.GetLocation().Z) <= (100/1.75);
 }
 
-FPathData UGridPath::PullCheapestTileOutOfDiscoverList()
-{
-	FIntPoint Index = DiscoverTileIndex[0];
-	DiscoverTileIndex.RemoveAt(0);
-	DiscoverTileSortingCost.RemoveAt(0);
-
-	AnalyseTileIndex.Add(Index);
-	
-	return PathData[Index];
-	
-}
+	// ----------------------------
+	// Neighbours
 
 bool UGridPath::DiscoverNextNeighbors()
 {
@@ -204,34 +240,24 @@ TArray<FPathData> UGridPath::GetValidTileNeighbors(FIntPoint Index)
 	
 }
 
-void UGridPath::InserTileDiscoverList(FPathData TilePath)
+TArray<FIntPoint> UGridPath::FindTileNeighbors(FIntPoint Index)
 {
-	int SortingCost = TilePath.MinCostToTarget + TilePath.CostFormStart;
-	if(DiscoverTileSortingCost.Num()==0)
-	{
-		DiscoverTileSortingCost.Add(SortingCost);
-		DiscoverTileIndex.Add(TilePath.Index);
-	}
-	else
-	{
-		if (SortingCost>= DiscoverTileSortingCost[DiscoverTileSortingCost.Num()-1])
-		{
-			DiscoverTileSortingCost.Add(SortingCost);
-			DiscoverTileIndex.Add(TilePath.Index);
-		}
-		else
-		{
-			for(int i = 0; i<DiscoverTileSortingCost.Num();i++)
-			{
-				if(SortingCost<=DiscoverTileSortingCost[i])
-				{
-					DiscoverTileSortingCost.Insert(SortingCost, i);
-					DiscoverTileIndex.Insert(TilePath.Index, i);
-					break;
-				}
-			}
-		}
-	}
+	TArray<FIntPoint> Neighbors;
+	if(Index.X < Grid->GridSize.X-1) Neighbors.Add(FIntPoint(Index.X + 1, Index.Y));
+	if (Index.X > 0){Neighbors.Add(FIntPoint(Index.X - 1, Index.Y));}
+	if(Index.Y < Grid->GridSize.Y-1) Neighbors.Add(FIntPoint(Index.X, Index.Y + 1));
+	if (Index.Y > 0){Neighbors.Add(FIntPoint(Index.X, Index.Y - 1));}
+	
+	
+	return Neighbors;
+}
+
+	// ----------------------------
+	// Path
+
+TArray<FIntPoint> UGridPath::GeneratePath()
+{
+	return TArray<FIntPoint>();
 }
 
 void UGridPath::ClearGeneratedPath()
@@ -247,23 +273,8 @@ void UGridPath::ClearGeneratedPath()
 	Path.Empty();
 }
 
-void UGridPath::SetGrid(AGrid* GridRef)
-{
-	Grid = GridRef;
-}
-
-bool UGridPath::IsValidHeigh(FDC_TileData* IndextestData, FDC_TileData* CurrentIndexData)
-{
-	return FMath::Abs(IndextestData->TileTransform.GetLocation().Z - CurrentIndexData->TileTransform.GetLocation().Z) <= (100/1.75);
-}
-
-// Called every frame
-void UGridPath::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
+	// ----------------------------
+	// Movement
 
 TArray<FIntPoint> UGridPath::FindPath(FIntPoint Start, FIntPoint End, bool IsReachable, int PathLenght,	bool IsEscalation)
 {
@@ -356,3 +367,10 @@ TArray<FIntPoint> UGridPath::NewFindPath(FIntPoint Start, ACustomPlayerControlle
 	return AllMoveCases;
 }
 
+	// ----------------------------
+	// SETTER
+
+void UGridPath::SetGrid(AGrid* GridRef)
+{
+	Grid = GridRef;
+}

@@ -22,15 +22,17 @@ class DIVINECONFLICT_API AGrid : public AActor , public IInteractInterface
 	GENERATED_BODY()
 
 	
+
+	// UPROPERTIES
+public:	
+	// ----------------------------
+	// Components
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivateAccess = "true"))
     UInstancedStaticMeshComponent* GridMesh;	
-
-
-public:	
-	// Sets default values for this actor's properties
-	AGrid();
-
 	
+	// ----------------------------
+	// References
 	
 	UPROPERTY(EditAnywhere , Category = "GridElement")
 	UGridPath* GridPath = nullptr;
@@ -40,44 +42,10 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "GridElement")
 	UGridVisual * GridVisual = nullptr;
+
+	// ----------------------------
+	// Grid Properties
 	
-	
-	
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	
-	
-
-	UPROPERTY( EditAnywhere, Category = "GridElement")
-	TArray<FIntPoint> InstanceArray;
-
-	
-	FHitResult TraceHitGround(FVector Location);
-
-	UFUNCTION(Category = "GridElement", BlueprintCallable,CallInEditor)
-	void SpawnGrid();
-
-	
-	UFUNCTION( Category = "GridElement", BlueprintCallable,CallInEditor)
-	void TestPathfinding();
-
-	UFUNCTION(CallInEditor, BlueprintCallable,Category = "GridElement")
-	void TestReachedPath();
-
-	UFUNCTION(CallInEditor, BlueprintCallable,Category = "GridElement")
-	void TestReachwithCliming();
-	
-
-	FVector SnapVectorToVector(FVector InVector, const FVector InSnapTo);
-
-	
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "GridElement", meta = (AllowPrivate))
 	TMap <FIntPoint, FDC_TileData> GridData;
 
@@ -87,25 +55,88 @@ public:
 	UPROPERTY(Blueprintable, EditAnywhere, Category = "GridElement")
 	FVector TileSize = FVector(100, 100, 100);
 	
+protected:
+	// ----------------------------
+	// Instances
+	
+	UPROPERTY( EditAnywhere, Category = "GridElement")
+	TArray<FIntPoint> InstanceArray;
+	
+	// UFUNCTIONS
+public:	
+	// ----------------------------
+	// Constructor
+	
+	AGrid();
+	
+	// ----------------------------
+	// Overrides
+	virtual void Tick(float DeltaTime) override;
+	
+	// ----------------------------
+	// Check Grid Element
 	
 	UFUNCTION( Category = "GridElement")
 	bool IsTileWalkable(FIntPoint Index);
 
 	bool IsTileTypeWalkable(EDC_TileType Type);
 
-	TMap <FIntPoint, FDC_TileData>* GetGridData();
+	// ----------------------------
+	// Converts
 	
-	void SetGridData(TMap <FIntPoint, FDC_TileData> Data);
-
 	FIntPoint ConvertLocationToIndex(FVector3d Location);
 
 	FVector3d ConvertIndexToLocation(FIntPoint Index);
 
-	void RemoveInstance(FIntPoint Index);
+	
+	// ----------------------------
+	// Instances Editor
 
 	int AddInstance(FIntPoint Index, FTransform3d Transform);
+	
+	void RemoveInstance(FIntPoint Index);
+	
+	// ----------------------------
+	// Color
 
 	void UpdateColor(int I, FLinearColor InColor, float	Alpha);
 
+	// ----------------------------
+	// GETTERS
+
+	TMap <FIntPoint, FDC_TileData>* GetGridData();
+	
+	// ----------------------------
+	// SETTERS
+	
+	void SetGridData(TMap <FIntPoint, FDC_TileData> Data);
+
+protected:
+	// ----------------------------
+	// Overrides
+	
+	virtual void BeginPlay() override;
+	
+	// ----------------------------
+	// Spawn Grid
+
+	UFUNCTION(Category = "GridElement", BlueprintCallable,CallInEditor)
+	void SpawnGrid();
+	
+	FHitResult TraceHitGround(FVector Location);
+
+	FVector SnapVectorToVector(FVector InVector, const FVector InSnapTo);
+
+	// ----------------------------
+	// Tests
+	
+	UFUNCTION( Category = "GridElement", BlueprintCallable,CallInEditor)
+	void TestPathfinding();
+
+	UFUNCTION(CallInEditor, BlueprintCallable,Category = "GridElement")
+	void TestReachedPath();
+
+	UFUNCTION(CallInEditor, BlueprintCallable,Category = "GridElement")
+	void TestReachwithCliming();
 
 };
