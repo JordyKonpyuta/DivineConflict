@@ -34,13 +34,13 @@ public:
 	int CurrentPA = 10;
 
 	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Ressources")
-	int WoodPoints = 55555;
+	int WoodPoints = 0;
 
 	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Ressources")
-	int StonePoints = 0555555;
+	int StonePoints = 0;
 
 	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Ressources")
-	int GoldPoints = 555555;
+	int GoldPoints = 0;
 	
 	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "RessourceGathering")
 	int WoodBuildingOwned = 0;

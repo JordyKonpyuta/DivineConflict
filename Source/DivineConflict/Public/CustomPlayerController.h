@@ -267,6 +267,9 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void UpdateUi();
+	UFUNCTION(Client, Reliable)
+	void Client_UpdateUi();
+	
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateUITimer(int TimeLeft);
 	UFUNCTION(BlueprintNativeEvent)

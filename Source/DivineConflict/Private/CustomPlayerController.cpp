@@ -498,6 +498,7 @@ bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnCh
 
 void ACustomPlayerController::Multicast_SpawnUnit_Implementation(AUnit* UnitSpawned,AGrid* GridSpawned, ACustomPlayerState* PlayerStatRef,  ABase* BaseSpawned, ABuilding* BuildingSpawned)
 {
+	Client_UpdateUi();
 	if(UnitSpawned)
 	{
 		UnitSpawned->Grid = Grid;
@@ -537,7 +538,7 @@ void ACustomPlayerController::Server_SpawnUnit_Implementation(EUnitType UnitToSp
 		CostOfSpawn = {20,0,10};
 		break;
 	case EUnitType::U_Leader:
-		CostOfSpawn = {20,20,20};
+		CostOfSpawn = {30,30,30};
 		break;
 	default:
 		CostOfSpawn = {15,15,15};
@@ -553,6 +554,7 @@ void ACustomPlayerController::Server_SpawnUnit_Implementation(EUnitType UnitToSp
 		PlayerStateRef->ChangeWoodPoints(CostOfSpawn[0], false);
 		PlayerStateRef->ChangeStonePoints(CostOfSpawn[1], false);
 		PlayerStateRef->ChangeGoldPoints(CostOfSpawn[2], false);
+		
 		AUnit* UnitThatSpawned;
 		switch (UnitToSpawn)
 		{
@@ -684,6 +686,11 @@ void ACustomPlayerController::ActionEndTurn()
 		}
 	}
 
+}
+
+void ACustomPlayerController::Client_UpdateUi_Implementation()
+{
+	UpdateUi();
 }
 
 void ACustomPlayerController::UpdateUITimer_Implementation(int TimeLeft)
