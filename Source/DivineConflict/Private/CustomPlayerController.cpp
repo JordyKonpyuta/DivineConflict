@@ -17,7 +17,6 @@
 #include "GridVisual.h"
 #include "Tower.h"
 #include "Unit.h"
-
 #include "Unit_Child_Leader.h"
 #include "Unit_Child_Mage.h"
 #include "Unit_Child_Tank.h"
@@ -697,6 +696,30 @@ void ACustomPlayerController::ActionEndTurn()
 		}
 	}
 
+}
+
+void ACustomPlayerController::CancelLastAction()
+{
+	if (!AllPlayerPassive.IsEmpty())
+	{
+		AUnit* ActorThatStops = Cast<AUnit>(AllPlayerActions.Last().ActorRef);
+		switch(AllPlayerActions.Last().UnitAction)
+		{
+			case EDC_ActionPlayer::MoveUnit:
+			ActorThatStops->CancelMove();
+				break;
+			case EDC_ActionPlayer::SpellCast:
+				ActorThatStops->CancelSpecial();
+				break;
+			case EDC_ActionPlayer::AttackUnit:
+				ActorThatStops->CancelAttack();
+				break;
+			case EDC_ActionPlayer::AttackBuilding:
+				ActorThatStops->CancelAttack();
+				break;
+		}
+		AllPlayerActions.RemoveAt(AllPlayerActions.end);
+	}
 }
 
 void ACustomPlayerController::Client_UpdateUi_Implementation()

@@ -162,7 +162,7 @@ public:
 
 	UFUNCTION()
 	void OnRep_PlayerTeam();
-
+	
 	UFUNCTION(BlueprintCallable)
 	void SelectModeMovement();
 
@@ -271,7 +271,10 @@ public:
 
 	UFUNCTION()
 	void ActionEndTurn();
-
+	
+	UFUNCTION()
+	void CancelLastAction();
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void UpdateUi();
 	UFUNCTION(Client, Reliable)
