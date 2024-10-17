@@ -29,8 +29,6 @@ enum class EDC_TileType : uint8
 	Walkable UMETA(DisplayName = "Walkable"),
 };
 
-
-
 UENUM(BlueprintType)
 enum class EDC_TileState : uint8
 {
@@ -43,6 +41,7 @@ enum class EDC_TileState : uint8
 	Attacked UMETA(DisplayName = "Attacked"),
 	Spawnable UMETA(DisplayName = "Spawnable"),
 	NotSpawnable UMETA(DisplayName = "NotSpawnable"),
+	Spawned UMETA(DisplayName = "Spawned"),
 
 };
 

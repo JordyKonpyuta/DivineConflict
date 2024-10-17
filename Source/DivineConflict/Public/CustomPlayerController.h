@@ -13,6 +13,7 @@
 #include "Unit.h"
 #include "CustomPlayerController.generated.h"
 
+class AGhostUnitSpawning;
 class ABuilding;
 class ACameraPlayer;
 class AGrid;
@@ -62,7 +63,13 @@ struct FStructPassive
 	AActor* ActorRef;
 
 	UPROPERTY()
-	EDC_ActionPlayer BuildingAction;
+	EUnitType UnitType = EUnitType::U_Leader;
+
+	UPROPERTY()
+	FIntPoint TilePosition;
+
+	UPROPERTY()
+	AGhostUnitSpawning* GhostRef;
 };
 
 UCLASS()

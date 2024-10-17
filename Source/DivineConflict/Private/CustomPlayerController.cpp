@@ -23,6 +23,7 @@
 #include "Unit_Child_Tank.h"
 #include "Unit_Child_Warrior.h"
 #include "Net/UnrealNetwork.h"
+#include "Unit/GhostUnitSpawning.h"
 #include "Utility/DC_CustomPlayerStart.h"
 
 
@@ -509,16 +510,16 @@ void ACustomPlayerController::Multicast_SpawnUnit_Implementation(AUnit* UnitSpaw
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BuildingSpawned"));
 			UnitSpawned->SetPlayerOwner(BuildingSpawned->PlayerOwner);
-			BuildingRef->BuildingPreAction(UnitSpawned);
-			AllPlayerPassive.Add(FStructPassive(BuildingRef, EDC_ActionPlayer::SelectBuilding));
+			//BuildingRef->BuildingPreAction(UnitSpawned);
+			//AllPlayerPassive.Add(FStructPassive(BuildingRef, EDC_ActionPlayer::SelectBuilding));
 		}
 			
 		if(BaseSpawned)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BaseSpawned"));
 			UnitSpawned->SetPlayerOwner(BaseSpawned->PlayerOwner);
-			BaseSpawned->BasePreAction(UnitSpawned);
-			AllPlayerPassive.Add(FStructPassive(BaseSpawned, EDC_ActionPlayer::SelectBuilding));
+			//BaseSpawned->BasePreAction(UnitSpawned);
+			//AllPlayerPassive.Add(FStructPassive(BaseSpawned, EDC_ActionPlayer::SelectBuilding));
 		}
 
 	}
@@ -675,8 +676,10 @@ void ACustomPlayerController::ActionEndTurn()
 		}
 		else
 		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AllPlayerPassive"));
 			if(!AllPlayerPassive.IsEmpty())
 			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AllPlayerPassive"));
 				if(ABuilding *BuildingAction = Cast<ABuilding>(AllPlayerPassive[0].ActorRef))
                 {
                     BuildingAction->BuildingAction();
@@ -685,7 +688,9 @@ void ACustomPlayerController::ActionEndTurn()
 				else if(ABase *BaseAction = Cast<ABase>(AllPlayerPassive[0].ActorRef))
                 {
 					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BaseAction"));
-                    BaseAction->BaseAction();
+					GetWorld()->DestroyActor(AllPlayerPassive[0].GhostRef);
+					Grid->GridVisual->RemoveStateFromTile(AllPlayerPassive[0].TilePosition, EDC_TileState::Spawned);
+                    Server_SpawnBaseUnit(AllPlayerPassive[0].UnitType,Grid,BaseAction,PlayerStateRef->PlayerTeam);
                     AllPlayerPassive.RemoveAt(0);
                 }
 			}
@@ -830,8 +835,37 @@ void ACustomPlayerController::ServerMoveUnit_Implementation(const AUnit* UnitToM
 
 void ACustomPlayerController::SpawnBaseUnit(EUnitType UnitToSpawn)
 {
-	UE_LOG(	LogTemp, Warning, TEXT("SpawnBaseUnit") );
-	Server_SpawnBaseUnit(UnitToSpawn, Grid, BaseRef, PlayerTeam);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SpawnBaseUnit"));
+	if (Grid != nullptr)
+	{
+		FIntPoint SpawnLoc = FIntPoint(-999,-999);
+		for (FIntPoint Index : BaseRef->AllSpawnLoc)
+		{
+			if (!Grid->GetGridData()->Find(Index)->TileState.Contains(EDC_TileState::Spawned))
+			{
+				SpawnLoc = Index;
+				break;
+			}
+		}
+		if(SpawnLoc != FIntPoint(-999,-999))
+		{
+			AGhostUnitSpawning* GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnLoc)->TileTransform.GetLocation(), FRotator(0,0,0));
+			GhostUnit->SetUnitType(UnitToSpawn);
+			GhostUnit->Spawn();
+			AllPlayerPassive.Add(FStructPassive( BaseRef,UnitToSpawn,SpawnLoc,GhostUnit));
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AllPlayerPassive : " + FString::FromInt(AllPlayerPassive.Num())));
+			Grid->GridVisual->RemoveStateFromTile(SpawnLoc, EDC_TileState::Spawnable);
+			Grid->GridVisual->addStateToTile(SpawnLoc, EDC_TileState::Spawned);
+			
+		}
+	}
+
+	
+
+	
+
+
+	//Server_SpawnBaseUnit(UnitToSpawn, Grid, BaseRef, PlayerTeam);
 }
 
 void ACustomPlayerController::Server_PrepareMoveUnit_Implementation(const TArray<FIntPoint>& Path,
