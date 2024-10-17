@@ -611,6 +611,11 @@ void ACustomPlayerController::ActionEndTurn()
 					UnitAction->HasActed = false;
 					UnitAction->HasMoved = false;
 				}
+				if(BaseAction || BuildingAction)
+				{
+					AllPlayerActions[0].UnitAttacking->HasActed = false;
+					AllPlayerActions[0].UnitAttacking->HasMoved = false;
+				}
 				switch (AllPlayerActions[0].UnitAction)
 				{
 				case EDC_ActionPlayer::MoveUnit:

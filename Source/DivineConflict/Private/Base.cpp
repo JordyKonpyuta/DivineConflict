@@ -37,7 +37,8 @@ void ABase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePro
 void ABase::BeginPlay()
 {
 	Super::BeginPlay();
-
+	FTimerHandle UnusedHandle;
+	
 	for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState<ACustomGameState>()->PlayerArray)
 	{
 		if (ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
@@ -49,26 +50,44 @@ void ABase::BeginPlay()
         }
 	}
 
+
 	SetMesh();
 	// Get Grid
 	if (Grid)
 	{
+		if(HasAuthority())
+			GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT(" Server Base Begin Play"));
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT(" Client Base Begin Play"));
+		}
+		GetWorld()->GetTimerManager().SetTimer( UnusedHandle, this, &ABase::timerBeginPlay, 2.f, false );
 		// Grid : Building
-		Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
-
+		timerBeginPlay();
 		// Grid : Spawnable Locations
 		int Ratio = 0;
 
 		if (PlayerOwner == EPlayer::P_Heaven) Ratio = -1;
 		else if (PlayerOwner == EPlayer::P_Hell) Ratio = 1;
-			
+	
 		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, 0));
 		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(0, 1*Ratio));
 		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, -1*Ratio));
 		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 1*Ratio));
 	}
+	else
+	{
+		UE_LOG( LogTemp, Warning, TEXT("Grid is NULL"));
+	}
 	
 }
+
+void ABase::timerBeginPlay()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Silver, TEXT("addBaseGrid"));
+	Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+}
+
 
 // Called every frame
 void ABase::Tick(float DeltaTime)

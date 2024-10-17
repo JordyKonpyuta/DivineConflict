@@ -111,8 +111,9 @@ void UGridInfo::SetBuildingOnGrid(FIntPoint GridPosition, ABuilding* Building)
 
 void UGridInfo::addBaseOnGrid(FIntPoint GridPosition, ABase* Base)
 {
-	BasesGrid.Add(Cast<ABase>(Base));
-	SetBaseOnGrid(GridPosition, Base);
+	GEngine->AddOnScreenDebugMessage(-1, 50.f, FColor::Silver, TEXT("addBaseOnGrid"));
+	BasesGrid.Add(Base);
+	Multi_SetBaseOnGrid(GridPosition, Base);
 }
 
 void UGridInfo::SetBaseOnGrid(FIntPoint GridPosition, ABase* Base)
@@ -132,6 +133,46 @@ void UGridInfo::SetBaseOnGrid(FIntPoint GridPosition, ABase* Base)
 			FDC_TileData* NewIndex = Grid->GetGridData()->Find(Base->GetGridPosition());
 			if(NewIndex != nullptr)
 			{
+				GridDataRef->Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, NewIndex->BuildingOnTile, Base, NewIndex->TowerOnTile));
+				Grid->GridData.Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, NewIndex->BuildingOnTile, Base, NewIndex->TowerOnTile));
+			}
+		}
+	}
+}
+ 
+void UGridInfo::Multi_SetBaseOnGrid_Implementation(const FIntPoint GridPosition, const ABase* BaseRef)
+{GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Multi_SetBaseOnGrid"));
+	if(Grid == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Grid is null"));
+		return;
+	}
+	TMap<FIntPoint,FDC_TileData>* GridDataRef = Grid->GetGridData();
+	ABase* Base = const_cast<ABase*>(BaseRef);
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Base->GetGridPosition() : " + Base->GetGridPosition().ToString()));
+	//if(GridPosition != Base->GetGridPosition())
+	{
+		FDC_TileData* PreviousIndex = Grid->GetGridData()->Find(Base->GetGridPosition());
+		
+		if(PreviousIndex != nullptr)
+		{
+			if(PreviousIndex->BaseOnTile == Base)
+			{
+				Grid->GetGridData()->Add(PreviousIndex->TilePosition, FDC_TileData(PreviousIndex->TilePosition, PreviousIndex->TileType, PreviousIndex->TileTransform, PreviousIndex->TileState, PreviousIndex->UnitOnTile, PreviousIndex->BuildingOnTile , nullptr, PreviousIndex->TowerOnTile));
+				Grid->GridData.Add(PreviousIndex->TilePosition, FDC_TileData(PreviousIndex->TilePosition, PreviousIndex->TileType, PreviousIndex->TileTransform, PreviousIndex->TileState, PreviousIndex->UnitOnTile, PreviousIndex->BuildingOnTile , nullptr, PreviousIndex->TowerOnTile));
+			}
+		}
+		
+		Base->SetGridPosition(GridPosition);
+		if(Base->GetGridPosition() != FIntPoint(-999,-999))
+		{
+			
+			GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Orange, TEXT("Base->GetGridPosition() : " + Base->GetGridPosition().ToString()));
+			GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Orange, TEXT("GridPosition : " + GridPosition.ToString()));
+			FDC_TileData* NewIndex = Grid->GetGridData()->Find(GridPosition);
+			if(NewIndex != nullptr)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Orange, TEXT("NewIndex is not null"));
 				GridDataRef->Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, NewIndex->BuildingOnTile, Base, NewIndex->TowerOnTile));
 				Grid->GridData.Add(NewIndex->TilePosition, FDC_TileData(NewIndex->TilePosition, NewIndex->TileType, NewIndex->TileTransform, NewIndex->TileState, NewIndex->UnitOnTile, NewIndex->BuildingOnTile, Base, NewIndex->TowerOnTile));
 			}

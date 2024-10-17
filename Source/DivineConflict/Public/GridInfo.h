@@ -48,6 +48,9 @@ public:
 	UFUNCTION(	Category = "GridElement",CallInEditor)
 	void SetBaseOnGrid(FIntPoint GridPosition, ABase* Base);
 
+	UFUNCTION( NetMulticast,Reliable, Category = "GridElement",CallInEditor)
+	void Multi_SetBaseOnGrid(const FIntPoint GridPosition,const ABase* Base);
+
 	UFUNCTION( Category = "GridElement",CallInEditor)
 	void addTowerOnGrid(FIntPoint GridPosition, ATower* Tower);
 
