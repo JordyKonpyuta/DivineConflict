@@ -219,3 +219,48 @@ int ACustomPlayerState::GetLeaderGoldCost()
 {
 	return LeaderGoldCost;
 }
+
+int ACustomPlayerState::GetMageCount()
+{
+	return MageCount;
+}
+
+int ACustomPlayerState::GetTankCount()
+{
+	return TankCount;
+}
+
+int ACustomPlayerState::GetWarriorCount()
+{
+	return WarriorCount;
+}
+
+int ACustomPlayerState::GetLeaderCount()
+{
+	return LeaderCount;
+}
+
+void ACustomPlayerState::SetMageCount(int NewCount)
+{
+	MageCount = NewCount;
+}
+
+void ACustomPlayerState::SetTankCount(int NewCount)
+{
+	TankCount = NewCount;
+}
+
+void ACustomPlayerState::SetWarriorCount(int NewCount)
+{
+	WarriorCount = NewCount;
+}
+
+void ACustomPlayerState::SetLeaderCount(int NewCount)
+{
+	LeaderCount = NewCount;
+}
+
+void ACustomPlayerState::SetPopulation()
+{
+	CurrentUnitCount = MageCount + TankCount + WarriorCount + LeaderCount;
+}

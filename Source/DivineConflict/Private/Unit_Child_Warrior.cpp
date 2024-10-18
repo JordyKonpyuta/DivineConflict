@@ -2,6 +2,8 @@
 
 
 #include "Unit_Child_Warrior.h"
+
+#include "CustomGameState.h"
 #include "UObject/ConstructorHelpers.h"
 
 	// ----------------------------
@@ -45,6 +47,17 @@ void AUnit_Child_Warrior::BeginPlay()
 		SetPM(5);
 
 	UnitName = EUnitName::Warrior;
+	
+	for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState<ACustomGameState>()->PlayerArray)
+	{
+		if (ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
+		{
+			if (CurrentCustomPlayerState->PlayerTeam == PlayerOwner)
+			{
+				CurrentCustomPlayerState->SetWarriorCount(CurrentCustomPlayerState->GetWarriorCount() + 1);
+			}
+		}
+	}
 }
 
 void AUnit_Child_Warrior::Special()

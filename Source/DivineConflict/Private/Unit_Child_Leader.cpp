@@ -2,6 +2,8 @@
 
 
 #include "Unit_Child_Leader.h"
+
+#include "CustomGameState.h"
 #include "Grid.h"
 #include "GridPath.h"
 #include "UObject/ConstructorHelpers.h"
@@ -46,6 +48,17 @@ void AUnit_Child_Leader::BeginPlay()
 		SetPM(3);
 
 	UnitName = EUnitName::Leader;
+
+	for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState<ACustomGameState>()->PlayerArray)
+	{
+		if (ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
+		{
+			if (CurrentCustomPlayerState->PlayerTeam == PlayerOwner)
+			{
+				CurrentCustomPlayerState->SetLeaderCount(CurrentCustomPlayerState->GetLeaderCount() + 1);
+			}
+		}
+	}
 }
 
 void AUnit_Child_Leader::Special()

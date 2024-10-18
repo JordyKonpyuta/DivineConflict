@@ -130,6 +130,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Turn")
 	void NewTurnBegin();
+	
 
 	// GETTERS FOR UNITS SPAWN COSTS
 
@@ -165,6 +166,31 @@ public:
 	int GetLeaderStoneCost();
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Units")
 	int GetLeaderGoldCost();
+
+
+	// GETTERS FOR NUMBER OF UNITS
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Units")
+	int GetMageCount();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Units")
+	int GetTankCount();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Units")
+	int GetWarriorCount();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Units")
+	int GetLeaderCount();
+
+	// SETTERS FOR NUMBER OF UNITS
+	UFUNCTION(BlueprintCallable, Category = "Units")
+	void SetMageCount(int NewCount);
+	UFUNCTION(BlueprintCallable, Category = "Units")
+	void SetTankCount(int NewCount);
+	UFUNCTION(BlueprintCallable, Category = "Units")
+	void SetWarriorCount(int NewCount);
+	UFUNCTION(BlueprintCallable, Category = "Units")
+	void SetLeaderCount(int NewCount);
+
+	UFUNCTION(BlueprintCallable, Category = "Units")
+	void SetPopulation();
+
 	
 protected:
 
@@ -202,5 +228,16 @@ protected:
 	int LeaderStoneCost = 30;
 	UPROPERTY()
 	int LeaderGoldCost = 30;
+
+	// NUMBER OF EACH UNITS
+
+	UPROPERTY()
+	int MageCount = 0;
+	UPROPERTY()
+	int TankCount = 0;
+	UPROPERTY()
+	int WarriorCount = 0;
+	UPROPERTY()
+	int LeaderCount = 0;
 
 };

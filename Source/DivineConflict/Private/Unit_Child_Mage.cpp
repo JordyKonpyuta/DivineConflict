@@ -3,6 +3,7 @@
 
 #include "Unit_Child_Mage.h"
 #include "Base.h"
+#include "CustomGameState.h"
 #include "CustomPlayerController.h"
 #include "CustomPlayerState.h"
 #include "Grid.h"
@@ -60,6 +61,17 @@ void AUnit_Child_Mage::BeginPlay()
 		SetPM(4);
 
 	UnitName = EUnitName::Mage;
+
+	for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState<ACustomGameState>()->PlayerArray)
+	{
+		if (ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
+		{
+			if (CurrentCustomPlayerState->PlayerTeam == PlayerOwner)
+			{
+				CurrentCustomPlayerState->SetMageCount(CurrentCustomPlayerState->GetMageCount() + 1);
+			}
+		}
+	}
 }
 
 void AUnit_Child_Mage::Special()
