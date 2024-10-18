@@ -12,6 +12,8 @@
 #include "GridPath.h"
 #include "GridVisual.h"
 #include "Tower.h"
+#include "Unit_Child_Leader.h"
+#include "Unit_Child_Tank.h"
 #include "WidgetDamage2.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -540,6 +542,7 @@ void AUnit::MoveUnitEndTurn()
 	Multi_HiddeGhosts();
 	InitializeFullMove(FutureMovement);
 	FutureMovement.Empty();
+	GetBuffs();
 }
 
 // ----------------------------
@@ -794,7 +797,33 @@ void AUnit::SpecialUnit(AUnit* UnitToAttack)
 void AUnit::SpecialBase(ABase* BaseToAttack)
 {
 }
-	
+
+// ----------------------------
+// Get Buffs
+
+void AUnit::GetBuffs()
+{
+	if (bIsCommandeerBuffed) bIsCommandeerBuffed = false;
+	if (bBuffTank) bBuffTank = false;
+	for (FIntPoint CurrentLoc : Grid->GridPath->FindPath(GetIndexPosition(), FIntPoint(-999,-999), true, 3, false))
+	{
+		AUnit_Child_Leader* UnitToBuff = Cast<AUnit_Child_Leader> (Grid->GetGridData()->Find(CurrentLoc)->UnitOnTile);
+		if (UnitToBuff)
+		{
+			bIsCommandeerBuffed = true;
+			UnitToBuff = nullptr;
+		}
+	}
+	for (FIntPoint CurrentPos : Grid->GridPath->FindTileNeighbors(GetIndexPosition()))
+	{
+		AUnit_Child_Tank* TankToCheck = Cast<AUnit_Child_Tank>(Grid->GetGridData()->Find(CurrentPos)->UnitOnTile);
+		if (TankToCheck)
+		{
+			if (TankToCheck->GetIsUsingSpecial()) bBuffTank = true;
+		}
+	}
+}
+
 // ----------------------------
 // Cancel Actions
 

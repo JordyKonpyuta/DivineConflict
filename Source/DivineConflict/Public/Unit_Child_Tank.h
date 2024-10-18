@@ -18,6 +18,11 @@ class DIVINECONFLICT_API AUnit_Child_Tank : public AUnit
 public:
 	
 protected:
+	
+	// ----------------------------
+	// Special
+
+	bool bIsUsingSpecial = false;
 
 	// UFUNCTIONS
 public:
@@ -30,6 +35,16 @@ public:
 	// Overrides
 
 	void Special() override;
+	
+	// ----------------------------
+	// GETTERS
+
+	bool GetIsUsingSpecial();
+	
+	// ----------------------------
+	// SETTERS
+
+	void SetIsUsingSpecial(bool bIsBoosting);
 
 private:
 	// ----------------------------

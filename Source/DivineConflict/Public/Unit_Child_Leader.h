@@ -31,9 +31,9 @@ public:
 	// ----------------------------
 	// Overrides
 	
-	void Special() override;
+	virtual void Special() override;
 
-	void MoveUnitEndTurn() override;
+	virtual void MoveUnitEndTurn() override;
 	
 	// ----------------------------
 	// Buff

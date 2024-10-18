@@ -360,6 +360,12 @@ public:
 	virtual void SpecialBase(ABase *BaseToAttack);
 	
 	// ----------------------------
+	// Get Buffs
+
+	UFUNCTION()
+	void GetBuffs();
+	
+	// ----------------------------
 	// Cancel Actions
 
 	void CancelMove();

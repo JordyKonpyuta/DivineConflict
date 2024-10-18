@@ -77,3 +77,20 @@ void AUnit_Child_Tank::Special()
 		}
 	}
 }
+
+
+	// ----------------------------
+	// GETTERS
+
+bool AUnit_Child_Tank::GetIsUsingSpecial()
+{
+	return bIsUsingSpecial;
+}
+
+	// ----------------------------
+	// SETTERS
+
+void AUnit_Child_Tank::SetIsUsingSpecial(bool bIsBoosting)
+{
+	bIsUsingSpecial = bIsBoosting;
+}
