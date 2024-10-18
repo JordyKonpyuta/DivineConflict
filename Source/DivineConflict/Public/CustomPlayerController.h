@@ -258,7 +258,10 @@ public:
 	void Server_SpawnBaseUnit(EUnitType UnitToSpawn,AGrid* GridSer, ABase* BaseToSpawn, EPlayer PlayerOwner);
 	
 	UFUNCTION(BlueprintCallable)
-	void SpawnBaseUnit(EUnitType UnitToSpawn);
+	void SpawnBaseUnitGhost(EUnitType UnitToSpawn);
+
+	UFUNCTION()
+	void SpawnGhostUnit(EUnitType UnitToSpawn,FIntPoint SpawnChosen);
 
 	UFUNCTION(Server, Reliable)
 	void Server_PrepareMoveUnit(const TArray<FIntPoint> &Path, const AUnit* UnitToMove);
