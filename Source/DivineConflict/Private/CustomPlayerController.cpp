@@ -463,6 +463,7 @@ void ACustomPlayerController::ServerAttackUnit_Implementation(AUnit* UnitToAttac
 		UnitToAttack->AttackUnit(UnitAttacking);
 	else
 	{
+		GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Silver,TEXT("Active"));
 		Multi_ActionActiveTurn();
 	}
 }
@@ -680,7 +681,6 @@ void ACustomPlayerController::Server_ActionActiveTurn_Implementation()
 
 void ACustomPlayerController::Multi_ActionActiveTurn_Implementation()
 {
-	
 	if(IsLocalController())
 	{
 		HiddeWidget();
@@ -690,8 +690,8 @@ void ACustomPlayerController::Multi_ActionActiveTurn_Implementation()
 		if(PlayerStateRef->bIsActiveTurn)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("IsActiveTurn"));
-			FTimerHandle TimerActiveEndTurn;
 			
+			GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Silver, TEXT("AllPlayerAction : " + FString::FromInt(AllPlayerActions.Num())));
 			if(AllPlayerActions.Num() > 0)
 			{
 				AUnit* UnitAction = Cast<AUnit>( AllPlayerActions[0].ActorRef);
@@ -716,8 +716,8 @@ void ACustomPlayerController::Multi_ActionActiveTurn_Implementation()
 				{
 				case EDC_ActionPlayer::MoveUnit:
 					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("MoveUnit"));
-					AllPlayerActions.RemoveAt(0);
 					ServerMoveUnit(UnitAction);
+					AllPlayerActions.RemoveAt(0);
 					break;
 				case EDC_ActionPlayer::AttackUnit:
 					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackUnit"));
@@ -809,6 +809,7 @@ void ACustomPlayerController::Multi_ActionPassiveTurn_Implementation()
 			//Cast<ACustomGameState>(GetWorld()->GetGameState())->SwitchPlayerTurn();
 		}
 	}
+	OnTurnChangedDelegate.Broadcast();
 }
 
 void ACustomPlayerController::Server_SwitchPlayerTurn_Implementation(const ACustomGameState* GameState)
@@ -828,13 +829,10 @@ void ACustomPlayerController::Multi_SwitchPlayerTurn_Implementation(const ACusto
 	ACustomGameState* GameStateRef = const_cast<ACustomGameState*>(GameState);
 	if(GameStateRef)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, TEXT("SwitchPlayerTurn"));
+		
 		GameStateRef->SwitchPlayerTurn();
-		UE_LOG( LogTemp, Warning, TEXT("EnfTurn2") );
 	}
 	
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("SwitchPlayerTurn"));
-	UE_LOG( LogTemp, Warning, TEXT("SwitchPlayerTurn") );
 }
 
 

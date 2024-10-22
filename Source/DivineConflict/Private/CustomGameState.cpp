@@ -96,12 +96,10 @@ void ACustomGameState::SwitchIsBlockTurnSwitchTimer()
 
 void ACustomGameState::SwitchPlayerTurn()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("Block Turn Switch : ") + FString::FromInt(bBlockTurnSwitch));
 	if(!bBlockTurnSwitch)
 	{
 		Turn++;
 		bBlockTurnSwitch = true;
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Switching Turns"));
 		for(APlayerState* CurrentPlayerState : PlayerArray)
 		{
 			ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState);
@@ -110,7 +108,6 @@ void ACustomGameState::SwitchPlayerTurn()
 				CurrentCustomPlayerState->bIsActiveTurn = !CurrentCustomPlayerState->bIsActiveTurn;
 				CurrentCustomPlayerState->SetIsReadyToSwitchTurn(false);
 				CurrentCustomPlayerState->OnRep_bIsActiveTurn();
-				GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Blue, TEXT("Player Type Turn : ") + FString::FromInt(CurrentCustomPlayerState->bIsActiveTurn));
 			}
 		}
 		// Timer to switch turns                                                           
@@ -145,22 +142,15 @@ void ACustomGameState::CheckSwitchPlayerTurn()
 
 void ACustomGameState::CheckPlayerActionPassive()
 {
-	if(HasAuthority())
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Server"));
-	else
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Client"));
-		
 	for(APlayerState * CurrentPlayerState : PlayerArray)
 	{
 		if(ACustomPlayerState* PlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
 		{
 			if(!PlayerState->bIsActiveTurn)
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Passive Turn"));
 				//Multi_SendPlayerAction(PlayerState);
 				if(ACustomPlayerController* PlayerController = Cast<ACustomPlayerController>(PlayerState->GetPlayerController()))                        
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Passive Turn"));
 					PlayerController->Server_ActionPassiveTurn();
 				}
 			}
@@ -172,7 +162,6 @@ void ACustomGameState::Multi_SendPlayerAction_Implementation(ACustomPlayerState*
 {
 	if(ACustomPlayerController* PlayerController = Cast<ACustomPlayerController>(PlayerState->GetPlayerController()))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Passive Turn"));
 		PlayerController->Server_ActionPassiveTurn();
 	}
 }

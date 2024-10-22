@@ -72,6 +72,8 @@ struct FStructPassive
 	AGhostUnitSpawning* GhostRef;
 };
 
+DECLARE_MULTICAST_DELEGATE(FOnTurnChangedSignature);
+
 UCLASS()
 class DIVINECONFLICT_API ACustomPlayerController : public APlayerController , public IInteractInterface
 {
@@ -118,6 +120,8 @@ public:
 /*
 	UFUNCTION(Server, Reliable)
 	void DoActions();*/
+
+	FOnTurnChangedSignature OnTurnChangedDelegate;
 	
 protected:
 
@@ -141,6 +145,9 @@ protected:
 
 	UPROPERTY()
 	TArray<FIntPoint> PathReachable;
+
+	UPROPERTY()
+	FTimerHandle TimerActiveEndTurn;
 	
 	virtual void BeginPlay() override;
 

@@ -83,6 +83,8 @@ public:
 
 	FTimerHandle UnitAttackAnimTimer;
 
+	FTimerHandle InitializationTimer;
+
 	// ----------------------------
 	// Booleans
 	
@@ -128,11 +130,6 @@ public:
 	// ----------------------------
 	// ----------------------------
 protected:
-	// Overrides
-	
-	virtual void BeginPlay() override;
-	
-	virtual void NotifyActorOnClicked(FKey ButtonPressed) override;
 	
 	// ----------------------------
 	// Meshes
@@ -157,7 +154,7 @@ protected:
 	// ----------------------------
 	// References
 	
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	ACustomPlayerController* PlayerControllerRef;
 
 	UPROPERTY()
@@ -190,7 +187,7 @@ protected:
 	UPROPERTY(Replicated)
 	bool bIsGhosts = false;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	bool bIsCommandeerBuffed = false;
 
 	UPROPERTY()
@@ -490,7 +487,18 @@ public:
 	// ----------------------------
 	// ----------------------------
 protected:
+	// Overrides
+	
+	virtual void BeginPlay() override;
+	
+	virtual void NotifyActorOnClicked(FKey ButtonPressed) override;
 
+	//-----------------------------
+	// Initialization
+
+	UFUNCTION(Server, Reliable)
+	void AssignPlayerController();
+	
 	// Movement
 
 	UFUNCTION(Client,Reliable)
