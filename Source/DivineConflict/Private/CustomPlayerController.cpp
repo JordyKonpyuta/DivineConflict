@@ -1028,9 +1028,9 @@ void ACustomPlayerController::SpawnGhostUnit(EUnitType UnitToSpawn, FIntPoint Sp
 				case EUnitType::U_Warrior:
 					if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetWarriorStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetWarriorWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetWarriorGoldCost())
 					{
-						PlayerStateRef->ChangeWoodPoints(PlayerStateRef->GetWarriorWoodCost(), true);
-						PlayerStateRef->ChangeStonePoints(PlayerStateRef->GetWarriorStoneCost(), true);
-						PlayerStateRef->ChangeGoldPoints(PlayerStateRef->GetWarriorGoldCost(), true);
+						PlayerStateRef->ChangeWoodPoints(PlayerStateRef->GetWarriorWoodCost(), false);
+						PlayerStateRef->ChangeStonePoints(PlayerStateRef->GetWarriorStoneCost(), false);
+						PlayerStateRef->ChangeGoldPoints(PlayerStateRef->GetWarriorGoldCost(), false);
 						GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 						GhostUnit->SetUnitType(UnitToSpawn);
 						GhostUnit->Spawn();
