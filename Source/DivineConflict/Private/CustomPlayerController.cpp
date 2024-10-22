@@ -153,10 +153,12 @@ void ACustomPlayerController::SelectModeSpecial()
 	case EUnitName::Warrior:
 		//Warrior
 			UnitRef->Special();
+		UnitRef->HasActed = true;
 		break;
 	case EUnitName::Tank:
 		//Tank
 			UnitRef->Special();
+		UnitRef->HasActed = true;
 		break;
 	case EUnitName::Mage:
 		//Mage

@@ -44,6 +44,9 @@ protected:
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
 	TArray<ATower*> TowerGrid;
 
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
+	TArray<AUpwall*> ClimbableGrid;
+
 	
 	// UFUNCTIONS
 public:	
@@ -101,6 +104,15 @@ public:
 
 	UFUNCTION(	Category = "GridElement",CallInEditor)
 	void SetTowerOnGrid(FIntPoint GridPosition, ATower* Tower);
+	
+	// ----------------------------
+	// Climbable Area on Grid
+	
+	UFUNCTION( Category = "GridElement",CallInEditor)
+	void AddClimbableOnGrid(FIntPoint GridPosition, AUpwall* Upwall);
+
+	UFUNCTION(	Category = "GridElement",CallInEditor)
+	void SetClimbableOnGrid(FIntPoint GridPosition, AUpwall* Upwall);
 	
 	// ----------------------------
 	// SETTERS

@@ -13,6 +13,7 @@ class AUnit;
 class ABuilding;
 class ABase;
 class ATower;
+class AUpwall;
 
 
 
@@ -54,7 +55,7 @@ struct DIVINECONFLICT_API FDC_TileData
 public:
 	FDC_TileData();
 	FDC_TileData(FIntPoint tilePosition, EDC_TileType tileType, FTransform3d tileTransform,
-	             TArray<EDC_TileState> tileState, AUnit* unitOnTile, ABuilding* BuildingOnTile, ABase* baseOnTile , ATower* towerOnTile);
+	             TArray<EDC_TileState> tileState, AUnit* unitOnTile, ABuilding* BuildingOnTile, ABase* baseOnTile , ATower* towerOnTile, AUpwall* UpwallOnTile);
 	
 	
 	~FDC_TileData();
@@ -82,6 +83,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GridElement")
 	ATower* TowerOnTile = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GridElement")
+	AUpwall* UpwallOnTile = nullptr;
 };
 
 USTRUCT(BlueprintType)

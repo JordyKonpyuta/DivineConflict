@@ -33,8 +33,6 @@ AUnit::AUnit()
 	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/tank_ange_pose.tank_ange_pose'")).Object);
 	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	UnitMesh->SetIsReplicated(true);
-
-	UnitName = EUnitName::Tank;
 	
 	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture_DEBUG/M_NeutralPlayer.M_NeutralPlayer'")).Object);
 	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HeavenPlayer.Mi_HeavenPlayer'")).Object);
@@ -186,7 +184,6 @@ void AUnit::SetGrid()
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("No Grid Found"));
 		//delay 0.2s and try again
 		FTimerHandle TimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AUnit::SetGrid, 0.2f, false);
@@ -229,7 +226,6 @@ void AUnit::AssignPlayerController_Implementation()
 	{
 		if (GetPlayerOwner() == EPlayer::P_Neutral)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, GetName());
 			GetWorld()->GetTimerManager().ClearTimer(InitializationTimer);
 			return;
 		}
@@ -857,8 +853,7 @@ void AUnit::GetBuffs()
 		AUnit_Child_Leader* UnitToBuff = Cast<AUnit_Child_Leader> (Grid->GetGridData()->Find(CurrentLoc)->UnitOnTile);
 		if (UnitToBuff && PlayerControllerRef)
 		{
-			if (   GetPlayerOwner() == UnitToBuff->GetPlayerOwner()
-				&& GetPlayerOwner() == PlayerControllerRef->PlayerStateRef->PlayerTeam)
+			if (GetPlayerOwner() == UnitToBuff->GetPlayerOwner())
 			{
 				bIsCommandeerBuffed = true;
 				UnitToBuff = nullptr;
@@ -867,9 +862,12 @@ void AUnit::GetBuffs()
 	}
 	for (FIntPoint CurrentPos : Grid->GridPath->FindTileNeighbors(GetIndexPosition()))
 	{
-		if (AUnit_Child_Tank* TankToCheck = Cast<AUnit_Child_Tank>(Grid->GetGridData()->Find(CurrentPos)->UnitOnTile))
-		{
-			if (TankToCheck->GetIsUsingSpecial() && TankToCheck->GetPlayerOwner() == GetPlayerOwner()) bBuffTank = true;
+		if (Grid->GetGridData()->Find(CurrentPos)->UnitOnTile != this){
+			AUnit_Child_Tank* TankToCheck = Cast<AUnit_Child_Tank>(Grid->GetGridData()->Find(CurrentPos)->UnitOnTile);
+			if (TankToCheck)
+			{
+				if (TankToCheck->GetIsUsingSpecial() && TankToCheck->GetPlayerOwner() == GetPlayerOwner()) bBuffTank = true;
+			}
 		}
 	}
 }

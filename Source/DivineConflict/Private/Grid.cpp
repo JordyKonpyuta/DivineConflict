@@ -8,6 +8,7 @@
 #include "GridInfo.h"
 #include "GridPath.h"
 #include "GridVisual.h"
+#include "Upwall.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -105,12 +106,12 @@ void AGrid::SpawnGrid()
 			{
 				FIntPoint TileIndex = FIntPoint(X, Y);
 				FDC_TileData TileData = FDC_TileData(TileIndex, EDC_TileType::Normal, FTransform3d(FVector(X * 100, Y * 100, HitResult.ImpactPoint.Z)),
-					TArray<EDC_TileState>(), nullptr, nullptr, nullptr, nullptr);
+					TArray<EDC_TileState>(), nullptr, nullptr, nullptr, nullptr, nullptr);
 				if(Cast<ABase>(HitResult.GetActor()))
 				{
 					TileData.TileType = EDC_TileType::Gate;
 					UE_LOG( LogTemp, Warning, TEXT("Obstacle"));
-				} else if(Cast<AClimbActor>(HitResult.GetActor()))
+				} else if(Cast<AUpwall>(HitResult.GetActor()))
 				{
 					TileData.TileType = EDC_TileType::Climbable;
 					UE_LOG( LogTemp, Warning, TEXT("Climbable"));

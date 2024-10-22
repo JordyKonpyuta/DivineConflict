@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "Upwall.generated.h"
 
+class AGrid;
+class ACustomPlayerController;
+
 UCLASS()
 class DIVINECONFLICT_API AUpwall : public AActor
 {
@@ -13,12 +16,36 @@ class DIVINECONFLICT_API AUpwall : public AActor
 
 	// UPROPERTIES
 public:
+	// ----------------------------
+	// Appearance
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Unit", Replicated, meta = (AllowPrivateAccess = "true"))
+	USceneComponent* Scene;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Unit", Replicated, meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* Plane1;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Unit", Replicated, meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* Plane2;
+	
+	// ----------------------------
+	// References
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
+	AGrid* GridRef;
 	
 protected:
-
+	// ----------------------------
+	// Positions
+	
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Grid")
+	FIntPoint GridPosition = FIntPoint(-999, -999);
+	
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Grid")
+	FIntPoint ClimbLocation = FIntPoint(-999, -999);
+	
 	// UFUNCTIONS
 public:	
-
 	// ----------------------------
 	// Constructor
 	
@@ -28,7 +55,25 @@ public:
 	// Overrides
 	
 	virtual void Tick(float DeltaTime) override;
+	
+	// ----------------------------
+	// GETTERS
 
+	UFUNCTION()
+	FIntPoint GetGridPosition();
+
+	UFUNCTION()
+	FIntPoint GetClimbLocation();
+	
+	// ----------------------------
+	// SETTERS
+
+	UFUNCTION()
+	void SetGridPosition(FIntPoint NewGridPosition);
+
+	UFUNCTION()
+	void SetClimbLocation(FIntPoint NewClimbLocation);
+	
 protected:
 	// ----------------------------
 	// Overrides
