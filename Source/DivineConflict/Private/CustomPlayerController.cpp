@@ -687,6 +687,7 @@ void ACustomPlayerController::Multi_ActionActiveTurn_Implementation()
 		if(PlayerStateRef == nullptr)
 			PlayerStateRef = Cast<ACustomPlayerState>(PlayerState);
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Multi_ActionActiveTurn"));
+		GetWorld()->GetTimerManager().ClearTimer(TimerActiveEndTurn);
 		if(PlayerStateRef->bIsActiveTurn)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("IsActiveTurn"));
