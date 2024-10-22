@@ -867,12 +867,20 @@ void ACustomPlayerController::UpdateUITimer_Implementation(int TimeLeft)
 {
 }
 
-void ACustomPlayerController::UpdateWidget3D_Implementation(bool bInteractive, bool bVisibility)
+void ACustomPlayerController::UpdateWidget3D_Implementation(int Index, bool bVisibility)
 {
 }
 
 
 // Display Widget 3D on camera depending if item is interactive or not
+
+void ACustomPlayerController::DisplayAttackWidget_Implementation()
+{
+}
+
+void ACustomPlayerController::RemoveAttackWidget_Implementation()
+{
+}
 
 void ACustomPlayerController::VerifyBuildInteraction()
 {
@@ -887,32 +895,56 @@ void ACustomPlayerController::VerifyBuildInteraction()
 		{
 			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile->GetPlayerOwner() == PlayerStateRef->PlayerTeam && PlayerStateRef->bIsActiveTurn)
 			{
-				UpdateWidget3D(true, true);
+				UpdateWidget3D(0, true);
 			}
-			else UpdateWidget3D(false, true);
+			else UpdateWidget3D(1, true);
 		}
 
 		else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BaseOnTile != nullptr)
 		{
 				if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BaseOnTile->PlayerOwner == PlayerStateRef->PlayerTeam && !PlayerStateRef->bIsActiveTurn)
 			{
-				UpdateWidget3D(true, true);
+				UpdateWidget3D(0, true);
 			}
-			else UpdateWidget3D(false, true);
+			else UpdateWidget3D(1, true);
 		}
 
 		else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TowerOnTile != nullptr)
 		{
 			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TowerOnTile->GetPlayerOwner() == PlayerStateRef->PlayerTeam && PlayerStateRef->bIsActiveTurn)
 			{
-				UpdateWidget3D(true, true);
+				UpdateWidget3D(0, true);
 			}
-			else UpdateWidget3D(false, true);
+			else UpdateWidget3D(1, true);
 		}
 
-		else UpdateWidget3D(false, false);
+		else UpdateWidget3D(1, false);
 	}
-	else UpdateWidget3D(false, false);
+	else if (PlayerAction == EDC_ActionPlayer::AttackUnit)
+	{
+		if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile != nullptr)
+		{
+			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile->GetPlayerOwner() != PlayerStateRef->PlayerTeam)
+			{
+				DisplayAttackWidget();
+			}
+		}
+		else RemoveAttackWidget();
+	}
+
+	else if (PlayerAction == EDC_ActionPlayer::AttackBuilding)
+	{
+		if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BuildingOnTile != nullptr)
+		{
+			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BuildingOnTile->PlayerOwner != PlayerStateRef->PlayerTeam)
+			{
+				UpdateWidget3D(2, true);
+			}
+			else UpdateWidget3D(0, false);
+		}
+	}
+
+	else UpdateWidget3D(0, false);
 }
 
 void ACustomPlayerController::AssignPlayerPosition()
@@ -1031,6 +1063,7 @@ void ACustomPlayerController::SpawnGhostUnit(EUnitType UnitToSpawn, FIntPoint Sp
 						PlayerStateRef->ChangeWoodPoints(PlayerStateRef->GetWarriorWoodCost(), false);
 						PlayerStateRef->ChangeStonePoints(PlayerStateRef->GetWarriorStoneCost(), false);
 						PlayerStateRef->ChangeGoldPoints(PlayerStateRef->GetWarriorGoldCost(), false);
+						PlayerStateRef->SetWarriorCount(PlayerStateRef->GetWarriorCount() + 1);
 						GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 						GhostUnit->SetUnitType(UnitToSpawn);
 						GhostUnit->Spawn();
@@ -1042,6 +1075,7 @@ void ACustomPlayerController::SpawnGhostUnit(EUnitType UnitToSpawn, FIntPoint Sp
 						PlayerStateRef->ChangeWoodPoints(PlayerStateRef->GetTankWoodCost(), false);
 						PlayerStateRef->ChangeStonePoints(PlayerStateRef->GetTankStoneCost(), false);
 						PlayerStateRef->ChangeGoldPoints(PlayerStateRef->GetTankGoldCost(), false);
+						PlayerStateRef->SetTankCount(PlayerStateRef->GetTankCount() + 1);
 						GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 						GhostUnit->SetUnitType(UnitToSpawn);
 						GhostUnit->Spawn();
@@ -1053,6 +1087,7 @@ void ACustomPlayerController::SpawnGhostUnit(EUnitType UnitToSpawn, FIntPoint Sp
 						PlayerStateRef->ChangeWoodPoints(PlayerStateRef->GetMageWoodCost(), false);
 						PlayerStateRef->ChangeStonePoints(PlayerStateRef->GetMageStoneCost(), false);
 						PlayerStateRef->ChangeGoldPoints(PlayerStateRef->GetMageGoldCost(), false);
+						PlayerStateRef->SetMageCount(PlayerStateRef->GetMageCount() + 1);
 						GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 						GhostUnit->SetUnitType(UnitToSpawn);
 						GhostUnit->Spawn();
@@ -1064,6 +1099,7 @@ void ACustomPlayerController::SpawnGhostUnit(EUnitType UnitToSpawn, FIntPoint Sp
 						PlayerStateRef->ChangeWoodPoints(PlayerStateRef->GetLeaderWoodCost(), false);
 						PlayerStateRef->ChangeStonePoints(PlayerStateRef->GetLeaderStoneCost(), false);
 						PlayerStateRef->ChangeGoldPoints(PlayerStateRef->GetLeaderGoldCost(), false);
+						PlayerStateRef->SetLeaderCount(PlayerStateRef->GetLeaderCount() + 1);
 						GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 						GhostUnit->SetUnitType(UnitToSpawn);
 						GhostUnit->Spawn();

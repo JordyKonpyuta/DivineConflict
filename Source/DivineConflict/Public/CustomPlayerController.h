@@ -314,7 +314,11 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateUITimer(int TimeLeft);
 	UFUNCTION(BlueprintNativeEvent)
-	void UpdateWidget3D(bool bInteractive, bool bVisibility);
+	void UpdateWidget3D(int Index, bool bVisibility);
+	UFUNCTION(BlueprintNativeEvent)
+	void DisplayAttackWidget();
+	UFUNCTION(BlueprintNativeEvent)
+	void RemoveAttackWidget();
 
 	UFUNCTION(BlueprintCallable)
 	void VerifyBuildInteraction();

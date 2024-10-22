@@ -276,21 +276,25 @@ int ACustomPlayerState::GetLeaderCount()
 void ACustomPlayerState::SetMageCount(int NewCount)
 {
 	MageCount = NewCount;
+	SetPopulation();
 }
 
 void ACustomPlayerState::SetTankCount(int NewCount)
 {
 	TankCount = NewCount;
+	SetPopulation();
 }
 
 void ACustomPlayerState::SetWarriorCount(int NewCount)
 {
 	WarriorCount = NewCount;
+	SetPopulation();
 }
 
 void ACustomPlayerState::SetLeaderCount(int NewCount)
 {
 	LeaderCount = NewCount;
+	SetPopulation();
 }
 
 void ACustomPlayerState::SetPopulation()
