@@ -891,6 +891,8 @@ void ACustomPlayerController::VerifyBuildInteraction()
 	
 	if (PlayerAction == EDC_ActionPlayer::None)
 	{
+		RemoveAttackWidget();
+		
 		if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile != nullptr)
 		{
 			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile->GetPlayerOwner() == PlayerStateRef->PlayerTeam && PlayerStateRef->bIsActiveTurn)
@@ -920,6 +922,7 @@ void ACustomPlayerController::VerifyBuildInteraction()
 
 		else UpdateWidget3D(1, false);
 	}
+	
 	else if (PlayerAction == EDC_ActionPlayer::AttackUnit)
 	{
 		if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile != nullptr)
@@ -929,12 +932,8 @@ void ACustomPlayerController::VerifyBuildInteraction()
 				DisplayAttackWidget();
 			}
 		}
-		else RemoveAttackWidget();
-	}
-
-	else if (PlayerAction == EDC_ActionPlayer::AttackBuilding)
-	{
-		if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BuildingOnTile != nullptr)
+		
+		else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BuildingOnTile != nullptr)
 		{
 			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BuildingOnTile->PlayerOwner != PlayerStateRef->PlayerTeam)
 			{
@@ -942,9 +941,14 @@ void ACustomPlayerController::VerifyBuildInteraction()
 			}
 			else UpdateWidget3D(0, false);
 		}
+
+		else RemoveAttackWidget();
 	}
 
-	else UpdateWidget3D(0, false);
+	else
+	{
+		UpdateWidget3D(0, false);
+	}
 }
 
 void ACustomPlayerController::AssignPlayerPosition()
