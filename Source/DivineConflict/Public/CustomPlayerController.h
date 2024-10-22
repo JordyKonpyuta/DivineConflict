@@ -291,6 +291,8 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_ActionPassiveTurn();
+	UFUNCTION(Server, Reliable)
+	void Server_Delegate();
 
 	UFUNCTION(Server, Reliable)
 	void Server_SwitchPlayerTurn(const ACustomGameState *GameStateRef);

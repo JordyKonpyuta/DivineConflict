@@ -806,21 +806,14 @@ void ACustomPlayerController::Multi_ActionPassiveTurn_Implementation()
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("EndActionPassiveTurn"));
 			Server_SwitchPlayerTurn(Cast<ACustomGameState>(GetWorld()->GetGameState()));
-			//Cast<ACustomGameState>(GetWorld()->GetGameState())->SwitchPlayerTurn();
+			Server_Delegate();
 		}
+		
 	}
-	OnTurnChangedDelegate.Broadcast();
 }
 
 void ACustomPlayerController::Server_SwitchPlayerTurn_Implementation(const ACustomGameState* GameState)
-{/*
-	ACustomGameState* GameStateRef = const_cast<ACustomGameState*>(GameState);
-	if(GameStateRef)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, TEXT("Server SwitchPlayerTurn"));
-		GameStateRef->SwitchPlayerTurn();
-		UE_LOG( LogTemp, Warning, TEXT("EnfTurn2") );
-	}*/
+{
 	Multi_SwitchPlayerTurn(GameState);
 }
 
@@ -829,12 +822,15 @@ void ACustomPlayerController::Multi_SwitchPlayerTurn_Implementation(const ACusto
 	ACustomGameState* GameStateRef = const_cast<ACustomGameState*>(GameState);
 	if(GameStateRef)
 	{
-		
 		GameStateRef->SwitchPlayerTurn();
 	}
-	
 }
 
+
+void ACustomPlayerController::Server_Delegate_Implementation()
+{
+	OnTurnChangedDelegate.Broadcast();
+}
 
 void ACustomPlayerController::CancelLastAction()
 {

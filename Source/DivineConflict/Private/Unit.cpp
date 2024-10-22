@@ -287,10 +287,8 @@ void AUnit::NewTurn()
 	bIsClimbing = false;
 	SetBuffTank(false);
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("HEAL"));
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("commendandbuff : " + FString::FromInt(bIsCommandeerBuffed)));
 	if (PlayerControllerRef)
-		if (GetPlayerOwner() == EPlayer::P_Heaven && bIsCommandeerBuffed && !PlayerControllerRef->PlayerStateRef->bIsActiveTurn)
+		if (GetPlayerOwner() == EPlayer::P_Heaven && bIsCommandeerBuffed && PlayerControllerRef->PlayerStateRef->bIsActiveTurn)
 		{
 			CurrentHealth = UKismetMathLibrary::Clamp(CurrentHealth + 2, 0, MaxHealth +2);
 		}
