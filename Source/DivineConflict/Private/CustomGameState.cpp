@@ -2,6 +2,8 @@
 
 
 #include "CustomGameState.h"
+
+#include "CustomPlayerController.h"
 #include "EnumsList.h"
 #include "CustomPlayerState.h"
 #include "Net/UnrealNetwork.h"
@@ -34,6 +36,7 @@ void ACustomGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(ACustomGameState, Turn);
 	DOREPLIFETIME(ACustomGameState, PWinner);
 	DOREPLIFETIME(ACustomGameState, PLoser);
+	DOREPLIFETIME(ACustomGameState, bBlockTurnSwitch);
 }
 
 	// ----------------------------
@@ -86,21 +89,35 @@ void ACustomGameState::BeginTimer()
 	SwitchPlayerTurn();
 }
 
+void ACustomGameState::SwitchIsBlockTurnSwitchTimer()
+{
+	bBlockTurnSwitch = !bBlockTurnSwitch;
+}
+
 void ACustomGameState::SwitchPlayerTurn()
 {
-	Turn++;
-
-	for(APlayerState* CurrentPlayerState : PlayerArray)
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("Block Turn Switch : ") + FString::FromInt(bBlockTurnSwitch));
+	if(!bBlockTurnSwitch)
 	{
-		ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState);
-		if(CurrentCustomPlayerState)
+		Turn++;
+		bBlockTurnSwitch = true;
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Switching Turns"));
+		for(APlayerState* CurrentPlayerState : PlayerArray)
 		{
-			CurrentCustomPlayerState->bIsActiveTurn = !CurrentCustomPlayerState->bIsActiveTurn;
-			CurrentCustomPlayerState->SetIsReadyToSwitchTurn(false);
-			CurrentCustomPlayerState->OnRep_bIsActiveTurn();
+			ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState);
+			if(CurrentCustomPlayerState)
+			{
+				CurrentCustomPlayerState->bIsActiveTurn = !CurrentCustomPlayerState->bIsActiveTurn;
+				CurrentCustomPlayerState->SetIsReadyToSwitchTurn(false);
+				CurrentCustomPlayerState->OnRep_bIsActiveTurn();
+				GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Blue, TEXT("Player Type Turn : ") + FString::FromInt(CurrentCustomPlayerState->bIsActiveTurn));
+			}
 		}
+		// Timer to switch turns                                                           
+		GetWorld()->GetTimerManager().ClearTimer(TurnTimerHandle);
+		GetWorld()->GetTimerManager().SetTimer(TurnTimerHandle,	this,	&ACustomGameState::BeginTimer,	TurnTimerLength,	true);
+		GetWorld()->GetTimerManager().SetTimer(TurnTimerHandle,	this,	&ACustomGameState::SwitchIsBlockTurnSwitchTimer,	BlockTurnSwitchTimerLength,	false);
 	}
-
 }
 
 void ACustomGameState::MulticastSwitchPlayerTurn_Implementation()
@@ -121,25 +138,63 @@ void ACustomGameState::CheckSwitchPlayerTurn()
 	}
 	if(PlayerReadyCount == PlayerArray.Num())
 	{
-		Turn++;
-		for(APlayerState* CurrentPlayerState : PlayerArray)
+		//SwitchPlayerTurn();
+		CheckPlayerActionActive();
+	}
+}
+
+void ACustomGameState::CheckPlayerActionPassive()
+{
+	if(HasAuthority())
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Server"));
+	else
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Client"));
+		
+	for(APlayerState * CurrentPlayerState : PlayerArray)
+	{
+		if(ACustomPlayerState* PlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
 		{
-			ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState);
-			if(CurrentCustomPlayerState)
+			if(!PlayerState->bIsActiveTurn)
 			{
-				CurrentCustomPlayerState->bIsActiveTurn = !CurrentCustomPlayerState->bIsActiveTurn;
-				CurrentCustomPlayerState->SetIsReadyToSwitchTurn(false);
-				CurrentCustomPlayerState->OnRep_bIsActiveTurn();
-				
-				// Timer to switch turns                                                           
-				GetWorld()->GetTimerManager().ClearTimer(TurnTimerHandle);
-				GetWorld()->GetTimerManager().SetTimer(TurnTimerHandle,	this,	&ACustomGameState::BeginTimer,	TurnTimerLength,	true);
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Passive Turn"));
+				//Multi_SendPlayerAction(PlayerState);
+				if(ACustomPlayerController* PlayerController = Cast<ACustomPlayerController>(PlayerState->GetPlayerController()))                        
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Passive Turn"));
+					PlayerController->Server_ActionPassiveTurn();
+				}
 			}
 		}
 	}
 }
 
-	// ----------------------------
+void ACustomGameState::Multi_SendPlayerAction_Implementation(ACustomPlayerState* PlayerState)
+{
+	if(ACustomPlayerController* PlayerController = Cast<ACustomPlayerController>(PlayerState->GetPlayerController()))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Passive Turn"));
+		PlayerController->Server_ActionPassiveTurn();
+	}
+}
+
+void ACustomGameState::CheckPlayerActionActive()
+{
+	for(APlayerState * CurrentPlayerState : PlayerArray)
+	{
+		if(ACustomPlayerState* PlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
+		{
+			if(PlayerState->bIsActiveTurn)
+			{
+				if(ACustomPlayerController* PlayerController = Cast<ACustomPlayerController>(PlayerState->GetPlayerController()))
+				{
+					PlayerController->Server_ActionActiveTurn();
+				}
+			}
+		}
+	}
+}
+
+// ----------------------------
 	// Widgets
 
 void ACustomGameState::DisplayWidget_Implementation()

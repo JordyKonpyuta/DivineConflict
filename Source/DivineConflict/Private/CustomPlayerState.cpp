@@ -31,14 +31,26 @@ void ACustomPlayerState::OnRep_bIsActiveTurn()
 	{
 		NewTurnBegin();
 	}
-	if(Cast<ACustomPlayerController>(GetPlayerController()))
-	{
-		Cast<ACustomPlayerController>(GetPlayerController())->UpdateUi();
-		Cast<ACustomPlayerController>(GetPlayerController())->UpdateUITimer(90);
-		Cast<ACustomPlayerController>(GetPlayerController())->ActionEndTurn();
-	}
-		
 	
+	if(PlayerControllerRef ||Cast<ACustomPlayerController>(GetPlayerController()))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player %d is active turn"), PlayerTeam));
+		PlayerControllerRef = Cast<ACustomPlayerController>(GetPlayerController());
+		PlayerControllerRef->UpdateUi();
+		PlayerControllerRef->UpdateUITimer(90);
+		//Cast<ACustomPlayerController>(GetPlayerController())->ActionEndTurn();
+	}
+	else
+	{
+		//UpdateUI();
+	}
+	bIsReadyToSiwtchTurn = false;
+	
+}
+
+ACustomPlayerController* ACustomPlayerState::GetPlayerCustomController()
+{
+	return Cast<ACustomPlayerController>(GetPlayerController());
 }
 
 void ACustomPlayerState::OnRep_PlayerTeam()
@@ -63,6 +75,7 @@ void ACustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(ACustomPlayerState, GoldBuildingOwned);
 	DOREPLIFETIME(ACustomPlayerState, CurrentUnitCount);
 	DOREPLIFETIME(ACustomPlayerState, MaxUnitCount);
+	DOREPLIFETIME(ACustomPlayerState, PlayerControllerRef);
 
 }
 
@@ -94,6 +107,26 @@ bool ACustomPlayerState::GetIsReadyToSwitchTurn()
 void ACustomPlayerState::SetIsReadyToSwitchTurn(bool Ready)
 {
 	bIsReadyToSiwtchTurn = Ready;
+}
+
+void ACustomPlayerState::UpdateUI()
+{
+	
+	
+	if(!PlayerControllerRef)
+		PlayerControllerRef = Cast<ACustomPlayerController>(GetPlayerController());
+	UE_LOG( LogTemp, Warning, TEXT("PlayerControllerRef"));
+	if(PlayerControllerRef)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player %d is active turn"), PlayerTeam));
+		//PlayerControllerRef = Cast<ACustomPlayerController>(GetPlayerController());
+		PlayerControllerRef->UpdateUi();
+		PlayerControllerRef->UpdateUITimer(90);
+	}
+	else
+	{
+		UpdateUI();
+	}
 }
 
 int ACustomPlayerState::GetGoldPoints()

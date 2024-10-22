@@ -453,7 +453,7 @@ void ACustomPlayerController::AttackBase_Implementation(ABase* BaseToAttack, AUn
 		UnitAttacking->AttackBase(BaseToAttack);
 	else
 	{
-		ActionEndTurn();
+		Multi_ActionActiveTurn();
 	}
 }
 
@@ -463,7 +463,7 @@ void ACustomPlayerController::ServerAttackUnit_Implementation(AUnit* UnitToAttac
 		UnitToAttack->AttackUnit(UnitAttacking);
 	else
 	{
-		ActionEndTurn();
+		Multi_ActionActiveTurn();
 	}
 }
 
@@ -473,7 +473,7 @@ void ACustomPlayerController::ServerAttackBuilding_Implementation(ABuilding* Bui
 		UnitAttacking->AttackBuilding(BuildingToAttack);
 	else
 	{
-		ActionEndTurn();
+		Multi_ActionActiveTurn();
 	}
 }
 
@@ -485,7 +485,7 @@ void ACustomPlayerController::ServerAttackTower_Implementation(ATower* TowerToAt
 	}
 	else
 	{
-		ActionEndTurn();
+		Multi_ActionActiveTurn();
 	}
 }
 
@@ -566,7 +566,7 @@ void ACustomPlayerController::EndTurn()
 void ACustomPlayerController::ActionEndTurn()
 {
 	GEngine->AddOnScreenDebugMessage( -1,5.f,FColor::Emerald,TEXT("ActionEndTurn"));
-	if(IsLocalController())
+/*	if(IsLocalController())
 	{
 		HiddeWidget();
 		if(PlayerStateRef == nullptr)
@@ -576,7 +576,7 @@ void ACustomPlayerController::ActionEndTurn()
 		{
 			FTimerHandle TimerActiveEndTurn;
 			
-			if(AllPlayerActions.Num() > 0)
+			if(AllPlayerActions.Num() > 9999)
 			{
 				AUnit* UnitAction = Cast<AUnit>( AllPlayerActions[0].ActorRef);
 				ATower* TowerAction = Cast<ATower>( AllPlayerActions[0].ActorRef);
@@ -653,7 +653,7 @@ void ACustomPlayerController::ActionEndTurn()
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AllPlayerPassive"));
 				if(ABuilding *BuildingAction = Cast<ABuilding>(AllPlayerPassive[0].ActorRef))
                 {
-                    					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BuildingAction"));
+                    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BuildingAction"));
 					GetWorld()->DestroyActor(AllPlayerPassive[0].GhostRef);
 					Grid->GridVisual->RemoveStateFromTile(AllPlayerPassive[0].TilePosition, EDC_TileState::Spawned);
 					Server_SpawnUnit(BuildingAction->UnitProduced, AllPlayerPassive[0].TilePosition, nullptr, BuildingAction);
@@ -670,8 +670,173 @@ void ACustomPlayerController::ActionEndTurn()
 			}
 		}
 	}
-
+*/
 }
+
+void ACustomPlayerController::Server_ActionActiveTurn_Implementation()
+{
+	Multi_ActionActiveTurn();
+}
+
+void ACustomPlayerController::Multi_ActionActiveTurn_Implementation()
+{
+	
+	if(IsLocalController())
+	{
+		HiddeWidget();
+		if(PlayerStateRef == nullptr)
+			PlayerStateRef = Cast<ACustomPlayerState>(PlayerState);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Multi_ActionActiveTurn"));
+		if(PlayerStateRef->bIsActiveTurn)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("IsActiveTurn"));
+			FTimerHandle TimerActiveEndTurn;
+			
+			if(AllPlayerActions.Num() > 0)
+			{
+				AUnit* UnitAction = Cast<AUnit>( AllPlayerActions[0].ActorRef);
+				ATower* TowerAction = Cast<ATower>( AllPlayerActions[0].ActorRef);
+				ABuilding* BuildingAction = Cast<ABuilding>( AllPlayerActions[0].ActorRef);
+				ABase* BaseAction = Cast<ABase>( AllPlayerActions[0].ActorRef);
+				if(UnitAction)
+				{
+					UnitAction->HasActed = false;
+					UnitAction->HasMoved = false;
+				}
+				if(BaseAction || BuildingAction)
+				{
+					AllPlayerActions[0].UnitAttacking->HasActed = false;
+					AllPlayerActions[0].UnitAttacking->HasMoved = false;
+				}
+				if (TowerAction)
+				{
+					TowerAction->SetCanAttack(true);
+				}
+				switch (AllPlayerActions[0].UnitAction)
+				{
+				case EDC_ActionPlayer::MoveUnit:
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("MoveUnit"));
+					AllPlayerActions.RemoveAt(0);
+					ServerMoveUnit(UnitAction);
+					break;
+				case EDC_ActionPlayer::AttackUnit:
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackUnit"));
+					ServerAttackUnit(UnitAction, AllPlayerActions[0].UnitAttacking);
+					GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurn, 0.5f, false);
+					AllPlayerActions.RemoveAt(0);
+					break;
+				case EDC_ActionPlayer::AttackBuilding:
+					if(TowerAction)
+					{
+						UE_LOG( LogTemp, Warning, TEXT("TowerRef") );
+						ServerAttackTower(TowerAction, AllPlayerActions[0].UnitAttacking);
+						GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurn, 0.5f, false);
+						TowerAction = nullptr;
+					}
+					if(BaseAction)
+					{
+						UE_LOG( LogTemp, Warning, TEXT("BaseRef") );
+						AttackBase(BaseAction, AllPlayerActions[0].UnitAttacking);
+						GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurn, 0.5f, false);
+					}
+					if (BuildingAction)
+					{
+						UE_LOG( LogTemp, Warning, TEXT("BuildingRef") );
+						ServerAttackBuilding(BuildingAction, AllPlayerActions[0].UnitAttacking);
+						GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurn, 0.5f, false);
+						BuildingAction = nullptr;
+					}
+					AllPlayerActions.RemoveAt(0);
+					break;
+				case EDC_ActionPlayer::SpellCast:
+					AllPlayerActions.RemoveAt(0);
+					UnitAction->Special();
+					break;
+				default:
+					break;
+				}
+			}else
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("EndActionActiveTurn"));
+				AllPlayerActions.Empty();
+				GetWorld()->GetTimerManager().ClearTimer(TimerActiveEndTurn);
+				Server_CheckPlayerActionPassive();
+			}
+		}
+	}
+}
+void ACustomPlayerController::Server_CheckPlayerActionPassive_Implementation()
+{
+	Cast<ACustomGameState>(GetWorld()->GetGameState())->CheckPlayerActionPassive();
+}
+
+
+void ACustomPlayerController::Server_ActionPassiveTurn_Implementation()
+{
+	Multi_ActionPassiveTurn();
+}
+
+void ACustomPlayerController::Multi_ActionPassiveTurn_Implementation()
+{
+	if(IsLocalController())
+	{
+		if(!AllPlayerPassive.IsEmpty())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AllPlayerPassive"));
+			if(ABuilding *BuildingAction = Cast<ABuilding>(AllPlayerPassive[0].ActorRef))
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BuildingAction"));
+				GetWorld()->DestroyActor(AllPlayerPassive[0].GhostRef);
+				Grid->GridVisual->RemoveStateFromTile(AllPlayerPassive[0].TilePosition, EDC_TileState::Spawned);
+				Server_SpawnUnit(BuildingAction->UnitProduced, AllPlayerPassive[0].TilePosition, nullptr, BuildingAction);
+				AllPlayerPassive.RemoveAt(0);
+				Multi_ActionPassiveTurn();
+			}
+			else if(ABase *BaseAction = Cast<ABase>(AllPlayerPassive[0].ActorRef))
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BaseAction"));
+				GetWorld()->DestroyActor(AllPlayerPassive[0].GhostRef);
+				Grid->GridVisual->RemoveStateFromTile(AllPlayerPassive[0].TilePosition, EDC_TileState::Spawned);
+				Server_SpawnBaseUnit(AllPlayerPassive[0].UnitType,Grid,BaseAction,PlayerStateRef->PlayerTeam);
+				AllPlayerPassive.RemoveAt(0);
+				Multi_ActionPassiveTurn();
+			}
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("EndActionPassiveTurn"));
+			Server_SwitchPlayerTurn(Cast<ACustomGameState>(GetWorld()->GetGameState()));
+			//Cast<ACustomGameState>(GetWorld()->GetGameState())->SwitchPlayerTurn();
+		}
+	}
+}
+
+void ACustomPlayerController::Server_SwitchPlayerTurn_Implementation(const ACustomGameState* GameState)
+{/*
+	ACustomGameState* GameStateRef = const_cast<ACustomGameState*>(GameState);
+	if(GameStateRef)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, TEXT("Server SwitchPlayerTurn"));
+		GameStateRef->SwitchPlayerTurn();
+		UE_LOG( LogTemp, Warning, TEXT("EnfTurn2") );
+	}*/
+	Multi_SwitchPlayerTurn(GameState);
+}
+
+void ACustomPlayerController::Multi_SwitchPlayerTurn_Implementation(const ACustomGameState* GameState)
+{
+	ACustomGameState* GameStateRef = const_cast<ACustomGameState*>(GameState);
+	if(GameStateRef)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, TEXT("SwitchPlayerTurn"));
+		GameStateRef->SwitchPlayerTurn();
+		UE_LOG( LogTemp, Warning, TEXT("EnfTurn2") );
+	}
+	
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("SwitchPlayerTurn"));
+	UE_LOG( LogTemp, Warning, TEXT("SwitchPlayerTurn") );
+}
+
 
 void ACustomPlayerController::CancelLastAction()
 {

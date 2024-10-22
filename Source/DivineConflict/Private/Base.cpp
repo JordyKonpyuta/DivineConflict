@@ -57,12 +57,6 @@ void ABase::BeginPlay()
 	// Get Grid
 	if (Grid)
 	{
-		if(HasAuthority())
-			GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT(" Server Base Begin Play"));
-		else
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Red, TEXT(" Client Base Begin Play"));
-		}
 		GetWorld()->GetTimerManager().SetTimer( UnusedHandle, this, &ABase::timerBeginPlay, 2.f, false );
 		// Grid : Building
 		timerBeginPlay();
@@ -77,16 +71,13 @@ void ABase::BeginPlay()
 		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, -1*Ratio));
 		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 1*Ratio));
 	}
-	else
-	{
-		UE_LOG( LogTemp, Warning, TEXT("Grid is NULL"));
-	}
+
 	
 }
 
 void ABase::timerBeginPlay()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 60.f, FColor::Silver, TEXT("addBaseGrid"));
+
 	Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
 }
 

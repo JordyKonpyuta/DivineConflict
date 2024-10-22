@@ -85,9 +85,7 @@ public:
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
 	UInputMappingContext* InputMappingContext;
-
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
-	ACustomGameState* GameStateRef;
+	
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
 	ACustomPlayerState* PlayerStateRef;
@@ -274,6 +272,27 @@ public:
 
 	UFUNCTION()
 	void ActionEndTurn();
+
+	UFUNCTION(Server, Reliable)
+	void Server_ActionActiveTurn();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_ActionActiveTurn();
+
+	UFUNCTION(Server, Reliable)
+	void Server_ActionPassiveTurn();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_ActionPassiveTurn();
+
+	UFUNCTION(Server, Reliable)
+	void Server_SwitchPlayerTurn(const ACustomGameState *GameStateRef);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_SwitchPlayerTurn(const ACustomGameState *GameStateRef);
+
+	UFUNCTION(Server, Reliable)
+	void Server_CheckPlayerActionPassive();
 	
 	UFUNCTION()
 	void CancelLastAction();

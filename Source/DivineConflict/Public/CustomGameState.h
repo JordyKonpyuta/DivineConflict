@@ -50,12 +50,18 @@ public:
 	// Turns
 	
 	FTimerHandle TurnTimerHandle;
+
+	FTimerHandle SwitchPlayerTurnHandle;
+	
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timer", meta = (AllowPrivateAccess = "true"))
 	int TurnTimerLength = 90;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Turns")
-	bool bP1Turn = false;
+	UPROPERTY()
+	int BlockTurnSwitchTimerLength = 1;
+
+	UPROPERTY(BlueprintReadOnly,Replicated, Category = "Turns")
+	bool bBlockTurnSwitch = false;
 
 	UPROPERTY(Blueprintable,Replicated, BlueprintReadWrite, Category = "Turns")
 	int Turn = 0;
@@ -81,7 +87,10 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "TurnSystem")
 	void BeginTimer();
-
+	
+	UFUNCTION()
+	void SwitchIsBlockTurnSwitchTimer();
+	
 	UFUNCTION(BlueprintCallable, Category = "TurnSystem")
 	void SwitchPlayerTurn();
 
@@ -90,6 +99,19 @@ public:
 
 	UFUNCTION()
 	void CheckSwitchPlayerTurn();
+
+
+	// ----------------------------
+	// Action EndTurn
+
+	UFUNCTION()
+	void CheckPlayerActionActive();
+
+	UFUNCTION()
+	void CheckPlayerActionPassive();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_SendPlayerAction(ACustomPlayerState* PlayerState);
 
 	// ----------------------------
 	// Widgets

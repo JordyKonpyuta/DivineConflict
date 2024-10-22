@@ -79,7 +79,7 @@ public:
 private:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(VisibleAnywhere, Category = "Ref", meta = (AllowPrivate = "true"))
+	UPROPERTY(VisibleAnywhere, Replicated, Category = "Ref", meta = (AllowPrivate = "true"))
 	ACustomPlayerController* PlayerControllerRef;
 
 	// UFUNCTIONS //
@@ -88,6 +88,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	void OnRep_bIsActiveTurn();
 
+	UFUNCTION()
+	ACustomPlayerController* GetPlayerCustomController();
+	
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	void OnRep_PlayerTeam();
 	
@@ -111,6 +114,9 @@ public:
 
 	UFUNCTION()
 	void SetIsReadyToSwitchTurn(bool Ready);
+
+	UFUNCTION()
+	void UpdateUI();
 	
 	// true to add ; false to remove
 	UFUNCTION(BlueprintCallable, Category = "Ressources")
@@ -177,6 +183,7 @@ public:
 	int GetWarriorCount();
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Units")
 	int GetLeaderCount();
+	
 
 	// SETTERS FOR NUMBER OF UNITS
 	UFUNCTION(BlueprintCallable, Category = "Units")
