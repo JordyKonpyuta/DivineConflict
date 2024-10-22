@@ -55,6 +55,7 @@ void AUnit_Child_Warrior::BeginPlay()
 			if (CurrentCustomPlayerState->PlayerTeam == PlayerOwner)
 			{
 				CurrentCustomPlayerState->SetWarriorCount(CurrentCustomPlayerState->GetWarriorCount() + 1);
+				CurrentCustomPlayerState->SetPopulation();
 			}
 		}
 	}

@@ -56,6 +56,7 @@ void AUnit_Child_Leader::BeginPlay()
 			if (CurrentCustomPlayerState->PlayerTeam == PlayerOwner)
 			{
 				CurrentCustomPlayerState->SetLeaderCount(CurrentCustomPlayerState->GetLeaderCount() + 1);
+				CurrentCustomPlayerState->SetPopulation();
 			}
 		}
 	}

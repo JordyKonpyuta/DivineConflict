@@ -69,6 +69,7 @@ void AUnit_Child_Mage::BeginPlay()
 			if (CurrentCustomPlayerState->PlayerTeam == PlayerOwner)
 			{
 				CurrentCustomPlayerState->SetMageCount(CurrentCustomPlayerState->GetMageCount() + 1);
+				CurrentCustomPlayerState->SetPopulation();
 			}
 		}
 	}

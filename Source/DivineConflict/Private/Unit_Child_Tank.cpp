@@ -58,6 +58,7 @@ void AUnit_Child_Tank::BeginPlay()
 			if (CurrentCustomPlayerState->PlayerTeam == PlayerOwner)
 			{
 				CurrentCustomPlayerState->SetTankCount(CurrentCustomPlayerState->GetTankCount() + 1);
+				CurrentCustomPlayerState->SetPopulation();
 			}
 		}
 	}
