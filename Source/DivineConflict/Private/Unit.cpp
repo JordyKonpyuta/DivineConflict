@@ -458,13 +458,13 @@ void AUnit::UnitMoveAnim_Implementation()
 	if (MoveSequencePos == 0)
 	{
 		SetActorLocation(GetActorLocation() + FVector(0,0,50));
-		MoveSequencePos++;
+		MoveSequencePos = 1;
 	}
 
 	// Déplacement
 	else if (MoveSequencePos == 1)
 	{
-		bool WillMove = true;
+		WillMove = true;
 		Grid->GridVisual->RemoveStateFromTile(PathToCross[PathToCrossPosition], EDC_TileState::Pathfinding);
 
 		// If you cross a building
@@ -554,19 +554,19 @@ void AUnit::UnitMoveAnim_Implementation()
 			Grid->GridInfo->Multi_setUnitIndexOnGrid(PathToCross.Last(), this);
 			PathToCross.Empty();
 			PathToCrossPosition = 0;
-			
+			MoveSequencePos = 2;
 		}
 		
 		
+		PathToCrossPosition++;
 
-		MoveSequencePos++;
+		
 	}
 
 	// Descend
 	else if (MoveSequencePos == 2)
 	{
 		SetActorLocation(GetActorLocation() + FVector(0,0,-50));
-		PathToCrossPosition++;
 		MoveSequencePos = 0;
 		if (PathToCross.IsEmpty())
 		{

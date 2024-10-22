@@ -193,6 +193,8 @@ protected:
 	UPROPERTY()
 	bool bBeganAttack = false;
 	
+		bool WillMove = true;
+	
 	// ----------------------------
 	// Units stats
 	
