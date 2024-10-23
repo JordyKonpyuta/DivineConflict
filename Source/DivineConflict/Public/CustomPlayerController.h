@@ -313,6 +313,13 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateUITimer(int TimeLeft);
+
+	UFUNCTION(Client, Reliable)
+	void Client_PauseTimerUI();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void PauseTimerUI();
+	
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateWidget3D(int Index, bool bVisibility);
 	UFUNCTION(BlueprintNativeEvent)

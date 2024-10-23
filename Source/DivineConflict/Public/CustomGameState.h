@@ -113,6 +113,9 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_SendPlayerAction(ACustomPlayerState* PlayerState);
 
+	UFUNCTION()
+	void PauseTimerUI();
+
 	// ----------------------------
 	// Widgets
 	

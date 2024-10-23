@@ -860,6 +860,15 @@ void ACustomPlayerController::CancelLastAction()
 	}
 }
 
+void ACustomPlayerController::Client_PauseTimerUI_Implementation()
+{
+	PauseTimerUI();
+}
+
+void ACustomPlayerController::PauseTimerUI_Implementation()
+{
+}
+
 void ACustomPlayerController::Client_UpdateUi_Implementation()
 {
 	UpdateUi();

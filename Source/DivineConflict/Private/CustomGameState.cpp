@@ -86,7 +86,8 @@ void ACustomGameState::AssignPlayerTurns()
 
 void ACustomGameState::BeginTimer()
 {
-	SwitchPlayerTurn();
+	CheckPlayerActionActive();
+	PauseTimerUI();
 }
 
 void ACustomGameState::SwitchIsBlockTurnSwitchTimer()
@@ -110,10 +111,10 @@ void ACustomGameState::SwitchPlayerTurn()
 				CurrentCustomPlayerState->OnRep_bIsActiveTurn();
 			}
 		}
-		// Timer to switch turns                                                           
+		// Timer to switch turns
 		GetWorld()->GetTimerManager().ClearTimer(TurnTimerHandle);
-		GetWorld()->GetTimerManager().SetTimer(TurnTimerHandle,	this,	&ACustomGameState::BeginTimer,	TurnTimerLength,	true);
-		GetWorld()->GetTimerManager().SetTimer(TurnTimerHandle,	this,	&ACustomGameState::SwitchIsBlockTurnSwitchTimer,	BlockTurnSwitchTimerLength,	false);
+		GetWorld()->GetTimerManager().SetTimer(TurnTimerHandle,this,&ACustomGameState::BeginTimer,TurnTimerLength,false);
+		GetWorld()->GetTimerManager().SetTimer(SwitchPlayerTurnHandle,	this,	&ACustomGameState::SwitchIsBlockTurnSwitchTimer,	BlockTurnSwitchTimerLength,	false);
 	}
 }
 
@@ -137,6 +138,7 @@ void ACustomGameState::CheckSwitchPlayerTurn()
 	{
 		//SwitchPlayerTurn();
 		CheckPlayerActionActive();
+		PauseTimerUI();
 	}
 }
 
@@ -153,6 +155,21 @@ void ACustomGameState::CheckPlayerActionPassive()
 				{
 					PlayerController->Server_ActionPassiveTurn();
 				}
+			}
+		}
+	}
+}
+
+void ACustomGameState::PauseTimerUI()
+{
+	for(APlayerState * CurrentPlayerState : PlayerArray)
+	{
+		if(ACustomPlayerState* PlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
+		{
+			//Multi_SendPlayerAction(PlayerState);
+			if(ACustomPlayerController* PlayerController = Cast<ACustomPlayerController>(PlayerState->GetPlayerController()))                        
+			{
+				PlayerController->Client_PauseTimerUI();
 			}
 		}
 	}
