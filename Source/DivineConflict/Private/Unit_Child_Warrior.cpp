@@ -2,8 +2,11 @@
 
 
 #include "Unit_Child_Warrior.h"
+
+#include "CameraPlayer.h"
 #include "Upwall.h"
 #include "CustomGameState.h"
+#include "CustomPlayerController.h"
 #include "Grid.h"
 #include "GameFramework/CharacterMovementReplication.h"
 #include "UObject/ConstructorHelpers.h"
@@ -67,14 +70,10 @@ void AUnit_Child_Warrior::Special()
 {
 	Super::Special();
 	//Special ability
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Special Activatated"));
 	if (HasMoved)
 	{
 		if (AUpwall* WallToClimb = Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(GetFinalGhostMesh()->GetComponentLocation()))->UpwallOnTile)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("UpwallToClimb found"));
-			TArray<FIntPoint> NewMove;
-			NewMove.Add(WallToClimb->GetClimbLocation());
 			if (WallToClimb->GetClimbLocation() != FIntPoint(-999, -999))
 			{
 				FutureMovement.Add(WallToClimb->GetClimbLocation());
@@ -87,11 +86,13 @@ void AUnit_Child_Warrior::Special()
 		if (AUpwall* WallToClimb = Grid->GetGridData()->Find(GetIndexPosition())->UpwallOnTile)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("UpwallToClimb found"));
-			TArray<FIntPoint> NewMove;
-			NewMove.Add(WallToClimb->GetClimbLocation());
 			if (WallToClimb->GetClimbLocation() != FIntPoint(-999, -999))
 			{
-				FutureMovement.Add(WallToClimb->GetClimbLocation());
+				TArray<FIntPoint> NewMove;
+				NewMove.Add(WallToClimb->GetClimbLocation());
+				SetIsSelected(false);
+				PlayerControllerRef->Server_PrepareMoveUnit(NewMove, this);
+				FutureMovement[0] = WallToClimb->GetClimbLocation();
 				GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(WallToClimb->GetClimbLocation()));
 			}
 		}

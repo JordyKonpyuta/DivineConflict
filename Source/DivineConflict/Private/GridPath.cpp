@@ -5,8 +5,9 @@
 #include "Building.h"
 #include "Grid.h"
 #include "Unit.h"
+#include "Unit_Child_Warrior.h"
 
-	// ----------------------------
+// ----------------------------
 	// Constructor
 UGridPath::UGridPath()
 {
@@ -146,11 +147,19 @@ bool UGridPath::AnalyseNextDiscoverTile()
 }
 
 	// ----------------------------
-	// Height Check
+// Height Check
 
 bool UGridPath::IsValidHeigh(FDC_TileData* IndextestData, FDC_TileData* CurrentIndexData)
 {
 	return FMath::Abs(IndextestData->TileTransform.GetLocation().Z - CurrentIndexData->TileTransform.GetLocation().Z) <= (100/1.75);
+}
+
+bool UGridPath::IsValidHeighWarrior(FDC_TileData* IndextestData, FDC_TileData* CurrentIndexData)
+{
+	if (IndextestData->TileTransform.GetLocation().Z - CurrentIndexData->TileTransform.GetLocation().Z >= -100/1.75 && IndextestData->TileTransform.GetLocation().Z - CurrentIndexData->TileTransform.GetLocation().Z <= 200/1.75)
+		return true;
+	
+	return false;
 }
 
 	// ----------------------------
@@ -323,10 +332,8 @@ TArray<FIntPoint> UGridPath::FindPath(FIntPoint Start, FIntPoint End, bool IsRea
 
 TArray<FIntPoint> UGridPath::NewFindPath(FIntPoint Start, ACustomPlayerController* CPC)
 {
-
-	FIntPoint StartPos = CPC->UnitRef->GetIndexPosition();
-	TArray<FIntPoint> AllMoveCases = {StartPos};
-	TArray<FIntPoint> NewCases = {StartPos};
+	TArray<FIntPoint> AllMoveCases = {Start};
+	TArray<FIntPoint> NewCases = {Start};
 	if (CPC->UnitRef->GetIsGarrison())
 	{
 		AllMoveCases = CPC->UnitRef->GetBuildingRef()->SpawnLocRef;
@@ -334,35 +341,71 @@ TArray<FIntPoint> UGridPath::NewFindPath(FIntPoint Start, ACustomPlayerControlle
 	}
 	TArray<FIntPoint> NewNewCases;
 	int AllMovement = CPC->UnitRef->GetPM();
+	bool IsWarrior = Cast<AUnit_Child_Warrior>(CPC->UnitRef) != nullptr;
+	TMap<FIntPoint, FDC_TileData>* GridData = Grid->GetGridData();
 
-	for (int i = 0; i < AllMovement; i++)
+	if(IsWarrior)
 	{
-		for (FIntPoint CaseToCheck : NewCases)
+		for (int i = 0; i < AllMovement; i++)
 		{
-			for (FIntPoint NeighbourToCheck : Grid->GridPath->FindTileNeighbors(CaseToCheck))
+			for (FIntPoint CaseToCheck : NewCases)
 			{
-				if (AllMoveCases.Find(NeighbourToCheck)
-					&& Grid->GridPath->IsValidHeigh(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck)) 
-					&& Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile
-					)
+				for (FIntPoint NeighbourToCheck : Grid->GridPath->FindTileNeighbors(CaseToCheck))
 				{
-					AllMoveCases += CPC->Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile->SpawnLocRef;
-				}
-				else if (AllMoveCases.Find(NeighbourToCheck)
-					&& Grid->GridPath->IsValidHeigh(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck))
-					)
-				{
-					NewNewCases.Add(NeighbourToCheck);
-				}
-				else
-				{
+					if (AllMoveCases.Find(NeighbourToCheck)
+						&& Grid->GridPath->IsValidHeighWarrior(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck)) 
+						&& Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile
+						)
+					{
+						AllMoveCases += CPC->Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile->SpawnLocRef;
+					}
+					else if (AllMoveCases.Find(NeighbourToCheck)
+						&& Grid->GridPath->IsValidHeighWarrior(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck))
+						)
+					{
+						NewNewCases.Add(NeighbourToCheck);
+					}
+					else
+					{
+					}
 				}
 			}
+			AllMoveCases += NewCases;
+			NewCases = NewNewCases;
+			NewNewCases.Empty();
 		}
-		AllMoveCases += NewCases;
-		NewCases = NewNewCases;
-		NewNewCases.Empty();
+	} else
+	{
+		for (int i = 0; i < AllMovement; i++)
+		{
+			for (FIntPoint CaseToCheck : NewCases)
+			{
+				for (FIntPoint NeighbourToCheck : Grid->GridPath->FindTileNeighbors(CaseToCheck))
+				{
+					if (AllMoveCases.Find(NeighbourToCheck)
+						&& Grid->GridPath->IsValidHeigh(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck)) 
+						&& Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile
+						)
+					{
+						AllMoveCases += CPC->Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile->SpawnLocRef;
+					}
+					else if (AllMoveCases.Find(NeighbourToCheck)
+						&& Grid->GridPath->IsValidHeigh(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck))
+						)
+					{
+						NewNewCases.Add(NeighbourToCheck);
+					}
+					else
+					{
+					}
+				}
+			}
+			AllMoveCases += NewCases;
+			NewCases = NewNewCases;
+			NewNewCases.Empty();
+		}
 	}
+	
 	AllMoveCases += NewCases;
 	return AllMoveCases;
 }

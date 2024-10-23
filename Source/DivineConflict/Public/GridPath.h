@@ -112,6 +112,8 @@ public:
 	// Height Check
 	
 	bool IsValidHeigh(FDC_TileData* IndextestData, FDC_TileData* CurrentIndexData);
+	
+	bool IsValidHeighWarrior(FDC_TileData* IndextestData, FDC_TileData* CurrentIndexData);
 
 	// ----------------------------
 	// Neighbours
