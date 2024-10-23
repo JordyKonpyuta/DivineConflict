@@ -38,6 +38,8 @@ public:
 
 	virtual void PrepareSpecial(FIntPoint SpecialPos) override;
 
+	virtual void DisplayWidgetTutorial() override;
+
 protected:
 	// ----------------------------
 	// Overrides

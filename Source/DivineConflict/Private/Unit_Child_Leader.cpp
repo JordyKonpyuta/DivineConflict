@@ -6,6 +6,7 @@
 #include "CustomGameState.h"
 #include "Grid.h"
 #include "GridPath.h"
+#include "TutorialGameMode.h"
 #include "UObject/ConstructorHelpers.h"
 
 	// ----------------------------
@@ -42,10 +43,22 @@ void AUnit_Child_Leader::BeginPlay()
 		SetDefense(0);
 	if (MaxHealth == 0)
 		SetMaxHealth(20);
-	if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
-		SetCurrentHealth(MaxHealth);
 	if (PM == 0)
 		SetPM(3);
+	for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState<ACustomGameState>()->PlayerArray)
+	{
+		if (ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
+		{
+			if (CurrentCustomPlayerState->bIsInTutorial)
+			{
+				SetCurrentHealth(4);
+				if (PlayerOwner == EPlayer::P_Heaven)
+					GetWorld()->GetAuthGameMode<ATutorialGameMode>()->Leader = this;
+			}
+			else if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
+				SetCurrentHealth(MaxHealth);
+		}
+	}
 
 	UnitName = EUnitName::Leader;
 

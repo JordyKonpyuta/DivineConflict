@@ -38,5 +38,7 @@ protected:
 	// Overrides
 	
 	virtual void BeginPlay() override;
+
+	virtual void DisplayWidgetTutorial() override;
 	
 };

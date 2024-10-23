@@ -8,6 +8,7 @@
 #include "CustomPlayerController.h"
 #include "Grid.h"
 #include "GridInfo.h"
+#include "TutorialGameMode.h"
 #include "Unit_Child_Leader.h"
 #include "Unit_Child_Warrior.h"
 #include "Unit_Child_Mage.h"
@@ -168,12 +169,6 @@ bool ABuilding::Interact_Implementation(ACustomPlayerController* PlayerControlle
 	PlayerControllerRef = PlayerController;
 	return true;
 }
-	
-	// ----------------------------
-	// Check Tutorial
-void ABuilding::Tutorial_Implementation()
-{
-}
 
 	// ----------------------------
 	// Prepare Actions
@@ -229,6 +224,8 @@ void ABuilding::SpawnUnitFromBuilding_Implementation(const FIntPoint &SpawnLocat
 			UnitToSpawn =GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
 		}
 		UnitToSpawn->SetUnitTeam(PlayerOwner);
+		if (PlayerControllerRef->PlayerStateRef->bIsInTutorial)
+			GetWorld()->GetAuthGameMode<ATutorialGameMode>()->DisplayTutorialWidget(8);
 	}
 }
 
@@ -319,7 +316,8 @@ void ABuilding::SwitchOwner(ACustomPlayerState* NewOwner)
 	{
 	case EPlayer::P_Hell:
 	StaticMeshBuilding->SetMaterial(0, AllMaterials[2]);
-		if (NewOwner->bIsInTutorial == true && GarrisonFull) Tutorial();
+		if (NewOwner->bIsInTutorial == true && GarrisonFull)
+			GetWorld()->GetAuthGameMode<ATutorialGameMode>()->DisplayTutorialWidget(7);
 		break;
 	case EPlayer::P_Heaven:
 	StaticMeshBuilding->SetMaterial(0, AllMaterials[1]);

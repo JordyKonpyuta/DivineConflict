@@ -257,6 +257,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual bool Interact_Implementation(ACustomPlayerController* PlayerController) override;
+
+	virtual void DisplayWidgetTutorial();
 	
 	// ----------------------------
 	// Interactions

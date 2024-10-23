@@ -127,12 +127,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	
 	virtual bool Interact_Implementation(ACustomPlayerController* PlayerController) override;
-
-	// ----------------------------
-	// Check Tutorial
-
-	UFUNCTION(BlueprintNativeEvent)
-	void Tutorial();
 	
 	// ----------------------------
 	// Prepare Actions

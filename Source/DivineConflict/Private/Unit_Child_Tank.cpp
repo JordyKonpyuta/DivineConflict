@@ -5,7 +5,10 @@
 
 #include "CustomGameState.h"
 #include "Grid.h"
+#include "CustomPlayerState.h"
 #include "GridPath.h"
+#include "GridVisual.h"
+#include "TutorialGameMode.h"
 #include "UObject/ConstructorHelpers.h"
 
 	// ----------------------------
@@ -31,7 +34,12 @@ AUnit_Child_Tank::AUnit_Child_Tank()
 	}
 }
 
-	// ----------------------------
+void AUnit_Child_Tank::SetTimer()
+{
+	
+}
+
+// ----------------------------
 	// Overrides
 
 void AUnit_Child_Tank::BeginPlay()
@@ -44,13 +52,27 @@ void AUnit_Child_Tank::BeginPlay()
 		SetDefense(9);
 	if (MaxHealth == 0)
 		SetMaxHealth(12);
-	if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
-		SetCurrentHealth(MaxHealth);
 	if (PM == 0)
 		SetPM(3);
 
-	UnitName = EUnitName::Tank;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AUnit_Child_Tank::SetTimer, 1.0f, true);
+	for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState<ACustomGameState>()->PlayerArray)
+	{
+		if (ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
+		{
+			if (CurrentCustomPlayerState->bIsInTutorial)
+			{
+				SetCurrentHealth(4);
+				if (PlayerOwner == EPlayer::P_Heaven)
+					GetWorld()->GetAuthGameMode<ATutorialGameMode>()->HilightUnit(this);
+			}
+			else if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
+				SetCurrentHealth(MaxHealth);
+		}
+	}
+	
 
+	UnitName = EUnitName::Tank;
 
 }
 
@@ -69,8 +91,16 @@ void AUnit_Child_Tank::Special()
 	}
 }
 
+void AUnit_Child_Tank::DisplayWidgetTutorial()
+{
+	Super::DisplayWidgetTutorial();
 
-	// ----------------------------
+	Grid->GridVisual->RemoveStateFromTile(Grid->ConvertLocationToIndex(this->GetActorLocation()), EDC_TileState::Selected);
+	GetWorld()->GetAuthGameMode<ATutorialGameMode>()->DisplayTutorialWidget(1);
+}
+
+
+// ----------------------------
 	// GETTERS
 
 bool AUnit_Child_Tank::GetIsUsingSpecial()

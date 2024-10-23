@@ -205,6 +205,8 @@ void AUnit::Server_DestroyUnit_Implementation()
 	Grid->GridInfo->RemoveUnitInGrid(this);
 	Destroyed();
 	GetWorld()->DestroyActor(this);
+	if (GetWorld()->GetFirstPlayerController()->GetPlayerState<ACustomPlayerState>()->bIsInTutorial)
+		DisplayWidgetTutorial();
 }
 
 // Called to bind functionality to input
@@ -268,6 +270,10 @@ bool AUnit::Interact_Implementation(ACustomPlayerController* PlayerController)
 
 	
 	return true;
+}
+
+void AUnit::DisplayWidgetTutorial()
+{
 }
 
 void AUnit::interaction(ACustomPlayerController* PlayerController)

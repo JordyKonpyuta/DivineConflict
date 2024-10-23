@@ -8,6 +8,7 @@
 #include "CustomPlayerState.h"
 #include "Grid.h"
 #include "GridInfo.h"
+#include "TutorialGameMode.h"
 #include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -55,10 +56,23 @@ void AUnit_Child_Mage::BeginPlay()
 		SetDefense(2);
 	if (MaxHealth == 0)
 		SetMaxHealth(10);
-	if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
-		SetCurrentHealth(MaxHealth);
 	if (PM == 0)
 		SetPM(4);
+	
+	for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState<ACustomGameState>()->PlayerArray)
+	{
+		if (ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
+		{
+			if (CurrentCustomPlayerState->bIsInTutorial)
+			{
+				SetCurrentHealth(4);
+				if (PlayerOwner == EPlayer::P_Heaven)
+					GetWorld()->GetAuthGameMode<ATutorialGameMode>()->Mage = this;
+			}
+			else if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
+				SetCurrentHealth(MaxHealth);
+		}
+	}
 
 	UnitName = EUnitName::Mage;
 
@@ -105,4 +119,10 @@ void AUnit_Child_Mage::PrepareSpecial(FIntPoint SpecialPos)
 				}
 			}
 		}
+}
+
+void AUnit_Child_Mage::DisplayWidgetTutorial()
+{
+	Super::DisplayWidgetTutorial();
+	GetWorld()->GetAuthGameMode<ATutorialGameMode>()->DisplayTutorialWidget(4);
 }

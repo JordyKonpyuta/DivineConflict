@@ -24,17 +24,24 @@ protected:
 
 	bool bIsUsingSpecial = false;
 
+	FTimerHandle TimerHandle;
+
 	// UFUNCTIONS
 public:
 	// ----------------------------
 	// Constructor
 	
 	AUnit_Child_Tank();
-	
+
+	UFUNCTION()
+	void SetTimer();
+
+
 	// ----------------------------
 	// Overrides
 
 	void Special() override;
+	virtual void DisplayWidgetTutorial() override;
 	
 	// ----------------------------
 	// GETTERS
