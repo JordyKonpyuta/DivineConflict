@@ -468,7 +468,10 @@ void ACustomPlayerController::AttackBase_Implementation(ABase* BaseToAttack, AUn
 void ACustomPlayerController::ServerAttackUnit_Implementation(AUnit* UnitToAttack, AUnit* UnitAttacking)
 {
 	if(UnitToAttack && UnitAttacking)
-		UnitToAttack->AttackUnit(UnitAttacking);
+	{
+		UnitAttacking->UnitToAttackRef = UnitToAttack;
+		UnitToAttack->AnimAttack(UnitAttacking);
+	}
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Silver,TEXT("Active"));
@@ -865,6 +868,7 @@ void ACustomPlayerController::AssignPlayerPosition()
 		PlayerStateRef = Cast<ACustomPlayerState>(PlayerState);
 		PlayerStateRef->PlayerControllerRef = this;
 	}
+	UpdateUi();
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADC_CustomPlayerStart::StaticClass(), FoundActors);
 	for(AActor* CurrentActor : FoundActors)

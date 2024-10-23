@@ -707,13 +707,12 @@ void AUnit::TakeDamage(int Damage)
 void AUnit::AttackUnit(AUnit* UnitToAttack)
 {
 	//AUnit* UnitToAttack = UnitToAttackRef;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("UnitToAttack : ") + UnitToAttack->GetName());
 	if(UnitToAttack == nullptr || Grid == nullptr || UnitToAttack == this)
 	{
 		return;
 	}
 	if (Grid->GridPath->FindTileNeighbors(GetIndexPosition()).Contains(UnitToAttack->GetIndexPosition())
-		|| Grid->GetGridData()->Find(UnitToAttack->GetIndexPosition())->BuildingOnTile)
+		|| UnitToAttack->IsGarrison)
 	{
 		if (PlayerOwner == EPlayer::P_Hell && bIsCommandeerBuffed)
 		{
@@ -722,7 +721,6 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 		{
 			UnitToAttack->TakeDamage(GetAttack());
 		}
-
 		if (UnitToAttack->PlayerOwner == EPlayer::P_Hell && UnitToAttack->bIsCommandeerBuffed)
 		{
 			TakeDamage(UnitToAttack->GetAttack() + 1);
@@ -739,6 +737,7 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 			{
 				UnitToAttack->BuildingRef->UnitRef = nullptr;
 				UnitToAttack->BuildingRef->GarrisonFull = false;
+				UnitToAttack->IsGarrison = false;
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Unit Got Killed and removed")));
 				if(GetCurrentHealth() < 1)
 				{
@@ -781,29 +780,30 @@ void AUnit::AttackBuilding_Implementation(ABuilding* BuildingToAttack)
 {
 	if (BuildingToAttack == nullptr || Grid == nullptr)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("BuildingToAttack is null"));
 		return;
 	}
-	UnitToAttackRef = BuildingToAttack->UnitRef;
-	AnimAttack();
+	if (BuildingToAttack->UnitRef)
+		UnitToAttackRef = BuildingToAttack->UnitRef;
+	AnimAttack(UnitToAttackRef);
 }
 
-void AUnit::AnimAttack()
+void AUnit::AnimAttack(AUnit* UnitToAttack)
 {
-	if (!bBeganAttack)
+	if (!bBeganAttack && UnitToAttack)
 	{
 		UnitLocationInWorld = UnitMesh->GetComponentLocation();
 		SetActorLocation(FVector(
-			(UnitLocationInWorld.X + UnitToAttackRef->UnitMesh->GetComponentLocation().X) / 2,
-			(UnitLocationInWorld.Y + UnitToAttackRef->UnitMesh->GetComponentLocation().Y) / 2,
-			(UnitLocationInWorld.Z + UnitToAttackRef->UnitMesh->GetComponentLocation().Z) / 2));
+			(UnitLocationInWorld.X + UnitToAttack->UnitMesh->GetComponentLocation().X) / 2,
+			(UnitLocationInWorld.Y + UnitToAttack->UnitMesh->GetComponentLocation().Y) / 2,
+			(UnitLocationInWorld.Z + UnitToAttack->UnitMesh->GetComponentLocation().Z) / 2)
+			);
+		MoveTimerDelegate.BindUFunction(this, "AnimAttack", UnitToAttack);
 		GetWorld()->GetTimerManager().SetTimer(
-			MoveTimerHandle, 
-			this,
-			&AUnit::AnimAttack,
+			MoveTimerHandle,
+			MoveTimerDelegate,
 			0.2,
 			false);
-		AttackUnit(UnitToAttackRef);
+		AttackUnit(UnitToAttack);
 		bBeganAttack = true;
 	} else
 	{

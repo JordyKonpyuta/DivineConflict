@@ -80,6 +80,7 @@ public:
 	// Timer Handles
 
 	FTimerHandle MoveTimerHandle;
+	FTimerDelegate MoveTimerDelegate;
 
 	FTimerHandle UnitAttackAnimTimer;
 
@@ -340,7 +341,7 @@ public:
 	void AttackBuilding(ABuilding* BuildingToAttack);
 	
 	UFUNCTION()
-	void AnimAttack();
+	void AnimAttack(AUnit* UnitToAttack);
 	
 	// ----------------------------
 	// Prepare Specials
