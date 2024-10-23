@@ -251,9 +251,9 @@ public:
 	bool SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen, ABase* BaseToSpawn, ABuilding* BuildingToSpawn);
 
 	UFUNCTION(Server, Reliable)
-	void Server_SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen, ABase* BaseToSpawn, ABuilding* BuildingToSpawn);
+	void Server_SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen, ABase* BaseToSpawn, ABuilding* BuildingToSpawn,ACustomPlayerState* PlayerStat);
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_SpawnUnit(AUnit* UnitSpawned,AGrid* GridSpawned, ACustomPlayerState* PlayerStatRef, ABase* BaseSpawned, ABuilding* BuildingSpawned);
 
 	UFUNCTION(Server, Reliable)
@@ -276,9 +276,6 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_EndTurn();
-
-	UFUNCTION()
-	void ActionEndTurn();
 
 	UFUNCTION(Server, Reliable)
 	void Server_ActionActiveTurn();

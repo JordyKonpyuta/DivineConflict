@@ -31,19 +31,7 @@ void ACustomPlayerState::OnRep_bIsActiveTurn()
 	{
 		NewTurnBegin();
 	}
-	
-	if(PlayerControllerRef ||Cast<ACustomPlayerController>(GetPlayerController()))
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player %d is active turn"), PlayerTeam));
-		PlayerControllerRef = Cast<ACustomPlayerController>(GetPlayerController());
-		PlayerControllerRef->UpdateUi();
-		PlayerControllerRef->UpdateUITimer(90);
-		//Cast<ACustomPlayerController>(GetPlayerController())->ActionEndTurn();
-	}
-	else
-	{
-		//UpdateUI();
-	}
+	UpdateUI();
 	bIsReadyToSiwtchTurn = false;
 	
 }
@@ -76,6 +64,11 @@ void ACustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(ACustomPlayerState, CurrentUnitCount);
 	DOREPLIFETIME(ACustomPlayerState, MaxUnitCount);
 	DOREPLIFETIME(ACustomPlayerState, PlayerControllerRef);
+	DOREPLIFETIME(ACustomPlayerState, WarriorCount);
+	DOREPLIFETIME(ACustomPlayerState, MageCount);
+	DOREPLIFETIME(ACustomPlayerState, TankCount);
+	DOREPLIFETIME(ACustomPlayerState, LeaderCount);
+	
 
 }
 
@@ -111,21 +104,15 @@ void ACustomPlayerState::SetIsReadyToSwitchTurn(bool Ready)
 
 void ACustomPlayerState::UpdateUI()
 {
-	
-	
+
 	if(!PlayerControllerRef)
 		PlayerControllerRef = Cast<ACustomPlayerController>(GetPlayerController());
 	UE_LOG( LogTemp, Warning, TEXT("PlayerControllerRef"));
 	if(PlayerControllerRef)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player %d is active turn"), PlayerTeam));
-		//PlayerControllerRef = Cast<ACustomPlayerController>(GetPlayerController());
 		PlayerControllerRef->UpdateUi();
 		PlayerControllerRef->UpdateUITimer(90);
-	}
-	else
-	{
-		UpdateUI();
 	}
 }
 
@@ -287,6 +274,7 @@ void ACustomPlayerState::SetTankCount(int NewCount)
 
 void ACustomPlayerState::SetWarriorCount(int NewCount)
 {
+
 	WarriorCount = NewCount;
 	SetPopulation();
 }

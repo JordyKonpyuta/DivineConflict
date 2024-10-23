@@ -79,12 +79,14 @@ public:
 private:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(VisibleAnywhere, Replicated, Category = "Ref", meta = (AllowPrivate = "true"))
-	ACustomPlayerController* PlayerControllerRef;
+
 
 	// UFUNCTIONS //
 public:
 
+	UPROPERTY(VisibleAnywhere, Replicated, Category = "Ref", meta = (AllowPrivate = "true"))
+	ACustomPlayerController* PlayerControllerRef;
+	
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	void OnRep_bIsActiveTurn();
 
@@ -238,13 +240,13 @@ protected:
 
 	// NUMBER OF EACH UNITS
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	int MageCount = 0;
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	int TankCount = 0;
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	int WarriorCount = 0;
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	int LeaderCount = 0;
 
 };

@@ -49,17 +49,7 @@ void AUnit_Child_Leader::BeginPlay()
 
 	UnitName = EUnitName::Leader;
 
-	for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState<ACustomGameState>()->PlayerArray)
-	{
-		if (ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
-		{
-			if (CurrentCustomPlayerState->PlayerTeam == PlayerOwner)
-			{
-				CurrentCustomPlayerState->SetLeaderCount(CurrentCustomPlayerState->GetLeaderCount() + 1);
-				CurrentCustomPlayerState->SetPopulation();
-			}
-		}
-	}
+	
 }
 
 void AUnit_Child_Leader::Special()

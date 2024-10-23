@@ -173,6 +173,7 @@ void ACustomGameState::PauseTimerUI()
 			}
 		}
 	}
+	GetWorld()->GetTimerManager().ClearTimer(TurnTimerHandle);
 }
 
 void ACustomGameState::Multi_SendPlayerAction_Implementation(ACustomPlayerState* PlayerState)

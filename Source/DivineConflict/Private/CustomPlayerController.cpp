@@ -39,6 +39,8 @@ void ACustomPlayerController::BeginPlay()
 		CameraPlayerRef->SetCustomPlayerController(this);
 	}
 	setGrid();
+
+
 	
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACustomPlayerController::AssignPlayerPosition, 2.f, false);
@@ -360,7 +362,6 @@ void ACustomPlayerController::ControllerInteraction()
 					PathReachable.Empty();
 					CameraPlayerRef->IsMovingUnit = false;
 					CameraPlayerRef->Path.Empty();
-					UpdateUi();
 					
 					PlayerAction = EDC_ActionPlayer::None;
 				}
@@ -494,42 +495,35 @@ void ACustomPlayerController::ServerAttackTower_Implementation(ATower* TowerToAt
 
 bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen,ABase* BaseToSpawn, ABuilding* BuildingToSpawn)
 {
-	Server_SpawnUnit(UnitToSpawn, SpawnChosen, BaseToSpawn, BuildingToSpawn);
+	Server_SpawnUnit(UnitToSpawn, SpawnChosen, BaseToSpawn, BuildingToSpawn,PlayerStateRef);
 	return Grid->GetGridData()->Find(SpawnChosen)->UnitOnTile != nullptr;
 }
 
 void ACustomPlayerController::Multicast_SpawnUnit_Implementation(AUnit* UnitSpawned,AGrid* GridSpawned, ACustomPlayerState* PlayerStatRef,  ABase* BaseSpawned, ABuilding* BuildingSpawned)
 {
-	Client_UpdateUi();
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Multicast_SpawnUnit"));
 	if(UnitSpawned)
 	{
-		UnitSpawned->Grid = Grid;
-		
+		UnitSpawned->Grid = Grid;		
 		if(BuildingSpawned)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BuildingSpawned"));
 			UnitSpawned->SetPlayerOwner(BuildingSpawned->PlayerOwner);
-			//BuildingRef->BuildingPreAction(UnitSpawned);
-			//AllPlayerPassive.Add(FStructPassive(BuildingRef, EDC_ActionPlayer::SelectBuilding));
 		}
 			
 		if(BaseSpawned)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BaseSpawned"));
 			UnitSpawned->SetPlayerOwner(BaseSpawned->PlayerOwner);
-			//BaseSpawned->BasePreAction(UnitSpawned);
-			//AllPlayerPassive.Add(FStructPassive(BaseSpawned, EDC_ActionPlayer::SelectBuilding));
 		}
-
 	}
+	Client_UpdateUi();
 }
 
-void ACustomPlayerController::Server_SpawnUnit_Implementation(EUnitType UnitToSpawn, FIntPoint SpawnChosen , ABase* BaseToSpawn, ABuilding* BuildingToSpawn)
+void ACustomPlayerController::Server_SpawnUnit_Implementation(EUnitType UnitToSpawn, FIntPoint SpawnChosen , ABase* BaseToSpawn, ABuilding* BuildingToSpawn, ACustomPlayerState* PlayerStatRef)
 {
-	if(!PlayerStateRef)
-		PlayerStateRef = Cast<ACustomPlayerState>(PlayerState);
 	
-	if (Grid->GetGridData()->Find(SpawnChosen)->UnitOnTile == nullptr)
+	if (Grid->GetGridData()->Find(SpawnChosen)->UnitOnTile == nullptr && PlayerStatRef->CurrentUnitCount <= PlayerStatRef->MaxUnitCount)
 	{
 	
 		AUnit* UnitThatSpawned;
@@ -537,143 +531,39 @@ void ACustomPlayerController::Server_SpawnUnit_Implementation(EUnitType UnitToSp
 		{
 		case EUnitType::U_Warrior:
 			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
-			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStateRef, BaseToSpawn, BuildingToSpawn);
-			
+			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStatRef, BaseToSpawn, BuildingToSpawn);
+			PlayerStatRef->SetWarriorCount(PlayerStatRef->GetWarriorCount() + 1);
 			break;
 		case EUnitType::U_Mage:
 			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Mage>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
-			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStateRef, BaseToSpawn, BuildingToSpawn);
+			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStatRef, BaseToSpawn, BuildingToSpawn);
+			PlayerStatRef->SetMageCount(PlayerStatRef->GetMageCount() + 1);
 			break;
 		case EUnitType::U_Tank:
 			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Tank>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
-			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStateRef, BaseToSpawn, BuildingToSpawn);
+			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStatRef, BaseToSpawn, BuildingToSpawn);
+			PlayerStatRef->SetTankCount(PlayerStatRef->GetTankCount() + 1);
 			break;
 		case EUnitType::U_Leader:
 			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Leader>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
-			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStateRef, BaseToSpawn, BuildingToSpawn);
+			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStatRef, BaseToSpawn, BuildingToSpawn);
+			PlayerStatRef->SetLeaderCount(PlayerStatRef->GetLeaderCount() + 1);
 			break;
 		default:
 			UnitThatSpawned = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
-			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStateRef, BaseToSpawn, BuildingToSpawn);
+			Multicast_SpawnUnit(UnitThatSpawned,Grid,PlayerStatRef, BaseToSpawn, BuildingToSpawn);
+			PlayerStatRef->SetWarriorCount(PlayerStatRef->GetWarriorCount() + 1);
 			break;
 		}
 	}
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("UnitCount : " + FString::FromInt(PlayerStatRef->CurrentUnitCount) + " WarriorCount : " + FString::FromInt(PlayerStatRef->GetWarriorCount())
+		+"TankCount : " + FString::FromInt(PlayerStatRef->GetTankCount()) +"MageCount : " + FString::FromInt(PlayerStatRef->GetMageCount()) +"LeaderCount : " + FString::FromInt(PlayerStatRef->GetLeaderCount())));
 }
 
 void ACustomPlayerController::EndTurn()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("EndTurn"));
 	Server_EndTurn();
-}
-
-void ACustomPlayerController::ActionEndTurn()
-{
-	GEngine->AddOnScreenDebugMessage( -1,5.f,FColor::Emerald,TEXT("ActionEndTurn"));
-/*	if(IsLocalController())
-	{
-		HiddeWidget();
-		if(PlayerStateRef == nullptr)
-			PlayerStateRef = Cast<ACustomPlayerState>(PlayerState);
-
-		if(!PlayerStateRef->bIsActiveTurn)
-		{
-			FTimerHandle TimerActiveEndTurn;
-			
-			if(AllPlayerActions.Num() > 9999)
-			{
-				AUnit* UnitAction = Cast<AUnit>( AllPlayerActions[0].ActorRef);
-				ATower* TowerAction = Cast<ATower>( AllPlayerActions[0].ActorRef);
-				ABuilding* BuildingAction = Cast<ABuilding>( AllPlayerActions[0].ActorRef);
-				ABase* BaseAction = Cast<ABase>( AllPlayerActions[0].ActorRef);
-				if(UnitAction)
-				{
-					UnitAction->HasActed = false;
-					UnitAction->HasMoved = false;
-				}
-				if(BaseAction || BuildingAction)
-				{
-					AllPlayerActions[0].UnitAttacking->HasActed = false;
-					AllPlayerActions[0].UnitAttacking->HasMoved = false;
-				}
-				if (TowerAction)
-				{
-					TowerAction->SetCanAttack(true);
-				}
-				switch (AllPlayerActions[0].UnitAction)
-				{
-				case EDC_ActionPlayer::MoveUnit:
-					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("MoveUnit"));
-					AllPlayerActions.RemoveAt(0);
-					ServerMoveUnit(UnitAction);
-					break;
-				case EDC_ActionPlayer::AttackUnit:
-					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackUnit"));
-					ServerAttackUnit(UnitAction, AllPlayerActions[0].UnitAttacking);
-					GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::ActionEndTurn, 0.5f, false);
-					AllPlayerActions.RemoveAt(0);
-					break;
-				case EDC_ActionPlayer::AttackBuilding:
-					if(TowerAction)
-					{
-						UE_LOG( LogTemp, Warning, TEXT("TowerRef") );
-						ServerAttackTower(TowerAction, AllPlayerActions[0].UnitAttacking);
-						GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::ActionEndTurn, 0.5f, false);
-						TowerAction = nullptr;
-					}
-					if(BaseAction)
-                    {
-                        UE_LOG( LogTemp, Warning, TEXT("BaseRef") );
-                        AttackBase(BaseAction, AllPlayerActions[0].UnitAttacking);
-                        GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::ActionEndTurn, 0.5f, false);
-                    }
-					if (BuildingAction)
-					{
-						UE_LOG( LogTemp, Warning, TEXT("BuildingRef") );
-						ServerAttackBuilding(BuildingAction, AllPlayerActions[0].UnitAttacking);
-						GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::ActionEndTurn, 0.5f, false);
-						BuildingAction = nullptr;
-					}
-					AllPlayerActions.RemoveAt(0);
-					break;
-				case EDC_ActionPlayer::SpellCast:
-                        AllPlayerActions.RemoveAt(0);
-                        UnitAction->Special();
-                        break;
-				default:
-					break;
-				}
-			}else
-			{
-				AllPlayerActions.Empty();
-				GetWorld()->GetTimerManager().ClearTimer(TimerActiveEndTurn);
-			}
-		}
-		else
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AllPlayerPassive"));
-			if(!AllPlayerPassive.IsEmpty())
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AllPlayerPassive"));
-				if(ABuilding *BuildingAction = Cast<ABuilding>(AllPlayerPassive[0].ActorRef))
-                {
-                    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BuildingAction"));
-					GetWorld()->DestroyActor(AllPlayerPassive[0].GhostRef);
-					Grid->GridVisual->RemoveStateFromTile(AllPlayerPassive[0].TilePosition, EDC_TileState::Spawned);
-					Server_SpawnUnit(BuildingAction->UnitProduced, AllPlayerPassive[0].TilePosition, nullptr, BuildingAction);
-					AllPlayerPassive.RemoveAt(0);
-                }
-				else if(ABase *BaseAction = Cast<ABase>(AllPlayerPassive[0].ActorRef))
-                {
-					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BaseAction"));
-					GetWorld()->DestroyActor(AllPlayerPassive[0].GhostRef);
-					Grid->GridVisual->RemoveStateFromTile(AllPlayerPassive[0].TilePosition, EDC_TileState::Spawned);
-                    Server_SpawnBaseUnit(AllPlayerPassive[0].UnitType,Grid,BaseAction,PlayerStateRef->PlayerTeam);
-                    AllPlayerPassive.RemoveAt(0);
-                }
-			}
-		}
-	}
-*/
 }
 
 void ACustomPlayerController::Server_ActionActiveTurn_Implementation()
@@ -791,7 +681,7 @@ void ACustomPlayerController::Multi_ActionPassiveTurn_Implementation()
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BuildingAction"));
 				GetWorld()->DestroyActor(AllPlayerPassive[0].GhostRef);
 				Grid->GridVisual->RemoveStateFromTile(AllPlayerPassive[0].TilePosition, EDC_TileState::Spawned);
-				Server_SpawnUnit(BuildingAction->UnitProduced, AllPlayerPassive[0].TilePosition, nullptr, BuildingAction);
+				Server_SpawnUnit(BuildingAction->UnitProduced, AllPlayerPassive[0].TilePosition, nullptr, BuildingAction, PlayerStateRef);
 				AllPlayerPassive.RemoveAt(0);
 				Multi_ActionPassiveTurn();
 			}
@@ -811,8 +701,8 @@ void ACustomPlayerController::Multi_ActionPassiveTurn_Implementation()
 			Server_SwitchPlayerTurn(Cast<ACustomGameState>(GetWorld()->GetGameState()));
 			Server_Delegate();
 		}
-		
 	}
+
 }
 
 void ACustomPlayerController::Server_SwitchPlayerTurn_Implementation(const ACustomGameState* GameState)
@@ -964,8 +854,12 @@ void ACustomPlayerController::VerifyBuildInteraction()
 
 void ACustomPlayerController::AssignPlayerPosition()
 {
+	
 	if(!PlayerStateRef)
+	{
 		PlayerStateRef = Cast<ACustomPlayerState>(PlayerState);
+		PlayerStateRef->PlayerControllerRef = this;
+	}
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADC_CustomPlayerStart::StaticClass(), FoundActors);
 	for(AActor* CurrentActor : FoundActors)
@@ -1073,51 +967,44 @@ void ACustomPlayerController::SpawnGhostUnit(EUnitType UnitToSpawn, FIntPoint Sp
 				switch (UnitToSpawn)
 				{
 				case EUnitType::U_Warrior:
-					if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetWarriorStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetWarriorWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetWarriorGoldCost())
+					//if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetWarriorStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetWarriorWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetWarriorGoldCost())
 					{
 						PlayerStateRef->ChangeWoodPoints(PlayerStateRef->GetWarriorWoodCost(), false);
 						PlayerStateRef->ChangeStonePoints(PlayerStateRef->GetWarriorStoneCost(), false);
 						PlayerStateRef->ChangeGoldPoints(PlayerStateRef->GetWarriorGoldCost(), false);
-						PlayerStateRef->SetWarriorCount(PlayerStateRef->GetWarriorCount() + 1);
 						GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 						GhostUnit->SetUnitType(UnitToSpawn);
 						GhostUnit->Spawn();
 					}
 					break;
 				case EUnitType::U_Tank:
-					if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetTankStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetTankWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetTankGoldCost())
+					//if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetTankStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetTankWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetTankGoldCost())
 					{
 						PlayerStateRef->ChangeWoodPoints(PlayerStateRef->GetTankWoodCost(), false);
 						PlayerStateRef->ChangeStonePoints(PlayerStateRef->GetTankStoneCost(), false);
 						PlayerStateRef->ChangeGoldPoints(PlayerStateRef->GetTankGoldCost(), false);
-						PlayerStateRef->SetTankCount(PlayerStateRef->GetTankCount() + 1);
 						GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 						GhostUnit->SetUnitType(UnitToSpawn);
 						GhostUnit->Spawn();
 					}
 					break;
 				case EUnitType::U_Mage:
-					if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetMageStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetMageWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetMageGoldCost())
+					//if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetMageStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetMageWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetMageGoldCost())
 					{
 						PlayerStateRef->ChangeWoodPoints(PlayerStateRef->GetMageWoodCost(), false);
 						PlayerStateRef->ChangeStonePoints(PlayerStateRef->GetMageStoneCost(), false);
 						PlayerStateRef->ChangeGoldPoints(PlayerStateRef->GetMageGoldCost(), false);
-						PlayerStateRef->SetMageCount(PlayerStateRef->GetMageCount() + 1);
 						GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 						GhostUnit->SetUnitType(UnitToSpawn);
 						GhostUnit->Spawn();
 					}
 					break;
 				case EUnitType::U_Leader:
-					if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetLeaderStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetLeaderWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetLeaderGoldCost())
+					//if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetLeaderStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetLeaderWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetLeaderGoldCost())
 					{
 						PlayerStateRef->ChangeWoodPoints(PlayerStateRef->GetLeaderWoodCost(), false);
 						PlayerStateRef->ChangeStonePoints(PlayerStateRef->GetLeaderStoneCost(), false);
 						PlayerStateRef->ChangeGoldPoints(PlayerStateRef->GetLeaderGoldCost(), false);
-						PlayerStateRef->SetLeaderCount(PlayerStateRef->GetLeaderCount() + 1);
-						GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
-						GhostUnit->SetUnitType(UnitToSpawn);
-						GhostUnit->Spawn();
 						GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 						GhostUnit->SetUnitType(UnitToSpawn);
 						GhostUnit->Spawn();

@@ -62,17 +62,6 @@ void AUnit_Child_Mage::BeginPlay()
 
 	UnitName = EUnitName::Mage;
 
-	for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState<ACustomGameState>()->PlayerArray)
-	{
-		if (ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
-		{
-			if (CurrentCustomPlayerState->PlayerTeam == PlayerOwner)
-			{
-				CurrentCustomPlayerState->SetMageCount(CurrentCustomPlayerState->GetMageCount() + 1);
-				CurrentCustomPlayerState->SetPopulation();
-			}
-		}
-	}
 }
 
 void AUnit_Child_Mage::Special()

@@ -405,7 +405,6 @@ void AUnit::Move_Implementation(const TArray<FIntPoint> &PathIn)
 	if(PlayerControllerRef != nullptr)
     {
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Next Action"));
-        PlayerControllerRef->ActionEndTurn();
     }
 }
 
