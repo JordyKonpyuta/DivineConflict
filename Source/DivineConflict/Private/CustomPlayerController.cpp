@@ -838,6 +838,7 @@ void ACustomPlayerController::VerifyBuildInteraction()
 		{
 			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile->GetPlayerOwner() != PlayerStateRef->PlayerTeam)
 			{
+				Opponent = Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile;
 				DisplayAttackWidget();
 			}
 		}
