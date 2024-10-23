@@ -50,10 +50,12 @@ void AUpwall::BeginPlay()
 
 	if (GridRef)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Teehee got grid :p"));
 		GridRef->GridInfo->AddClimbableOnGrid(GridRef->ConvertLocationToIndex(GetActorLocation()),this);
 
 		ClimbLocation = GridRef->ConvertLocationToIndex(Plane2->GetComponentLocation());
+	
+		Plane1->SetVisibility(false);
+		Plane2->SetVisibility(false);
 	}
 }
 
