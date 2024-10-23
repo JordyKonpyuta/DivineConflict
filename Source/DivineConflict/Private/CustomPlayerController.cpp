@@ -91,7 +91,13 @@ void ACustomPlayerController::FindReachableTiles()
 	if(Grid)
 		if(UnitRef)
 		{
-			PathReachable =  Grid->GridPath->NewFindPath(Grid->ConvertLocationToIndex(UnitRef->GetActorLocation()), this);
+			AUnit_Child_Warrior* TempWarriorRef = Cast<AUnit_Child_Warrior>(UnitRef);
+			if (UnitRef->HasActed && TempWarriorRef)
+			{
+				PathReachable = Grid->GridPath->NewFindPath(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()), this);
+			}
+			else
+				PathReachable = Grid->GridPath->NewFindPath(Grid->ConvertLocationToIndex(UnitRef->GetActorLocation()), this);
 
 			for(FIntPoint Index : PathReachable)
 			{
@@ -114,7 +120,16 @@ void ACustomPlayerController::OnRep_PlayerTeam()
 void ACustomPlayerController::SelectModeMovement()
 {
 	FindReachableTiles();
-	CameraPlayerRef->Path.Add(UnitRef->GetIndexPosition());
+	if (UnitRef)
+		if (Cast<AUnit_Child_Warrior>(UnitRef)->HasActed)
+		{
+			CameraPlayerRef->Path.Add(UnitRef->FutureMovement[0]);
+			CameraPlayerRef->FullMoveDirection.X = UnitRef->GetFinalGhostMesh()->GetComponentLocation().X;
+			CameraPlayerRef->FullMoveDirection.Y = UnitRef->GetFinalGhostMesh()->GetComponentLocation().Y;
+			CameraPlayerRef->FullMoveDirection.Z = (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
+		}
+	else
+		CameraPlayerRef->Path.Add(UnitRef->GetIndexPosition());
 	PlayerAction = EDC_ActionPlayer::MoveUnit;
 	CameraPlayerRef->IsMovingUnit = true;
 }
@@ -248,7 +263,6 @@ void ACustomPlayerController::ControllerInteraction()
 				else
 				{
 					//PassiveTurn
-					GEngine->AddOnScreenDebugMessage(-1, 5.f,FColor::Blue,TEXT("PassiveTurn"));
 					if(Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile)
 					{
 						if(Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == PlayerStateRef->PlayerTeam)
@@ -265,7 +279,6 @@ void ACustomPlayerController::ControllerInteraction()
 					}	
 					else if(Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile)
 					{
-						GEngine->AddOnScreenDebugMessage(-1, 5.f,FColor::Blue,TEXT("Base"));
 						if(Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile->PlayerOwner == PlayerStateRef->PlayerTeam)
 						{
 							BaseRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile;
