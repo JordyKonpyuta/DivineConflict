@@ -1057,6 +1057,11 @@ void AUnit::SetUnitTeam(EPlayer PO)
 
 void AUnit::SetPlayerOwner(EPlayer po)
 {
+	SetPlayerOwnerMulticast(po);
+}
+
+void AUnit::SetPlayerOwnerMulticast_Implementation(EPlayer po)
+{
 	PlayerOwner = po;
 	
 	switch (PlayerOwner)

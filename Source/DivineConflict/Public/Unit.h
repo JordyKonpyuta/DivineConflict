@@ -481,6 +481,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetPlayerOwner(EPlayer po);
 
+	UFUNCTION(NetMulticast,Reliable)
+	void SetPlayerOwnerMulticast(EPlayer po);
+
 	// Fstring
 	UFUNCTION(BlueprintCallable)
 	void SetName(FString n);
