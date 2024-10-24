@@ -6,6 +6,8 @@
 #include "CustomPlayerController.h"
 #include "GridInfo.h"
 #include "GridPath.h"
+#include "IMovieSceneTracksModule.h"
+#include "Projectile.h"
 #include "Unit.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -83,10 +85,12 @@ void ATower::PreprareAttack(AUnit* UnitAttack)
 
 void ATower::AttackUnit(AUnit* UnitToAttacking, ACustomPlayerController* PlayerControllerAttacking)
 {
-
+	CannonBall = GetWorld()->SpawnActor<AProjectile>(AProjectile::StaticClass(), GetActorLocation(), GetActorRotation());
+	CannonBall->TowerOwner = this;
+	CannonBall->MoveProjectile(UnitToAttacking);
+	
 	UnitToAttacking->SetCurrentHealth(UnitToAttacking->GetCurrentHealth() - Attack);
 	SetCanAttack(false);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UnitToAttack : " + FString::FromInt(UnitToAttacking->GetCurrentHealth())));
 	if(UnitToAttacking->GetCurrentHealth() < 1)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UnitToAttack Destroyed"));

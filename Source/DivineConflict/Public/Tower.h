@@ -12,6 +12,7 @@
 
 class AUnit;
 class AGrid;
+class AProjectile;
 
 UCLASS()
 class DIVINECONFLICT_API ATower : public AActor
@@ -62,6 +63,9 @@ public:
 
 	UPROPERTY(Replicated)
 	FIntPoint UnitToAttackPosition = FIntPoint(-999, -999);
+	
+	UPROPERTY()
+	AProjectile* CannonBall;
 
 protected:
 	// ----------------------------
