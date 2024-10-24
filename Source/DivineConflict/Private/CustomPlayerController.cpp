@@ -121,15 +121,18 @@ void ACustomPlayerController::SelectModeMovement()
 {
 	FindReachableTiles();
 	if (UnitRef)
-		if (Cast<AUnit_Child_Warrior>(UnitRef)->HasActed && UnitRef->GetFinalGhostMesh()->IsVisible())
+	{
+		if (Cast<AUnit_Child_Warrior>(UnitRef))
 		{
+			if (UnitRef->HasActed &&  UnitRef->GetFinalGhostMesh()->IsVisible())
 			CameraPlayerRef->Path.Add(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()));
 			CameraPlayerRef->FullMoveDirection.X = UnitRef->GetFinalGhostMesh()->GetComponentLocation().X;
 			CameraPlayerRef->FullMoveDirection.Y = UnitRef->GetFinalGhostMesh()->GetComponentLocation().Y;
 			CameraPlayerRef->FullMoveDirection.Z = (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
 		}
-	else
-		CameraPlayerRef->Path.Add(UnitRef->GetIndexPosition());
+		else
+			CameraPlayerRef->Path.Add(UnitRef->GetIndexPosition());
+	}
 	PlayerAction = EDC_ActionPlayer::MoveUnit;
 	CameraPlayerRef->IsMovingUnit = true;
 }
