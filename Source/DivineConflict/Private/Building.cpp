@@ -73,7 +73,7 @@ void ABuilding::BeginPlay()
 		
 		if(BuildingList == EBuildingList::B_AP)
 		{
-// Get Position Stocked
+			// Get Position Stocked
 			SpawnLocRef.Add(Grid->ConvertLocationToIndex(GetActorLocation()));
 			SpawnLocRef.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(100, 100, 0)));
 			SpawnLocRef.Add(Grid->ConvertLocationToIndex(GetActorLocation() + FVector3d(100, 0, 0)));
@@ -127,29 +127,32 @@ void ABuilding::BeginPlay()
 			BuildingSpawnLocationRef->GridRef = Grid;
 		}
 		UE_LOG(LogTemp, Warning, TEXT("Building : %d %d "), SpawnLocRef[0].X, SpawnLocRef[0].Y);
-		switch (BuildingList)
+		if(HasAuthority())
 		{
-		case EBuildingList::B_Gold:
-			UnitRef = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
-			break;
-		case EBuildingList::B_Wood:
-			UnitRef = GetWorld()->SpawnActor<AUnit_Child_Mage>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
-			break;
-		case EBuildingList::B_Stone:
-			UnitRef = GetWorld()->SpawnActor<AUnit_Child_Tank>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
-			break;
-		case EBuildingList::B_AP:
-			UnitRef = GetWorld()->SpawnActor<AUnit_Child_Leader>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
-			break;
-		default:
-			UnitRef = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
+			switch (BuildingList)
+			{
+			case EBuildingList::B_Gold:
+				UnitRef = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
+				break;
+			case EBuildingList::B_Wood:
+				UnitRef = GetWorld()->SpawnActor<AUnit_Child_Mage>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
+				break;
+			case EBuildingList::B_Stone:
+				UnitRef = GetWorld()->SpawnActor<AUnit_Child_Tank>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
+				break;
+			case EBuildingList::B_AP:
+				UnitRef = GetWorld()->SpawnActor<AUnit_Child_Leader>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
+				break;
+			default:
+				UnitRef = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
+			}
+			GarrisonFull = true;
+			UnitRef->SetIsGarrison(true);
+			UnitRef->SetBuildingRef(this);
+			UnitRef->SetActorLocation(GetActorLocation());
 		}
-		GarrisonFull = true;
-		UnitRef->SetIsGarrison(true);
-		UnitRef->SetBuildingRef(this);
-		UnitRef->SetActorLocation(GetActorLocation());
 		StaticMeshBuilding->SetMaterial(0, AllMaterials[0]);
-
+		
 		GameStateRef = Cast<ACustomGameState>(GetWorld()->GetGameState());
 	
 		GameStateRef->OnTurnSwitchDelegate.AddUniqueDynamic(this,
@@ -288,6 +291,16 @@ void ABuilding::SetGridPosition(FIntPoint GridP)
 // Owner & Type
 void ABuilding::SwitchOwner(ACustomPlayerState* NewOwner)
 {
+	Server_SwitchOwner(NewOwner);
+}
+
+void ABuilding::Server_SwitchOwner_Implementation(ACustomPlayerState* NewOwner)
+{
+	Server_SwitchOwner(NewOwner);
+}
+
+void ABuilding::Multi_SwitchOwner_Implementation(ACustomPlayerState* NewOwner)
+{
 	switch (BuildingList)
 	{
 	case EBuildingList::B_Wood:
@@ -315,15 +328,15 @@ void ABuilding::SwitchOwner(ACustomPlayerState* NewOwner)
 	switch (PlayerOwner)
 	{
 	case EPlayer::P_Hell:
-	StaticMeshBuilding->SetMaterial(0, AllMaterials[2]);
+		StaticMeshBuilding->SetMaterial(0, AllMaterials[2]);
 		if (NewOwner->bIsInTutorial == true && GarrisonFull)
 			GetWorld()->GetAuthGameMode<ATutorialGameMode>()->DisplayTutorialWidget(7);
 		break;
 	case EPlayer::P_Heaven:
-	StaticMeshBuilding->SetMaterial(0, AllMaterials[1]);
+		StaticMeshBuilding->SetMaterial(0, AllMaterials[1]);
 		break;
 	case EPlayer::P_Neutral:
-	StaticMeshBuilding->SetMaterial(0, AllMaterials[0]);
+		StaticMeshBuilding->SetMaterial(0, AllMaterials[0]);
 		break;
 	}
 	OwnerPlayerState = NewOwner;

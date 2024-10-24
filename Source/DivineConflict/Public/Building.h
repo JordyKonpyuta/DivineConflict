@@ -161,6 +161,12 @@ public:
 	// Owner & Type
 	UFUNCTION(BlueprintCallable, Category = "Player")
 	void SwitchOwner(ACustomPlayerState* NewOwner);
+
+	UFUNCTION(Server, Reliable)
+	void Server_SwitchOwner(ACustomPlayerState* NewOwner);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_SwitchOwner(ACustomPlayerState* NewOwner);
 	
 protected:
 	// ----------------------------

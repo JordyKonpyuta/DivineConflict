@@ -8,7 +8,6 @@
 #include "Grid.h"
 #include "GridPath.h"
 #include "GridVisual.h"
-#include "NavigationSystem.h"
 #include "Unit.h"
 #include "Unit_Child_Warrior.h"
 #include "Kismet/KismetMathLibrary.h"
