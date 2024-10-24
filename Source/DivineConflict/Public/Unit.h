@@ -146,11 +146,13 @@ protected:
 
 	// ----------------------------
 	// Textures
-	
+
+	UPROPERTY()
+	UTexture2D* HeavenIcon;
+	UPROPERTY()
+	UTexture2D* HellIcon;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Texture")
-	UTexture2D* UnitIconParadise;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Texture")
-	UTexture2D* UnitIconHell;
+	UTexture2D* UnitIcon;
 	
 	// ----------------------------
 	// References
@@ -375,7 +377,6 @@ public:
 	void CancelAttack();
 
 	void CancelSpecial();
-	
 	
 	// ----------------------------
 	// GETTERS //

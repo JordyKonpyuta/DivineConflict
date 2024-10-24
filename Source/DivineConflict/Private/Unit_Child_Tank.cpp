@@ -20,18 +20,14 @@ AUnit_Child_Tank::AUnit_Child_Tank()
 	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	
 
+
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjectHell(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Tank_Hell.T_Icon_Tank_Hell'"));
-	if (IconTexObjectHell.Object != NULL)
-	{
-		UnitIconHell = IconTexObjectHell.Object;
-	}
-
-
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Tank_Paradise.T_Icon_Tank_Paradise'"));
+	if (IconTexObjectHell.Object != NULL)
+		HellIcon = IconTexObjectHell.Object;
 	if (IconTexObject.Object != NULL)
-	{
-		UnitIconParadise = IconTexObject.Object;
-	}
+		HeavenIcon = IconTexObject.Object;
+
 }
 
 void AUnit_Child_Tank::SetTimer()
@@ -73,6 +69,15 @@ void AUnit_Child_Tank::BeginPlay()
 	
 
 	UnitName = EUnitName::Tank;
+
+	if (PlayerOwner == EPlayer::P_Hell)
+	{
+		UnitIcon = HellIcon;
+	}
+	else if (PlayerOwner == EPlayer::P_Heaven)
+	{
+		UnitIcon = HeavenIcon;
+	}
 
 }
 

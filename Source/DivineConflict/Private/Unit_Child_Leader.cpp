@@ -16,18 +16,14 @@ AUnit_Child_Leader::AUnit_Child_Leader()
 {
 	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/Ange_test_shape/SM_ange_mage_Scale_up_full_float_1_2.SM_ange_mage_Scale_up_full_float_1_2'")).Object);
 	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	
+	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjectHell(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Leader_Hell.T_Icon_Leader_Hell'"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Leader_Paradise.T_Icon_Leader_Paradise'"));
+	if (IconTexObjectHell.Object != NULL)
+		HellIcon = IconTexObjectHell.Object;
+	if (IconTexObject.Object != NULL)
+		HeavenIcon = IconTexObject.Object;
 
-		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjectHell(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Leader_Hell.T_Icon_Leader_Hell'"));
-		if (IconTexObjectHell.Object != NULL)
-		{
-			UnitIconHell = IconTexObjectHell.Object;
-		}
-
-		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Leader_Paradise.T_Icon_Leader_Paradise'"));
-		if (IconTexObject.Object != NULL)
-		{
-			UnitIconParadise = IconTexObject.Object;
-		}
 }
 
 	// ----------------------------
@@ -62,6 +58,14 @@ void AUnit_Child_Leader::BeginPlay()
 
 	UnitName = EUnitName::Leader;
 
+	if (PlayerOwner == EPlayer::P_Hell)
+	{
+		UnitIcon = HellIcon;
+	}
+	else if (PlayerOwner == EPlayer::P_Heaven)
+	{
+		UnitIcon = HeavenIcon;
+	}
 	
 }
 

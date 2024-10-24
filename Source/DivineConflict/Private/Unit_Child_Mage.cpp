@@ -20,17 +20,13 @@ AUnit_Child_Mage::AUnit_Child_Mage()
 	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/ange_mage/mage.mage'")).Object);
 	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 
-	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjectHell(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Mage_Hell.T_Icon_Mage_Hell'"));
-	if (IconTexObjectHell.Object != NULL)
-	{
-		UnitIconHell = IconTexObjectHell.Object;
-	}
 
+	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjectHell(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Mage_Hell.T_Icon_Mage_Hell'"));
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Mage_Paradise.T_Icon_Mage_Paradise'"));
+	if (IconTexObjectHell.Object != NULL)
+		HellIcon = IconTexObjectHell.Object;
 	if (IconTexObject.Object != NULL)
-	{
-		UnitIconParadise = IconTexObject.Object;
-	}
+		HeavenIcon = IconTexObject.Object;
 }
 
 	// ----------------------------
@@ -75,6 +71,15 @@ void AUnit_Child_Mage::BeginPlay()
 	}
 
 	UnitName = EUnitName::Mage;
+
+	if (PlayerOwner == EPlayer::P_Hell)
+	{
+		UnitIcon = HellIcon;
+	}
+	else if (PlayerOwner == EPlayer::P_Heaven)
+	{
+		UnitIcon = HeavenIcon;
+	}
 
 }
 

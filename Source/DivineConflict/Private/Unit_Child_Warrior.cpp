@@ -21,18 +21,14 @@ AUnit_Child_Warrior::AUnit_Child_Warrior()
 {
 	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/ange_guerrier/gerrier.gerrier'")).Object);
 	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
-
-		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjHell(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Warrior_Hell.T_Icon_Warrior_Hell'"));
-		if (IconTexObjHell.Object)
-		{
-			UnitIconHell = IconTexObjHell.Object;
-		}
 	
-		static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObj(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Warrior_Paradise.T_Icon_Warrior_Paradise'"));
-		if (IconTexObj.Object)
-		{
-			UnitIconParadise = IconTexObj.Object;
-		}
+	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjHell(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Warrior_Hell.T_Icon_Warrior_Hell'"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObj(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Warrior_Paradise.T_Icon_Warrior_Paradise'"));
+	if (IconTexObjHell.Object)
+		HellIcon = IconTexObjHell.Object;
+	if (IconTexObj.Object)
+		HeavenIcon = IconTexObj.Object;
+	
 
 }
 
@@ -69,6 +65,15 @@ void AUnit_Child_Warrior::BeginPlay()
 	}
 
 	UnitName = EUnitName::Warrior;
+
+	if (PlayerOwner == EPlayer::P_Hell)
+	{
+		UnitIcon = HellIcon;
+	}
+	else if (PlayerOwner == EPlayer::P_Heaven)
+	{
+		UnitIcon = HeavenIcon;
+	}
 
 }
 
