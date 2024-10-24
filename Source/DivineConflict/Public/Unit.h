@@ -96,7 +96,7 @@ public:
 	UPROPERTY(Replicated)
 	bool bJustBecameGarrison = false;
 
-	UPROPERTY(Blueprintable, BlueprintReadOnly)
+	UPROPERTY(Blueprintable, BlueprintReadOnly,Replicated)
 	bool HasMoved = false;
 
 	UPROPERTY(Blueprintable, BlueprintReadOnly, Replicated)

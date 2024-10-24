@@ -172,7 +172,7 @@ void ACustomPlayerController::SelectModeSpecial()
 	{
 	case EUnitName::Warrior:
 		//Warrior
-			UnitRef->Special();
+			Server_SpecialUnit(UnitRef);
 		UnitRef->HasActed = true;
 		break;
 	case EUnitName::Tank:
@@ -523,6 +523,11 @@ void ACustomPlayerController::ServerAttackTower_Implementation(ATower* TowerToAt
 	{
 		Multi_ActionActiveTurn();
 	}
+}
+
+void ACustomPlayerController::Server_SpecialUnit_Implementation(AUnit* UnitSpecial)
+{
+	UnitSpecial->Special();
 }
 
 bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen,ABase* BaseToSpawn, ABuilding* BuildingToSpawn)

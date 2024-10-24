@@ -148,7 +148,8 @@ void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProp
 	DOREPLIFETIME(AUnit, bJustBecameGarrison);
 	DOREPLIFETIME(AUnit, MoveSequencePos);
 	DOREPLIFETIME(AUnit, FutureMovement);
-	DOREPLIFETIME(AUnit, HasActed)
+	DOREPLIFETIME(AUnit, HasActed);
+	DOREPLIFETIME(AUnit, HasMoved);
 
 }
 
@@ -319,6 +320,7 @@ void AUnit::Multi_PrepareMove_Implementation(const TArray<FIntPoint>& NewPos)
 	FutureMovement = NewPos;
 	FutureMovementPos = FutureMovement.Last();
 	InitGhosts();
+	HasMoved = true;
 	//Grid->GridInfo->Server_setUnitIndexOnGrid(IndexPosition,this);
 	//PlayerControllerRef->AllPlayerActions.Add(FStructActions(this, EDC_ActionPlayer::MoveUnit));
 }
