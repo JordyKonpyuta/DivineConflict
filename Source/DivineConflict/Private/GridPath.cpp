@@ -354,13 +354,14 @@ TArray<FIntPoint> UGridPath::NewFindPath(FIntPoint Start, ACustomPlayerControlle
 				{
 					if (AllMoveCases.Find(NeighbourToCheck)
 						&& Grid->GridPath->IsValidHeighWarrior(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck)) 
-						&& Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile
+						&& Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile 
 						)
 					{
 						AllMoveCases += CPC->Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile->SpawnLocRef;
 					}
 					else if (AllMoveCases.Find(NeighbourToCheck)
 						&& Grid->GridPath->IsValidHeighWarrior(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck))
+						&& Grid->IsTileWalkable(NeighbourToCheck)
 						)
 					{
 						NewNewCases.Add(NeighbourToCheck);
@@ -384,13 +385,14 @@ TArray<FIntPoint> UGridPath::NewFindPath(FIntPoint Start, ACustomPlayerControlle
 				{
 					if (AllMoveCases.Find(NeighbourToCheck)
 						&& Grid->GridPath->IsValidHeigh(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck)) 
-						&& Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile
+						&& Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile 
 						)
 					{
 						AllMoveCases += CPC->Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile->SpawnLocRef;
 					}
 					else if (AllMoveCases.Find(NeighbourToCheck)
 						&& Grid->GridPath->IsValidHeigh(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck))
+						&& Grid->IsTileWalkable(NeighbourToCheck)
 						)
 					{
 						NewNewCases.Add(NeighbourToCheck);
