@@ -24,6 +24,7 @@ private:
 /* UFUNCTIONS */	
 public:
 
+	UCustomGameInstance();
 	
 private:
 };
