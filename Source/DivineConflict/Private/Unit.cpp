@@ -444,7 +444,36 @@ void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 		IsGarrison = false;
 		BuildingRef = nullptr;
 	}
-		
+
+	while (true)
+	{
+		if(Grid->GetGridData()->Find(PathToCross.Last())->UnitOnTile)
+		{
+			PathToCross.RemoveAt(PathToCross.Num() - 1);
+		}
+		else
+		{
+			break;
+		}
+	}
+	TArray<FIntPoint> PathToCrossTemp;
+
+	for(FIntPoint index : PathToCross)
+    {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("PathToCross : %s"), *index.ToString()));
+    	if(Grid->GetGridData()->Find(index)->UnitOnTile != nullptr)
+		{
+    		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit on tile"));
+			if(Grid->GetGridData()->Find(index)->UnitOnTile->GetPlayerOwner() != GetPlayerOwner())
+            {
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit on tile is not mine"));
+                break;
+            }
+		}
+		PathToCrossTemp.Add(index);
+    }
+	PathToCross = PathToCrossTemp;
+	
 	GetWorld()->GetTimerManager().SetTimer(
 		MoveTimerHandle, 
 		this,
