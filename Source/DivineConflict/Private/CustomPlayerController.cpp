@@ -445,6 +445,10 @@ void ACustomPlayerController::HiddeWidget_Implementation()
 {
 }
 
+void ACustomPlayerController::FeedbackEndTurn_Implementation(bool visibility)
+{
+}
+
 TArray<FIntPoint> ACustomPlayerController::PrepareSpawnArea(TArray<FIntPoint> AllSpawnArea, FIntPoint BaseTile)
 {
 	TArray<FIntPoint> TrueSpawnArea;
@@ -575,6 +579,7 @@ void ACustomPlayerController::EndTurn()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("EndTurn"));
 	Server_EndTurn();
+	FeedbackEndTurn(true);
 }
 
 void ACustomPlayerController::Server_ActionActiveTurn_Implementation()

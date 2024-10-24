@@ -231,6 +231,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void DisplayWidgetTower();
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void FeedbackEndTurn(bool visibility);
+
 	UFUNCTION(BlueprintNativeEvent)
 	void HiddeWidget();
 
