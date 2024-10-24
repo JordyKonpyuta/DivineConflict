@@ -473,13 +473,14 @@ void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 		PathToCrossTemp.Add(index);
     }
 	PathToCross = PathToCrossTemp;
-	
-	GetWorld()->GetTimerManager().SetTimer(
-		MoveTimerHandle, 
-		this,
-		&AUnit::UnitMoveAnim,
-		0.3,
-		true);
+
+	if (!PathToCross.IsEmpty())
+		GetWorld()->GetTimerManager().SetTimer(
+			MoveTimerHandle, 
+			this,
+			&AUnit::UnitMoveAnim,
+			0.3,
+			true);
 }
 
 void AUnit::UnitMoveAnim_Implementation()
@@ -822,29 +823,47 @@ void AUnit::AttackBuilding_Implementation(ABuilding* BuildingToAttack)
 	AnimAttack(UnitToAttackRef);
 }
 
-void AUnit::AnimAttack(AUnit* UnitToAttack)
+void AUnit::AnimAttack(AActor* ThingToAttack)
 {
-	if (!bBeganAttack && UnitToAttack)
+	if (!bBeganAttack && ThingToAttack)
 	{
 		UnitLocationInWorld = UnitMesh->GetComponentLocation();
-		SetActorLocation(FVector(
-			(UnitLocationInWorld.X + UnitToAttack->UnitMesh->GetComponentLocation().X) / 2,
-			(UnitLocationInWorld.Y + UnitToAttack->UnitMesh->GetComponentLocation().Y) / 2,
-			(UnitLocationInWorld.Z + UnitToAttack->UnitMesh->GetComponentLocation().Z) / 2)
-			);
-		MoveTimerDelegate.BindUFunction(this, "AnimAttack", UnitToAttack);
+		MoveTimerDelegate.BindUFunction(this, "AnimAttack", ThingToAttack);
 		GetWorld()->GetTimerManager().SetTimer(
-			MoveTimerHandle,
-			MoveTimerDelegate,
-			0.2,
-			false);
-		AttackUnit(UnitToAttack);
+		MoveTimerHandle,
+		MoveTimerDelegate,
+		0.2,
+		false);
+		if (Cast<AUnit>(ThingToAttack)){
+			AUnit* UnitToAttack = Cast<AUnit>(ThingToAttack);
+			SetActorLocation(FVector(
+				(UnitLocationInWorld.X + UnitToAttack->UnitMesh->GetComponentLocation().X) / 2,
+				(UnitLocationInWorld.Y + UnitToAttack->UnitMesh->GetComponentLocation().Y) / 2,
+				(UnitLocationInWorld.Z + UnitToAttack->UnitMesh->GetComponentLocation().Z) / 2)
+				);
+			UnitAttackAnimDelegate.BindUFunction(this, "AttackUnit", UnitToAttack);
+			GetWorld()->GetTimerManager().SetTimer(
+				UnitAttackAnimTimer,
+				UnitAttackAnimDelegate,
+				0.1,
+				false);
+		}
+		else
+		{
+			SetActorLocation(FVector(
+				(UnitLocationInWorld.X + ThingToAttack->GetActorLocation().X) / 2,
+				(UnitLocationInWorld.Y + ThingToAttack->GetActorLocation().Y) / 2,
+				(UnitLocationInWorld.Z + ThingToAttack->GetActorLocation().Z) / 2)
+				);
+		}
 		bBeganAttack = true;
-	} else
-	{
-		SetActorLocation(UnitLocationInWorld);
-		bBeganAttack = false;
 	}
+	else
+	{
+			SetActorLocation(UnitLocationInWorld);
+			bBeganAttack = false;
+	}
+	
 }
 
 // ----------------------------

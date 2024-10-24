@@ -83,6 +83,7 @@ public:
 	FTimerDelegate MoveTimerDelegate;
 
 	FTimerHandle UnitAttackAnimTimer;
+	FTimerDelegate UnitAttackAnimDelegate;
 
 	FTimerHandle InitializationTimer;
 
@@ -345,7 +346,7 @@ public:
 	void AttackBuilding(ABuilding* BuildingToAttack);
 	
 	UFUNCTION()
-	void AnimAttack(AUnit* UnitToAttack);
+	void AnimAttack(AActor* ThingToAttack);
 	
 	// ----------------------------
 	// Prepare Specials

@@ -465,7 +465,10 @@ TArray<FIntPoint> ACustomPlayerController::PrepareSpawnArea(TArray<FIntPoint> Al
 void ACustomPlayerController::AttackBase_Implementation(ABase* BaseToAttack, AUnit* UnitAttacking)
 {
 	if(BaseToAttack && UnitAttacking)
+	{
 		UnitAttacking->AttackBase(BaseToAttack);
+		UnitAttacking->AnimAttack(BaseToAttack);
+	}
 	else
 	{
 		Multi_ActionActiveTurn();
