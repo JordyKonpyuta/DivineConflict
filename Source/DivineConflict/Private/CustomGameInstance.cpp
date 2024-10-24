@@ -6,6 +6,18 @@
 
 UCustomGameInstance::UCustomGameInstance()
 {
+	EnableFaceBottomKey(true);
+}
+
+void UCustomGameInstance::EnableFaceBottomKey(bool enable)
+{
 	FKey& virtual_key = const_cast<FKey&>(EKeys::Virtual_Accept);
-	virtual_key = EKeys::Invalid;
+	if (enable)
+	{
+		virtual_key = EKeys::Virtual_Accept;
+	}
+	else
+	{
+		virtual_key = EKeys::Invalid;
+	}
 }

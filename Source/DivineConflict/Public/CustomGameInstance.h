@@ -25,6 +25,9 @@ private:
 public:
 
 	UCustomGameInstance();
+
+	UFUNCTION(BlueprintCallable, Category = "CustomGameInstance")
+	void EnableFaceBottomKey(bool enable);
 	
 private:
 };
