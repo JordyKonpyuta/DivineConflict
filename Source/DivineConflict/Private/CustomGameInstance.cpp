@@ -14,7 +14,7 @@ void UCustomGameInstance::EnableFaceBottomKey(bool enable)
 	FKey& virtual_key = const_cast<FKey&>(EKeys::Virtual_Accept);
 	if (enable)
 	{
-		virtual_key = EKeys::Virtual_Accept;
+		virtual_key = EKeys::Gamepad_FaceButton_Bottom;
 	}
 	else
 	{
