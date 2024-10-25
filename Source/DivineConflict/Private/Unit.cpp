@@ -433,6 +433,9 @@ void AUnit::Server_Move_Implementation(const TArray<FIntPoint>& PathToFollow)
 
 void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 {
+	if (FullMove.IsEmpty())
+		return;
+	
 	// Initialisation
 	PathToCross = FullMove;
 	GhostsMesh->SetVisibility(false);
