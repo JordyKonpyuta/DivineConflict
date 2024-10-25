@@ -174,6 +174,7 @@ void ACustomPlayerController::SelectModeSpecial()
 		//Warrior
 			//AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::Special));
 			UnitRef->Special();
+		AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::MoveUnit));
 		UnitRef->HasActed = true;
 		break;
 	case EUnitName::Tank:
