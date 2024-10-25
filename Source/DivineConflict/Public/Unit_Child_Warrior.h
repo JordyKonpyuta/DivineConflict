@@ -6,6 +6,8 @@
 #include "Unit.h"
 #include "Unit_Child_Warrior.generated.h"
 
+class AUpwall;
+
 
 
 /**
@@ -18,6 +20,8 @@ class DIVINECONFLICT_API AUnit_Child_Warrior : public AUnit
 
 	// UPROPERTIES
 public:
+	UPROPERTY(Replicated)
+	AUpwall* WallToClimb;
 	
 protected:
 

@@ -12,6 +12,7 @@
 #include "TutorialGameMode.h"
 #include "GameFramework/CharacterMovementReplication.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
 
 	// ----------------------------
@@ -29,6 +30,12 @@ AUnit_Child_Warrior::AUnit_Child_Warrior()
 	if (IconTexObj.Object)
 		HeavenIcon = IconTexObj.Object;
 	
+
+}
+void AUnit_Child_Warrior::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProps) const{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AUnit_Child_Warrior, WallToClimb);
 
 }
 
@@ -95,18 +102,21 @@ void AUnit_Child_Warrior::Special()
 	//Special ability
 	if (HasMoved)
 	{
-		if (AUpwall* WallToClimb = Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(GetFinalGhostMesh()->GetComponentLocation()))->UpwallOnTile)
+		WallToClimb = Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(GetFinalGhostMesh()->GetComponentLocation()))->UpwallOnTile
+		if (WallToClimb)
 		{
 			if (WallToClimb->GetClimbLocation() != FIntPoint(-999, -999))
 			{
 				FutureMovement.Add(WallToClimb->GetClimbLocation());
 				GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(WallToClimb->GetClimbLocation()));
+				WallToClimb = nullptr;
 			}
 		}
 	}
 	else
 	{
-		if (AUpwall* WallToClimb = Grid->GetGridData()->Find(GetIndexPosition())->UpwallOnTile)
+		WallToClimb = Grid->GetGridData()->Find(GetIndexPosition())->UpwallOnTile;
+		if (WallToClimb = Grid->GetGridData()->Find(GetIndexPosition())->UpwallOnTile)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("UpwallToClimb found"));
 			if (WallToClimb->GetClimbLocation() != FIntPoint(-999, -999))
@@ -115,7 +125,7 @@ void AUnit_Child_Warrior::Special()
 				NewMove.Add(WallToClimb->GetClimbLocation());
 				SetIsSelected(false);
 				PlayerControllerRef->Server_PrepareMoveUnit(NewMove, this);
-				FutureMovement[0] = WallToClimb->GetClimbLocation();
+				FutureMovement.Add(WallToClimb->GetClimbLocation());
 				GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(WallToClimb->GetClimbLocation()));
 			}
 		}
