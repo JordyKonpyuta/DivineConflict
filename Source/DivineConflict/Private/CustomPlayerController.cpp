@@ -172,32 +172,33 @@ void ACustomPlayerController::SelectModeSpecial()
 	{
 	case EUnitName::Warrior:
 		//Warrior
-			Server_SpecialUnit(UnitRef);
+			//AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::Special));
+			UnitRef->Special();
 		UnitRef->HasActed = true;
 		break;
 	case EUnitName::Tank:
 		//Tank
-			UnitRef->Special();
+			AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::Special));
 		UnitRef->HasActed = true;
 		break;
 	case EUnitName::Mage:
 		//Mage
-		if (UnitRef->HasMoved)
-		{
-			PathReachable =  Grid->GridPath->FindPath(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()),
-				FIntPoint(-999,-999),true,3,false);
-			CameraPlayerRef->FullMoveDirection.X = UnitRef->GetFinalGhostMesh()->GetComponentLocation().X;
-			CameraPlayerRef->FullMoveDirection.Y = UnitRef->GetFinalGhostMesh()->GetComponentLocation().Y;
-			CameraPlayerRef->FullMoveDirection.Z = (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
-		} else
-		{
-			PathReachable =  Grid->GridPath->FindPath(UnitRef->GetIndexPosition(),FIntPoint(-999,-999),true,3,false);
-		}
-			for(FIntPoint Index : PathReachable)
+			if (UnitRef->HasMoved)
 			{
-				Grid->GridVisual->addStateToTile(Index, EDC_TileState::Attacked);
+				PathReachable =  Grid->GridPath->FindPath(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()),
+					FIntPoint(-999,-999),true,3,false);
+				CameraPlayerRef->FullMoveDirection.X = UnitRef->GetFinalGhostMesh()->GetComponentLocation().X;
+				CameraPlayerRef->FullMoveDirection.Y = UnitRef->GetFinalGhostMesh()->GetComponentLocation().Y;
+				CameraPlayerRef->FullMoveDirection.Z = (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
+			} else
+			{
+				PathReachable =  Grid->GridPath->FindPath(UnitRef->GetIndexPosition(),FIntPoint(-999,-999),true,3,false);
 			}
-			PlayerAction = EDC_ActionPlayer::SpellCast;
+		for(FIntPoint Index : PathReachable)
+		{
+			Grid->GridVisual->addStateToTile(Index, EDC_TileState::Attacked);
+		}
+		PlayerAction = EDC_ActionPlayer::Special;
 		break;
 	default: ;
 	}
@@ -405,7 +406,7 @@ void ACustomPlayerController::ControllerInteraction()
 			}
 			PlayerAction = EDC_ActionPlayer::None;
 			break;
-		case EDC_ActionPlayer::SpellCast:
+		case EDC_ActionPlayer::Special:
 			if(UnitRef)
 			{
 				if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
@@ -413,12 +414,12 @@ void ACustomPlayerController::ControllerInteraction()
 					if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() != UnitRef->GetPlayerOwner())
 					{
 						UnitRef->PrepareSpecial(PlayerPositionInGrid);
-						AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::SpellCast));
+						AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::Special, Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile));
 					}
 					if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile)
 					{
 						UnitRef->PrepareSpecial(PlayerPositionInGrid);
-						AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::SpellCast));
+						AllPlayerActions.Add(FStructActions(Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile, EDC_ActionPlayer::Special, UnitRef));
 					}
 				}
 				for(FIntPoint Index : PathReachable)
@@ -525,9 +526,11 @@ void ACustomPlayerController::ServerAttackTower_Implementation(ATower* TowerToAt
 	}
 }
 
-void ACustomPlayerController::Server_SpecialUnit_Implementation(AUnit* UnitSpecial)
+void ACustomPlayerController::Server_SpecialUnit_Implementation(AUnit* UnitSpecial,AActor* ThingToAttack)
 {
-	UnitSpecial->Special();
+	if(AUnit_Child_Mage* MageSp =  Cast<AUnit_Child_Mage>(UnitSpecial))
+		MageSp->SpecialMage(ThingToAttack);
+	else UnitSpecial->Special();
 }
 
 bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen,ABase* BaseToSpawn, ABuilding* BuildingToSpawn)
@@ -679,10 +682,13 @@ void ACustomPlayerController::Multi_ActionActiveTurn_Implementation()
 					}
 					AllPlayerActions.RemoveAt(0);
 					break;
-				case EDC_ActionPlayer::SpellCast:
-					AllPlayerActions.RemoveAt(0);
-					UnitAction->Special();
+				case EDC_ActionPlayer::Special:
+					if(BaseAction)
+						Server_SpecialUnit(AllPlayerActions[0].UnitAttacking, BaseAction);
+					if(UnitAction)
+						Server_SpecialUnit(UnitAction,AllPlayerActions[0].UnitAttacking);
 					GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurn, 0.5f, false);
+					AllPlayerActions.RemoveAt(0);
 					break;
 				default:
 					break;
@@ -774,7 +780,7 @@ void ACustomPlayerController::CancelLastAction()
 			case EDC_ActionPlayer::MoveUnit:
 			ActorThatStops->CancelMove();
 				break;
-			case EDC_ActionPlayer::SpellCast:
+			case EDC_ActionPlayer::Special:
 				ActorThatStops->CancelSpecial();
 				break;
 			case EDC_ActionPlayer::AttackUnit:

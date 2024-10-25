@@ -34,7 +34,7 @@ enum class EDC_ActionPlayer : uint8
 	None UMETA(DisplayName = "None"),
 	MoveUnit UMETA(DisplayName = "MoveUnit"),
 	AttackUnit UMETA(DisplayName = "AttackUnit"),
-	SpellCast UMETA(DisplayName = "SpellCast"),
+	Special UMETA(DisplayName = "Special"),
 	AttackBuilding UMETA(DisplayName = "AttackBuilding"),
 	SelectBuilding UMETA(DisplayNmae = "SelectBuilding"),
 };
@@ -253,7 +253,7 @@ public:
 	void ServerAttackTower(ATower* TowerToAttack, AUnit* UnitAttacking);
 
 	UFUNCTION(Server, Reliable)
-	void Server_SpecialUnit(AUnit* UnitSpecial);
+	void Server_SpecialUnit(AUnit* UnitSpecial, AActor* ThingToAttack);
 	
 	UFUNCTION(Blueprintable)
 	bool SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen, ABase* BaseToSpawn, ABuilding* BuildingToSpawn);

@@ -34,7 +34,7 @@ public:
 	// ----------------------------
 	// Overrides
 
-	virtual void Special() override;
+	void SpecialMage(AActor* Target);
 
 	virtual void PrepareSpecial(FIntPoint SpecialPos) override;
 

@@ -83,23 +83,24 @@ void AUnit_Child_Mage::BeginPlay()
 
 }
 
-void AUnit_Child_Mage::Special()
+void AUnit_Child_Mage::SpecialMage(AActor* Target)
 {
-	if(BaseToAttack)
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("MAGE SPECIAL"));
+	if(ABase* BaseAttack = Cast<ABase>(Target))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("BASE TO ATTACK DAMAGE"));
-		BaseToAttack->TakeDamage(5);
+		BaseAttack->TakeDamage(5);
 	}
-	if(UnitToAttack)
+	if(AUnit* UnitAttack = Cast<AUnit>(Target))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UNIT TO ATTACK DAMAGE"));
-		UnitToAttack->SetCurrentHealth(UnitToAttack->GetCurrentHealth() - 5);
+		UnitAttack->SetCurrentHealth(UnitAttack->GetCurrentHealth() - 5);
 
-		if(UnitToAttack->GetCurrentHealth() <= 0)
+		if(UnitAttack->GetCurrentHealth() <= 0)
 		{
-			Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
+			Grid->GridInfo->RemoveUnitInGrid(UnitAttack);
 			PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
-			GetWorld()->DestroyActor(UnitToAttack);
+			GetWorld()->DestroyActor(UnitAttack);
 		}
 	}
 }
