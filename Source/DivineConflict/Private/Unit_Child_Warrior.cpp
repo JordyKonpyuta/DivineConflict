@@ -102,7 +102,7 @@ void AUnit_Child_Warrior::Special()
 	//Special ability
 	if (HasMoved)
 	{
-		WallToClimb = Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(GetFinalGhostMesh()->GetComponentLocation()))->UpwallOnTile
+		WallToClimb = Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(GetFinalGhostMesh()->GetComponentLocation()))->UpwallOnTile;
 		if (WallToClimb)
 		{
 			if (WallToClimb->GetClimbLocation() != FIntPoint(-999, -999))
@@ -116,7 +116,7 @@ void AUnit_Child_Warrior::Special()
 	else
 	{
 		WallToClimb = Grid->GetGridData()->Find(GetIndexPosition())->UpwallOnTile;
-		if (WallToClimb = Grid->GetGridData()->Find(GetIndexPosition())->UpwallOnTile)
+		if (WallToClimb)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("UpwallToClimb found"));
 			if (WallToClimb->GetClimbLocation() != FIntPoint(-999, -999))
