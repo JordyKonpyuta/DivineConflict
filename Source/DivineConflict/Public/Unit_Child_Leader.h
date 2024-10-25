@@ -16,7 +16,7 @@ class DIVINECONFLICT_API AUnit_Child_Leader : public AUnit
 	// UPROPERTIES
 public:
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TArray<AUnit*> AllUnitsToBuff;
 	
 protected:
@@ -38,7 +38,11 @@ public:
 	// ----------------------------
 	// Buff
 
-	void PushBuff();
+	UFUNCTION(Server, Reliable)
+	void Server_PushBuff();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_PushBuff();
 	
 protected:
 	// ----------------------------

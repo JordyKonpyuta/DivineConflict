@@ -367,8 +367,11 @@ public:
 	// ----------------------------
 	// Get Buffs
 
-	UFUNCTION()
-	void GetBuffs();
+	UFUNCTION(Server, Reliable)
+	void Server_GetBuffs();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_GetBuffs();
 	
 	// ----------------------------
 	// Cancel Actions

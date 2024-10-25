@@ -7,6 +7,7 @@
 #include "Grid.h"
 #include "GridPath.h"
 #include "TutorialGameMode.h"
+#include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
 
 	// ----------------------------
@@ -23,6 +24,13 @@ AUnit_Child_Leader::AUnit_Child_Leader()
 		HellIcon = IconTexObjectHell.Object;
 	if (IconTexObject.Object != NULL)
 		HeavenIcon = IconTexObject.Object;
+
+}
+
+void AUnit_Child_Leader::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProps) const{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AUnit_Child_Leader, AllUnitsToBuff);
 
 }
 
@@ -66,6 +74,7 @@ void AUnit_Child_Leader::BeginPlay()
 	{
 		UnitIcon = HeavenIcon;
 	}
+	Server_PushBuff();
 	
 }
 
@@ -88,15 +97,21 @@ void AUnit_Child_Leader::MoveUnitEndTurn()
 {
 	Super::MoveUnitEndTurn();
 
-	PushBuff();
+	Server_PushBuff();
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Post-Move Buff"));
 }
 
-	// ----------------------------
+// ----------------------------
 	// Buff
 
-void AUnit_Child_Leader::PushBuff()
+void AUnit_Child_Leader::Server_PushBuff_Implementation()
 {
+	Multi_PushBuff();
+}
+
+void AUnit_Child_Leader::Multi_PushBuff_Implementation()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Buff has been Pushed"));
 	TArray<AUnit*> TempAllUnitsToCheck;
 	TArray<AUnit*> OldUnitsSave = AllUnitsToBuff;
 
@@ -131,8 +146,6 @@ void AUnit_Child_Leader::PushBuff()
 			{
 				Unit->SetIsCommandeerBuffed(true);
 				AllUnitsToBuff.AddUnique(this);
-				
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Applied Buff"));
 			}
 		}
 	}

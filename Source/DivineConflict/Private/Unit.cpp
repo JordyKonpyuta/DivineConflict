@@ -109,7 +109,7 @@ void AUnit::BeginPlay()
 		InitializationTimer, 
 		this,
 		&AUnit::AssignPlayerController_Implementation,
-		5,
+		0.2,
 		true);
 }
 
@@ -235,24 +235,34 @@ void AUnit::AssignPlayerController_Implementation()
 		TArray<AActor*> AllActors;
 		TArray<ACustomPlayerController*> AllControllers;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACustomPlayerController::StaticClass(), AllActors);
-		for (AActor* CurrentActor : AllActors)
+		if (!AllActors.IsEmpty())
 		{
-			AllControllers.Add(Cast<ACustomPlayerController>(CurrentActor));
-		}
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, TEXT("Number :" + FString::FromInt(AllControllers.Num())));
-		for (ACustomPlayerController* CurrentPC : AllControllers)
-		{
-			if (CurrentPC->PlayerStateRef->PlayerTeam == GetPlayerOwner())
+			for (AActor* CurrentActor : AllActors)
 			{
-				GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Cyan,GetName());
-				PlayerControllerRef = CurrentPC;
-				PlayerControllerRef->OnTurnChangedDelegate.AddUFunction(this, "NewTurn");
-				GetWorld()->GetTimerManager().ClearTimer(InitializationTimer);
-				return;
+				AllControllers.Add(Cast<ACustomPlayerController>(CurrentActor));
+			}
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, TEXT("Number :" + FString::FromInt(AllControllers.Num())));
+			if (!AllControllers.IsEmpty()){
+				for (ACustomPlayerController* CurrentPC : AllControllers)
+				{
+					if (CurrentPC->PlayerStateRef)
+						if (CurrentPC->PlayerStateRef->PlayerTeam == GetPlayerOwner())
+						{
+							GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Cyan,GetName());
+							PlayerControllerRef = CurrentPC;
+							PlayerControllerRef->OnTurnChangedDelegate.AddUFunction(this, "NewTurn");
+							GetWorld()->GetTimerManager().ClearTimer(InitializationTimer);
+							Server_GetBuffs();
+							return;
+						}
+				}
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, GetName());
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Received Buff"));
 			}
 		}
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, GetName());
 	}
+	else
+		GetWorld()->GetTimerManager().ClearTimer(InitializationTimer);
 }
 
 
@@ -370,9 +380,9 @@ void AUnit::Move_Implementation(const TArray<FIntPoint> &PathIn)
 				{
 					if (this != Grid->GetGridData()->Find(index)->BuildingOnTile->UnitRef)
 					{
-						for(FIntPoint Superindex : Path)
+						for(FIntPoint SuperIndex : Path)
 						{
-							Grid->GridVisual->RemoveStateFromTile(Superindex, EDC_TileState::Pathfinding);
+							Grid->GridVisual->RemoveStateFromTile(SuperIndex, EDC_TileState::Pathfinding);
 						}
 						Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
 						break;
@@ -611,7 +621,7 @@ void AUnit::UnitMoveAnim_Implementation()
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Next Action"));
 				FutureMovement.Empty();
 				PlayerControllerRef->Server_ActionActiveTurn();
-				GetBuffs();
+				Server_GetBuffs();
 			}
 		}
 	}
@@ -622,7 +632,7 @@ void AUnit::MoveUnitEndTurn()
 	Multi_HiddeGhosts();
 	InitializeFullMove(FutureMovement);
 	FutureMovement.Empty();
-	GetBuffs();
+	Server_GetBuffs();
 }
 
 // ----------------------------
@@ -648,8 +658,8 @@ void AUnit::InitGhosts_Implementation()
 	GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovementPos));
 	GhostsFinaleLocationMesh->SetVisibility(true);
 
-	// Set ghost's position as unit's position on grid
-	//Grid->GridInfo->Server_setUnitIndexOnGrid(FutureMovementPos, this);
+	// Set ghost's position as unit's position on grid ;
+	// Grid->GridInfo->Server_setUnitIndexOnGrid(FutureMovementPos, this);
 	bIsGhosts = true;
 }
 
@@ -899,13 +909,20 @@ void AUnit::SpecialBase(ABase* BaseToAttack)
 // ----------------------------
 // Get Buffs
 
-void AUnit::GetBuffs()
+void AUnit::Server_GetBuffs_Implementation()
+{
+	Multi_GetBuffs();
+}
+
+
+void AUnit::Multi_GetBuffs_Implementation()
 {
 	if (bIsCommandeerBuffed) bIsCommandeerBuffed = false;
 	if (bBuffTank) bBuffTank = false;
 	for (FIntPoint CurrentLoc : Grid->GridPath->FindPath(GetIndexPosition(), FIntPoint(-999,-999), true, 3, false))
 	{
 		AUnit_Child_Leader* UnitToBuff = Cast<AUnit_Child_Leader> (Grid->GetGridData()->Find(CurrentLoc)->UnitOnTile);
+
 		if (UnitToBuff && PlayerControllerRef)
 		{
 			if (GetPlayerOwner() == UnitToBuff->GetPlayerOwner())
@@ -917,11 +934,19 @@ void AUnit::GetBuffs()
 	}
 	for (FIntPoint CurrentPos : Grid->GridPath->FindTileNeighbors(GetIndexPosition()))
 	{
-		if (Grid->GetGridData()->Find(CurrentPos)->UnitOnTile != this){
-			AUnit_Child_Tank* TankToCheck = Cast<AUnit_Child_Tank>(Grid->GetGridData()->Find(CurrentPos)->UnitOnTile);
-			if (TankToCheck)
-			{
-				if (TankToCheck->GetIsUsingSpecial() && TankToCheck->GetPlayerOwner() == GetPlayerOwner()) bBuffTank = true;
+		if (CurrentPos != FIntPoint(-999,-999)){
+			if (Grid->GetGridData()->Find(CurrentPos)){
+				if (Grid->GetGridData()->Find(CurrentPos)->UnitOnTile)
+				{
+					if (Grid->GetGridData()->Find(CurrentPos)->UnitOnTile != this)
+					{
+						AUnit_Child_Tank* TankToCheck = Cast<AUnit_Child_Tank>(Grid->GetGridData()->Find(CurrentPos)->UnitOnTile);
+						if (TankToCheck)
+						{
+							if (TankToCheck->GetIsUsingSpecial() && TankToCheck->GetPlayerOwner() == GetPlayerOwner()) bBuffTank = true;
+						}
+					}
+				}
 			}
 		}
 	}
