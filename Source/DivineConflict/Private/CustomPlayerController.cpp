@@ -932,10 +932,22 @@ void ACustomPlayerController::AssignPlayerPosition()
 					}
 
 				}
+			
+			if (PlayerStateRef->PlayerTeam == EPlayer::P_Heaven)
+			{
+				UpdateWidget3D(0, true);
+			}
+			else if (PlayerStateRef->PlayerTeam == EPlayer::P_Hell)
+			{
+				UpdateWidget3D(1, true);
+			}
+
+			else UpdateWidget3D(0, true);
         }
 	}
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACustomPlayerController::AssignPlayerPosition, 0.2f, false);
+	
 }
 
 void ACustomPlayerController::SetPathReachable(TArray<FIntPoint> NewPath)

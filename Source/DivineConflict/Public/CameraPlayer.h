@@ -182,7 +182,7 @@ public:
 	// ----------------------------
 	// Widget
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Widget")
 	void RotateWidget(float ValueX, float ValueY);
 	
 	// ----------------------------

@@ -727,6 +727,8 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 			//PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
 			Server_DestroyUnit();
 		}
+
+		PlayerControllerRef->VerifyBuildInteraction();
 	}
 
 }
@@ -739,6 +741,7 @@ void AUnit::AttackBase_Implementation(ABase* BaseToAttack)
 		return;
 	}
 	BaseToAttack->BaseTakeDamage(/*GetAttack()*/100);
+	PlayerControllerRef->VerifyBuildInteraction();
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("health Base: ") + FString::FromInt(BaseToAttack->GetHealth()));
 }
 
@@ -751,6 +754,7 @@ void AUnit::AttackBuilding_Implementation(ABuilding* BuildingToAttack)
 	if (BuildingToAttack->UnitRef)
 		UnitToAttackRef = BuildingToAttack->UnitRef;
 	AnimAttack(UnitToAttackRef);
+	PlayerControllerRef->VerifyBuildInteraction();
 }
 
 void AUnit::AnimAttack(AActor* ThingToAttack)
@@ -878,16 +882,19 @@ void AUnit::CancelMove()
 	HasMoved = false;
 	Multi_HiddeGhosts();
 	FutureMovement.Empty();
+	PlayerControllerRef->VerifyBuildInteraction();
 }
 
 void AUnit::CancelAttack()
 {
 	HasActed = false;
+	PlayerControllerRef->VerifyBuildInteraction();
 }
 
 void AUnit::CancelSpecial()
 {
 	HasActed = false;
+	PlayerControllerRef->VerifyBuildInteraction();
 }
 
 void AUnit::SetUnitIcon()
