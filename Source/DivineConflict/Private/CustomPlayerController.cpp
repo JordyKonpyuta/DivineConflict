@@ -313,6 +313,7 @@ void ACustomPlayerController::ControllerInteraction()
 					TowerRef->PreprareAttack(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile);
 					AllPlayerActions.Add(FStructActions(TowerRef, EDC_ActionPlayer::AttackBuilding, Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile));
 					PlayerAction = EDC_ActionPlayer::None;
+					DisplayWidget();
 				}
 				CameraPlayerRef->IsTowering = false;
 			}
@@ -358,9 +359,9 @@ void ACustomPlayerController::ControllerInteraction()
 					PathReachable.Empty();
 					UnitRef->SetIsSelected(false);
 					UnitRef->HasActed = true;
-					UnitRef = nullptr;
 					CameraPlayerRef->IsAttacking = false;
 					PlayerAction = EDC_ActionPlayer::None;
+					DisplayWidget();
 				}
 			}
 			break;
@@ -390,6 +391,7 @@ void ACustomPlayerController::ControllerInteraction()
 					CameraPlayerRef->Path.Empty();
 					
 					PlayerAction = EDC_ActionPlayer::None;
+					DisplayWidget();
 				}
 			}
 			break;
@@ -431,8 +433,8 @@ void ACustomPlayerController::ControllerInteraction()
 				}
 				PathReachable.Empty();
 				UnitRef->SetIsSelected(false);
-				UnitRef = nullptr;
 				PlayerAction = EDC_ActionPlayer::None;
+				DisplayWidget();
 			}
 			break;
 		default:
