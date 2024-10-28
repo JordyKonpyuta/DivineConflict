@@ -85,7 +85,7 @@ void AUnit_Child_Mage::SpecialMage(AActor* Target)
 	if(ABase* BaseAttack = Cast<ABase>(Target))
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("BASE TO ATTACK DAMAGE"));
-		BaseAttack->TakeDamage(5);
+		BaseAttack->BaseTakeDamage(5);
 	}
 	if(AUnit* UnitAttack = Cast<AUnit>(Target))
 	{

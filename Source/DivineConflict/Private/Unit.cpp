@@ -738,7 +738,7 @@ void AUnit::AttackBase_Implementation(ABase* BaseToAttack)
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("BaseToAttack is null"));
 		return;
 	}
-	BaseToAttack->TakeDamage(/*GetAttack()*/100);
+	BaseToAttack->BaseTakeDamage(/*GetAttack()*/100);
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("health Base: ") + FString::FromInt(BaseToAttack->GetHealth()));
 }
 

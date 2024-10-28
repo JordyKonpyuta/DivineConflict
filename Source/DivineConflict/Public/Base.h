@@ -45,6 +45,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bool")
 	bool IsSelected = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bool")
+	bool CanSpawn = true;
+
 	// ----------------------------
 	// Grid Indexes
 	
@@ -129,7 +132,7 @@ public:
 	// Take Damage
 
 	UFUNCTION(BlueprintCallable)
-	void TakeDamage(int Damage);
+	void BaseTakeDamage(int Damage);
 
 	// ----------------------------
 	// Check Death
@@ -145,6 +148,12 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void OnDeath();
+
+	// ----------------------------
+	// Tiles Check
+	
+	UFUNCTION(BlueprintCallable)
+	bool CheckTiles();
 
 	// ----------------------------
 	// GETTERS

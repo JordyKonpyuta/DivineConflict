@@ -109,13 +109,10 @@ void ABase::VisualSpawn()
 	
 	for (FIntPoint i : AllSpawnLoc)
 	{
-		UE_LOG( LogTemp, Warning, TEXT("i : %s"), *i.ToString());
 		if (IsSelected)
 			{
-			UE_LOG( LogTemp, Warning, TEXT("i : %s"), *i.ToString());
 				if (Grid->GetGridData()->Find(i)->UnitOnTile == nullptr)
 				{
-					UE_LOG( LogTemp, Warning, TEXT("i : %s"), *i.ToString());
 					Grid->GridVisual->addStateToTile(i, EDC_TileState::Spawnable);
 					return;
 				}
@@ -146,8 +143,6 @@ void ABase::Upgrade()
 					Level++;
 				}
 			}
-
-			else UE_LOG( LogTemp, Warning, TEXT("Player State Ref is NULL"));
 }
 
 	// ----------------------------
@@ -181,7 +176,7 @@ void ABase::BaseAction()
 	// ----------------------------
 	// Take Damage
 
-void ABase::TakeDamage(int Damage)
+void ABase::BaseTakeDamage(int Damage)
 {
 	Health -= Damage;
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Base Health : %d"), Health));
@@ -202,14 +197,12 @@ void ABase::MulticastCheckIfDead_Implementation(int H)
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Base Health : %d"), H));
 	if (H <= 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Base is Dead"));
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Base is Dead"));
 		if(!PlayerStateRef)
 			SetPlayerState();
 		
 		if(PlayerStateRef)
 		{
-			UE_LOG( LogTemp, Warning, TEXT("PlayerStateRef is not NULL"));
 			if (PlayerStateRef->bIsInTutorial) OnDeath();
 			else GetWorld()->GetGameState<ACustomGameState>()->ServerVictoryScreen(PlayerOwner);
 		}
@@ -221,6 +214,32 @@ void ABase::MulticastCheckIfDead_Implementation(int H)
 
 void ABase::OnDeath_Implementation()
 {
+}
+
+	// ----------------------------
+	// Tiles Check
+
+bool ABase::CheckTiles()
+{
+	int count = 0;
+	
+	for (FIntPoint i : AllSpawnLoc)
+	{
+		if (Grid->GetGridData()->Find(i)->TileState.Contains(EDC_TileState::Spawned))
+		{
+			count++;
+		}
+	}
+
+	if (count == 4)
+	{
+		CanSpawn = false;
+	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("CanSpawn : %d"), CanSpawn));
+	return CanSpawn;
+	
+
 }
 
 	// ----------------------------
