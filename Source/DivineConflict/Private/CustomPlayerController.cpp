@@ -351,6 +351,10 @@ void ACustomPlayerController::ControllerInteraction()
 							AllPlayerActions.Add(FStructActions(Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile, EDC_ActionPlayer::AttackBuilding,UnitRef));
 						}
 					}
+					else
+					{
+						AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::AttackUnit, nullptr));
+					}
 					for(FIntPoint Index : PathReachable)
 					{
 						Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Attacked);
@@ -503,7 +507,7 @@ void ACustomPlayerController::ServerAttackUnit_Implementation(AUnit* UnitToAttac
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Silver,TEXT("Active"));
-		Multi_ActionActiveTurn();
+		//Multi_ActionActiveTurn();
 	}
 }
 
@@ -706,6 +710,12 @@ void ACustomPlayerController::Multi_ActionActiveTurn_Implementation()
 		}
 	}
 }
+
+EDC_ActionPlayer ACustomPlayerController::GetPlayerAction()
+{
+	return PlayerAction;
+}
+
 void ACustomPlayerController::Server_CheckPlayerActionPassive_Implementation()
 {
 	Cast<ACustomGameState>(GetWorld()->GetGameState())->CheckPlayerActionPassive();
@@ -745,7 +755,6 @@ void ACustomPlayerController::Multi_ActionPassiveTurn_Implementation()
 		}
 		else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("EndActionPassiveTurn"));
 			Server_SwitchPlayerTurn(Cast<ACustomGameState>(GetWorld()->GetGameState()));
 			Server_Delegate();
 		}
@@ -775,26 +784,35 @@ void ACustomPlayerController::Server_Delegate_Implementation()
 
 void ACustomPlayerController::CancelLastAction()
 {
-	if (!AllPlayerPassive.IsEmpty())
+	if (!AllPlayerActions.IsEmpty() && PlayerStateRef->bIsActiveTurn)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("No :D"));
 		AUnit* ActorThatStops = Cast<AUnit>(AllPlayerActions.Last().ActorRef);
 		switch(AllPlayerActions.Last().UnitAction)
 		{
 			case EDC_ActionPlayer::MoveUnit:
-			ActorThatStops->CancelMove();
+				ActorThatStops->Server_CancelMove();
 				break;
 			case EDC_ActionPlayer::Special:
-				ActorThatStops->CancelSpecial();
+				ActorThatStops->Server_CancelSpecial();
 				break;
 			case EDC_ActionPlayer::AttackUnit:
-				ActorThatStops->CancelAttack();
+				ActorThatStops->Server_CancelAttack();
 				break;
 			case EDC_ActionPlayer::AttackBuilding:
-				ActorThatStops->CancelAttack();
+				ActorThatStops->Server_CancelAttack();
 				break;
 		default: break;
 		}
-		//AllPlayerActions.RemoveAt(AllPlayerActions.end);
+		AllPlayerActions.RemoveAt(AllPlayerActions.Num() - 1);
+		CurrentPA++;
+	}
+	else if (!AllPlayerPassive.IsEmpty() && !PlayerStateRef->bIsActiveTurn)
+	{
+		AllPlayerPassive.Last().GhostRef->Destroy();
+		Grid->GridVisual->RemoveStateFromTile(AllPlayerPassive.Last().TilePosition, EDC_TileState::Spawned);
+		
+		AllPlayerPassive.RemoveAt(AllPlayerPassive.Num() - 1);
 	}
 }
 
@@ -883,7 +901,7 @@ void ACustomPlayerController::VerifyBuildInteraction()
 			}
 		}
 		
-		else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BuildingOnTile != nullptr)
+		else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BuildingOnTile)
 		{
 			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BuildingOnTile->PlayerOwner != PlayerStateRef->PlayerTeam)
 			{

@@ -282,53 +282,61 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 
 void ACameraPlayer::PathRemove(const FInputActionValue& Value)
 {
-	if (Path.Num() == 0)
-	{
-		IsAttacking = false;
-		IsTowering = false;
-		for(FIntPoint Point : CustomPlayerController->GetPathReachable())
+	if (CustomPlayerController->GetPlayerAction() != EDC_ActionPlayer::None){
+		if (Path.Num() == 0)
 		{
-			CustomPlayerController->SetPlayerAction(EDC_ActionPlayer::None);
-			CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(Point, EDC_TileState::Attacked);
-		}
-		if (CustomPlayerController)
-		{
-			if (CustomPlayerController->UnitRef)
+			IsAttacking = false;
+			IsTowering = false;
+			for(FIntPoint Point : CustomPlayerController->GetPathReachable())
 			{
-				FullMoveDirection.X = CustomPlayerController->UnitRef->GetActorLocation().X;
-				FullMoveDirection.Y = CustomPlayerController->UnitRef->GetActorLocation().Y;
-				FullMoveDirection.Z = CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->UnitRef->GetIndexPosition())->TileTransform.GetLocation().Z * 0.8 + 175;
-				CustomPlayerController->VerifyBuildInteraction();
+				CustomPlayerController->SetPlayerAction(EDC_ActionPlayer::None);
+				CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(Point, EDC_TileState::Attacked);
 			}
+			if (CustomPlayerController)
+			{
+				if (CustomPlayerController->UnitRef)
+				{
+					FullMoveDirection.X = CustomPlayerController->UnitRef->GetActorLocation().X;
+					FullMoveDirection.Y = CustomPlayerController->UnitRef->GetActorLocation().Y;
+					FullMoveDirection.Z = CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->UnitRef->GetIndexPosition())->TileTransform.GetLocation().Z * 0.8 + 175;
+					CustomPlayerController->VerifyBuildInteraction();
+				}
+			}
+			return;
 		}
-		return;
-	}
-	CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(Path.Last(), EDC_TileState::Pathfinding);
-	Path.RemoveAt(Path.Num() - 1);
-	if (!Path.IsEmpty())
-	{
-		if (Path.Last() != Path[0])
+		CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(Path.Last(), EDC_TileState::Pathfinding);
+		Path.RemoveAt(Path.Num() - 1);
+		if (!Path.IsEmpty())
 		{
-			OldMoveDirection.X = Path.Last(1).X * 100;
-			OldMoveDirection.Y = Path.Last(1).Y * 100;
-			OldMoveDirection.Z = CustomPlayerController->Grid->GetGridData()->Find(Path.Last(1))->TileTransform.GetLocation().Z * 0.8 + 175;
+			if (Path.Last() != Path[0])
+			{
+				OldMoveDirection.X = Path.Last(1).X * 100;
+				OldMoveDirection.Y = Path.Last(1).Y * 100;
+				OldMoveDirection.Z = CustomPlayerController->Grid->GetGridData()->Find(Path.Last(1))->TileTransform.GetLocation().Z * 0.8 + 175;
+			}
+			UnitMovingCurrentMovNumber++;
+			FullMoveDirection.X = Path.Last().X * 100;
+			FullMoveDirection.Y = Path.Last().Y * 100;
+			FullMoveDirection.Z = CustomPlayerController->Grid->GetGridData()->Find(Path.Last())->TileTransform.GetLocation().Z * 0.8 + 175;
 		}
-		UnitMovingCurrentMovNumber++;
-		FullMoveDirection.X = Path.Last().X * 100;
-		FullMoveDirection.Y = Path.Last().Y * 100;
-		FullMoveDirection.Z = CustomPlayerController->Grid->GetGridData()->Find(Path.Last())->TileTransform.GetLocation().Z * 0.8 + 175;
-	}
 
-	if(Path.Num() == 0)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Path Remove: Empty!!"));
-		for(FIntPoint Point : CustomPlayerController->GetPathReachable())
+		if(Path.Num() == 0)
 		{
-			CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(Point, EDC_TileState::Reachable);
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Path Remove: Empty!!"));
+			for(FIntPoint Point : CustomPlayerController->GetPathReachable())
+			{
+				CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(Point, EDC_TileState::Reachable);
+			}
+			CustomPlayerController->SetPlayerAction(EDC_ActionPlayer::None);
+			IsMovingUnit = false;
+			return;
 		}
-		CustomPlayerController->SetPlayerAction(EDC_ActionPlayer::None);
-		IsMovingUnit = false;
-		return;
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("Ya :D"));
+		
+		CustomPlayerController->CancelLastAction();
 	}
 }
 

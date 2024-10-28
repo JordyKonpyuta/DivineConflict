@@ -8,6 +8,7 @@
 #include "CustomPlayerController.h"
 #include "Grid.h"
 #include "GridInfo.h"
+#include "GridVisual.h"
 #include "TutorialGameMode.h"
 #include "Unit_Child_Leader.h"
 #include "Unit_Child_Warrior.h"

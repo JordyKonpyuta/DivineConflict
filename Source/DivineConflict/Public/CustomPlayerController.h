@@ -217,6 +217,9 @@ public:
 
 	UFUNCTION()
 	void SetPlayerAction(EDC_ActionPlayer PA);
+
+	UFUNCTION()
+	EDC_ActionPlayer GetPlayerAction();
 	
 	void ControllerInteraction();
 
