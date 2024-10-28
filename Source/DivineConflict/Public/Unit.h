@@ -294,12 +294,6 @@ public:
 	// ----------------------------
 	// Movement
 
-	UFUNCTION( BlueprintCallable,NetMulticast,Reliable)
-	void Move(const TArray<FIntPoint> &PathToFollow);
-	
-	UFUNCTION(Server,Reliable)
-	void Server_Move(const TArray<FIntPoint> &PathToFollow);
-
 	UFUNCTION()
 	void InitializeFullMove(TArray <FIntPoint> FullMove);
 	

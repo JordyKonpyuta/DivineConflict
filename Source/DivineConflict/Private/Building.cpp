@@ -296,7 +296,7 @@ void ABuilding::SwitchOwner(ACustomPlayerState* NewOwner)
 
 void ABuilding::Server_SwitchOwner_Implementation(ACustomPlayerState* NewOwner)
 {
-	Server_SwitchOwner(NewOwner);
+	Multi_SwitchOwner(NewOwner);
 }
 
 void ABuilding::Multi_SwitchOwner_Implementation(ACustomPlayerState* NewOwner)

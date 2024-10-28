@@ -241,14 +241,12 @@ void AUnit::AssignPlayerController_Implementation()
 			{
 				AllControllers.Add(Cast<ACustomPlayerController>(CurrentActor));
 			}
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, TEXT("Number :" + FString::FromInt(AllControllers.Num())));
 			if (!AllControllers.IsEmpty()){
 				for (ACustomPlayerController* CurrentPC : AllControllers)
 				{
 					if (CurrentPC->PlayerStateRef)
 						if (CurrentPC->PlayerStateRef->PlayerTeam == GetPlayerOwner())
 						{
-							GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Cyan,GetName());
 							PlayerControllerRef = CurrentPC;
 							PlayerControllerRef->OnTurnChangedDelegate.AddUFunction(this, "NewTurn");
 							GetWorld()->GetTimerManager().ClearTimer(InitializationTimer);
@@ -256,8 +254,6 @@ void AUnit::AssignPlayerController_Implementation()
 							return;
 						}
 				}
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, GetName());
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Received Buff"));
 			}
 		}
 	}
@@ -272,14 +268,7 @@ void AUnit::AssignPlayerController_Implementation()
 bool AUnit::Interact_Implementation(ACustomPlayerController* PlayerController)
 {
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Interact unit"));
-	//PlayerControllerRef->CameraPlayerRef->IsMovingUnit = true;
-	//DisplayWidget();
-				
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, PlayerController->GetName());
-
-
-	
+	PlayerControllerRef = PlayerController;
 	return true;
 }
 
@@ -313,7 +302,6 @@ void AUnit::NewTurn()
 
 void AUnit::Server_AddOnGrid_Implementation()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Unit Add on grid"));
 	Grid->GridInfo->AddUnitInGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
 }
 
@@ -338,101 +326,9 @@ void AUnit::Multi_PrepareMove_Implementation(const TArray<FIntPoint>& NewPos)
 // ----------------------------
 // Movements
 
-void AUnit::Move_Implementation(const TArray<FIntPoint> &PathIn)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit moved"));
-	GhostsMesh->SetVisibility(false);
-	GhostsFinaleLocationMesh->SetVisibility(false);
-	bIsGhosts = false;
-	bJustBecameGarrison = false;
-	Path.Empty();
-	Path = FutureMovement;
-	if (Path.Num()!=-1)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit Path Ready"));
-		for(FIntPoint index : Path)
-		{
-			if (index == Path.Last() && Grid->GetGridData()->Find(index)->UnitOnTile)
-			{
-				Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
-				break;
-			}
-			if (Grid->GetGridData()->Find(index)->BuildingOnTile)
-			{
-				if (Grid->GetGridData()->Find(index)->BuildingOnTile->GarrisonFull != true)
-				{
-
-					SetActorLocation(Grid->GetGridData()->Find(index)->BuildingOnTile->GetActorLocation());
-					Grid->GetGridData()->Find(index)->BuildingOnTile->UnitRef = this;
-					Grid->GetGridData()->Find(index)->BuildingOnTile->GarrisonFull = true;
-
-					Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
-					SetIsGarrison(true);
-					bJustBecameGarrison = true;
-					BuildingRef = Grid->GetGridData()->Find(index)->BuildingOnTile;
-					if (PlayerControllerRef->PlayerStateRef != nullptr)
-					{
-						BuildingRef->SwitchOwner(PlayerControllerRef->PlayerStateRef);
-					}
-					break;
-				}
-				else
-				{
-					if (this != Grid->GetGridData()->Find(index)->BuildingOnTile->UnitRef)
-					{
-						for(FIntPoint SuperIndex : Path)
-						{
-							Grid->GridVisual->RemoveStateFromTile(SuperIndex, EDC_TileState::Pathfinding);
-						}
-						Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
-						break;
-					}
-				}
-			}
-
-			else if (Grid->GetGridData()->Find(index)->TowerOnTile)
-			{
-				if (Grid->GetGridData()->Find(index)->TowerOnTile->IsGarrisoned == false)
-				{
-					SetActorLocation(Grid->GetGridData()->Find(index)->TowerOnTile->GetActorLocation());
-					Grid->GetGridData()->Find(index)->TowerOnTile->UnitInGarrison = this;
-					Grid->GetGridData()->Find(index)->TowerOnTile->IsGarrisoned = true;
-
-					Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
-					SetIsGarrison(true);
-					bJustBecameGarrison = true;
-				}
-			}
-			FVector location = Grid->ConvertIndexToLocation(index);
-			Grid->GridVisual->RemoveStateFromTile(index, EDC_TileState::Pathfinding);
-			SetActorLocation(location);
-		}
-		
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Unit moved"));
-		
-		Grid->GridInfo->Multi_setUnitIndexOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()),this);
-
-		if (IsGarrison && !bJustBecameGarrison)
-		{
-			BuildingRef->UnitRef = nullptr;
-			BuildingRef->GarrisonFull = false;
-			IsGarrison = false;
-			BuildingRef = nullptr;
-		}
-	}
-	if(PlayerControllerRef != nullptr)
-    {
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Next Action"));
-    }
-}
-
-void AUnit::Server_Move_Implementation(const TArray<FIntPoint>& PathToFollow)
-{
-	Move(PathToFollow);
-}
-
 void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 {
+	UE_LOG( LogTemp, Warning, TEXT("InitializeFullMove"));
 	if (FullMove.IsEmpty())
 		return;
 	
@@ -464,7 +360,9 @@ void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 	{
 		if(Grid->GetGridData()->Find(PathToCross.Last())->UnitOnTile)
 		{
-			PathToCross.RemoveAt(PathToCross.Num() - 1);
+			UE_LOG( LogTemp, Warning, TEXT("PathTocrss Num : %d"), PathToCross.Num());
+			PathToCross.Remove(PathToCross.Last());
+			UE_LOG( LogTemp, Warning, TEXT("PathTocrss Num : %d"), PathToCross.Num());
 		}
 		else
 		{
@@ -472,6 +370,8 @@ void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 		}
 	}
 	TArray<FIntPoint> PathToCrossTemp;
+	if(PathToCross.IsEmpty())
+		return;
 
 	for(FIntPoint index : PathToCross)
     {
@@ -512,13 +412,15 @@ void AUnit::UnitMoveAnim_Implementation()
 	{
 		WillMove = true;
 		Grid->GridVisual->RemoveStateFromTile(PathToCross[PathToCrossPosition], EDC_TileState::Pathfinding);
-
+		UE_LOG( LogTemp, Warning, TEXT("PathToCrossPosition : %d"), PathToCrossPosition);
 		// If you cross a building
 		if (Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile)
 		{
+			UE_LOG( LogTemp, Warning, TEXT("building"));
 			// If the building is empty
 			if (Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile->GarrisonFull != true)
 			{
+				UE_LOG( LogTemp, Warning, TEXT("building empty"));
 				// Set Unit's visual Location
 				SetActorLocation(Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile->GetActorLocation());
 				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 50));
@@ -532,14 +434,21 @@ void AUnit::UnitMoveAnim_Implementation()
 				SetIsGarrison(true);
 				bJustBecameGarrison = true;
 				BuildingRef = Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile;
-				if (PlayerControllerRef->PlayerStateRef)
+				if(PlayerControllerRef)
 				{
-					BuildingRef->SwitchOwner(PlayerControllerRef->PlayerStateRef);
+					if (PlayerControllerRef->PlayerStateRef)
+					{
+						BuildingRef->SwitchOwner(PlayerControllerRef->PlayerStateRef);
+					}
 				}
+				UE_LOG( LogTemp, Warning, TEXT("building empty"));
+				//GetWorldTimerManager().ClearTimer(MoveTimerHandle);
+				//return;
 			}
 			// If the building is full
 			else
 			{
+				UE_LOG( LogTemp, Warning, TEXT("building full"));
 				if (this != Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile->UnitRef)
 				{
 					for(const FIntPoint SuperIndex : Path)
@@ -782,20 +691,26 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 
 		if(UnitToAttack->GetCurrentHealth() < 1)
 		{
-			Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
+
 			//PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
 			if (UnitToAttack->BuildingRef)
 			{
 				UnitToAttack->BuildingRef->UnitRef = nullptr;
 				UnitToAttack->BuildingRef->GarrisonFull = false;
 				UnitToAttack->IsGarrison = false;
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Unit Got Killed and removed")));
-				if(GetCurrentHealth() < 1)
-				{
-					FutureMovement.Insert(UnitToAttack->GetIndexPosition(), 0);
-					Move(FutureMovement);
-				}
+
+				UE_LOG( LogTemp, Warning, TEXT("Unit move in building"));
+				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Unit move in building")));
+				UE_LOG( LogTemp, Warning, TEXT("Unit move in building"));
+				UE_LOG( LogTemp, Warning, TEXT("Unit index position : %s"), *UnitToAttack->IndexPosition.ToString());
+				UE_LOG( LogTemp, Warning, TEXT("Unit move in building"));
+				TArray<FIntPoint> MoveInBuilding = {UnitToAttack->IndexPosition};
+				Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
+				UE_LOG( LogTemp, Warning, TEXT("Unit index position : %s"), *UnitToAttack->IndexPosition.ToString());
+				InitializeFullMove(MoveInBuilding);
+				UE_LOG( LogTemp, Warning, TEXT("Unit move in building"));
 			}
+			Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
 			UnitToAttack->Server_DestroyUnit();
 			/*if(GetCurrentHealth() < 1)
 			{
