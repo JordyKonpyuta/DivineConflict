@@ -182,62 +182,62 @@ void ACustomPlayerState::NewTurnBegin()
 
 int ACustomPlayerState::GetMageWoodCost()
 {
-	return MageWoodCost;
+	return MageWoodCost+(MageWoodCost*(0.25*GetMageCount()));
 }
 
 int ACustomPlayerState::GetMageStoneCost()
 {
-	return MageStoneCost;
+	return MageStoneCost + (MageStoneCost*(0.25*GetMageCount()));
 }
 
 int ACustomPlayerState::GetMageGoldCost()
 {
-	return MageGoldCost;
+	return MageGoldCost + (MageGoldCost*(0.25*GetMageCount()));
 }
 
 int ACustomPlayerState::GetTankWoodCost()
 {
-	return TankWoodCost;
+	return TankWoodCost + (TankWoodCost*(0.25*GetTankCount()));
 }
 
 int ACustomPlayerState::GetTankStoneCost()
 {
-	return TankStoneCost;
+	return TankStoneCost + (TankStoneCost*(0.25*GetTankCount()));
 }
 
 int ACustomPlayerState::GetTankGoldCost()
 {
-	return TankGoldCost;
+	return TankGoldCost + (TankGoldCost*(0.25*GetTankCount()));
 }
 
 int ACustomPlayerState::GetWarriorWoodCost()
 {
-	return WarriorWoodCost;
+	return WarriorWoodCost + (WarriorWoodCost*(0.25*GetWarriorCount()));
 }
 
 int ACustomPlayerState::GetWarriorStoneCost()
 {
-	return WarriorStoneCost;
+	return WarriorStoneCost + (WarriorStoneCost*(0.25*GetWarriorCount()));
 }
 
 int ACustomPlayerState::GetWarriorGoldCost()
 {
-	return WarriorGoldCost;
+	return WarriorGoldCost + (WarriorGoldCost*(0.25*GetWarriorCount()));
 }
 
 int ACustomPlayerState::GetLeaderWoodCost()
 {
-	return LeaderWoodCost;
+	return LeaderWoodCost + (LeaderWoodCost*(0.25*GetLeaderCount()));
 }
 
 int ACustomPlayerState::GetLeaderStoneCost()
 {
-	return LeaderStoneCost;
+	return LeaderStoneCost + (LeaderStoneCost*(0.25*GetLeaderCount()));
 }
 
 int ACustomPlayerState::GetLeaderGoldCost()
 {
-	return LeaderGoldCost;
+	return LeaderGoldCost + (LeaderGoldCost*(0.25*GetLeaderCount()));
 }
 
 int ACustomPlayerState::GetMageCount()

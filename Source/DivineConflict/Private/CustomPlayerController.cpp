@@ -313,6 +313,7 @@ void ACustomPlayerController::ControllerInteraction()
 					TowerRef->PreprareAttack(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile);
 					AllPlayerActions.Add(FStructActions(TowerRef, EDC_ActionPlayer::AttackBuilding, Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile));
 					PlayerAction = EDC_ActionPlayer::None;
+					DisplayWidget();
 				}
 				CameraPlayerRef->IsTowering = false;
 			}
@@ -362,9 +363,9 @@ void ACustomPlayerController::ControllerInteraction()
 					PathReachable.Empty();
 					UnitRef->SetIsSelected(false);
 					UnitRef->HasActed = true;
-					UnitRef = nullptr;
 					CameraPlayerRef->IsAttacking = false;
 					PlayerAction = EDC_ActionPlayer::None;
+					DisplayWidget();
 				}
 			}
 			break;
@@ -394,6 +395,7 @@ void ACustomPlayerController::ControllerInteraction()
 					CameraPlayerRef->Path.Empty();
 					
 					PlayerAction = EDC_ActionPlayer::None;
+					DisplayWidget();
 				}
 			}
 			break;
@@ -435,8 +437,8 @@ void ACustomPlayerController::ControllerInteraction()
 				}
 				PathReachable.Empty();
 				UnitRef->SetIsSelected(false);
-				UnitRef = nullptr;
 				PlayerAction = EDC_ActionPlayer::None;
+				DisplayWidget();
 			}
 			break;
 		default:
@@ -948,10 +950,22 @@ void ACustomPlayerController::AssignPlayerPosition()
 					}
 
 				}
+			
+			if (PlayerStateRef->PlayerTeam == EPlayer::P_Heaven)
+			{
+				UpdateWidget3D(0, true);
+			}
+			else if (PlayerStateRef->PlayerTeam == EPlayer::P_Hell)
+			{
+				UpdateWidget3D(1, true);
+			}
+
+			else UpdateWidget3D(0, true);
         }
 	}
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACustomPlayerController::AssignPlayerPosition, 0.2f, false);
+	
 }
 
 void ACustomPlayerController::SetPathReachable(TArray<FIntPoint> NewPath)

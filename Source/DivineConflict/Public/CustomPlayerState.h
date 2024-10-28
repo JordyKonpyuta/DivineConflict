@@ -245,7 +245,7 @@ protected:
 	UPROPERTY(Replicated)
 	int TankCount = 0;
 	UPROPERTY(Replicated)
-	int WarriorCount = 0;
+	int WarriorCount = 1;
 	UPROPERTY(Replicated)
 	int LeaderCount = 0;
 
