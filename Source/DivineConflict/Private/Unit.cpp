@@ -442,8 +442,8 @@ void AUnit::UnitMoveAnim_Implementation()
 					}
 				}
 				UE_LOG( LogTemp, Warning, TEXT("building empty"));
-				//GetWorldTimerManager().ClearTimer(MoveTimerHandle);
-				//return;
+				PathToCross.Empty();
+				MoveSequencePos = 2;
 			}
 			// If the building is full
 			else
