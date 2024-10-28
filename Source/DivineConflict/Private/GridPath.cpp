@@ -52,7 +52,9 @@ int UGridPath::MinimulCostBetweenTwoTile(FIntPoint Index1, FIntPoint Index2)
 
 void UGridPath::InserTileDiscoverList(FPathData TilePath)
 {
+	//stock the sorting cost of the tile
 	int SortingCost = TilePath.MinCostToTarget + TilePath.CostFormStart;
+	//if the list is empty
 	if(DiscoverTileSortingCost.Num()==0)
 	{
 		DiscoverTileSortingCost.Add(SortingCost);
@@ -60,6 +62,7 @@ void UGridPath::InserTileDiscoverList(FPathData TilePath)
 	}
 	else
 	{
+		//if the sorting cost is higher than the last element of the list
 		if (SortingCost>= DiscoverTileSortingCost[DiscoverTileSortingCost.Num()-1])
 		{
 			DiscoverTileSortingCost.Add(SortingCost);
@@ -67,6 +70,7 @@ void UGridPath::InserTileDiscoverList(FPathData TilePath)
 		}
 		else
 		{
+			//if the sorting cost is lower than the first element of the list
 			for(int i = 0; i<DiscoverTileSortingCost.Num();i++)
 			{
 				if(SortingCost<=DiscoverTileSortingCost[i])
@@ -82,10 +86,12 @@ void UGridPath::InserTileDiscoverList(FPathData TilePath)
 
 bool UGridPath::IsInputDataValid(FIntPoint Start, FIntPoint End)
 {
+	//check if the start and end are the same
 	if(Start == End)
 	{
 		return false;
 	}
+	//check if the start and end are in the grid
 	if(Start.X < 0 || Start.Y < 0  )
 	{
 		return false;
@@ -98,6 +104,7 @@ bool UGridPath::IsInputDataValid(FIntPoint Start, FIntPoint End)
 	{
 		return false;
 	}
+	//check if the start and end are walkable
 	if(!Grid->IsTileWalkable(Start))
 	{
 		return false;
@@ -106,15 +113,12 @@ bool UGridPath::IsInputDataValid(FIntPoint Start, FIntPoint End)
 	{
 		return false;
 	}
-	//if(bIsReachable)
-	
-	//else return true;
-	
+
 	return true;
 }
 
 	// ----------------------------
-	// Tile Discovery (Process)
+	// Get a New Tile for Analyse
 
 FPathData UGridPath::PullCheapestTileOutOfDiscoverList()
 {
@@ -169,13 +173,15 @@ bool UGridPath::DiscoverNextNeighbors()
 {
 	CurrentNeighbors = CurrentsNeighbors[0];
 	CurrentsNeighbors.RemoveAt(0);
-	
+
+	// if the neighbor is not already in the AnalyseTileIndex
 	if(!AnalyseTileIndex.Contains(CurrentNeighbors.Index))
 	{
 		
 		int CostFormStart = CurrentDiscoverTile.CostFormStart + CurrentNeighbors.costEntrerToTile;
 		if(CostFormStart >= MaxLenght) return false;
-		
+
+		// if the neighbor is not already in the DiscoverTileIndex or if the cost to reach the neighbor is lower than the previous cost
 		if (DiscoverTileIndex.Find(CurrentNeighbors.Index) == INDEX_NONE)
 		{
 			if (PathData.Find(CurrentNeighbors.Index))
@@ -186,6 +192,8 @@ bool UGridPath::DiscoverNextNeighbors()
 				}
 			}
 		}
+
+		// if the neighbor is the end tile
 		DiscoverTile(FPathData(CurrentNeighbors.Index, CurrentNeighbors.CostFormStart, MinimulCostBetweenTwoTile(CurrentNeighbors.Index, CurrentDiscoverTile.Index), CostFormStart));
 		if(CurrentNeighbors.Index == EndPoint)
 		{
@@ -238,17 +246,12 @@ TArray<FPathData> UGridPath::GetValidTileNeighbors(FIntPoint Index)
 			Ret.Add(FPathData(NeighborTileData->TilePosition,1,99999,99999));
 		}
 	}
-
-	
 	//return the neighbors
-
-	
 	return Ret;
-	
-
-	
 }
 
+	// ----------------------------
+	// Find Neighbours
 TArray<FIntPoint> UGridPath::FindTileNeighbors(FIntPoint Index)
 {
 	TArray<FIntPoint> Neighbors;
@@ -269,6 +272,8 @@ TArray<FIntPoint> UGridPath::GeneratePath()
 	return TArray<FIntPoint>();
 }
 
+	// ----------------------------
+	// Clear
 void UGridPath::ClearGeneratedPath()
 {
 	DiscoverTileIndex.Empty();
@@ -308,7 +313,7 @@ TArray<FIntPoint> UGridPath::FindPath(FIntPoint Start, FIntPoint End, bool IsRea
 	//while we have not reached the end tile
 	while (DiscoverTileIndex.Num() > 0)
 	{
-		//UE_LOG( LogTemp, Warning, TEXT("DiscoverTileIndex : %d %d"), DiscoverTileIndex[0].X, DiscoverTileIndex[0].Y);
+		
 		if(AnalyseNextDiscoverTile())
 		{
 			return GeneratePath();
@@ -316,6 +321,7 @@ TArray<FIntPoint> UGridPath::FindPath(FIntPoint Start, FIntPoint End, bool IsRea
 			
 
 	}
+	//if we have not reached the end tile, return an empty path
 	if (bIsReachable)
 	{
 		return AnalyseTileIndex;

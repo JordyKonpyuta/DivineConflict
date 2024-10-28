@@ -46,7 +46,7 @@ public:
 protected:
 
 	// ----------------------------
-	// Pre-Movement
+	// Pre-Movement Info
 	
 	UPROPERTY( VisibleAnywhere, Category = "Grid", meta = (AllowPrivate = "true"))
 	FIntPoint StartPoint = FIntPoint(-999	,-999);
@@ -64,7 +64,7 @@ protected:
 	bool bIsEscalation = false;
 	
 	// ----------------------------
-	// Movement
+	// Movement Output
 	
 	UPROPERTY( VisibleAnywhere, Category = "Grid", meta = (AllowPrivate = "true"))
 	TArray<FIntPoint> Path;
@@ -116,16 +116,19 @@ public:
 	bool IsValidHeighWarrior(FDC_TileData* IndextestData, FDC_TileData* CurrentIndexData);
 
 	// ----------------------------
-	// Neighbours
+	// Find Neighbours
 
 	TArray<FIntPoint> FindTileNeighbors(FIntPoint Index);
 	
 	// ----------------------------
-	// Movement
-	
+	// Generate Pathfinding
+
+	//Pathfinding and Path Reachable
 	UFUNCTION()
 	TArray<FIntPoint> FindPath(FIntPoint Start, FIntPoint End , bool IsReachable, int PathLenght, bool IsEscalation);
 
+	// ----------------------------
+	//Path Reachable
 	TArray<FIntPoint> NewFindPath(FIntPoint Start, ACustomPlayerController* CustomPlayerController);
 	
 	// ----------------------------
@@ -166,7 +169,8 @@ protected:
 	// Neighbours
 	
 	bool DiscoverNextNeighbors();
-	
+	// ----------------------------
+	// Test viladity of Tile for walkable
 	TArray<FPathData> GetValidTileNeighbors(FIntPoint Index);
 };
 
