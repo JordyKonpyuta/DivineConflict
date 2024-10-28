@@ -257,7 +257,7 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 				}	
 			}
 		}
-		else if (IsTowering)
+		else if (IsTowering || IsSpelling)
 		{
 			TArray<FIntPoint> AllReachable = CustomPlayerController->GetPathReachable();
 			if (AllReachable.Contains(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection)))

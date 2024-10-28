@@ -184,16 +184,18 @@ void ACustomPlayerController::SelectModeSpecial()
 		break;
 	case EUnitName::Mage:
 		//Mage
+			if (CameraPlayerRef)
+				CameraPlayerRef->IsSpelling = true;
 			if (UnitRef->HasMoved)
 			{
 				PathReachable =  Grid->GridPath->FindPath(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()),
-					FIntPoint(-999,-999),true,3,false);
+					FIntPoint(-999,-999),true,4,false);
 				CameraPlayerRef->FullMoveDirection.X = UnitRef->GetFinalGhostMesh()->GetComponentLocation().X;
 				CameraPlayerRef->FullMoveDirection.Y = UnitRef->GetFinalGhostMesh()->GetComponentLocation().Y;
 				CameraPlayerRef->FullMoveDirection.Z = (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
 			} else
 			{
-				PathReachable =  Grid->GridPath->FindPath(UnitRef->GetIndexPosition(),FIntPoint(-999,-999),true,3,false);
+				PathReachable =  Grid->GridPath->FindPath(UnitRef->GetIndexPosition(),FIntPoint(-999,-999),true,4,false);
 			}
 		for(FIntPoint Index : PathReachable)
 		{

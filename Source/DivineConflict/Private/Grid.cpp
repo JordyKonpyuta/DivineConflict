@@ -8,6 +8,7 @@
 #include "GridInfo.h"
 #include "GridPath.h"
 #include "GridVisual.h"
+#include "Obstacle.h"
 #include "Upwall.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -119,6 +120,10 @@ void AGrid::SpawnGrid()
 				{
 					TileData.TileType = EDC_TileType::Building;
 					UE_LOG( LogTemp, Warning, TEXT("Building"));
+				} else if (Cast<AObstacle>(HitResult.GetActor()))
+				{
+					TileData.TileType = EDC_TileType::Obstacle;
+					UE_LOG( LogTemp, Warning, TEXT("Obstacle"));
 				}
 
 				

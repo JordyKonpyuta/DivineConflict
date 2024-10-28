@@ -78,8 +78,6 @@ public:
 	// Actions
 
 	// MOVEMENT
-	UPROPERTY(VisibleAnywhere , BlueprintReadWrite, Category = "Variable", meta = (AllowPrivate = "true"))
-	bool IsMovingUnit = false;
 
 	UPROPERTY()
 	int UnitMovingCurrentMovNumber;
@@ -92,10 +90,16 @@ public:
 
 	// RESTRICTIONS
 	UPROPERTY(VisibleAnywhere , BlueprintReadWrite, Category = "Variable", meta = (AllowPrivate = "true"))
+	bool IsMovingUnit = false;
+	
+	UPROPERTY(VisibleAnywhere , BlueprintReadWrite, Category = "Variable", meta = (AllowPrivate = "true"))
 	bool IsAttacking = false;
 
 	UPROPERTY(VisibleAnywhere , BlueprintReadWrite, Category = "Variable", meta = (AllowPrivate = "true"))
 	bool IsTowering = false;
+
+	UPROPERTY(VisibleAnywhere , BlueprintReadWrite, Category = "Variable", meta = (AllowPrivate = "true"))
+	bool IsSpelling = false;
 
 	UPROPERTY(VisibleAnywhere , BlueprintReadWrite, Category = "Variable", meta = (AllowPrivate = "true"))
 	bool IsSpawningUnit = false;
