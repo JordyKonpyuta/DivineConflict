@@ -13,7 +13,7 @@ AObstacle::AObstacle()
 	
 	// Set up appearance
 	Plane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ClimbPlane_Low"));
-	Scene  = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultRoot"));
+	Scene = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultRoot"));
 
 	Plane->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Engine/BasicShapes/Plane.Plane'")).Object);
 	
