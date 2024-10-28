@@ -890,6 +890,24 @@ void AUnit::CancelSpecial()
 	HasActed = false;
 }
 
+void AUnit::SetUnitIcon()
+{
+	if (PlayerOwner == EPlayer::P_Hell)
+	{
+		UnitIcon = HellIcon;
+	}
+
+	else if (PlayerOwner == EPlayer::P_Heaven)
+	{
+		UnitIcon = HeavenIcon;
+	}
+
+	else if (PlayerOwner == EPlayer::P_Neutral)
+	{
+		UnitIcon = NeutralIcon;
+	}
+}
+
 // ----------------------------
 // GETTERS
 

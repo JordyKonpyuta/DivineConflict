@@ -25,10 +25,13 @@ AUnit_Child_Warrior::AUnit_Child_Warrior()
 	
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjHell(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Warrior_Hell.T_Icon_Warrior_Hell'"));
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObj(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Warrior_Paradise.T_Icon_Warrior_Paradise'"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjNeutral(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Warrior_Paradise.T_Icon_Warrior_Neutral'"));
 	if (IconTexObjHell.Object)
 		HellIcon = IconTexObjHell.Object;
 	if (IconTexObj.Object)
 		HeavenIcon = IconTexObj.Object;
+	if (IconTexObjNeutral.Object)
+		NeutralIcon = IconTexObjNeutral.Object;
 	
 
 }
@@ -73,14 +76,7 @@ void AUnit_Child_Warrior::BeginPlay()
 
 	UnitName = EUnitName::Warrior;
 
-	if (PlayerOwner == EPlayer::P_Hell)
-	{
-		UnitIcon = HellIcon;
-	}
-	else if (PlayerOwner == EPlayer::P_Heaven)
-	{
-		UnitIcon = HeavenIcon;
-	}
+	GetWorld()->GetTimerManager().SetTimer(IconTimerHandle, this, &AUnit_Child_Warrior::SetUnitIcon, 1.0f, false);
 
 }
 

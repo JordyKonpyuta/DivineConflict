@@ -128,9 +128,24 @@ public:
 	// Unit Spawn FIntPoints
 	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitType")
 	TArray<int> UnitCost;
+
+	// ----------------------------
+	// Textures
+
+	UPROPERTY()
+	UTexture2D* HeavenIcon;
+	UPROPERTY()
+	UTexture2D* HellIcon;
+	UPROPERTY()
+	UTexture2D* NeutralIcon;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Texture")
+	UTexture2D* UnitIcon;
+
+	FTimerHandle IconTimerHandle;
+
+	// ----------------------------
+	// ----------------------------
 	
-	// ----------------------------
-	// ----------------------------
 protected:
 	
 	// ----------------------------
@@ -144,16 +159,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
 	UStaticMeshComponent* GhostsFinaleLocationMesh;
-
-	// ----------------------------
-	// Textures
-
-	UPROPERTY()
-	UTexture2D* HeavenIcon;
-	UPROPERTY()
-	UTexture2D* HellIcon;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Texture")
-	UTexture2D* UnitIcon;
 	
 	// ----------------------------
 	// References
@@ -375,6 +380,11 @@ public:
 	void CancelAttack();
 
 	void CancelSpecial();
+
+	// ----------------------------
+	// Textures
+	UFUNCTION()
+	void SetUnitIcon();
 	
 	// ----------------------------
 	// GETTERS //

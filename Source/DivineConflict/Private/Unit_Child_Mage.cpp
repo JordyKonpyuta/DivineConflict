@@ -23,10 +23,13 @@ AUnit_Child_Mage::AUnit_Child_Mage()
 
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjectHell(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Mage_Hell.T_Icon_Mage_Hell'"));
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Mage_Paradise.T_Icon_Mage_Paradise'"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjectNeutral(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Mage_Paradise.T_Icon_Mage_Neutral'"));
 	if (IconTexObjectHell.Object != NULL)
 		HellIcon = IconTexObjectHell.Object;
 	if (IconTexObject.Object != NULL)
 		HeavenIcon = IconTexObject.Object;
+	if (IconTexObjectNeutral.Object != NULL)
+		NeutralIcon = IconTexObjectNeutral.Object;
 }
 
 	// ----------------------------
@@ -72,14 +75,7 @@ void AUnit_Child_Mage::BeginPlay()
 
 	UnitName = EUnitName::Mage;
 
-	if (PlayerOwner == EPlayer::P_Hell)
-	{
-		UnitIcon = HellIcon;
-	}
-	else if (PlayerOwner == EPlayer::P_Heaven)
-	{
-		UnitIcon = HeavenIcon;
-	}
+	GetWorld()->GetTimerManager().SetTimer(IconTimerHandle, this, &AUnit_Child_Mage::SetUnitIcon, 1.0f, false);
 
 }
 
