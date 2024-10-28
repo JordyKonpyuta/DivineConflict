@@ -877,25 +877,41 @@ void AUnit::Multi_GetBuffs_Implementation()
 // ----------------------------
 // Cancel Actions
 
-void AUnit::CancelMove()
+
+void AUnit::Server_CancelMove_Implementation()
+{
+	Multi_CancelMove();
+}
+
+void AUnit::Multi_CancelMove_Implementation()
 {
 	HasMoved = false;
 	Multi_HiddeGhosts();
 	FutureMovement.Empty();
-	PlayerControllerRef->VerifyBuildInteraction();
 }
 
-void AUnit::CancelAttack()
+void AUnit::Server_CancelAttack_Implementation()
 {
-	HasActed = false;
-	PlayerControllerRef->VerifyBuildInteraction();
+	Multi_CancelAttack();
 }
 
-void AUnit::CancelSpecial()
+void AUnit::Multi_CancelAttack_Implementation()
 {
 	HasActed = false;
-	PlayerControllerRef->VerifyBuildInteraction();
 }
+
+void AUnit::Server_CancelSpecial_Implementation()
+{
+	Multi_CancelSpecial();
+}
+
+void AUnit::Multi_CancelSpecial_Implementation()
+{
+	HasActed = false;
+}
+
+
+
 
 void AUnit::SetUnitIcon()
 {
