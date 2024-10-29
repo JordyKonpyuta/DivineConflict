@@ -133,9 +133,9 @@ void ABase::Upgrade()
 		// Check if player has enough resources
 			if (PlayerStateRef->GetWoodPoints() >= WoodCostUpgrade && PlayerStateRef->GetStonePoints() >= StoneCostUpgrade && PlayerStateRef->GetGoldPoints() >= GoldCostUpgrade)
 			{
-				if (PlayerStateRef->MaxUnitCount < 15 && Level < MaxLevel)
+				if (PlayerStateRef->GetMaxUnits() < 15 && Level < MaxLevel)
 				{
-					PlayerStateRef->MaxUnitCount += 5;
+					PlayerStateRef->SetMaxUnits(PlayerStateRef->GetMaxUnits() + 5);
 					PlayerStateRef->ChangeWoodPoints(WoodCostUpgrade, false);
 					PlayerStateRef->ChangeStonePoints(StoneCostUpgrade, false);
 					PlayerStateRef->ChangeGoldPoints(GoldCostUpgrade, false);

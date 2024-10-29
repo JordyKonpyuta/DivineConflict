@@ -129,7 +129,7 @@ bool ACustomPlayerState::GetIsReadyToSwitchTurn()
 		// Ressources
 
 int ACustomPlayerState::GetMaxActionPoints()
-{
+{                            	
 	return MaxActionPoints;
 }
 
@@ -160,7 +160,12 @@ int ACustomPlayerState::GetUnits()
 	return CurrentUnitCount;
 }
 
-		// GETTERS FOR UNITS SPAWN COSTS
+int ACustomPlayerState::GetMaxUnits()
+{
+	return MaxUnitCount;
+}
+
+// GETTERS FOR UNITS SPAWN COSTS
 			// WARRIORS
 
 int ACustomPlayerState::GetWarriorWoodCost()
@@ -262,14 +267,31 @@ void ACustomPlayerState::SetIsReadyToSwitchTurn(bool Ready)
 	bIsReadyToSiwtchTurn = Ready;
 }
 
-		// Units
+// Units
 
 void ACustomPlayerState::SetUnits(int UnitNumber)
 {
 	CurrentUnitCount = UnitNumber;
 }
 
-		// SETTERS FOR RESSOURCES
+void ACustomPlayerState::SetMaxUnits(int UnitMax)
+{
+	MaxUnitCount = UnitMax;
+}
+
+// SETTERS FOR RESSOURCES
+
+void ACustomPlayerState::SetMaxActionPoints(int MaxAP)
+{
+	MaxActionPoints = MaxAP;
+}
+
+void ACustomPlayerState::SetActionPoints(int CurAP)
+{
+	CurrentPA = CurAP;
+	if (PlayerControllerRef)
+		PlayerControllerRef->UpdateUi();
+}
 
 void ACustomPlayerState::ChangeWoodPoints(int WoodChange, bool Add)
 {

@@ -46,15 +46,6 @@ public:
 	int GoldBuildingOwned = 0;
 	
 	// ----------------------------
-	// Units
-
-	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Units")
-	int MaxUnitCount = 10;
-
-	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Units")
-	int CurrentUnitCount = 0;
-	
-	// ----------------------------
 	// Turns
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRep_PlayerTeam, Category = "Turn")
@@ -104,7 +95,7 @@ protected:
 	// ----------------------------
 	// UNITS
 	
-	// Warrior Costs
+		// Warrior Costs
 	UPROPERTY()
 	int WarriorWoodCost = 0;
 	UPROPERTY()
@@ -112,7 +103,7 @@ protected:
 	UPROPERTY()
 	int WarriorGoldCost = 20;
 	
-	// Mage Costs
+		// Mage Costs
 	UPROPERTY()
 	int MageWoodCost = 20;
 	UPROPERTY()
@@ -120,7 +111,7 @@ protected:
 	UPROPERTY()
 	int MageGoldCost = 10;
 
-	// Tank Costs
+		// Tank Costs
 	UPROPERTY()
 	int TankWoodCost = 10;
 	UPROPERTY()
@@ -128,7 +119,7 @@ protected:
 	UPROPERTY()
 	int TankGoldCost = 0;
 	
-	// Leader Costs
+		// Leader Costs
 	UPROPERTY()
 	int LeaderWoodCost = 30;
 	UPROPERTY()
@@ -136,7 +127,12 @@ protected:
 	UPROPERTY()
 	int LeaderGoldCost = 30;
 
-	// Units Count
+		// Units Count
+	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Units")
+	int MaxUnitCount = 10;
+	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Units")
+	int CurrentUnitCount = 0;
+	
 	UPROPERTY(Replicated)
 	int MageCount = 0;
 	UPROPERTY(Replicated)
@@ -187,25 +183,28 @@ public:
 
 	// Ressources
 	
-	UFUNCTION(BlueprintCallable, Category = "Actions")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Actions")
 	int GetMaxActionPoints();
 	
-	UFUNCTION(BlueprintCallable, Category = "Actions")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Actions")
 	int GetActionPoints();
 	
-	UFUNCTION(BlueprintCallable, Category = "Ressources")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Ressources")
 	int GetWoodPoints();
 	
-	UFUNCTION(BlueprintCallable, Category = "Ressources")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Ressources")
 	int GetStonePoints();
 	
-	UFUNCTION(BlueprintCallable, Category = "Ressources")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Ressources")
 	int GetGoldPoints();
 
 	// Units
 
-	UFUNCTION(BlueprintCallable, Category = "Units")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Units")
 	int GetUnits();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Units")
+	int GetMaxUnits();
 	
 		// GETTERS FOR UNITS SPAWN COSTS
 		// Warrior
@@ -272,11 +271,20 @@ public:
 
 	// Units
 	
-	// true to add ; false to remove
 	UFUNCTION(BlueprintCallable, Category = "Units")
 	void SetUnits(int UnitNumber);
+	
+	// true to add ; false to remove
+	UFUNCTION(BlueprintCallable, Category = "Units")
+	void SetMaxUnits(int UnitMax);
 
 	// SETTERS FOR RESSOURCES
+	
+	UFUNCTION(BlueprintCallable, Category = "Actions")
+	void SetMaxActionPoints(int MaxAP);
+	
+	UFUNCTION(BlueprintCallable, Category = "Actions")
+	void SetActionPoints(int CurAP);
 	
 	UFUNCTION(BlueprintCallable, Category = "Ressources")
 	void ChangeWoodPoints(int WoodChange, bool Add);

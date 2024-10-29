@@ -117,6 +117,10 @@ void ACustomPlayerController::ControllerInteraction()
 	}
 	if (Grid != nullptr)
 	{
+		if (PlayerStateRef)
+			if (PlayerStateRef->GetActionPoints() < 1)
+				return;
+		
 		TArray<FIntPoint> AllPossibleSpawns;
 		FIntPoint PlayerPositionInGrid = Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation());
 		switch (PlayerAction)
@@ -209,6 +213,7 @@ void ACustomPlayerController::ControllerInteraction()
 					AllPlayerActions.Add(FStructActions(TowerRef, EDC_ActionPlayer::AttackBuilding, Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile));
 					PlayerAction = EDC_ActionPlayer::None;
 					DisplayWidget();
+					PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 1);
 				}
 				CameraPlayerRef->IsTowering = false;
 			}
@@ -256,6 +261,7 @@ void ACustomPlayerController::ControllerInteraction()
 					PathReachable.Empty();
 					UnitRef->SetIsSelected(false);
 					UnitRef->HasActed = true;
+					PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 1);
 					CameraPlayerRef->IsAttacking = false;
 					PlayerAction = EDC_ActionPlayer::None;
 					DisplayWidget();
@@ -283,6 +289,7 @@ void ACustomPlayerController::ControllerInteraction()
 						Server_PrepareMoveUnit(CameraPlayerRef->Path,UnitRef);
 						AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::MoveUnit));
 						UnitRef->HasMoved = true;
+						PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 1);
 					}
 					PathReachable.Empty();
 					CameraPlayerRef->IsMovingUnit = false;
@@ -320,11 +327,13 @@ void ACustomPlayerController::ControllerInteraction()
 					{
 						AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::Special, Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile));
 						UnitRef->HasActed = true;
+						PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 2);
 					}
 					if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile)
 					{
 						AllPlayerActions.Add(FStructActions(Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile, EDC_ActionPlayer::Special, UnitRef));
 						UnitRef->HasActed = true;
+						PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 2);
 					}
 				}
 				for(FIntPoint Index : PathReachable)
@@ -482,6 +491,10 @@ void ACustomPlayerController::SelectModeAttackBuilding()
 
 void ACustomPlayerController::SelectModeSpecial()
 {
+	if (PlayerStateRef)
+		if (PlayerStateRef->GetActionPoints() < 2)
+			return;
+	
 	switch (UnitRef->UnitName)
 	{
 	case EUnitName::Warrior:
@@ -490,11 +503,13 @@ void ACustomPlayerController::SelectModeSpecial()
 			UnitRef->Special();
 		AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::MoveUnit));
 		UnitRef->HasActed = true;
+		PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 2);
 		break;
 	case EUnitName::Tank:
 		//Tank
 			AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::Special));
 		UnitRef->HasActed = true;
+		PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 2);
 		break;
 	case EUnitName::Mage:
 		//Mage
@@ -708,7 +723,7 @@ bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnCh
 void ACustomPlayerController::Server_SpawnUnit_Implementation(EUnitType UnitToSpawn, FIntPoint SpawnChosen , ABase* BaseToSpawn, ABuilding* BuildingToSpawn, ACustomPlayerState* PlayerStatRef)
 {
 	
-	if (Grid->GetGridData()->Find(SpawnChosen)->UnitOnTile == nullptr && PlayerStatRef->CurrentUnitCount <= PlayerStatRef->MaxUnitCount)
+	if (Grid->GetGridData()->Find(SpawnChosen)->UnitOnTile == nullptr && PlayerStatRef->GetUnits() <= PlayerStatRef->GetMaxUnits())
 	{
 	
 		AUnit* UnitThatSpawned;
@@ -892,20 +907,23 @@ void ACustomPlayerController::CancelLastAction()
 		{
 			case EDC_ActionPlayer::MoveUnit:
 				ActorThatStops->Server_CancelMove();
+				PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 1);
 				break;
 			case EDC_ActionPlayer::Special:
 				ActorThatStops->Server_CancelSpecial();
+				PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 2);
 				break;
 			case EDC_ActionPlayer::AttackUnit:
 				ActorThatStops->Server_CancelAttack();
+				PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 1);
 				break;
 			case EDC_ActionPlayer::AttackBuilding:
 				ActorThatStops->Server_CancelAttack();
+				PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 1);
 				break;
 		default: break;
 		}
 		AllPlayerActions.RemoveAt(AllPlayerActions.Num() - 1);
-		CurrentPA++;
 	}
 	else if (!AllPlayerPassive.IsEmpty() && !PlayerStateRef->bIsActiveTurn)
 	{
