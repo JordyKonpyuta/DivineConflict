@@ -79,7 +79,7 @@ void AUnit_Child_Leader::Special()
 	Super::Special();
 	//Special ability
 
-	TArray<FIntPoint> PathBuff =  Grid->GridPath->FindPath(GetIndexPosition(),FIntPoint(-999,-999),true,3,false);
+	TArray<FIntPoint> PathBuff =  Grid->GridPath->FindPath(GetIndexPosition(),FIntPoint(-999,-999),true,3,false,false);
 	for(FIntPoint Tile : PathBuff)
 	{
 		if(Grid->GetGridData()->Find(Tile)->UnitOnTile  && Grid->GetGridData()->Find(Tile)->UnitOnTile != this && Grid->GetGridData()->Find(Tile)->UnitOnTile->GetPlayerOwner() == GetPlayerOwner())
@@ -114,7 +114,7 @@ void AUnit_Child_Leader::Multi_PushBuff_Implementation()
 	// Check all units two cases around
 	if (Grid)
 	{
-		for (FIntPoint CurrentLoc : Grid->GridPath->FindPath(Grid->ConvertLocationToIndex(GetActorLocation()), FIntPoint(-999,-999), true, 3, false))
+		for (FIntPoint CurrentLoc : Grid->GridPath->FindPath(Grid->ConvertLocationToIndex(GetActorLocation()), FIntPoint(-999,-999), true, 3, false, false))
 		{
 			if(Grid->GetGridData()->Find(CurrentLoc)->UnitOnTile)
 			{

@@ -36,7 +36,7 @@ void ATower::BeginPlay()
 	{
 		Grid->GridInfo->addTowerOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
 		// Set Reachable Tiles for Attack
-		TilesInRange = Grid->GridPath->FindPath(GridPosition,FIntPoint(-999,-999),true,4,false);
+		TilesInRange = Grid->GridPath->FindPath(GridPosition,FIntPoint(-999,-999),true,4,false,false);
 	}
 
 }

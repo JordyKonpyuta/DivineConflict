@@ -319,13 +319,13 @@ void ACustomPlayerController::ControllerInteraction()
 				{
 					if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() != UnitRef->GetPlayerOwner())
 					{
-						UnitRef->PrepareSpecial(PlayerPositionInGrid);
 						AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::Special, Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile));
+						UnitRef->HasActed = true;
 					}
 					if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile)
 					{
-						UnitRef->PrepareSpecial(PlayerPositionInGrid);
 						AllPlayerActions.Add(FStructActions(Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile, EDC_ActionPlayer::Special, UnitRef));
+						UnitRef->HasActed = true;
 					}
 				}
 				for(FIntPoint Index : PathReachable)
@@ -334,6 +334,7 @@ void ACustomPlayerController::ControllerInteraction()
 				}
 				PathReachable.Empty();
 				UnitRef->SetIsSelected(false);
+				CameraPlayerRef->IsSpelling = false;
 				PlayerAction = EDC_ActionPlayer::None;
 				DisplayWidget();
 			}
@@ -472,7 +473,7 @@ void ACustomPlayerController::SelectModeAttack()
 void ACustomPlayerController::SelectModeAttackBuilding()
 {
 	PlayerAction = EDC_ActionPlayer::AttackBuilding;
-	PathReachable = Grid->GridPath->FindPath(TowerRef->GetGridPosition(),FIntPoint(-999,-999),true,3,false);
+	PathReachable = Grid->GridPath->FindPath(TowerRef->GetGridPosition(),FIntPoint(-999,-999),true,3,false, false);
 	for(FIntPoint Index : PathReachable)
 	{
 		Grid->GridVisual->addStateToTile(Index, EDC_TileState::Attacked);
@@ -504,13 +505,13 @@ void ACustomPlayerController::SelectModeSpecial()
 			if (UnitRef->HasMoved)
 			{
 				PathReachable =  Grid->GridPath->FindPath(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()),
-					FIntPoint(-999,-999),true,4,false);
+					FIntPoint(-999,-999),true,4,false,true);
 				CameraPlayerRef->FullMoveDirection.X = UnitRef->GetFinalGhostMesh()->GetComponentLocation().X;
 				CameraPlayerRef->FullMoveDirection.Y = UnitRef->GetFinalGhostMesh()->GetComponentLocation().Y;
 				CameraPlayerRef->FullMoveDirection.Z = (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
 			} else
 			{
-				PathReachable =  Grid->GridPath->FindPath(UnitRef->GetIndexPosition(),FIntPoint(-999,-999),true,4,false);
+				PathReachable =  Grid->GridPath->FindPath(UnitRef->GetIndexPosition(),FIntPoint(-999,-999),true,4,false,true);
 			}
 		//set color on grid
 		for(FIntPoint Index : PathReachable)

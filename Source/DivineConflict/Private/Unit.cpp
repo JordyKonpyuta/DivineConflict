@@ -841,7 +841,7 @@ void AUnit::Multi_GetBuffs_Implementation()
 {
 	if (bIsCommandeerBuffed) bIsCommandeerBuffed = false;
 	if (bBuffTank) bBuffTank = false;
-	for (FIntPoint CurrentLoc : Grid->GridPath->FindPath(GetIndexPosition(), FIntPoint(-999,-999), true, 3, false))
+	for (FIntPoint CurrentLoc : Grid->GridPath->FindPath(GetIndexPosition(), FIntPoint(-999,-999), true, 3, false, false))
 	{
 		AUnit_Child_Leader* UnitToBuff = Cast<AUnit_Child_Leader> (Grid->GetGridData()->Find(CurrentLoc)->UnitOnTile);
 

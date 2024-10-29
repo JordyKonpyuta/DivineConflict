@@ -105,11 +105,11 @@ bool UGridPath::IsInputDataValid(FIntPoint Start, FIntPoint End)
 		return false;
 	}
 	//check if the start and end are walkable
-	if(!Grid->IsTileWalkable(Start))
+	if(!Grid->IsTileWalkable(Start, bIsAttackable))
 	{
 		return false;
 	}
-	if(!Grid->IsTileWalkable(End))
+	if(!Grid->IsTileWalkable(End, bIsAttackable))
 	{
 		return false;
 	}
@@ -230,9 +230,19 @@ TArray<FPathData> UGridPath::GetValidTileNeighbors(FIntPoint Index)
 
 		FDC_TileData* NeighborTileData = Grid->GetGridData()->Find(Neighbor);
 		//check if the neighbor is walkable
-		if(!Grid->IsTileTypeWalkable(NeighborTileData->TileType))
+		if(bIsAttackable)
 		{
-			continue;
+			if(!Grid->IsTileTypeAttackable(NeighborTileData->TileType))
+			{
+				continue;
+			}
+		}
+		else
+		{
+			if(!Grid->IsTileTypeWalkable(NeighborTileData->TileType))
+			{
+				continue;
+			}
 		}
 
 		if(NeighborTileData->TileType == EDC_TileType::Climbable && bIsEscalation)
@@ -290,7 +300,7 @@ void UGridPath::ClearGeneratedPath()
 	// ----------------------------
 	// Movement
 
-TArray<FIntPoint> UGridPath::FindPath(FIntPoint Start, FIntPoint End, bool IsReachable, int PathLenght,	bool IsEscalation)
+TArray<FIntPoint> UGridPath::FindPath(FIntPoint Start, FIntPoint End, bool IsReachable, int PathLenght,	bool IsEscalation, bool attackable)
 {
 	//initialize the path
 	StartPoint = Start;
@@ -298,6 +308,7 @@ TArray<FIntPoint> UGridPath::FindPath(FIntPoint Start, FIntPoint End, bool IsRea
 	bIsReachable = IsReachable;
 	MaxLenght = PathLenght;
 	bIsEscalation = IsEscalation;
+	bIsAttackable = attackable;
 
 	ClearGeneratedPath();
 
@@ -367,7 +378,7 @@ TArray<FIntPoint> UGridPath::NewFindPath(FIntPoint Start, ACustomPlayerControlle
 					}
 					else if (AllMoveCases.Find(NeighbourToCheck)
 						&& Grid->GridPath->IsValidHeighWarrior(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck))
-						&& Grid->IsTileWalkable(NeighbourToCheck)
+						&& Grid->IsTileWalkable(NeighbourToCheck,false)
 						)
 					{
 						NewNewCases.Add(NeighbourToCheck);
@@ -398,7 +409,7 @@ TArray<FIntPoint> UGridPath::NewFindPath(FIntPoint Start, ACustomPlayerControlle
 					}
 					else if (AllMoveCases.Find(NeighbourToCheck)
 						&& Grid->GridPath->IsValidHeigh(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck))
-						&& Grid->IsTileWalkable(NeighbourToCheck)
+						&& Grid->IsTileWalkable(NeighbourToCheck,false)
 						)
 					{
 						NewNewCases.Add(NeighbourToCheck);

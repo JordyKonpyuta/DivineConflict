@@ -62,6 +62,9 @@ protected:
 	
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
 	bool bIsEscalation = false;
+
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
+	bool bIsAttackable = false;
 	
 	// ----------------------------
 	// Movement Output
@@ -125,7 +128,7 @@ public:
 
 	//Pathfinding and Path Reachable
 	UFUNCTION()
-	TArray<FIntPoint> FindPath(FIntPoint Start, FIntPoint End , bool IsReachable, int PathLenght, bool IsEscalation);
+	TArray<FIntPoint> FindPath(FIntPoint Start, FIntPoint End , bool IsReachable, int PathLenght, bool IsEscalation, bool attackable);
 
 	// ----------------------------
 	//Path Reachable

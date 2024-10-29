@@ -169,21 +169,31 @@ FVector AGrid::SnapVectorToVector(FVector InVector, const FVector InSnapTo)
 	// ----------------------------
 	// Check Grid Elements
 
-bool AGrid::IsTileWalkable(FIntPoint Index)
+bool AGrid::IsTileWalkable(FIntPoint Index,bool Attacking)
 {
+	if (Attacking)
+	{
+		return IsTileTypeAttackable(GetGridData()->Find(Index)->TileType);
+	}
 	return IsTileTypeWalkable(GetGridData()->Find(Index)->TileType);
-	
 }
+
 
 bool AGrid::IsTileTypeWalkable(EDC_TileType Type)
 {
 	TArray<EDC_TileType> WalkableTypes = { EDC_TileType::None, EDC_TileType::Obstacle, EDC_TileType::Gate };
 
 	return !WalkableTypes.Contains(Type);
-	
 }
 
-	// ----------------------------
+bool AGrid::IsTileTypeAttackable(EDC_TileType Type)
+{
+	TArray<EDC_TileType> WalkableTypes = { EDC_TileType::None, EDC_TileType::Obstacle};
+
+	return !WalkableTypes.Contains(Type);
+}
+
+// ----------------------------
 	// Converts
 
 FIntPoint AGrid::ConvertLocationToIndex(FVector3d Location)
@@ -237,7 +247,7 @@ void AGrid::UpdateColor(int I, FLinearColor InColor, float	Alpha)
 
 void AGrid::TestPathfinding()
 {
-	TArray<FIntPoint> Path = GridPath->FindPath(FIntPoint	(0, 0), FIntPoint(9, 9), false,2 ,false);
+	TArray<FIntPoint> Path = GridPath->FindPath(FIntPoint	(0, 0), FIntPoint(9, 9), false,2 ,false, false);
 
 	for(FIntPoint Index : Path)
 	{
@@ -248,7 +258,7 @@ void AGrid::TestPathfinding()
 
 void AGrid::TestReachedPath()
 {
-	TArray<FIntPoint> Reach = GridPath->FindPath(FIntPoint(14,3),FIntPoint(-999,-999), true, 2, false);
+	TArray<FIntPoint> Reach = GridPath->FindPath(FIntPoint(14,3),FIntPoint(-999,-999), true, 2, false, false);
 	for(FIntPoint Index : Reach)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Reach not clim : %d %d"), Index.X, Index.Y);
@@ -257,7 +267,7 @@ void AGrid::TestReachedPath()
 
 void AGrid::TestReachwithCliming()
 {
-	TArray<FIntPoint> Reach = GridPath->FindPath(FIntPoint(14,3),FIntPoint(-999,-999), true, 2, true);
+	TArray<FIntPoint> Reach = GridPath->FindPath(FIntPoint(14,3),FIntPoint(-999,-999), true, 2, true, false);
 	for(FIntPoint Index : Reach)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Reach with clim : %d %d"), Index.X, Index.Y);

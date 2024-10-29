@@ -77,9 +77,11 @@ public:
 	// Check Grid Element
 	
 	UFUNCTION( Category = "GridElement")
-	bool IsTileWalkable(FIntPoint Index);
+	bool IsTileWalkable(FIntPoint Index , bool Attacking);
 
 	bool IsTileTypeWalkable(EDC_TileType Type);
+
+	bool IsTileTypeAttackable(EDC_TileType Type);
 
 	// ----------------------------
 	// Converts
