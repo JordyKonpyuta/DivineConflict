@@ -210,7 +210,7 @@ void ABuilding::SpawnUnitFromBuilding_Implementation(const FIntPoint &SpawnLocat
 	{
 		PlayerControllerRef->SetPlayerAction(EDC_ActionPlayer::None);
 	}
-	if (PlayerControllerRef->PlayerStateRef->WoodPoints <= Cost[0] && PlayerControllerRef->PlayerStateRef->StonePoints <= Cost[1] && PlayerControllerRef->PlayerStateRef->GoldPoints <= Cost[2])
+	if (PlayerControllerRef->PlayerStateRef->GetWoodPoints() <= Cost[0] && PlayerControllerRef->PlayerStateRef->GetStonePoints() <= Cost[1] && PlayerControllerRef->PlayerStateRef->GetGoldPoints() <= Cost[2])
 	{
 		AUnit* UnitToSpawn = nullptr;
 		switch (UnitProduced)

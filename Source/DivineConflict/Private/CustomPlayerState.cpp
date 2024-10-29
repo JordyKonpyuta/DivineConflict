@@ -7,6 +7,9 @@
 #include "Net/UnrealNetwork.h"
 
 
+	// ----------------------------
+	// Overrides
+
 void ACustomPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
@@ -23,29 +26,9 @@ void ACustomPlayerState::BeginPlay()
 	}
 	
 }
-
-void ACustomPlayerState::OnRep_bIsActiveTurn()
-{
 	
-	if(!bIsActiveTurn)
-	{
-		NewTurnBegin();
-	}
-	UpdateUI();
-	bIsReadyToSiwtchTurn = false;
-	
-}
-
-ACustomPlayerController* ACustomPlayerState::GetPlayerCustomController()
-{
-	return Cast<ACustomPlayerController>(GetPlayerController());
-}
-
-void ACustomPlayerState::OnRep_PlayerTeam()
-{
-	if(Cast<ACustomPlayerController>(GetPlayerController()))
-        Cast<ACustomPlayerController>(GetPlayerController())->SetPlayerTeam(PlayerTeam);
-}
+	// ----------------------------
+	// Replication (Variables)
 
 void ACustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -72,35 +55,45 @@ void ACustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 
 }
 
-int ACustomPlayerState::GetMaxActionPoints()
+	// ----------------------------
+	// Replication (Functions)
+
+void ACustomPlayerState::OnRep_bIsActiveTurn()
 {
-	return MaxActionPoints;
+	
+	if(!bIsActiveTurn)
+	{
+		NewTurnBegin();
+	}
+	UpdateUI();
+	bIsReadyToSiwtchTurn = false;
+	
 }
 
-bool ACustomPlayerState::IsCentralBuildingOurs()
+void ACustomPlayerState::OnRep_PlayerTeam()
 {
-	return GotCentralBuilding;
+	if(Cast<ACustomPlayerController>(GetPlayerController()))
+        Cast<ACustomPlayerController>(GetPlayerController())->SetPlayerTeam(PlayerTeam);
 }
 
-int ACustomPlayerState::GetWoodPoints()
-{
-	return WoodPoints;
-}
+	// ----------------------------
+	// Turns
 
-int ACustomPlayerState::GetStonePoints()
+void ACustomPlayerState::NewTurnBegin()
 {
-	return StonePoints;
-}
+	ChangeWoodPoints(20 + (WoodBuildingOwned * 15), true);
+	ChangeStonePoints(20 + (StoneBuildingOwned * 15), true);
+	ChangeGoldPoints(20 + (GoldBuildingOwned * 15), true);
 
-bool ACustomPlayerState::GetIsReadyToSwitchTurn()
-{
-	return bIsReadyToSiwtchTurn;
-}
 
-void ACustomPlayerState::SetIsReadyToSwitchTurn(bool Ready)
-{
-	bIsReadyToSiwtchTurn = Ready;
+		MaxActionPoints = 10 + (GotCentralBuilding * UKismetMathLibrary::Clamp(TurnPassed, 0, 5));
+		CurrentPA = MaxActionPoints;
+		//PlayerControllerRef->CurrentPA = CurrentPA;
+
 }
+	
+	// ----------------------------
+	// UI
 
 void ACustomPlayerState::UpdateUI()
 {
@@ -115,16 +108,168 @@ void ACustomPlayerState::UpdateUI()
 		PlayerControllerRef->UpdateUITimer(90);
 	}
 }
+	
+	// ----------------------------
+	// GETTERS
+
+		// Refs
+
+ACustomPlayerController* ACustomPlayerState::GetPlayerCustomController()
+{
+	return Cast<ACustomPlayerController>(GetPlayerController());
+}
+
+		// Turns
+
+bool ACustomPlayerState::GetIsReadyToSwitchTurn()
+{
+	return bIsReadyToSiwtchTurn;
+}
+
+		// Ressources
+
+int ACustomPlayerState::GetMaxActionPoints()
+{
+	return MaxActionPoints;
+}
+
+int ACustomPlayerState::GetActionPoints()
+{
+	return CurrentPA;
+}
+
+int ACustomPlayerState::GetWoodPoints()
+{
+	return WoodPoints;
+}
+
+int ACustomPlayerState::GetStonePoints()
+{
+	return StonePoints;
+}
 
 int ACustomPlayerState::GetGoldPoints()
 {
 	return GoldPoints;
 }
 
+		// Units
+
 int ACustomPlayerState::GetUnits()
 {
 	return CurrentUnitCount;
 }
+
+		// GETTERS FOR UNITS SPAWN COSTS
+			// WARRIORS
+
+int ACustomPlayerState::GetWarriorWoodCost()
+{
+	return WarriorWoodCost + (WarriorWoodCost*(0.25*GetWarriorCount()));
+}
+
+int ACustomPlayerState::GetWarriorStoneCost()
+{
+	return WarriorStoneCost + (WarriorStoneCost*(0.25*GetWarriorCount()));
+}
+
+int ACustomPlayerState::GetWarriorGoldCost()
+{
+	return WarriorGoldCost + (WarriorGoldCost*(0.25*GetWarriorCount()));
+}
+
+			// MAGES
+
+int ACustomPlayerState::GetMageWoodCost()
+{
+	return MageWoodCost+(MageWoodCost*(0.25*GetMageCount()));
+}
+
+int ACustomPlayerState::GetMageStoneCost()
+{
+	return MageStoneCost + (MageStoneCost*(0.25*GetMageCount()));
+}
+
+int ACustomPlayerState::GetMageGoldCost()
+{
+	return MageGoldCost + (MageGoldCost*(0.25*GetMageCount()));
+}
+
+			// TANKS
+
+int ACustomPlayerState::GetTankWoodCost()
+{
+	return TankWoodCost + (TankWoodCost*(0.25*GetTankCount()));
+}
+
+int ACustomPlayerState::GetTankStoneCost()
+{
+	return TankStoneCost + (TankStoneCost*(0.25*GetTankCount()));
+}
+
+int ACustomPlayerState::GetTankGoldCost()
+{
+	return TankGoldCost + (TankGoldCost*(0.25*GetTankCount()));
+}
+
+			// LEADERS
+
+int ACustomPlayerState::GetLeaderWoodCost()
+{
+	return LeaderWoodCost + (LeaderWoodCost*(0.25*GetLeaderCount()));
+}
+
+int ACustomPlayerState::GetLeaderStoneCost()
+{
+	return LeaderStoneCost + (LeaderStoneCost*(0.25*GetLeaderCount()));
+}
+
+int ACustomPlayerState::GetLeaderGoldCost()
+{
+	return LeaderGoldCost + (LeaderGoldCost*(0.25*GetLeaderCount()));
+}
+
+		// GETTER FOR THE UNIT COUNTS
+
+int ACustomPlayerState::GetWarriorCount()
+{
+	return WarriorCount;
+}
+
+int ACustomPlayerState::GetMageCount()
+{
+	return MageCount;
+}
+
+int ACustomPlayerState::GetTankCount()
+{
+	return TankCount;
+}
+
+int ACustomPlayerState::GetLeaderCount()
+{
+	return LeaderCount;
+}
+
+
+	// ----------------------------
+	// SETTERS
+
+		// Turns
+
+void ACustomPlayerState::SetIsReadyToSwitchTurn(bool Ready)
+{
+	bIsReadyToSiwtchTurn = Ready;
+}
+
+		// Units
+
+void ACustomPlayerState::SetUnits(int UnitNumber)
+{
+	CurrentUnitCount = UnitNumber;
+}
+
+		// SETTERS FOR RESSOURCES
 
 void ACustomPlayerState::ChangeWoodPoints(int WoodChange, bool Add)
 {
@@ -162,102 +307,13 @@ void ACustomPlayerState::ChangeGoldPoints(int GoldChange, bool Add)
 	}
 }
 
-void ACustomPlayerState::SetUnits(int UnitNumber)
+		// SETTERS FOR UNIT COUNTS
+
+void ACustomPlayerState::SetWarriorCount(int NewCount)
 {
-	CurrentUnitCount = UnitNumber;
-}
 
-void ACustomPlayerState::NewTurnBegin()
-{
-	ChangeWoodPoints(20 + (WoodBuildingOwned * 15), true);
-	ChangeStonePoints(20 + (StoneBuildingOwned * 15), true);
-	ChangeGoldPoints(20 + (GoldBuildingOwned * 15), true);
-
-
-		MaxActionPoints = 10 + (GotCentralBuilding * UKismetMathLibrary::Clamp(TurnPassed, 0, 5));
-		CurrentPA = MaxActionPoints;
-		//PlayerControllerRef->CurrentPA = CurrentPA;
-
-}
-
-int ACustomPlayerState::GetMageWoodCost()
-{
-	return MageWoodCost+(MageWoodCost*(0.25*GetMageCount()));
-}
-
-int ACustomPlayerState::GetMageStoneCost()
-{
-	return MageStoneCost + (MageStoneCost*(0.25*GetMageCount()));
-}
-
-int ACustomPlayerState::GetMageGoldCost()
-{
-	return MageGoldCost + (MageGoldCost*(0.25*GetMageCount()));
-}
-
-int ACustomPlayerState::GetTankWoodCost()
-{
-	return TankWoodCost + (TankWoodCost*(0.25*GetTankCount()));
-}
-
-int ACustomPlayerState::GetTankStoneCost()
-{
-	return TankStoneCost + (TankStoneCost*(0.25*GetTankCount()));
-}
-
-int ACustomPlayerState::GetTankGoldCost()
-{
-	return TankGoldCost + (TankGoldCost*(0.25*GetTankCount()));
-}
-
-int ACustomPlayerState::GetWarriorWoodCost()
-{
-	return WarriorWoodCost + (WarriorWoodCost*(0.25*GetWarriorCount()));
-}
-
-int ACustomPlayerState::GetWarriorStoneCost()
-{
-	return WarriorStoneCost + (WarriorStoneCost*(0.25*GetWarriorCount()));
-}
-
-int ACustomPlayerState::GetWarriorGoldCost()
-{
-	return WarriorGoldCost + (WarriorGoldCost*(0.25*GetWarriorCount()));
-}
-
-int ACustomPlayerState::GetLeaderWoodCost()
-{
-	return LeaderWoodCost + (LeaderWoodCost*(0.25*GetLeaderCount()));
-}
-
-int ACustomPlayerState::GetLeaderStoneCost()
-{
-	return LeaderStoneCost + (LeaderStoneCost*(0.25*GetLeaderCount()));
-}
-
-int ACustomPlayerState::GetLeaderGoldCost()
-{
-	return LeaderGoldCost + (LeaderGoldCost*(0.25*GetLeaderCount()));
-}
-
-int ACustomPlayerState::GetMageCount()
-{
-	return MageCount;
-}
-
-int ACustomPlayerState::GetTankCount()
-{
-	return TankCount;
-}
-
-int ACustomPlayerState::GetWarriorCount()
-{
-	return WarriorCount;
-}
-
-int ACustomPlayerState::GetLeaderCount()
-{
-	return LeaderCount;
+	WarriorCount = NewCount;
+	SetPopulation();
 }
 
 void ACustomPlayerState::SetMageCount(int NewCount)
@@ -269,13 +325,6 @@ void ACustomPlayerState::SetMageCount(int NewCount)
 void ACustomPlayerState::SetTankCount(int NewCount)
 {
 	TankCount = NewCount;
-	SetPopulation();
-}
-
-void ACustomPlayerState::SetWarriorCount(int NewCount)
-{
-
-	WarriorCount = NewCount;
 	SetPopulation();
 }
 
