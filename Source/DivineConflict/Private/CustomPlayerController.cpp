@@ -837,9 +837,7 @@ void ACustomPlayerController::SpawnGhostUnit(EUnitType UnitToSpawn, FIntPoint Sp
 					//if you have enough resources
 					if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetWarriorStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetWarriorWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetWarriorGoldCost())
 					{
-						PlayerStateRef->ChangeWoodPoints(PlayerStateRef->GetWarriorWoodCost(), false);
-						PlayerStateRef->ChangeStonePoints(PlayerStateRef->GetWarriorStoneCost(), false);
-						PlayerStateRef->ChangeGoldPoints(PlayerStateRef->GetWarriorGoldCost(), false);
+						Server_RessourceChange(PlayerStateRef,UnitToSpawn);
 						GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 						GhostUnit->SetUnitType(UnitToSpawn);
 						GhostUnit->Spawn();
@@ -848,9 +846,7 @@ void ACustomPlayerController::SpawnGhostUnit(EUnitType UnitToSpawn, FIntPoint Sp
 				case EUnitType::U_Tank:
 					if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetTankStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetTankWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetTankGoldCost())
 					{
-						PlayerStateRef->ChangeWoodPoints(PlayerStateRef->GetTankWoodCost(), false);
-						PlayerStateRef->ChangeStonePoints(PlayerStateRef->GetTankStoneCost(), false);
-						PlayerStateRef->ChangeGoldPoints(PlayerStateRef->GetTankGoldCost(), false);
+						Server_RessourceChange(PlayerStateRef,UnitToSpawn);
 						GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 						GhostUnit->SetUnitType(UnitToSpawn);
 						GhostUnit->Spawn();
@@ -859,9 +855,7 @@ void ACustomPlayerController::SpawnGhostUnit(EUnitType UnitToSpawn, FIntPoint Sp
 				case EUnitType::U_Mage:
 					if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetMageStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetMageWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetMageGoldCost())
 					{
-						PlayerStateRef->ChangeWoodPoints(PlayerStateRef->GetMageWoodCost(), false);
-						PlayerStateRef->ChangeStonePoints(PlayerStateRef->GetMageStoneCost(), false);
-						PlayerStateRef->ChangeGoldPoints(PlayerStateRef->GetMageGoldCost(), false);
+						Server_RessourceChange(PlayerStateRef,UnitToSpawn);
 						GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 						GhostUnit->SetUnitType(UnitToSpawn);
 						GhostUnit->Spawn();
@@ -870,9 +864,7 @@ void ACustomPlayerController::SpawnGhostUnit(EUnitType UnitToSpawn, FIntPoint Sp
 				case EUnitType::U_Leader:
 					if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetLeaderStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetLeaderWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetLeaderGoldCost())
 					{
-						PlayerStateRef->ChangeWoodPoints(PlayerStateRef->GetLeaderWoodCost(), false);
-						PlayerStateRef->ChangeStonePoints(PlayerStateRef->GetLeaderStoneCost(), false);
-						PlayerStateRef->ChangeGoldPoints(PlayerStateRef->GetLeaderGoldCost(), false);
+						Server_RessourceChange(PlayerStateRef,UnitToSpawn);
 						GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 						GhostUnit->SetUnitType(UnitToSpawn);
 						GhostUnit->Spawn();
@@ -892,6 +884,46 @@ void ACustomPlayerController::SpawnGhostUnit(EUnitType UnitToSpawn, FIntPoint Sp
 				Grid->GridVisual->addStateToTile(SpawnChosen, EDC_TileState::Spawned);
 			}
 			Grid->GridVisual->RemoveStateFromTile(SpawnChosen, EDC_TileState::Spawnable);
+}
+
+void ACustomPlayerController::Server_RessourceChange_Implementation(const ACustomPlayerState* PSR,
+	EUnitType UnitType)
+{
+	Multi_RessourceChange(PSR, UnitType);
+}
+
+// ----------------------------
+// Cancel Actions
+
+void ACustomPlayerController::Multi_RessourceChange_Implementation(const ACustomPlayerState* PSR,
+	EUnitType UnitType)
+{
+	ACustomPlayerState* PlayerStateR = const_cast<ACustomPlayerState*>(PSR);
+	switch (UnitType)
+	{
+	case EUnitType::U_Leader:
+		PlayerStateR->ChangeWoodPoints(PlayerStateR->GetLeaderWoodCost(), false);
+		PlayerStateR->ChangeStonePoints(PlayerStateR->GetLeaderStoneCost(), false);
+		PlayerStateR->ChangeGoldPoints(PlayerStateR->GetLeaderGoldCost(), false);
+		break;
+	case EUnitType::U_Mage:
+		PlayerStateR->ChangeWoodPoints(PlayerStateR->GetMageWoodCost(), false);
+		PlayerStateR->ChangeStonePoints(PlayerStateR->GetMageStoneCost(), false);
+		PlayerStateR->ChangeGoldPoints(PlayerStateR->GetMageGoldCost(), false);
+		break;
+	case EUnitType::U_Tank:
+		PlayerStateR->ChangeWoodPoints(PlayerStateR->GetTankWoodCost(), false);
+		PlayerStateR->ChangeStonePoints(PlayerStateR->GetTankStoneCost(), false);
+		PlayerStateR->ChangeGoldPoints(PlayerStateR->GetTankGoldCost(), false);
+		break;
+	case EUnitType::U_Warrior:
+		PlayerStateR->ChangeWoodPoints(PlayerStateR->GetWarriorWoodCost(), false);
+		PlayerStateR->ChangeStonePoints(PlayerStateR->GetWarriorStoneCost(), false);
+		PlayerStateR->ChangeGoldPoints(PlayerStateR->GetWarriorGoldCost(), false);
+		break;
+	default:
+		break;
+	}
 }
 	
 	// ----------------------------

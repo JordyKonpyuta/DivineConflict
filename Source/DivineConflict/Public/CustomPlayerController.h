@@ -299,6 +299,12 @@ public:
 
 	UFUNCTION()
 	void SpawnGhostUnit(EUnitType UnitToSpawn,FIntPoint SpawnChosen);
+
+	UFUNCTION(Server, Reliable)
+	void Server_RessourceChange(const ACustomPlayerState* PSR,EUnitType UnitType);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_RessourceChange(const ACustomPlayerState* PSR,EUnitType UnitType);
 	
 	// ----------------------------
 	// Cancel Actions
