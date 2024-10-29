@@ -71,7 +71,6 @@ void ACustomPlayerController::SetupInputComponent()
 void ACustomPlayerController::setGrid()
 {
 	//get the grid
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Set Grid"));
 	AActor* FoundActors = UGameplayStatics::GetActorOfClass(GetWorld(), AGrid::StaticClass());
 	if (FoundActors != nullptr)
 	{
@@ -85,6 +84,8 @@ void ACustomPlayerController::setGrid()
 		
 	}
 }
+
+//get all tile for reach movement
 
 void ACustomPlayerController::FindReachableTiles()
 {
@@ -122,8 +123,10 @@ void ACustomPlayerController::SelectModeMovement()
 	FindReachableTiles();
 	if (UnitRef)
 	{
+		
 		if (Cast<AUnit_Child_Warrior>(UnitRef))
 		{
+			//si use a Special action
 			if (UnitRef->HasActed &&  UnitRef->GetFinalGhostMesh()->IsVisible())
 			{
 				CameraPlayerRef->Path.Add(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()));
@@ -145,7 +148,8 @@ void ACustomPlayerController::SelectModeAttack()
 {
 	PlayerAction = EDC_ActionPlayer::AttackUnit;
 	CameraPlayerRef->IsAttacking = true;
-	
+
+	//si unit has move
 	if (UnitRef->HasMoved)
 	{
 		PathReachable = Grid->GridPath->FindTileNeighbors(
@@ -157,7 +161,7 @@ void ACustomPlayerController::SelectModeAttack()
 	{
 		PathReachable = Grid->GridPath->FindTileNeighbors(UnitRef->GetIndexPosition());
 	}
-	
+	//set color on grid
 	for(FIntPoint Index : PathReachable)
     {
         Grid->GridVisual->addStateToTile(Index, EDC_TileState::Attacked);
@@ -186,6 +190,7 @@ void ACustomPlayerController::SelectModeSpecial()
 		//Mage
 			if (CameraPlayerRef)
 				CameraPlayerRef->IsSpelling = true;
+		//si unit has move
 			if (UnitRef->HasMoved)
 			{
 				PathReachable =  Grid->GridPath->FindPath(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()),
@@ -197,6 +202,7 @@ void ACustomPlayerController::SelectModeSpecial()
 			{
 				PathReachable =  Grid->GridPath->FindPath(UnitRef->GetIndexPosition(),FIntPoint(-999,-999),true,4,false);
 			}
+		//set color on grid
 		for(FIntPoint Index : PathReachable)
 		{
 			Grid->GridVisual->addStateToTile(Index, EDC_TileState::Attacked);
@@ -217,28 +223,29 @@ void ACustomPlayerController::SelectModeAttackBuilding()
 	}
 	CameraPlayerRef->IsTowering = true;
 }
-
+//interract system of element on grid
 
 void ACustomPlayerController::ControllerInteraction()
 {
+	
 	if(!PlayerStateRef)
 	{
 		PlayerStateRef = Cast<ACustomPlayerState>(PlayerState);
 	}
-
 	if (Grid != nullptr)
 	{
 		TArray<FIntPoint> AllPossibleSpawns;
 		FIntPoint PlayerPositionInGrid = Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation());
 		switch (PlayerAction)
 		{
+			//get object for interract
 		case EDC_ActionPlayer::None:
 			if(Grid->GetGridData()->Find(PlayerPositionInGrid) != nullptr) 
 			{
-				
 				if(PlayerStateRef->bIsActiveTurn)
 				{
 					//Active Turn
+					//Interract tower
 					if(Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile)
 					{
 						if(Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile->GetPlayerOwner() == PlayerStateRef->PlayerTeam)
@@ -250,7 +257,7 @@ void ACustomPlayerController::ControllerInteraction()
 						}
 					}
 						
-
+					//Interract unit
 					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile)
 					{
 						if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() == PlayerStateRef->PlayerTeam)
@@ -262,6 +269,7 @@ void ACustomPlayerController::ControllerInteraction()
 							DisplayWidget();
 						}
 					}
+					////Interract building and have an unit on build
 					else if(Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile)
 					{
 						if(Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef && Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == PlayerStateRef->PlayerTeam)
@@ -277,6 +285,7 @@ void ACustomPlayerController::ControllerInteraction()
 				else
 				{
 					//PassiveTurn
+					//Interract building
 					if(Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile)
 					{
 						if(Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == PlayerStateRef->PlayerTeam)
@@ -290,7 +299,8 @@ void ACustomPlayerController::ControllerInteraction()
 							}
 							DisplayWidgetBuilding();
 						}
-					}	
+					}
+					//Interract Base
 					else if(Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile)
 					{
 						if(Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile->PlayerOwner == PlayerStateRef->PlayerTeam)
@@ -306,8 +316,10 @@ void ACustomPlayerController::ControllerInteraction()
 			}
 			break;
 		case EDC_ActionPlayer::AttackBuilding:
+			//Attack tower
 			if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile)
 			{
+				//check if the unit on tile is not on your team
 				if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() != PlayerStateRef->PlayerTeam)
 				{
 					TowerRef->PreprareAttack(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile);
@@ -338,7 +350,6 @@ void ACustomPlayerController::ControllerInteraction()
 						{
 							if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BuildingOnTile->GarrisonFull)
 							{
-								//UnitRef->PrepareAttackBuilding(PlayerPositionInGrid);
 								AllPlayerActions.Add(FStructActions(Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile, EDC_ActionPlayer::AttackBuilding, UnitRef));
 							}
 						}
@@ -348,7 +359,6 @@ void ACustomPlayerController::ControllerInteraction()
 					{
 						if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BaseOnTile->PlayerOwner != UnitRef->GetPlayerOwner())
 						{
-							//AttackBase(Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile, UnitRef);
 							AllPlayerActions.Add(FStructActions(Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile, EDC_ActionPlayer::AttackBuilding,UnitRef));
 						}
 					}
@@ -356,6 +366,7 @@ void ACustomPlayerController::ControllerInteraction()
 					{
 						AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::AttackUnit, nullptr));
 					}
+					//hide color on grid
 					for(FIntPoint Index : PathReachable)
 					{
 						Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Attacked);
@@ -370,6 +381,7 @@ void ACustomPlayerController::ControllerInteraction()
 			}
 			break;
 		case EDC_ActionPlayer::MoveUnit:
+			//Unit Move 
 			if (UnitRef)
 			{
 				if (!UnitRef->HasMoved)
@@ -400,6 +412,7 @@ void ACustomPlayerController::ControllerInteraction()
 			}
 			break;
 		case EDC_ActionPlayer::SelectBuilding:
+			//slect position for spawn unit
 			AllPossibleSpawns = PrepareSpawnArea(BuildingRef->AllSpawnLoc, BuildingRef->SpawnLocRef[0]);
 			BuildingRef->BuildingSpawnLocationRef->DeSpawnGridColors(BuildingRef->AllSpawnLoc);
 			AllCurrentSpawnPoints.Empty();
@@ -416,6 +429,7 @@ void ACustomPlayerController::ControllerInteraction()
 			PlayerAction = EDC_ActionPlayer::None;
 			break;
 		case EDC_ActionPlayer::Special:
+			//Special wizard
 			if(UnitRef)
 			{
 				if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile != nullptr)
@@ -472,6 +486,7 @@ void ACustomPlayerController::HiddeWidget_Implementation()
 void ACustomPlayerController::FeedbackEndTurn_Implementation(bool visibility)
 {
 }
+//get tile valid for spawn
 
 TArray<FIntPoint> ACustomPlayerController::PrepareSpawnArea(TArray<FIntPoint> AllSpawnArea, FIntPoint BaseTile)
 {
@@ -485,7 +500,7 @@ TArray<FIntPoint> ACustomPlayerController::PrepareSpawnArea(TArray<FIntPoint> Al
 	}
 	return TrueSpawnArea;
 }
-
+//attack base with server
 void ACustomPlayerController::AttackBase_Implementation(ABase* BaseToAttack, AUnit* UnitAttacking)
 {
 	if(BaseToAttack && UnitAttacking)
@@ -498,7 +513,7 @@ void ACustomPlayerController::AttackBase_Implementation(ABase* BaseToAttack, AUn
 		Multi_ActionActiveTurn();
 	}
 }
-
+//attack unit with server
 void ACustomPlayerController::ServerAttackUnit_Implementation(AUnit* UnitToAttack, AUnit* UnitAttacking)
 {
 	if(UnitToAttack && UnitAttacking)
@@ -512,7 +527,7 @@ void ACustomPlayerController::ServerAttackUnit_Implementation(AUnit* UnitToAttac
 		//Multi_ActionActiveTurn();
 	}
 }
-
+//attack building with server
 void ACustomPlayerController::ServerAttackBuilding_Implementation(ABuilding* BuildingToAttack, AUnit* UnitAttacking)
 {
 	if(BuildingToAttack && UnitAttacking)
@@ -522,7 +537,7 @@ void ACustomPlayerController::ServerAttackBuilding_Implementation(ABuilding* Bui
 		Multi_ActionActiveTurn();
 	}
 }
-
+//attack unit with tower with server
 void ACustomPlayerController::ServerAttackTower_Implementation(ATower* TowerToAttack, AUnit* UnitAttacking)
 {
 	if(TowerToAttack && UnitAttacking)
@@ -534,20 +549,20 @@ void ACustomPlayerController::ServerAttackTower_Implementation(ATower* TowerToAt
 		Multi_ActionActiveTurn();
 	}
 }
-
+//use special unit with server
 void ACustomPlayerController::Server_SpecialUnit_Implementation(AUnit* UnitSpecial,AActor* ThingToAttack)
 {
 	if(AUnit_Child_Mage* MageSp =  Cast<AUnit_Child_Mage>(UnitSpecial))
 		MageSp->SpecialMage(ThingToAttack);
 	else UnitSpecial->Special();
 }
-
+//call spawn unit with server
 bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen,ABase* BaseToSpawn, ABuilding* BuildingToSpawn)
 {
 	Server_SpawnUnit(UnitToSpawn, SpawnChosen, BaseToSpawn, BuildingToSpawn,PlayerStateRef);
 	return Grid->GetGridData()->Find(SpawnChosen)->UnitOnTile != nullptr;
 }
-
+//set unit on grid and team with multicast
 void ACustomPlayerController::Multicast_SpawnUnit_Implementation(AUnit* UnitSpawned,AGrid* GridSpawned, ACustomPlayerState* PlayerStatRef,  ABase* BaseSpawned, ABuilding* BuildingSpawned)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Multicast_SpawnUnit"));
@@ -568,7 +583,7 @@ void ACustomPlayerController::Multicast_SpawnUnit_Implementation(AUnit* UnitSpaw
 	}
 	Client_UpdateUi();
 }
-
+//spawn unit with server
 void ACustomPlayerController::Server_SpawnUnit_Implementation(EUnitType UnitToSpawn, FIntPoint SpawnChosen , ABase* BaseToSpawn, ABuilding* BuildingToSpawn, ACustomPlayerState* PlayerStatRef)
 {
 	
@@ -608,33 +623,33 @@ void ACustomPlayerController::Server_SpawnUnit_Implementation(EUnitType UnitToSp
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("UnitCount : " + FString::FromInt(PlayerStatRef->CurrentUnitCount) + " WarriorCount : " + FString::FromInt(PlayerStatRef->GetWarriorCount())
 		+"TankCount : " + FString::FromInt(PlayerStatRef->GetTankCount()) +"MageCount : " + FString::FromInt(PlayerStatRef->GetMageCount()) +"LeaderCount : " + FString::FromInt(PlayerStatRef->GetLeaderCount())));
 }
-
+//call end turn with server
 void ACustomPlayerController::EndTurn()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("EndTurn"));
 	Server_EndTurn();
 	FeedbackEndTurn(true);
 }
-
+//call Action Active Turn with server
 void ACustomPlayerController::Server_ActionActiveTurn_Implementation()
 {
 	Multi_ActionActiveTurn();
 }
-
+//execute action active turn with multicast
 void ACustomPlayerController::Multi_ActionActiveTurn_Implementation()
 {
 	if(IsLocalController())
 	{
 		HiddeWidget();
+		//if PlayerState si set
 		if(PlayerStateRef == nullptr)
 			PlayerStateRef = Cast<ACustomPlayerState>(PlayerState);
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Multi_ActionActiveTurn"));
 		GetWorld()->GetTimerManager().ClearTimer(TimerActiveEndTurn);
+		
+		//if player is active
 		if(PlayerStateRef->bIsActiveTurn)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("IsActiveTurn"));
-			
-			GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Silver, TEXT("AllPlayerAction : " + FString::FromInt(AllPlayerActions.Num())));
+			//if there is action to do
 			if(AllPlayerActions.Num() > 0)
 			{
 				AUnit* UnitAction = Cast<AUnit>( AllPlayerActions[0].ActorRef);
@@ -655,20 +670,23 @@ void ACustomPlayerController::Multi_ActionActiveTurn_Implementation()
 				{
 					TowerAction->SetCanAttack(true);
 				}
+				//switch on action
 				switch (AllPlayerActions[0].UnitAction)
 				{
 				case EDC_ActionPlayer::MoveUnit:
-					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("MoveUnit"));
+					//move unit
 					ServerMoveUnit(UnitAction);
 					AllPlayerActions.RemoveAt(0);
 					break;
 				case EDC_ActionPlayer::AttackUnit:
+					//attack unit
 					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AttackUnit"));
 					ServerAttackUnit(UnitAction, AllPlayerActions[0].UnitAttacking);
 					GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurn, 0.5f, false);
 					AllPlayerActions.RemoveAt(0);
 					break;
 				case EDC_ActionPlayer::AttackBuilding:
+					//attack tower
 					if(TowerAction)
 					{
 						UE_LOG( LogTemp, Warning, TEXT("TowerRef") );
@@ -676,12 +694,14 @@ void ACustomPlayerController::Multi_ActionActiveTurn_Implementation()
 						GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurn, 0.5f, false);
 						TowerAction = nullptr;
 					}
+					//attack base with unit
 					if(BaseAction)
 					{
 						UE_LOG( LogTemp, Warning, TEXT("BaseRef") );
 						AttackBase(BaseAction, AllPlayerActions[0].UnitAttacking);
 						GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurn, 0.5f, false);
 					}
+					//attack building with unit
 					if (BuildingAction)
 					{
 						UE_LOG( LogTemp, Warning, TEXT("BuildingRef") );
@@ -692,8 +712,10 @@ void ACustomPlayerController::Multi_ActionActiveTurn_Implementation()
 					AllPlayerActions.RemoveAt(0);
 					break;
 				case EDC_ActionPlayer::Special:
+					//if special action on base
 					if(BaseAction)
 						Server_SpecialUnit(AllPlayerActions[0].UnitAttacking, BaseAction);
+					//if special action
 					if(UnitAction)
 						Server_SpecialUnit(UnitAction,AllPlayerActions[0].UnitAttacking);
 					GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurn, 0.5f, false);
@@ -704,47 +726,50 @@ void ACustomPlayerController::Multi_ActionActiveTurn_Implementation()
 				}
 			}else
 			{
+				//if no action left
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("EndActionActiveTurn"));
 				AllPlayerActions.Empty();
 				GetWorld()->GetTimerManager().ClearTimer(TimerActiveEndTurn);
+				//call check player action passive with server
 				Server_CheckPlayerActionPassive();
 			}
 		}
 	}
 }
-
+//get player action
 EDC_ActionPlayer ACustomPlayerController::GetPlayerAction()
 {
 	return PlayerAction;
 }
-
+//call check player action passive on Game State with server
 void ACustomPlayerController::Server_CheckPlayerActionPassive_Implementation()
 {
 	Cast<ACustomGameState>(GetWorld()->GetGameState())->CheckPlayerActionPassive();
 }
 
-
+//call Passive Active Turn with server
 void ACustomPlayerController::Server_ActionPassiveTurn_Implementation()
 {
 	Multi_ActionPassiveTurn();
 }
-
+//execute action passive turn with multicast
 void ACustomPlayerController::Multi_ActionPassiveTurn_Implementation()
 {
 	if(IsLocalController())
 	{
+		//if there is action to do
 		if(!AllPlayerPassive.IsEmpty())
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("AllPlayerPassive"));
+			//if Building Action
 			if(ABuilding *BuildingAction = Cast<ABuilding>(AllPlayerPassive[0].ActorRef))
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BuildingAction"));
 				GetWorld()->DestroyActor(AllPlayerPassive[0].GhostRef);
 				Grid->GridVisual->RemoveStateFromTile(AllPlayerPassive[0].TilePosition, EDC_TileState::Spawned);
 				Server_SpawnUnit(BuildingAction->UnitProduced, AllPlayerPassive[0].TilePosition, nullptr, BuildingAction, PlayerStateRef);
 				AllPlayerPassive.RemoveAt(0);
 				Multi_ActionPassiveTurn();
 			}
+			//if Base Action
 			else if(ABase *BaseAction = Cast<ABase>(AllPlayerPassive[0].ActorRef))
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BaseAction"));
@@ -757,18 +782,19 @@ void ACustomPlayerController::Multi_ActionPassiveTurn_Implementation()
 		}
 		else
 		{
+			//if no action left
 			Server_SwitchPlayerTurn(Cast<ACustomGameState>(GetWorld()->GetGameState()));
 			Server_Delegate();
 		}
 	}
 
 }
-
+//switch playerTurn with server
 void ACustomPlayerController::Server_SwitchPlayerTurn_Implementation(const ACustomGameState* GameState)
 {
 	Multi_SwitchPlayerTurn(GameState);
 }
-
+//call Switch Player Turn with multicast
 void ACustomPlayerController::Multi_SwitchPlayerTurn_Implementation(const ACustomGameState* GameState)
 {
 	ACustomGameState* GameStateRef = const_cast<ACustomGameState*>(GameState);
@@ -778,12 +804,12 @@ void ACustomPlayerController::Multi_SwitchPlayerTurn_Implementation(const ACusto
 	}
 }
 
-
+//call delegate with server of passive leader
 void ACustomPlayerController::Server_Delegate_Implementation()
 {
 	OnTurnChangedDelegate.Broadcast();
 }
-
+//cancel action (on final version)
 void ACustomPlayerController::CancelLastAction()
 {
 	if (!AllPlayerActions.IsEmpty() && PlayerStateRef->bIsActiveTurn)
@@ -850,7 +876,7 @@ void ACustomPlayerController::DisplayAttackWidget_Implementation()
 void ACustomPlayerController::RemoveAttackWidget_Implementation()
 {
 }
-
+//check if player can interact with element on grid for widget 3D
 void ACustomPlayerController::VerifyBuildInteraction()
 {
 	if (PlayerStateRef == nullptr)
@@ -920,7 +946,7 @@ void ACustomPlayerController::VerifyBuildInteraction()
 		UpdateWidget3D(0, false);
 	}
 }
-
+//set player position on grid on start
 void ACustomPlayerController::AssignPlayerPosition()
 {
 	
@@ -981,7 +1007,7 @@ void ACustomPlayerController::AddToPathReachable(FIntPoint NewPoint)
 void ACustomPlayerController::UpdateUi_Implementation()
 {
 }
-
+//get plsition for spawn unit with base
 void ACustomPlayerController::Server_SpawnBaseUnit_Implementation(EUnitType UnitToSpawn,AGrid* GridSer, ABase* BaseToSpawn, EPlayer PlayerOwner)
 {
 	GEngine->AddOnScreenDebugMessage( -1, 5.f, FColor::Green, TEXT("BaseToSpawn : " + BaseToSpawn->GetName()));
@@ -1014,7 +1040,7 @@ void ACustomPlayerController::ServerMoveUnit_Implementation(const AUnit* UnitToM
 		UnitRef = nullptr;
 	}
 }
-
+//get position for spawn unit ghost for base
 void ACustomPlayerController::SpawnBaseUnitGhost(EUnitType UnitToSpawn)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SpawnBaseUnit"));
@@ -1039,7 +1065,7 @@ void ACustomPlayerController::SpawnBaseUnitGhost(EUnitType UnitToSpawn)
 
 	//Server_SpawnBaseUnit(UnitToSpawn, Grid, BaseRef, PlayerTeam);
 }
-
+//Spawn ghost on client
 void ACustomPlayerController::SpawnGhostUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen)
 {
 	AGhostUnitSpawning* GhostUnit = nullptr;
@@ -1049,6 +1075,7 @@ void ACustomPlayerController::SpawnGhostUnit(EUnitType UnitToSpawn, FIntPoint Sp
 				switch (UnitToSpawn)
 				{
 				case EUnitType::U_Warrior:
+					//if you have enough resources
 					if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetWarriorStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetWarriorWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetWarriorGoldCost())
 					{
 						PlayerStateRef->ChangeWoodPoints(PlayerStateRef->GetWarriorWoodCost(), false);
@@ -1120,7 +1147,7 @@ void ACustomPlayerController::Server_PrepareMoveUnit_Implementation(const TArray
 }
 
 
-
+//call player end turn for GameState
 void ACustomPlayerController::Server_EndTurn_Implementation()
 {
 	PlayerStateRef->SetIsReadyToSwitchTurn(true);
