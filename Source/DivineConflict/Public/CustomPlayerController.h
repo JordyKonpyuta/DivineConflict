@@ -45,13 +45,13 @@ struct FStructActions
 	GENERATED_BODY()
 
 	UPROPERTY()
-	AActor* ActorRef;
+	TObjectPtr<AActor> ActorRef;
 
 	UPROPERTY()
 	EDC_ActionPlayer UnitAction;
 
 	UPROPERTY()
-	AUnit* UnitAttacking;
+	TObjectPtr<AUnit> UnitAttacking;
 };
 
 USTRUCT()
@@ -60,7 +60,7 @@ struct FStructPassive
 	GENERATED_BODY()
 
 	UPROPERTY()
-	AActor* ActorRef;
+	TObjectPtr<AActor> ActorRef;
 
 	UPROPERTY()
 	EUnitType UnitType = EUnitType::U_Leader;
@@ -69,7 +69,7 @@ struct FStructPassive
 	FIntPoint TilePosition;
 
 	UPROPERTY()
-	AGhostUnitSpawning* GhostRef;
+	TObjectPtr<AGhostUnitSpawning> GhostRef;
 };
 
 DECLARE_MULTICAST_DELEGATE(FOnTurnChangedSignature);
@@ -78,97 +78,143 @@ UCLASS()
 class DIVINECONFLICT_API ACustomPlayerController : public APlayerController , public IInteractInterface
 {
 	GENERATED_BODY()
+	
+	// UPROPERTIES
 public:
+	// ----------------------------
+	// References
+	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivateAccess = "true"))
-	AGrid* Grid;
+	TObjectPtr<AGrid> Grid;
 	
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivate = "true"))
-	ACameraPlayer* CameraPlayerRef;
+	TObjectPtr<ACameraPlayer> CameraPlayerRef;
+	
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
+	TObjectPtr<ACustomPlayerState> PlayerStateRef;
+	
+	// ----------------------------
+	// Inputs Context
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	UInputMappingContext* InputMappingContext;
+	TObjectPtr<UInputMappingContext> InputMappingContext;
 	
+	
+	// ----------------------------
+	// Unit Spawning
 
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
-	ACustomPlayerState* PlayerStateRef;
+	UPROPERTY()
+	TArray<FIntPoint> AllCurrentSpawnPoints;
+	
+	// ----------------------------
+	// Actions 
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
 	int CurrentPA = 10;
 	
-
-	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Ref", meta = (AllowPrivate = "true"))
-	AUnit* UnitRef = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ref", meta = (AllowPrivate = "true"))
-	AUnit* Opponent = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly,Replicated , Category = "Ref", meta = (AllowPrivate = "true"))
-	ABase* BaseRef = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
-	ATower* TowerRef = nullptr;
-	
-
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Replicated, Category = "Input", meta = (AllowPrivate = "true"))
-	ABuilding* BuildingRef = nullptr;
-
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
-	TArray<AUnit*> Units;
-	
-	TArray<FIntPoint> AllCurrentSpawnPoints;
+	// ----------------------------
+	// Actions at Turn End
 
 	UPROPERTY(Replicated)
 	TArray<FStructActions> AllPlayerActions;
 
 	UPROPERTY(Replicated)
 	TArray<FStructPassive> AllPlayerPassive;
-/*
-	UFUNCTION(Server, Reliable)
-	void DoActions();*/
 
+		// Possible Things to Interact with
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Ref", meta = (AllowPrivate = "true"))
+	TObjectPtr<AUnit> UnitRef;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ref", meta = (AllowPrivate = "true"))
+	TObjectPtr<AUnit> Opponent;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly,Replicated , Category = "Ref", meta = (AllowPrivate = "true"))
+	TObjectPtr<ABase> BaseRef;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
+	TObjectPtr<ATower> TowerRef;
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Replicated, Category = "Input", meta = (AllowPrivate = "true"))
+	TObjectPtr<ABuilding> BuildingRef;
+	
+	// ----------------------------
+	// Delegates
+	
 	FOnTurnChangedSignature OnTurnChangedDelegate;
 	
 protected:
+	// ----------------------------
+	// TO DELETE!!!!!!!!!!!!!!!!!!!
 
 	UPROPERTY()
 	bool IsHell = false;
 	
+	// ----------------------------
+	// Teams
+	
 	UPROPERTY(ReplicatedUsing = OnRep_PlayerTeam)
 	EPlayer PlayerTeam = EPlayer::P_Neutral;
+	
+	// ----------------------------
+	// Turns
 
 	UPROPERTY()
 	bool IsInActiveTurn = false;
 
 	UPROPERTY()
-	bool IsSelectingUnitFromBuilding;
-
-	UPROPERTY()
 	bool IsReady = false;
+	
+	// ----------------------------
+	// Actions
 
 	UPROPERTY()
 	EDC_ActionPlayer PlayerAction = EDC_ActionPlayer::None;
 
 	UPROPERTY()
+	bool IsSelectingUnitFromBuilding;
+	
+	// ----------------------------
+	// Pathfinding
+
+	UPROPERTY()
 	TArray<FIntPoint> PathReachable;
+	
+	// ----------------------------
+	// Timers
 
 	UPROPERTY()
 	FTimerHandle TimerActiveEndTurn;
+
 	
-	virtual void BeginPlay() override;
-
-	virtual void  SetupInputComponent() override;
-
-	void setGrid();
-
-	UFUNCTION()
-	void FindReachableTiles();
-
-
-
+	// UFUNCTIONS
 public:
+	// ----------------------------
+	// TO DELETE!!!!!!!!!!!!!!!!!!!
+	
+	UFUNCTION(BlueprintCallable)
+	bool GetIsHell();
 
+	UFUNCTION(BlueprintCallable)
+	void SetIsHell(bool bH);
+	
+	// ----------------------------
+	// Override
+	
 	UFUNCTION()
 	virtual void Tick(float DeltaTime) override;
-
+	
+	// ----------------------------
+	// On_Reps
 	UFUNCTION()
 	void OnRep_PlayerTeam();
+	
+	// ----------------------------
+	// Interactions
+
+	UFUNCTION()
+	void ControllerInteraction();
+
+	UFUNCTION(BlueprintCallable)
+	void VerifyBuildInteraction();
+	
+	// ----------------------------
+	// Mode Selection
 	
 	UFUNCTION(BlueprintCallable)
 	void SelectModeMovement();
@@ -176,72 +222,44 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SelectModeAttack();
 
-	UFUNCTION(	BlueprintCallable)
-	void SelectModeSpecial();
-
 	UFUNCTION( BlueprintCallable)
 	void SelectModeAttackBuilding();
+
+	UFUNCTION(	BlueprintCallable)
+	void SelectModeSpecial();
 	
 	UFUNCTION( BlueprintCallable)
 	void SelectModeSelectBuilding();
 	
-	UFUNCTION(BlueprintCallable)
-	bool GetIsHell();
-
-	UFUNCTION(BlueprintCallable)
-	void SetIsHell(bool bH);
-
-	UFUNCTION(BlueprintCallable)
-	EPlayer GetPlayerTeam();
-
-	UFUNCTION(BlueprintCallable)
-	void SetPlayerTeam(EPlayer PT);
+	// ----------------------------
+	// Turns - Set-up
 	
-	UFUNCTION(BlueprintCallable)
-	bool GetSelectingUnitFromBuilding();
-
-	UFUNCTION(BlueprintCallable)
-	void SetSelectingUnitFromBuilding(bool bS);
-
-	UFUNCTION(BlueprintCallable)
-	bool GetIsInActiveTurn();
-
-	UFUNCTION(BlueprintCallable)
-	void SetIsInActiveTurn(bool bA);
-
-	UFUNCTION(BlueprintCallable)
-	bool GetIsReady();
-
-	UFUNCTION(BlueprintCallable)
-	void SetIsReady(bool bR);
-
 	UFUNCTION()
-	void SetPlayerAction(EDC_ActionPlayer PA);
+	void AssignPlayerPosition();
 
+	UFUNCTION(Server, Reliable)
+	void Server_SwitchPlayerTurn(const ACustomGameState *GameStateRef);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_SwitchPlayerTurn(const ACustomGameState *GameStateRef);
+
+	UFUNCTION(Server, Reliable)
+	void Server_Delegate();
+	
+	// ----------------------------
+	// End Turn
+	
 	UFUNCTION()
-	EDC_ActionPlayer GetPlayerAction();
-	
-	void ControllerInteraction();
+	void EndTurn();
 
-	TArray<FIntPoint> GetPathReachable();
-	
-	UFUNCTION(BlueprintNativeEvent)
-	void DisplayWidget();
-	UFUNCTION(BlueprintNativeEvent)
-	void DisplayWidgetBuilding();
-	UFUNCTION(BlueprintNativeEvent)
-	void DisplayWidgetBase();
-	UFUNCTION(BlueprintNativeEvent)
-	void DisplayWidgetTower();
+	UFUNCTION(Server, Reliable)
+	void Server_EndTurn();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void FeedbackEndTurn(bool visibility);
-
-	UFUNCTION(BlueprintNativeEvent)
-	void HiddeWidget();
-
-	UFUNCTION(NotBlueprintable)
-	TArray<FIntPoint> PrepareSpawnArea(TArray<FIntPoint> AllSpawnArea, FIntPoint BaseTile);
+	
+	// ----------------------------
+	// Actions - Active
 
 	UFUNCTION(Server, Reliable)
 	void AttackBase(ABase* BaseToAttack,AUnit* UnitAttacking);
@@ -258,6 +276,12 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_SpecialUnit(AUnit* UnitSpecial, AActor* ThingToAttack);
 	
+	// ----------------------------
+	// Actions - Passive
+
+	UFUNCTION(NotBlueprintable)
+	TArray<FIntPoint> PrepareSpawnArea(TArray<FIntPoint> AllSpawnArea, FIntPoint BaseTile);
+	
 	UFUNCTION(Blueprintable)
 	bool SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen, ABase* BaseToSpawn, ABuilding* BuildingToSpawn);
 
@@ -266,10 +290,7 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_SpawnUnit(AUnit* UnitSpawned,AGrid* GridSpawned, ACustomPlayerState* PlayerStatRef, ABase* BaseSpawned, ABuilding* BuildingSpawned);
-
-	UFUNCTION(Server, Reliable)
-	void ServerMoveUnit(const AUnit* UnitToMove);
-
+	
 	UFUNCTION(Server, Reliable)
 	void Server_SpawnBaseUnit(EUnitType UnitToSpawn,AGrid* GridSer, ABase* BaseToSpawn, EPlayer PlayerOwner);
 	
@@ -278,15 +299,15 @@ public:
 
 	UFUNCTION()
 	void SpawnGhostUnit(EUnitType UnitToSpawn,FIntPoint SpawnChosen);
-
-	UFUNCTION(Server, Reliable)
-	void Server_PrepareMoveUnit(const TArray<FIntPoint> &Path, const AUnit* UnitToMove);
+	
+	// ----------------------------
+	// Cancel Actions
 	
 	UFUNCTION()
-	void EndTurn();
-
-	UFUNCTION(Server, Reliable)
-	void Server_EndTurn();
+	void CancelLastAction();
+	
+	// ----------------------------
+	// Actions - End Turn
 
 	UFUNCTION(Server, Reliable)
 	void Server_ActionActiveTurn();
@@ -295,55 +316,132 @@ public:
 	void Multi_ActionActiveTurn();
 
 	UFUNCTION(Server, Reliable)
+	void Server_CheckPlayerActionPassive();
+
+	UFUNCTION(Server, Reliable)
 	void Server_ActionPassiveTurn();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_ActionPassiveTurn();
-	UFUNCTION(Server, Reliable)
-	void Server_Delegate();
-
-	UFUNCTION(Server, Reliable)
-	void Server_SwitchPlayerTurn(const ACustomGameState *GameStateRef);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multi_SwitchPlayerTurn(const ACustomGameState *GameStateRef);
-
-	UFUNCTION(Server, Reliable)
-	void Server_CheckPlayerActionPassive();
 	
-	UFUNCTION()
-	void CancelLastAction();
+	// ----------------------------
+	// "Pathfinding"
+
+	UFUNCTION(Server, Reliable)
+	void ServerMoveUnit(const AUnit* UnitToMove);
+
+	UFUNCTION(Server, Reliable)
+	void Server_PrepareMoveUnit(const TArray<FIntPoint> &Path, const AUnit* UnitToMove);
 	
+	// ----------------------------
+	// UI
+
+		// General
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void UpdateUi();
 	UFUNCTION(Client, Reliable)
 	void Client_UpdateUi();
-	
-	UFUNCTION(BlueprintNativeEvent)
-	void UpdateUITimer(int TimeLeft);
-
-	UFUNCTION(Client, Reliable)
-	void Client_PauseTimerUI();
-
-	UFUNCTION(BlueprintNativeEvent)
-	void PauseTimerUI();
-	
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateWidget3D(int Index, bool bVisibility);
+
+		// Stats
+	UFUNCTION(BlueprintNativeEvent)
+	void DisplayWidget();
+	UFUNCTION(BlueprintNativeEvent)
+	void DisplayWidgetBuilding();
+	UFUNCTION(BlueprintNativeEvent)
+	void DisplayWidgetBase();
+	UFUNCTION(BlueprintNativeEvent)
+	void DisplayWidgetTower();
+
+		// Attack
 	UFUNCTION(BlueprintNativeEvent)
 	void DisplayAttackWidget();
 	UFUNCTION(BlueprintNativeEvent)
 	void RemoveAttackWidget();
 
-	UFUNCTION(BlueprintCallable)
-	void VerifyBuildInteraction();
+		// Timers
+	UFUNCTION(BlueprintNativeEvent)
+	void UpdateUITimer(int TimeLeft);
+	UFUNCTION(Client, Reliable)
+	void Client_PauseTimerUI();
+	UFUNCTION(BlueprintNativeEvent)
+	void PauseTimerUI();
+
+		// Hide
+	UFUNCTION(BlueprintNativeEvent)
+	void HiddeWidget();
 	
+	// ----------------------------
+	// GETTERS
+
+		// Turns
+	UFUNCTION(BlueprintCallable)
+	bool GetIsInActiveTurn();
+
+	UFUNCTION(BlueprintCallable)
+	bool GetIsReady();
+	
+		// Player Team
+
+	UFUNCTION(BlueprintCallable)
+	EPlayer GetPlayerTeam();
+
+		// Player Actions
 	UFUNCTION()
-	void AssignPlayerPosition();
+	EDC_ActionPlayer GetPlayerAction();
+
+		// "PathFinding"
+	UFUNCTION()
+	TArray<FIntPoint> GetPathReachable();
+	
+	
+	// ----------------------------
+	// SETTERS
+
+		// Turns
+
+	UFUNCTION(BlueprintCallable)
+	void SetIsInActiveTurn(bool bA);
+
+	UFUNCTION(BlueprintCallable)
+	void SetIsReady(bool bR);
+
+		// Player Team
+
+	UFUNCTION(BlueprintCallable)
+	void SetPlayerTeam(EPlayer PT);
+
+		// Player Actions
 
 	UFUNCTION()
-	void SetPathReachable(TArray<FIntPoint> NewPath);
+	void SetPlayerAction(EDC_ActionPlayer PA);
+
+		// "PathFinding"
 
 	UFUNCTION()
 	void AddToPathReachable(FIntPoint NewPoint);
+
+	UFUNCTION()
+	void SetPathReachable(TArray<FIntPoint> NewPath);
+	
+	
+protected:
+	// ----------------------------
+	// Overrides
+	
+	virtual void BeginPlay() override;
+
+	virtual void SetupInputComponent() override;
+	
+	// ----------------------------
+	// Grid
+	
+	void setGrid();
+	
+	// ----------------------------
+	// "Pathfinding"
+	
+	UFUNCTION()
+	void FindReachableTiles();
 };
