@@ -73,19 +73,19 @@ public:
 	TArray<EDC_TileState> TileState;
 	
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "GridElement")
-	AUnit* UnitOnTile = nullptr;
+	TObjectPtr<AUnit> UnitOnTile = nullptr;
 	
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "GridElement")
-	ABuilding* BuildingOnTile = nullptr;
+	TObjectPtr<ABuilding> BuildingOnTile = nullptr;
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "GridElement")
-	ABase* BaseOnTile = nullptr;
+	TObjectPtr<ABase> BaseOnTile = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GridElement")
-	ATower* TowerOnTile = nullptr;
+	TObjectPtr<ATower> TowerOnTile = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GridElement")
-	AUpwall* UpwallOnTile = nullptr;
+	TObjectPtr<AUpwall> UpwallOnTile = nullptr;
 };
 
 USTRUCT(BlueprintType)

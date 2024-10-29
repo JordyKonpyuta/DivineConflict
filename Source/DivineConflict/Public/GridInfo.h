@@ -27,25 +27,25 @@ protected:
 	// References
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	AGrid* Grid;
+	TObjectPtr<AGrid> Grid;
 
 	// ----------------------------
 	// All Objects in Grid
 	
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	TArray<AUnit*> UnitsCombat;
+	TArray<TObjectPtr<AUnit>> UnitsCombat;
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	TArray<ABuilding*> BuildingGrid;
+	TArray<TObjectPtr<ABuilding>> BuildingGrid;
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	TArray<ABase*> BasesGrid;
+	TArray<TObjectPtr<ABase>> BasesGrid;
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	TArray<ATower*> TowerGrid;
+	TArray<TObjectPtr<ATower>> TowerGrid;
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	TArray<AUpwall*> ClimbableGrid;
+	TArray<TObjectPtr<AUpwall>> ClimbableGrid;
 
 	
 	// UFUNCTIONS

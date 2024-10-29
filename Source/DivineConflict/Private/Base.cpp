@@ -146,34 +146,6 @@ void ABase::Upgrade()
 }
 
 	// ----------------------------
-	// Prepare Actions
-
-void ABase::BasePreAction(AUnit* UnitSp)
-{/*
-	if(UnitSp)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("BasePreAction"));
-		UnitSpawned = UnitSp;
-		UnitSpawned->GetFinalGhostMesh()->SetVisibility(true);
-		UnitSpawned->GetStaticMesh()->SetVisibility(false);
-	}*/
-}
-
-	// ----------------------------
-	// Actions
-
-void ABase::BaseAction()
-{/*
-	if(UnitSpawned)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("BaseAction"));
-		UnitSpawned->GetFinalGhostMesh()->SetVisibility(false);
-		UnitSpawned->GetStaticMesh()->SetVisibility(true);
-		UnitSpawned = nullptr;
-	}*/
-}
-
-	// ----------------------------
 	// Take Damage
 
 void ABase::BaseTakeDamage(int Damage)
@@ -188,16 +160,13 @@ void ABase::BaseTakeDamage(int Damage)
 
 void ABase::ServerCheckIfDead_Implementation(int H)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Base Health : %d"), H));
 	MulticastCheckIfDead(H);
 }
 
 void ABase::MulticastCheckIfDead_Implementation(int H)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Base Health : %d"), H));
 	if (H <= 0)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Base is Dead"));
 		if(!PlayerStateRef)
 			SetPlayerState();
 		

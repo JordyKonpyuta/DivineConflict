@@ -18,13 +18,13 @@ public:
 	// Components
 
 	UPROPERTY(VisibleAnywhere, Category = "Spawner", meta = (AllowPrivate = "true"))
-	UStaticMeshComponent* SpawnerMesh;
+	TObjectPtr<UStaticMeshComponent> SpawnerMesh;
 	
 	// ----------------------------
 	// References
 
 	UPROPERTY(EditAnywhere, Category = "Spawner")
-	AGrid* Grid;
+	TObjectPtr<AGrid> Grid;
 
 protected:
 	// ----------------------------

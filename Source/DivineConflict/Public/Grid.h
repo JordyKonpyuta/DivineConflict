@@ -29,19 +29,19 @@ public:
 	// Components
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivateAccess = "true"))
-    UInstancedStaticMeshComponent* GridMesh;	
+    TObjectPtr<UInstancedStaticMeshComponent> GridMesh;	
 	
 	// ----------------------------
 	// References
 	
 	UPROPERTY(EditAnywhere , Category = "GridElement")
-	UGridPath* GridPath = nullptr;
+	TObjectPtr<UGridPath> GridPath = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "GridElement")
-	UGridInfo* GridInfo = nullptr;
+	TObjectPtr<UGridInfo> GridInfo = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "GridElement")
-	UGridVisual * GridVisual = nullptr;
+	TObjectPtr<UGridVisual> GridVisual = nullptr;
 
 	// ----------------------------
 	// Grid Properties
@@ -128,17 +128,5 @@ protected:
 	FHitResult TraceHitGround(FVector Location);
 
 	FVector SnapVectorToVector(FVector InVector, const FVector InSnapTo);
-
-	// ----------------------------
-	// Tests
-	
-	UFUNCTION( Category = "GridElement", BlueprintCallable,CallInEditor)
-	void TestPathfinding();
-
-	UFUNCTION(CallInEditor, BlueprintCallable,Category = "GridElement")
-	void TestReachedPath();
-
-	UFUNCTION(CallInEditor, BlueprintCallable,Category = "GridElement")
-	void TestReachwithCliming();
 
 };

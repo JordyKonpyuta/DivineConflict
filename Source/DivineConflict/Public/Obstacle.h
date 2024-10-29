@@ -19,16 +19,16 @@ public:
 	// Appearance
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Unit", Replicated, meta = (AllowPrivateAccess = "true"))
-	USceneComponent* Scene;
+	TObjectPtr<USceneComponent> Scene;
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Unit", Replicated, meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* Plane;
+	TObjectPtr<UStaticMeshComponent> Plane;
 	
 	// ----------------------------
 	// References
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-	AGrid* GridRef;
+	TObjectPtr<AGrid> GridRef;
 	
 protected:
 

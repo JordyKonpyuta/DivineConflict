@@ -22,7 +22,7 @@ public:
 	// Components
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* CannonBallMesh;
+	TObjectPtr<UStaticMeshComponent> CannonBallMesh;
 	
 	// ----------------------------
 	// Projectile Properties
@@ -37,14 +37,14 @@ public:
 	// Owner
 
 	UPROPERTY()
-	ATower* TowerOwner;
+	TObjectPtr<ATower> TowerOwner;
 	
 protected:
 	// ----------------------------
 	// Components
 
 	UPROPERTY(Replicated)
-	UProjectileMovementComponent* ProjectileMovement;
+	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
 
 	// UFUNCTIONS
 public:

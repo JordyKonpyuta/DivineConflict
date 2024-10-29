@@ -26,13 +26,13 @@ public:
 	// Components
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivate))
-	USpringArmComponent* CameraBoom;
+	TObjectPtr<USpringArmComponent> CameraBoom;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivate))
-	UCameraComponent* FollowCamera;
+	TObjectPtr<UCameraComponent> FollowCamera;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	USceneComponent* CameraRoot;
+	TObjectPtr<USceneComponent> CameraRoot;
 	
 	// ----------------------------
 	// References
@@ -44,25 +44,25 @@ public:
 	// Input Actions
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	UInputAction* AIZoom;
+	TObjectPtr<UInputAction> AIZoom;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	UInputAction* AIMove;
+	TObjectPtr<UInputAction> AIMove;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	UInputAction* AIRotate;
+	TObjectPtr<UInputAction> AIRotate;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	UInputAction* AIFreeCam;
+	TObjectPtr<UInputAction> AIFreeCam;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	UInputAction* AIInteraction;
+	TObjectPtr<UInputAction> AIInteraction;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	UInputAction* AIRemovePath;
+	TObjectPtr<UInputAction> AIRemovePath;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	UInputAction* AIEndTurn;
+	TObjectPtr<UInputAction> AIEndTurn;
 	
 	// ----------------------------
 	// Timers

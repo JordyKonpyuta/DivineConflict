@@ -19,13 +19,13 @@ public:
 	AGhostUnitSpawning();
 
 	UPROPERTY()
-	UStaticMeshComponent* Mesh;
+	TObjectPtr<UStaticMeshComponent> Mesh;
 
 	UPROPERTY()
-	UMaterialInterface *MaterialToGhosts;
+	TObjectPtr<UMaterialInterface> MaterialToGhosts;
 
 	UPROPERTY()
-	TArray<UStaticMesh*> MeshUnits;
+	TArray<TObjectPtr<UStaticMesh>> MeshUnits;
 	
 
 protected:

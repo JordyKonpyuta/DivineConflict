@@ -20,10 +20,10 @@ public:
 protected:
 	
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Stats")
-	AUnit* UnitToAttack = nullptr;
+	TObjectPtr<AUnit> UnitToAttack = nullptr;
 
 	UPROPERTY(Replicated)
-	ABase* BaseToAttack = nullptr;
+	TObjectPtr<ABase> BaseToAttack = nullptr;
 
 	// UFUNCTIONS
 public:
@@ -35,8 +35,6 @@ public:
 	// Overrides
 
 	void SpecialMage(AActor* Target);
-
-	virtual void PrepareSpecial(FIntPoint SpecialPos) override;
 
 	virtual void DisplayWidgetTutorial() override;
 

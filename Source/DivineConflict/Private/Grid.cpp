@@ -111,19 +111,15 @@ void AGrid::SpawnGrid()
 				if(Cast<ABase>(HitResult.GetActor()))
 				{
 					TileData.TileType = EDC_TileType::Gate;
-					UE_LOG( LogTemp, Warning, TEXT("Obstacle"));
 				} else if(Cast<AUpwall>(HitResult.GetActor()))
 				{
 					TileData.TileType = EDC_TileType::Climbable;
-					UE_LOG( LogTemp, Warning, TEXT("Climbable"));
 				} else if (Cast<ABuilding>(HitResult.GetActor()))
 				{
 					TileData.TileType = EDC_TileType::Building;
-					UE_LOG( LogTemp, Warning, TEXT("Building"));
 				} else if (Cast<AObstacle>(HitResult.GetActor()))
 				{
 					TileData.TileType = EDC_TileType::Obstacle;
-					UE_LOG( LogTemp, Warning, TEXT("Obstacle"));
 				}
 
 				
@@ -153,7 +149,6 @@ FHitResult AGrid::TraceHitGround(FVector Location)
 	if (HitOut.bBlockingHit)
 	{
 		if(HitOut.GetActor() != nullptr)
-			UE_LOG(LogTemp, Warning, TEXT("Hit : %s"), *HitOut.GetActor()->GetName());
 		HitOut.bBlockingHit ? DrawDebugPoint(GetWorld(), HitOut.ImpactPoint, 10, FColor::Green, false,
 		1, 0) : DrawDebugPoint(GetWorld(), Location + FVector(0, 0, -1000), 10, FColor::Red, false, 1, 0);
 		return HitOut;
@@ -205,7 +200,6 @@ FIntPoint AGrid::ConvertLocationToIndex(FVector3d Location)
 
 FVector3d AGrid::ConvertIndexToLocation(FIntPoint Index)
 {
-	UE_LOG( LogTemp, Warning, TEXT("Index : %d %d"), Index.X, Index.Y);
 	return GridData.Find(Index)->TileTransform.GetLocation();
 }
 
@@ -240,38 +234,6 @@ void AGrid::UpdateColor(int I, FLinearColor InColor, float	Alpha)
 	GridMesh->SetCustomDataValue(I, 1, InColor.G);
 	GridMesh->SetCustomDataValue(I, 2, InColor.B);
 	GridMesh->SetCustomDataValue(I, 3, Alpha);
-}
-
-	// ----------------------------
-	// Tests
-
-void AGrid::TestPathfinding()
-{
-	TArray<FIntPoint> Path = GridPath->FindPath(FIntPoint	(0, 0), FIntPoint(9, 9), false,2 ,false, false);
-
-	for(FIntPoint Index : Path)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Path : %d %d"), Index.X, Index.Y);
-		GridVisual->addStateToTile(Index,EDC_TileState::Reachable);
-	}
-}
-
-void AGrid::TestReachedPath()
-{
-	TArray<FIntPoint> Reach = GridPath->FindPath(FIntPoint(14,3),FIntPoint(-999,-999), true, 2, false, false);
-	for(FIntPoint Index : Reach)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Reach not clim : %d %d"), Index.X, Index.Y);
-	}
-}
-
-void AGrid::TestReachwithCliming()
-{
-	TArray<FIntPoint> Reach = GridPath->FindPath(FIntPoint(14,3),FIntPoint(-999,-999), true, 2, true, false);
-	for(FIntPoint Index : Reach)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Reach with clim : %d %d"), Index.X, Index.Y);
-	}
 }
 
 	// ----------------------------

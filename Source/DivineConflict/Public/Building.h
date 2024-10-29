@@ -26,47 +26,47 @@ public:
 	// Components
 
 	UPROPERTY(Blueprintable, VisibleAnywhere, BlueprintReadWrite, Category = "Building")
-	USkeletalMeshComponent* StaticMeshBuilding;
+	TObjectPtr<USkeletalMeshComponent> StaticMeshBuilding;
 
 	UPROPERTY(Blueprintable, EditAnywhere, BlueprintReadWrite, Category = "Building")
-	UStaticMeshComponent* StaticMeshPlane;
+	TObjectPtr<UStaticMeshComponent> StaticMeshPlane;
 
 	UPROPERTY(Blueprintable, BlueprintReadWrite, Category = "Building")
-	USceneComponent* SceneComp;
+	TObjectPtr<USceneComponent> SceneComp;
 	
 	// ----------------------------
 	// Materials
 
 	UPROPERTY()
-	TArray<UMaterialInterface*> AllMaterials;
+	TArray<TObjectPtr<UMaterialInterface>> AllMaterials;
 	
 	// ----------------------------
 	// References
 
 	// Player
 	UPROPERTY(Blueprintable)
-	ACustomPlayerController* PlayerControllerRef;
+	TObjectPtr<ACustomPlayerController> PlayerControllerRef;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Player")
-	ACustomPlayerState* OwnerPlayerState;
+	TObjectPtr<ACustomPlayerState> OwnerPlayerState;
 
 	UPROPERTY()
-	ACustomGameState* GameStateRef;
+	TObjectPtr<ACustomGameState> GameStateRef;
 	
 	// Units
 	UPROPERTY(Blueprintable, BlueprintReadOnly)
-	UBuildingSpawnLocation* BuildingSpawnLocationRef;
+	TObjectPtr<UBuildingSpawnLocation> BuildingSpawnLocationRef;
 
 	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitSelection")
-	AUnit* UnitRef = nullptr;
+	TObjectPtr<AUnit> UnitRef = nullptr;
 
 	// Grid
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player")
-	AGrid* Grid;
+	TObjectPtr<AGrid> Grid;
 	
 	// Spawn
 	UPROPERTY()
-	AUnit* UnitSpawned = nullptr;
+	TObjectPtr<AUnit> UnitSpawned = nullptr;
 	
 	// ----------------------------
 	// Enumerators
@@ -172,19 +172,6 @@ protected:
 	// ----------------------------
 	// Override
 	virtual void BeginPlay() override;
-	
-	// ----------------------------
-	// Spawn
-	
-	// Cost takes three arguments, in order : wood, stone, gold
-	UFUNCTION(BlueprintCallable, Server, Reliable, Category = "Player")
-	void SpawnUnitFromBuilding(const FIntPoint &SpawnLocation, const TArray<int> &Cost);
-	
-	// ----------------------------
-	// Garrison
-	
-	UFUNCTION(BlueprintCallable, Category = "Unit")
-	void removeUnitRef();
 	
 	// ----------------------------
 	// Handling Turns

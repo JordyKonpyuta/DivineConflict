@@ -21,7 +21,7 @@ public:
 	// Components
 	
 	UPROPERTY(Blueprintable, BlueprintReadWrite, Category = "Appearance")
-	UStaticMeshComponent* StaticMeshClimbable;
+	TObjectPtr<UStaticMeshComponent> StaticMeshClimbable;
 	
 
 protected:

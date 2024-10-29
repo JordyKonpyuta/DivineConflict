@@ -21,7 +21,7 @@ class DIVINECONFLICT_API AUnit_Child_Warrior : public AUnit
 	// UPROPERTIES
 public:
 	UPROPERTY(Replicated)
-	AUpwall* WallToClimb;
+	TObjectPtr<AUpwall> WallToClimb;
 	
 protected:
 

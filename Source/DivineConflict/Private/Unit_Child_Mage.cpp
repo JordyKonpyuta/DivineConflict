@@ -101,28 +101,6 @@ void AUnit_Child_Mage::SpecialMage(AActor* Target)
 	}
 }
 
-void AUnit_Child_Mage::PrepareSpecial(FIntPoint SpecialPos)
-{
-	if(Grid)
-		if(Grid->GetGridData()->Find(SpecialPos)->UnitOnTile)
-		{
-			if(Grid->GetGridData()->Find(SpecialPos)->UnitOnTile->GetPlayerOwner() != PlayerOwner)
-			{
-				UnitToAttack = Grid->GetGridData()->Find(SpecialPos)->UnitOnTile;
-			}
-		}
-		else
-		{
-			if(Grid->GetGridData()->Find(SpecialPos)->BaseOnTile)
-			{
-				if(Grid->GetGridData()->Find(SpecialPos)->BaseOnTile->PlayerOwner != PlayerOwner)
-				{
-					BaseToAttack = Grid->GetGridData()->Find(SpecialPos)->BaseOnTile;
-				}
-			}
-		}
-}
-
 void AUnit_Child_Mage::DisplayWidgetTutorial()
 {
 	Super::DisplayWidgetTutorial();

@@ -25,22 +25,22 @@ public:
 	// ----------------------------
 	// Component
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Mesh")
-	UStaticMeshComponent* Mesh;
+	TObjectPtr<UStaticMeshComponent> Mesh;
 	
 	// ----------------------------
 	// References
 	
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Unit")
-	AUnit* UnitInGarrison = nullptr;
+	TObjectPtr<AUnit> UnitInGarrison = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-	AGrid* Grid;
+	TObjectPtr<AGrid> Grid;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controller")
-	ACustomPlayerController* PlayerController;
+	TObjectPtr<ACustomPlayerController> PlayerController;
 	
 	UPROPERTY(Replicated)
-	AUnit* UnitToAttack = nullptr;
+	TObjectPtr<AUnit> UnitToAttack = nullptr;
 
 	
 	// ----------------------------
@@ -65,7 +65,7 @@ public:
 	FIntPoint UnitToAttackPosition = FIntPoint(-999, -999);
 	
 	UPROPERTY()
-	AProjectile* CannonBall;
+	TObjectPtr<AProjectile> CannonBall;
 
 protected:
 	// ----------------------------

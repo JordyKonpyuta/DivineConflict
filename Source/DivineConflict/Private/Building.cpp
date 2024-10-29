@@ -200,46 +200,6 @@ void ABuilding::BuildingAction()
 		bHasSpawned = false;
 	}
 }
-
-	// ----------------------------
-	// Spawn
-// Make a unit spawn in a specific point
-void ABuilding::SpawnUnitFromBuilding_Implementation(const FIntPoint &SpawnLocation, const TArray<int> &Cost)
-{
-	if (Cost.Num() != 3)
-	{
-		PlayerControllerRef->SetPlayerAction(EDC_ActionPlayer::None);
-	}
-	if (PlayerControllerRef->PlayerStateRef->GetWoodPoints() <= Cost[0] && PlayerControllerRef->PlayerStateRef->GetStonePoints() <= Cost[1] && PlayerControllerRef->PlayerStateRef->GetGoldPoints() <= Cost[2])
-	{
-		AUnit* UnitToSpawn = nullptr;
-		switch (UnitProduced)
-		{
-		case EUnitType::U_Warrior:
-			UnitToSpawn = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
-			break;
-		case EUnitType::U_Mage:
-			UnitToSpawn =GetWorld()->SpawnActor<AUnit_Child_Mage>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
-			break;
-		case EUnitType::U_Tank:
-			UnitToSpawn =GetWorld()->SpawnActor<AUnit_Child_Tank>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
-			break;
-		default:
-			UnitToSpawn =GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocation), FRotator(0, 0, 0));
-		}
-		UnitToSpawn->SetUnitTeam(PlayerOwner);
-		if (PlayerControllerRef->PlayerStateRef->bIsInTutorial)
-			GetWorld()->GetAuthGameMode<ATutorialGameMode>()->DisplayTutorialWidget(8);
-	}
-}
-
-	// ----------------------------
-	// Garrison
-void ABuilding::removeUnitRef()
-{
-	UnitRef = nullptr;
-	GarrisonFull = false;
-}
 	
 	// ----------------------------
 	// Handling Turns

@@ -25,10 +25,10 @@ public:
 	// References
 
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "Ref", meta = (AllowPrivate = "true"))
-	ACustomPlayerController* PlayerControllerRef;
+	TObjectPtr<ACustomPlayerController> PlayerControllerRef;
 	
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
-	ACustomGameState* GameStateRef;
+	TObjectPtr<ACustomGameState> GameStateRef;
 	
 	// ----------------------------
 	// Buildings

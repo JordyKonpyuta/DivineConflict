@@ -26,17 +26,17 @@ public:
 	// References
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PlayerControllers", meta = (AllowPrivateAccess = "true"))
-	TArray<ACustomPlayerController*> PlayerControllers;
+	TArray<TObjectPtr<ACustomPlayerController>> PlayerControllers;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Refs")
-	TArray<ACustomPlayerState*> AllPlayerStates;
+	TArray<TObjectPtr<ACustomPlayerState>> AllPlayerStates;
 
 	// WIN/LOSE CON
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Game")
-	ACustomPlayerState* PWinner = nullptr;
+	TObjectPtr<ACustomPlayerState> PWinner = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Game")
-	ACustomPlayerState* PLoser = nullptr;
+	TObjectPtr<ACustomPlayerState> PLoser = nullptr;
 
 	// ----------------------------
 	// Loading Timer

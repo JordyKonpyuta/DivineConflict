@@ -23,7 +23,7 @@ protected:
 	// References
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	AGrid* Grid;	
+	TObjectPtr<AGrid> Grid;	
 
 	// UFUNCTIONS
 public:	

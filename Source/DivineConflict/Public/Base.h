@@ -17,27 +17,25 @@ class DIVINECONFLICT_API ABase : public AActor
 {
 	GENERATED_BODY()
 
-	// UPROPERTIES
+	// UPROPERTIES //
 public:	
-	// Sets default values for this actor's properties
-	ABase();
 	
 	// ----------------------------
 	// Components
 
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Mesh")
-	UStaticMeshComponent* Mesh;
+	TObjectPtr<UStaticMeshComponent> Mesh;
 	
 	// ----------------------------
 	// References
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-	AGrid* Grid;
+	TObjectPtr<AGrid> Grid;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ref", meta = (AllowPrivate = "true"))
-	ACustomPlayerState* PlayerStateRef;
+	TObjectPtr<ACustomPlayerState> PlayerStateRef;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Controller")
-	ACustomPlayerController* PlayerControllerRef;
+	TObjectPtr<ACustomPlayerController> PlayerControllerRef;
 	
 	// ----------------------------
 	// Booleans
@@ -61,32 +59,31 @@ public:
 	EPlayer PlayerOwner = EPlayer::P_Neutral;
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	UFUNCTION()
-	void timerBeginPlay();
 
 	// ----------------------------
 	// References
 
 	UPROPERTY()
-	AUnit* UnitSpawned;
+	TObjectPtr<AUnit> UnitSpawned;
 	
 	// ----------------------------
 	// Stats
-	
+
+		// Health
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
 	int Health = 200;
 
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
 	int MaxHealth = Health;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
-	int Level = 1;
+		// Levels
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 	int MaxLevel = 3;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	int Level = 1;
+
+		// Costs
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
 	int GoldCostUpgrade = 20;
 	
@@ -95,13 +92,21 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
 	int WoodCostUpgrade = 20;
-	
+
+		// Position	
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Grid")
 	FIntPoint GridPosition= FIntPoint(-999,-999);
 
-	// UFUNCTIONS
+	// UFUNCTIONS //
 public:	
-	// Called every frame
+	// ----------------------------
+	// Constructor
+	
+	ABase();
+	
+	// ----------------------------
+	// Override
+	
 	virtual void Tick(float DeltaTime) override;
 	
 	// ----------------------------
@@ -115,18 +120,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Upgrade();
-	
-	// ----------------------------
-	// Prepare Actions
-	
-	UFUNCTION()
-	void BasePreAction(AUnit* UnitSp);
-
-	// ----------------------------
-	// Action
-	
-	UFUNCTION()
-	void BaseAction();
 
 	// ----------------------------
 	// Take Damage
@@ -158,11 +151,11 @@ public:
 	// ----------------------------
 	// GETTERS
 
-	// Stats
+		// Stats
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int GetHealth();
 
-	// Costs
+		// Costs
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int GetGoldCostUpgrade();
 	
@@ -172,32 +165,42 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int GetWoodCostUpgrade();
 
-	// Index Position
+		// Index Position
 	UFUNCTION(BlueprintCallable)
 	FIntPoint GetGridPosition();
 
 	// ----------------------------
 	// SETTERS
 	
-	// Components
+		// Components
 	UFUNCTION(BlueprintNativeEvent)
 	void SetMesh();
 	
-	// Stats
+		// Stats
 	UFUNCTION(BlueprintCallable)
 	void SetHealth(int h);
 
-	// Player State
+		// Player State
 	UFUNCTION()
 	void SetPlayerState();
 
-	// Costs
+		// Costs
 	UFUNCTION(BlueprintCallable)
 	void SetCostsUpgrade(int g, int s, int w);
 
-	// Index Position
+		// Index Position
 	UFUNCTION(BlueprintCallable)
 	void SetGridPosition(FIntPoint GridP);
 
 private:
+	// ----------------------------
+	// Override
+
+	virtual void BeginPlay() override;
+	
+	// ----------------------------
+	// Timer
+	
+	UFUNCTION()
+	void timerBeginPlay();
 };

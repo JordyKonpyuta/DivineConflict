@@ -18,21 +18,26 @@ class DIVINECONFLICT_API ATutorialGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
-protected:
-	virtual void BeginPlay() override;
-
-	AGrid* Grid;
-
+	// UPROPERTIES
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AUnit* Warrior1;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AUnit* Warrior2;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AUnit* Mage;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AUnit* Leader;
+	TObjectPtr<AUnit> Warrior1;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<AUnit> Warrior2;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<AUnit> Mage;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<AUnit> Leader;
+	
+protected:
+	UPROPERTY()
+	TObjectPtr<AGrid> Grid;
+
+	// UFUNCTIONS
+public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void DisplayTutorialWidget(int index);
 
@@ -41,4 +46,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void HilightUnit(AUnit* UnitToHilight);
+
+protected:
+	virtual void BeginPlay() override;
 };

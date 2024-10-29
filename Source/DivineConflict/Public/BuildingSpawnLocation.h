@@ -19,15 +19,10 @@ public:
 	// ----------------------------
 	// References
 	UPROPERTY(NotBlueprintable)
-	ABuilding* BuildingRef;
+	TObjectPtr<ABuilding> BuildingRef;
 
 	UPROPERTY(Blueprintable, BlueprintReadOnly, Category="Refs")
-	AGrid* GridRef;
-	
-	// ----------------------------
-	// Spawn
-	UPROPERTY(Blueprintable, EditAnywhere, Category="Grid")
-	TArray<bool>ArraySpawnableIndex;
+	TObjectPtr<AGrid> GridRef;
 
 	
 protected:

@@ -44,31 +44,31 @@ public:
 	// Components
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Widget")
-	UWidgetComponent* DamageWidgetComponent;
+	TObjectPtr<UWidgetComponent> DamageWidgetComponent;
 	
 	// ----------------------------
 	// Materials
 
 	UPROPERTY()
-	TArray<UMaterialInterface*> AllMaterials;
+	TArray<TObjectPtr<UMaterialInterface>> AllMaterials;
 
 	UPROPERTY()
-	UMaterialInterface* MaterialToGhosts;
+	TObjectPtr<UMaterialInterface> MaterialToGhosts;
 	
 	// ----------------------------
 	// References
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly ,Category = "Unit")
-	AGrid* Grid;
+	TObjectPtr<AGrid> Grid;
 	
 	UPROPERTY()
-	AUnit* UnitToAttackRef;
+	TObjectPtr<AUnit> UnitToAttackRef;
 	
 	UPROPERTY()
-	ABuilding* BuildingToAttackRef;
+	TObjectPtr<ABuilding> BuildingToAttackRef;
 	
 	UPROPERTY()
-	ABase* EnemyBase;
+	TObjectPtr<ABase> EnemyBase;
 
 	// ----------------------------
 	// Enums
@@ -133,13 +133,13 @@ public:
 	// Textures
 
 	UPROPERTY()
-	UTexture2D* HeavenIcon;
+	TObjectPtr<UTexture2D> HeavenIcon;
 	UPROPERTY()
-	UTexture2D* HellIcon;
+	TObjectPtr<UTexture2D> HellIcon;
 	UPROPERTY()
-	UTexture2D* NeutralIcon;
+	TObjectPtr<UTexture2D> NeutralIcon;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Texture")
-	UTexture2D* UnitIcon;
+	TObjectPtr<UTexture2D> UnitIcon;
 
 	FTimerHandle IconTimerHandle;
 
@@ -152,25 +152,25 @@ protected:
 	// Meshes
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Unit", Replicated, meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* UnitMesh;
+	TObjectPtr<UStaticMeshComponent> UnitMesh;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
-	UStaticMeshComponent* GhostsMesh;
+	TObjectPtr<UStaticMeshComponent> GhostsMesh;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
-	UStaticMeshComponent* GhostsFinaleLocationMesh;
+	TObjectPtr<UStaticMeshComponent> GhostsFinaleLocationMesh;
 	
 	// ----------------------------
 	// References
 	
 	UPROPERTY(Replicated)
-	ACustomPlayerController* PlayerControllerRef;
+	TObjectPtr<ACustomPlayerController> PlayerControllerRef;
 
 	UPROPERTY()
-	ABuilding* BuildingRef = nullptr;
+	TObjectPtr<ABuilding> BuildingRef = nullptr;
 
 	UPROPERTY()
-	ATower* TowerRef = nullptr;
+	TObjectPtr<ATower> TowerRef = nullptr;
 
 	// ----------------------------
 	// Enums
@@ -202,7 +202,7 @@ protected:
 	UPROPERTY()
 	bool bBeganAttack = false;
 	
-		bool WillMove = true;
+	bool WillMove = true;
 	
 	// ----------------------------
 	// Units stats
@@ -291,10 +291,10 @@ public:
 	void SetGrid(AGrid* NewGrid);
 
 	// ----------------------------
-	// Prepare Moves
-	
-	UFUNCTION(NetMulticast,Reliable)
-	void Multi_PrepareMove(const TArray<FIntPoint> &NewPos);
+	// Pre Movement
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_PrepareMove(const TArray<FIntPoint>& NewPos);
 	
 	// ----------------------------
 	// Movement
@@ -318,18 +318,6 @@ public:
 	UStaticMeshComponent* GetFinalGhostMesh();
 
 	// ----------------------------
-	// Prepare Attacks
-	
-	UFUNCTION()
-	void PrepareAttackUnit(FIntPoint AttackPos);
-
-	UFUNCTION()
-	void PrepareAttackBuilding(FIntPoint AttackPos);
-
-	UFUNCTION()
-	void PrepareAttackBase(FIntPoint AttackPos);
-
-	// ----------------------------
 	// Attack
 
 	UFUNCTION()
@@ -346,12 +334,6 @@ public:
 	
 	UFUNCTION()
 	void AnimAttack(AActor* ThingToAttack);
-	
-	// ----------------------------
-	// Prepare Specials
-
-	UFUNCTION()
-	virtual void PrepareSpecial(FIntPoint SpecialPos);
 
 	// ----------------------------
 	// Special
@@ -442,9 +424,6 @@ public:
 	bool GetIsCommandeerBuffed();
 
 	// Enums
-	UFUNCTION(BluePrintCallable)
-	EPlayer GetUnitTeam();
-
 	UFUNCTION()
 	EPlayer GetPlayerOwner();
 
@@ -496,8 +475,6 @@ public:
 	void SetIsCommandeerBuffed(bool bC);
 
 	// Enums
-	UFUNCTION(BluePrintCallable)
-	void SetUnitTeam(EPlayer PO);
 
 	UFUNCTION(BlueprintCallable)
 	void SetPlayerOwner(EPlayer po);
