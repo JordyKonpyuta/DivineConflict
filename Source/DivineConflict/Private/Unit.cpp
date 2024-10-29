@@ -647,8 +647,8 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 			Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
 			Server_DestroyUnit();
 		}
-		if (PlayerControllerRef)
-			PlayerControllerRef->VerifyBuildInteraction();
+		//if (PlayerControllerRef)
+		//	PlayerControllerRef->VerifyBuildInteraction();
 	}
 
 }
@@ -660,8 +660,8 @@ void AUnit::AttackBase_Implementation(ABase* BaseToAttack)
 		return;
 	}
 	BaseToAttack->BaseTakeDamage(/*GetAttack()*/100);
-	if (PlayerControllerRef)
-		PlayerControllerRef->VerifyBuildInteraction();
+	//if (PlayerControllerRef)
+	//	PlayerControllerRef->VerifyBuildInteraction();
 }
 
 void AUnit::AttackBuilding_Implementation(ABuilding* BuildingToAttack)
@@ -673,8 +673,8 @@ void AUnit::AttackBuilding_Implementation(ABuilding* BuildingToAttack)
 	if (BuildingToAttack->UnitRef)
 		UnitToAttackRef = BuildingToAttack->UnitRef;
 	AnimAttack(UnitToAttackRef);
-	if (PlayerControllerRef)
-		PlayerControllerRef->VerifyBuildInteraction();
+	//if (PlayerControllerRef)
+	//	PlayerControllerRef->VerifyBuildInteraction();
 }
 
 void AUnit::AnimAttack(AActor* ThingToAttack)
