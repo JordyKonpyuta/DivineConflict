@@ -8,6 +8,7 @@
 #include "CustomPlayerState.h"
 #include "Grid.h"
 #include "GridInfo.h"
+#include "Projectile.h"
 #include "TutorialGameMode.h"
 #include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
@@ -81,6 +82,11 @@ void AUnit_Child_Mage::BeginPlay()
 
 void AUnit_Child_Mage::SpecialMage(AActor* Target)
 {
+	FireBall = GetWorld()->SpawnActor<AProjectile>(AProjectile::StaticClass(), GetActorLocation(), GetActorRotation());
+	FireBall->UnitOwner = this;
+	FireBall->IsMageAttack = true;
+	FireBall->Server_CreateProjectile();
+	FireBall->MoveProjectile(Target);
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("MAGE SPECIAL"));
 	if(ABase* BaseAttack = Cast<ABase>(Target))
 	{

@@ -6,6 +6,7 @@
 #include "Unit.h"
 #include "Unit_Child_Mage.generated.h"
 
+class AProjectile;
 /**
  * 
  */
@@ -16,6 +17,11 @@ class DIVINECONFLICT_API AUnit_Child_Mage : public AUnit
 
 	// UPROPERTIES
 public:
+	// ----------------------------
+	// Component
+	
+	UPROPERTY()
+	TObjectPtr<AProjectile> FireBall;
 	
 protected:
 	
