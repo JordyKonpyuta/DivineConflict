@@ -104,6 +104,7 @@ void AProjectile::Multi_CreateProjectile_Implementation()
 		
 		if (FireBallComp_NS)
 		{
+			FireBallComp_NS->SetNiagaraVariableFloat("NewSphereRadius", 150.f);
 			FireBallComp_NS->Activate();
 		}
 	}
@@ -123,8 +124,6 @@ void AProjectile::CalculateProjectileDirection(AActor* Target)
 		else if (XValue != 0 && YValue != 0 && XValue <= YValue)
 			NewTimeToTarget += FMath::Sqrt(UKismetMathLibrary::Abs((YValue * YValue) - (XValue * XValue)) * 0.17) + UKismetMathLibrary::Abs(0.5 * ZValue);
 
-		GEngine->AddOnScreenDebugMessage(-1, 25.f, FColor::Emerald, FString::SanitizeFloat(NewTimeToTarget));
-	
 		UGameplayStatics::SuggestProjectileVelocity_MovingTarget(
 			GetWorld(),
 			MoveVelocity,
@@ -140,15 +139,13 @@ void AProjectile::CalculateProjectileDirection(AActor* Target)
 		float YValue = UKismetMathLibrary::Abs(UnitOwner->GetIndexPosition().Y - UnitOwner->Grid->ConvertLocationToIndex(Target->GetActorLocation()).Y);
 		float ZValue = UnitOwner->GetActorLocation().Z / 50 - Target->GetActorLocation().Z / 50;
 
-		float NewTimeToTarget = 2.35;
+		float NewTimeToTarget = 0.75;
 
 		if (XValue != 0 && YValue != 0 && XValue > YValue)	
 			NewTimeToTarget += FMath::Sqrt(UKismetMathLibrary::Abs((XValue * XValue) - (YValue * YValue)) * 0.17) + UKismetMathLibrary::Abs(0.5 * ZValue);
 		else if (XValue != 0 && YValue != 0 && XValue <= YValue)
 			NewTimeToTarget += FMath::Sqrt(UKismetMathLibrary::Abs((YValue * YValue) - (XValue * XValue)) * 0.17) + UKismetMathLibrary::Abs(0.5 * ZValue);
-
-		GEngine->AddOnScreenDebugMessage(-1, 25.f, FColor::Emerald, FString::SanitizeFloat(NewTimeToTarget));
-	
+		
 		UGameplayStatics::SuggestProjectileVelocity_MovingTarget(
 			GetWorld(),
 			MoveVelocity,
@@ -165,28 +162,34 @@ void AProjectile::MoveProjectile(AActor* Actor)
 	GetWorld()->GetTimerManager().SetTimer(
 		CannonBallTimer,
 		this,
-		&AProjectile::DestroyProjectile,
+		&AProjectile::RemoveProjectile,
 		1.25f,
 		false);
-
-	FString DebugMessage = FString::Printf(TEXT("%lld %lld %lld"), FMath::RoundToInt(MoveVelocity.X), FMath::RoundToInt(MoveVelocity.Y), FMath::RoundToInt(MoveVelocity.Z));
-	GEngine->AddOnScreenDebugMessage(-1, 25.f, FColor::Emerald, DebugMessage);
 	
 	CalculateProjectileDirection(Actor);
 	ProjectileMovement->BeginReplication();
 	ProjectileMovement->Velocity = MoveVelocity;
-	
-	DebugMessage = FString::Printf(TEXT("%lld %lld %lld"), FMath::RoundToInt(MoveVelocity.X), FMath::RoundToInt(MoveVelocity.Y), FMath::RoundToInt(MoveVelocity.Z));
-	GEngine->AddOnScreenDebugMessage(-1, 25.f, FColor::Emerald, DebugMessage);
 }
 
-void AProjectile::DestroyProjectile()
+void AProjectile::RemoveProjectile()
 {
 	if (TowerOwner)
 		TowerOwner->CannonBall = nullptr;
 	if (UnitOwner)
 		UnitOwner->FireBall = nullptr;
+
+	if (FireBallComp_NS)
+		FireBallComp_NS->SetNiagaraVariableFloat("NewSphereRadius", 150.f);
 	
-	//Destroy(true, true);
+	GetWorld()->GetTimerManager().SetTimer(
+		CannonBallTimer,
+		this,
+		&AProjectile::DestroyProjectile,
+		0.75f,
+		false);
 }
 
+void AProjectile::DestroyProjectile()
+{
+	Destroyed();
+}

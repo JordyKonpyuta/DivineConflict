@@ -91,6 +91,9 @@ public:
 	void MoveProjectile(AActor* Actor);
 	
 	UFUNCTION()
+	void RemoveProjectile();
+	
+	UFUNCTION()
 	void DestroyProjectile();
 	
 protected:
