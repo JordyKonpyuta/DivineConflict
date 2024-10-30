@@ -148,6 +148,7 @@ void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProp
 	DOREPLIFETIME(AUnit, bJustBecameGarrison);
 	DOREPLIFETIME(AUnit, MoveSequencePos);
 	DOREPLIFETIME(AUnit, FutureMovement);
+	DOREPLIFETIME(AUnit, FutureMovementWithSpecial);
 	DOREPLIFETIME(AUnit, HasActed);
 	DOREPLIFETIME(AUnit, HasMoved);
 
@@ -317,10 +318,9 @@ void AUnit::Multi_PrepareMove_Implementation(const TArray<FIntPoint>& NewPos)
 {
 	FutureMovement = NewPos;
 	FutureMovementPos = FutureMovement.Last();
+	FutureMovementWithSpecial = FutureMovement;
 	InitGhosts();
 	HasMoved = true;
-	//Grid->GridInfo->Server_setUnitIndexOnGrid(IndexPosition,this);
-	//PlayerControllerRef->AllPlayerActions.Add(FStructActions(this, EDC_ActionPlayer::MoveUnit));
 }
 // ----------------------------
 // Movements
@@ -337,6 +337,7 @@ void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 	bIsGhosts = false;
 	bJustBecameGarrison = false;
 	MoveSequencePos = 0;
+	PathToCrossPosition = 0;
 
 	if (IsGarrison && !bJustBecameGarrison)
 	{
@@ -356,7 +357,7 @@ void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 
 	while (true)
 	{
-		if(Grid->GetGridData()->Find(PathToCross.Last())->UnitOnTile)
+		if(Grid->GetGridData()->Find(PathToCross.Last())->UnitOnTile && Grid->GetGridData()->Find(PathToCross.Last())->UnitOnTile != this)
 		{
 			PathToCross.Remove(PathToCross.Last());
 		}
@@ -399,7 +400,7 @@ void AUnit::UnitMoveAnim_Implementation()
 		SetActorLocation(GetActorLocation() + FVector(0,0,50));
 		MoveSequencePos = 1;
 	}
-
+	
 	// Déplacement
 	else if (MoveSequencePos == 1)
 	{
@@ -472,7 +473,7 @@ void AUnit::UnitMoveAnim_Implementation()
 				SetIsGarrison(true);
 				bJustBecameGarrison = true;
 			}
-		}
+		}/*
 		//If Last Path is a unit on tile and the unit is not the unit moving
 		else if (PathToCross[PathToCrossPosition] == PathToCross.Last())
 		{
@@ -480,10 +481,9 @@ void AUnit::UnitMoveAnim_Implementation()
 			{
 				WillMove = false;
 			}
-		}
+		}*/
 		if (WillMove)
 			SetActorLocation(Grid->ConvertIndexToLocation(PathToCross[PathToCrossPosition]) + FVector(0,0,50));
-		
 		
 
 		// If is last move
@@ -559,7 +559,7 @@ void AUnit::InitGhosts_Implementation()
 void AUnit::MoveGhosts(float DeltaTime)
 {
 
-	Server_MoveGhosts(DeltaTime, FutureMovement);
+	Server_MoveGhosts(DeltaTime, FutureMovementWithSpecial);
 }
 
 void AUnit::Server_MoveGhosts_Implementation(float DeltaTime ,const TArray<FIntPoint> &PathToFollowGhost)

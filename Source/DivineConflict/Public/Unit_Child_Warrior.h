@@ -37,6 +37,12 @@ public:
 
 	virtual void Special() override;
 
+	// ----------------------------
+	// Climbing
+
+	UFUNCTION()
+	void MoveToClimb();
+	
 protected:
 	// ----------------------------
 	// Overrides
@@ -44,5 +50,11 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void DisplayWidgetTutorial() override;
+
+	UFUNCTION(Server,Reliable)
+	void Server_SpecialMove(FIntPoint NewPos);
+
+	UFUNCTION(NetMulticast,Reliable)
+	void Multi_SpecialMove(FIntPoint NewPos);
 	
 };

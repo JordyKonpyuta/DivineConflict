@@ -499,9 +499,9 @@ void ACustomPlayerController::SelectModeSpecial()
 	{
 	case EUnitName::Warrior:
 		//Warrior
-			//AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::Special));
-			UnitRef->Special();
-		AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::MoveUnit));
+		AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::Special));
+		UnitRef->Special();
+		//AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::MoveUnit));
 		UnitRef->HasActed = true;
 		PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 2);
 		break;
@@ -691,7 +691,10 @@ void ACustomPlayerController::Server_SpecialUnit_Implementation(AUnit* UnitSpeci
 {
 	if(AUnit_Child_Mage* MageSp =  Cast<AUnit_Child_Mage>(UnitSpecial))
 		MageSp->SpecialMage(ThingToAttack);
-	else UnitSpecial->Special();
+	else if(AUnit_Child_Warrior* WarriorSp =  Cast<AUnit_Child_Warrior>(UnitSpecial))
+        WarriorSp->MoveToClimb();
+	else
+		UnitSpecial->Special();
 }
 
 	
@@ -1050,10 +1053,15 @@ void ACustomPlayerController::Multi_ActionActiveTurn_Implementation()
 				case EDC_ActionPlayer::Special:
 					//if special action on base
 					if(BaseAction)
+					{
 						Server_SpecialUnit(AllPlayerActions[0].UnitAttacking, BaseAction);
+					}
 					//if special action
 					if(UnitAction)
+					{
 						Server_SpecialUnit(UnitAction,AllPlayerActions[0].UnitAttacking);
+					}
+						
 					GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurn, 0.5f, false);
 					AllPlayerActions.RemoveAt(0);
 					break;

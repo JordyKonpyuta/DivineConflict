@@ -119,6 +119,9 @@ public:
 	
 	UPROPERTY(Replicated)
 	TArray<FIntPoint> FutureMovement;
+
+	UPROPERTY(Replicated)
+	TArray<FIntPoint> FutureMovementWithSpecial;
 	
 	UPROPERTY(Replicated)
 	TArray<FIntPoint> PathToCross;

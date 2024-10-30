@@ -53,7 +53,7 @@ void AUpwall::BeginPlay()
 		GridRef->GridInfo->AddClimbableOnGrid(GridRef->ConvertLocationToIndex(GetActorLocation()),this);
 
 		ClimbLocation = GridRef->ConvertLocationToIndex(Plane2->GetComponentLocation());
-	
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("ClimbLocation : %s"), *ClimbLocation.ToString()));
 		Plane1->SetVisibility(false);
 		Plane2->SetVisibility(false);
 	}

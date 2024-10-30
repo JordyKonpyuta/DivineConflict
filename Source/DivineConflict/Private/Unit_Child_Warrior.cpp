@@ -92,6 +92,8 @@ void AUnit_Child_Warrior::DisplayWidgetTutorial()
 }
 
 
+
+
 void AUnit_Child_Warrior::Special()
 {
 	Super::Special();
@@ -103,7 +105,7 @@ void AUnit_Child_Warrior::Special()
 		{
 			if (WallToClimb->GetClimbLocation() != FIntPoint(-999, -999))
 			{
-				FutureMovement.Add(WallToClimb->GetClimbLocation());
+				Server_SpecialMove(WallToClimb->GetClimbLocation());
 				GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(WallToClimb->GetClimbLocation()));
 				WallToClimb = nullptr;
 			}
@@ -114,16 +116,35 @@ void AUnit_Child_Warrior::Special()
 		WallToClimb = Grid->GetGridData()->Find(GetIndexPosition())->UpwallOnTile;
 		if (WallToClimb)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("UpwallToClimb found"));
 			if (WallToClimb->GetClimbLocation() != FIntPoint(-999, -999))
 			{
 				TArray<FIntPoint> NewMove;
-				NewMove.Add(WallToClimb->GetClimbLocation());
+				Server_SpecialMove(WallToClimb->GetClimbLocation());
 				SetIsSelected(false);
-				PlayerControllerRef->Server_PrepareMoveUnit(NewMove, this);
-				FutureMovement.Add(WallToClimb->GetClimbLocation());
+				//PlayerControllerRef->Server_PrepareMoveUnit(NewMove, this);
+				//FutureMovement.Add(WallToClimb->GetClimbLocation());
 				GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(WallToClimb->GetClimbLocation()));
 			}
 		}
 	}
 }
+
+void AUnit_Child_Warrior::Server_SpecialMove_Implementation(FIntPoint NewPos)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("NewPos : ") + NewPos.ToString());
+	Multi_SpecialMove(NewPos);
+}
+
+void AUnit_Child_Warrior::Multi_SpecialMove_Implementation(FIntPoint NewPos)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("NewPos : ") + NewPos.ToString());
+	FutureMovementWithSpecial.Add(NewPos);
+}
+
+void AUnit_Child_Warrior::MoveToClimb()
+{
+	InitializeFullMove(TArray<FIntPoint>{FutureMovementWithSpecial.Last()});
+	FutureMovementWithSpecial.Empty();
+	Server_GetBuffs();
+}
+
