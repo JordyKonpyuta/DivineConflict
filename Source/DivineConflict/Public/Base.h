@@ -97,6 +97,11 @@ protected:
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Grid")
 	FIntPoint GridPosition= FIntPoint(-999,-999);
 
+	// ----------------------------
+	// Timers
+	
+	FTimerHandle PlayerStateHandle;
+	
 	// UFUNCTIONS //
 public:	
 	// ----------------------------
@@ -203,4 +208,7 @@ private:
 	
 	UFUNCTION()
 	void timerBeginPlay();
+
+	UFUNCTION()
+	void AssignPlayerState();
 };

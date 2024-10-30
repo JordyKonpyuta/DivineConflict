@@ -54,6 +54,7 @@ void ABase::BeginPlay()
 
 
 	SetMesh();
+	
 	// Get Grid
 	if (Grid)
 	{
@@ -72,13 +73,34 @@ void ABase::BeginPlay()
 		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 1*Ratio));
 	}
 
-	
+	// Get PlayerState
+	GetWorld()->GetTimerManager().SetTimer(
+		PlayerStateHandle,
+		this,
+		&ABase::AssignPlayerState,
+		0.5,
+		true );
 }
+	
+	// ----------------------------
+	// Timer
 
 void ABase::timerBeginPlay()
 {
-
 	Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+}
+
+void ABase::AssignPlayerState()
+{
+	if (!PlayerStateRef)
+	{
+		SetPlayerState();
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("NO PLAYER STATE")));
+	}
+	else
+	{
+		GetWorld()->GetTimerManager().ClearTimer(PlayerStateHandle);
+	}
 }
 
 
@@ -129,20 +151,30 @@ void ABase::VisualSpawn()
 
 void ABase::Upgrade()
 {
-	if(PlayerStateRef)
+	UE_LOG( LogTemp, Warning, TEXT("3"));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("3")));
+	SetPlayerState();
+	if(PlayerStateRef){
 		// Check if player has enough resources
-			if (PlayerStateRef->GetWoodPoints() >= WoodCostUpgrade && PlayerStateRef->GetStonePoints() >= StoneCostUpgrade && PlayerStateRef->GetGoldPoints() >= GoldCostUpgrade)
+		UE_LOG( LogTemp, Warning, TEXT("2"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("2")));
+		if (PlayerStateRef->GetWoodPoints() >= WoodCostUpgrade && PlayerStateRef->GetStonePoints() >= StoneCostUpgrade && PlayerStateRef->GetGoldPoints() >= GoldCostUpgrade)
+		{
+			UE_LOG( LogTemp, Warning, TEXT("1"));
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("1")));
+			if (PlayerStateRef->GetMaxUnits() < 15 && Level < MaxLevel)
 			{
-				if (PlayerStateRef->GetMaxUnits() < 15 && Level < MaxLevel)
-				{
-					PlayerStateRef->SetMaxUnits(PlayerStateRef->GetMaxUnits() + 5);
-					PlayerStateRef->ChangeWoodPoints(WoodCostUpgrade, false);
-					PlayerStateRef->ChangeStonePoints(StoneCostUpgrade, false);
-					PlayerStateRef->ChangeGoldPoints(GoldCostUpgrade, false);
-					SetCostsUpgrade(GoldCostUpgrade += 10, StoneCostUpgrade += 10, WoodCostUpgrade += 10);
-					Level++;
-				}
+				UE_LOG( LogTemp, Warning, TEXT("0!!!"));
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("0!!!")));
+				PlayerStateRef->SetMaxUnits(PlayerStateRef->GetMaxUnits() + 5);
+				PlayerStateRef->ChangeWoodPoints(WoodCostUpgrade, false);
+				PlayerStateRef->ChangeStonePoints(StoneCostUpgrade, false);
+				PlayerStateRef->ChangeGoldPoints(GoldCostUpgrade, false);
+				SetCostsUpgrade(GoldCostUpgrade += 10, StoneCostUpgrade += 10, WoodCostUpgrade += 10);
+				Level++;
 			}
+		}
+	}
 }
 
 	// ----------------------------
