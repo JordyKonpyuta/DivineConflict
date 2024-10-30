@@ -718,8 +718,13 @@ TArray<FIntPoint> ACustomPlayerController::PrepareSpawnArea(TArray<FIntPoint> Al
 //call spawn unit with server
 bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen,ABase* BaseToSpawn, ABuilding* BuildingToSpawn)
 {
-	Server_SpawnUnit(UnitToSpawn, SpawnChosen, BaseToSpawn, BuildingToSpawn,PlayerStateRef);
-	return Grid->GetGridData()->Find(SpawnChosen)->UnitOnTile != nullptr;
+	if(PlayerStateRef->GetUnits() < PlayerStateRef->GetMaxUnits())
+    {
+		Server_SpawnUnit(UnitToSpawn, SpawnChosen, BaseToSpawn, BuildingToSpawn,PlayerStateRef);
+		return Grid->GetGridData()->Find(SpawnChosen)->UnitOnTile != nullptr;
+    }
+	return false;
+
 }
 
 //spawn unit with server
@@ -831,62 +836,62 @@ void ACustomPlayerController::SpawnBaseUnitGhost(EUnitType UnitToSpawn)
 void ACustomPlayerController::SpawnGhostUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen)
 {
 	AGhostUnitSpawning* GhostUnit = nullptr;
-			if(PlayerStateRef)
+	if(PlayerStateRef)
+	{
+	
+		switch (UnitToSpawn)
+		{
+		case EUnitType::U_Warrior:
+			//if you have enough resources
+				//if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetWarriorStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetWarriorWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetWarriorGoldCost())
 			{
-				
-				switch (UnitToSpawn)
-				{
-				case EUnitType::U_Warrior:
-					//if you have enough resources
-					if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetWarriorStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetWarriorWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetWarriorGoldCost())
-					{
-						Server_RessourceChange(PlayerStateRef,UnitToSpawn);
-						GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
-						GhostUnit->SetUnitType(UnitToSpawn);
-						GhostUnit->Spawn();
-					}
-					break;
-				case EUnitType::U_Tank:
-					if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetTankStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetTankWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetTankGoldCost())
-					{
-						Server_RessourceChange(PlayerStateRef,UnitToSpawn);
-						GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
-						GhostUnit->SetUnitType(UnitToSpawn);
-						GhostUnit->Spawn();
-					}
-					break;
-				case EUnitType::U_Mage:
-					if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetMageStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetMageWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetMageGoldCost())
-					{
-						Server_RessourceChange(PlayerStateRef,UnitToSpawn);
-						GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
-						GhostUnit->SetUnitType(UnitToSpawn);
-						GhostUnit->Spawn();
-					}
-					break;
-				case EUnitType::U_Leader:
-					if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetLeaderStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetLeaderWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetLeaderGoldCost())
-					{
-						Server_RessourceChange(PlayerStateRef,UnitToSpawn);
-						GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
-						GhostUnit->SetUnitType(UnitToSpawn);
-						GhostUnit->Spawn();
-					}
-					break;
-				default:
-					break;
-				}
+				Server_RessourceChange(PlayerStateRef,UnitToSpawn);
+				GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
+				GhostUnit->SetUnitType(UnitToSpawn);
+				GhostUnit->Spawn();
 			}
-			UpdateUi();
-			if(GhostUnit)
+			break;
+		case EUnitType::U_Tank:
+			if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetTankStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetTankWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetTankGoldCost())
 			{
-				if(BaseRef)
-					AllPlayerPassive.Add(FStructPassive( BaseRef,UnitToSpawn,SpawnChosen,GhostUnit));
-				if(BuildingRef)
-					AllPlayerPassive.Add(FStructPassive( BuildingRef,UnitToSpawn,SpawnChosen,GhostUnit));
-				Grid->GridVisual->addStateToTile(SpawnChosen, EDC_TileState::Spawned);
+				Server_RessourceChange(PlayerStateRef,UnitToSpawn);
+				GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
+				GhostUnit->SetUnitType(UnitToSpawn);
+				GhostUnit->Spawn();
 			}
-			Grid->GridVisual->RemoveStateFromTile(SpawnChosen, EDC_TileState::Spawnable);
+			break;
+		case EUnitType::U_Mage:
+			if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetMageStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetMageWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetMageGoldCost())
+			{
+				Server_RessourceChange(PlayerStateRef,UnitToSpawn);
+				GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
+				GhostUnit->SetUnitType(UnitToSpawn);
+				GhostUnit->Spawn();
+			}
+			break;
+		case EUnitType::U_Leader:
+			if(PlayerStateRef->GetStonePoints() >= PlayerStateRef->GetLeaderStoneCost() && PlayerStateRef->GetWoodPoints() >= PlayerStateRef->GetLeaderWoodCost() && PlayerStateRef->GetGoldPoints() >= PlayerStateRef->GetLeaderGoldCost())
+			{
+				Server_RessourceChange(PlayerStateRef,UnitToSpawn);
+				GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
+				GhostUnit->SetUnitType(UnitToSpawn);
+				GhostUnit->Spawn();
+			}
+			break;
+		default:
+			break;
+		}
+	}
+	UpdateUi();
+	if(GhostUnit)
+	{
+		if(BaseRef)
+			AllPlayerPassive.Add(FStructPassive( BaseRef,UnitToSpawn,SpawnChosen,GhostUnit));
+		if(BuildingRef)
+			AllPlayerPassive.Add(FStructPassive( BuildingRef,UnitToSpawn,SpawnChosen,GhostUnit));
+		Grid->GridVisual->addStateToTile(SpawnChosen, EDC_TileState::Spawned);
+	}
+	Grid->GridVisual->RemoveStateFromTile(SpawnChosen, EDC_TileState::Spawnable);
 }
 
 void ACustomPlayerController::Server_RessourceChange_Implementation(const ACustomPlayerState* PSR,

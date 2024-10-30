@@ -223,11 +223,13 @@ void ABase::OnDeath_Implementation()
 bool ABase::CheckTiles()
 {
 	int count = 0;
-	
+	CanSpawn = true;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("CheckTiles")));
 	for (FIntPoint i : AllSpawnLoc)
 	{
 		if (Grid->GetGridData()->Find(i)->TileState.Contains(EDC_TileState::Spawned))
 		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Tile Spawned")));
 			count++;
 		}
 	}

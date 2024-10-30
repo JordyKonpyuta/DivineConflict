@@ -18,6 +18,8 @@ void ACustomPlayerState::BeginPlay()
 
 	GameStateRef->AllPlayerStates.Add(this);
 
+	SetPopulation();
+
 	if (bIsInTutorial)
 	{
 		GoldPoints = 20;

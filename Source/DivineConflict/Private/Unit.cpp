@@ -205,6 +205,24 @@ void AUnit::Destroyed()
 void AUnit::Server_DestroyUnit_Implementation()
 {
 	Grid->GridInfo->RemoveUnitInGrid(this);
+	if(PlayerControllerRef)
+		switch (UnitName)
+		{
+		case EUnitName::Leader:
+			PlayerControllerRef->PlayerStateRef->SetLeaderCount(PlayerControllerRef->PlayerStateRef->GetLeaderCount() - 1);
+			break;
+		case EUnitName::Tank:
+			PlayerControllerRef->PlayerStateRef->SetTankCount(PlayerControllerRef->PlayerStateRef->GetTankCount() - 1);
+			break;
+		case EUnitName::Warrior:
+			PlayerControllerRef->PlayerStateRef->SetWarriorCount(PlayerControllerRef->PlayerStateRef->GetWarriorCount() - 1);
+			break;
+		case EUnitName::Mage:
+			PlayerControllerRef->PlayerStateRef->SetMageCount(PlayerControllerRef->PlayerStateRef->GetMageCount() - 1);
+			break;
+		default:
+			break;
+		}
 	Destroyed();
 	GetWorld()->DestroyActor(this);
 	if (GetWorld()->GetFirstPlayerController()->GetPlayerState<ACustomPlayerState>()->bIsInTutorial)
@@ -359,7 +377,9 @@ void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 	{
 		if(Grid->GetGridData()->Find(PathToCross.Last())->UnitOnTile && Grid->GetGridData()->Find(PathToCross.Last())->UnitOnTile != this)
 		{
-			PathToCross.Remove(PathToCross.Last());
+			if(PathToCross.Num() != 0)
+				PathToCross.RemoveAt(PathToCross.Num()-1);
+			else PathToCross.Empty();
 		}
 		else
 		{
