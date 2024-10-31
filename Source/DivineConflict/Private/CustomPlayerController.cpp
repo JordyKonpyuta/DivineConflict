@@ -211,8 +211,8 @@ void ACustomPlayerController::ControllerInteraction()
 					TowerRef->PreprareAttack(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile);
 					AllPlayerActions.Add(FStructActions(TowerRef, EDC_ActionPlayer::AttackBuilding, Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile));
 					PlayerAction = EDC_ActionPlayer::None;
-					DisplayWidget();
 					PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 1);
+					TowerRef->SetCanAttack(false);
 				}
 				CameraPlayerRef->IsTowering = false;
 			}
@@ -1026,7 +1026,8 @@ void ACustomPlayerController::Multi_ActionActiveTurn_Implementation()
 				}
 				if (TowerAction)
 				{
-					TowerAction->SetCanAttack(true);
+					TowerAction->CanAttack = TowerAction->IsGarrisoned;
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TowerAction->CanAttack ? TEXT("Trueeee") : TEXT("Falseeee"));
 				}
 				//switch on action
 				switch (AllPlayerActions[0].UnitAction)

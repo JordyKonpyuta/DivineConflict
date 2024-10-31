@@ -52,6 +52,9 @@ public:
 	// ----------------------------
 	// Can Attack
 	
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadOnly, Category = "Bool")
+	bool CanAttack = true;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bool")
 	bool IsSelected = false;
 	
@@ -72,12 +75,6 @@ protected:
 	// Stat
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
 	int Attack = 5;
-
-	// ----------------------------
-	// Can Attack
-	
-	UPROPERTY(EditAnywhere, Replicated, BlueprintReadOnly, Category = "Bool")
-	bool CanAttack = true;
 
 	// ----------------------------
 	// Owner
@@ -133,7 +130,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	EPlayer GetPlayerOwner();
 	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	bool GetCanAttack();
 	
 	FIntPoint GetGridPosition();

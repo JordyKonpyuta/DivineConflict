@@ -78,7 +78,6 @@ void ATower::PreprareAttack(AUnit* UnitAttack)
 {
 	UnitToAttack = UnitAttack;
 	UnitToAttackPosition = UnitAttack->GetIndexPosition();
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("unitToAttackPosition : " + UnitToAttackPosition.ToString()));
 	IsSelected = false;
 	UpdateVisuals();
 }
@@ -90,7 +89,6 @@ void ATower::AttackUnit(AUnit* UnitToAttacking, ACustomPlayerController* PlayerC
 	CannonBall->MoveProjectile(UnitToAttacking);
 	
 	UnitToAttacking->SetCurrentHealth(UnitToAttacking->GetCurrentHealth() - Attack);
-	SetCanAttack(false);
 	if(UnitToAttacking->GetCurrentHealth() < 1)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UnitToAttack Destroyed"));
