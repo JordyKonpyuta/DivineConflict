@@ -95,7 +95,6 @@ void ABase::AssignPlayerState()
 	if (!PlayerStateRef)
 	{
 		SetPlayerState();
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("NO PLAYER STATE")));
 	}
 	else
 	{

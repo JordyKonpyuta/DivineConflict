@@ -30,7 +30,7 @@ public:
 	UPROPERTY(Replicated)
 	TObjectPtr<UNiagaraSystem> FireBallSys_NS;
 	
-	UPROPERTY(Replicated)
+	UPROPERTY()
 	TObjectPtr<UNiagaraComponent> FireBallComp_NS;
 	
 	// ----------------------------
@@ -38,6 +38,9 @@ public:
 
 	UPROPERTY(Replicated)
 	bool IsMageAttack;
+
+	UPROPERTY(Replicated)
+	float TimeToTarget;
 
 	UPROPERTY(Replicated)
 	float ProjectileVelocity;
@@ -48,10 +51,10 @@ public:
 	// ----------------------------
 	// Owner
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TObjectPtr<ATower> TowerOwner;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TObjectPtr<AUnit_Child_Mage> UnitOwner;
 	
 protected:
@@ -77,6 +80,7 @@ public:
 	// Projectile LifeSpan
 
 	FTimerHandle CannonBallTimer;
+	FTimerHandle CannonBallTimer2;
 	
 	UFUNCTION(Server,Reliable)
 	void Server_CreateProjectile();
@@ -89,12 +93,24 @@ public:
 
 	UFUNCTION()
 	void MoveProjectile(AActor* Actor);
+
+	UFUNCTION(Server, Reliable)
+	void Server_MoveProjectile(AActor* Actor);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_MoveProjectile(AActor* Actor);
 	
-	UFUNCTION()
-	void RemoveProjectile();
+	UFUNCTION(Server, Reliable)
+	void Server_RemoveProjectile();
 	
-	UFUNCTION()
-	void DestroyProjectile();
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_RemoveProjectile();
+	
+	UFUNCTION(Server, Reliable)
+	void Server_DestroyProjectile();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_DestroyProjectile();
 	
 protected:
 	// ----------------------------
