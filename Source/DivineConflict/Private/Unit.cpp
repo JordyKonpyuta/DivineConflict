@@ -550,6 +550,9 @@ void AUnit::UnitMoveAnim_Implementation()
 				FutureMovement.Empty();
 				PlayerControllerRef->Server_ActionActiveTurn();
 				Server_GetBuffs();
+
+				if (TObjectPtr<AUnit_Child_Leader> Leader = Cast<AUnit_Child_Leader>(this))
+					Leader->Server_PushBuff();
 			}
 		}
 	}
