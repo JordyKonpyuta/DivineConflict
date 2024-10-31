@@ -69,6 +69,11 @@ void ACustomPlayerState::OnRep_bIsActiveTurn()
 	}
 	UpdateUI();
 	bIsReadyToSiwtchTurn = false;
+	if (GameStateRef)
+	{
+		MaxActionPoints = 10 + GotCentralBuilding * UKismetMathLibrary::Clamp(1 + UKismetMathLibrary::FTrunc(GameStateRef->Turn / 5), 1, MAX_int32);
+		CurrentPA = MaxActionPoints;
+	}
 	
 }
 
@@ -86,12 +91,6 @@ void ACustomPlayerState::NewTurnBegin()
 	ChangeWoodPoints(20 + (WoodBuildingOwned * 15), true);
 	ChangeStonePoints(20 + (StoneBuildingOwned * 15), true);
 	ChangeGoldPoints(20 + (GoldBuildingOwned * 15), true);
-
-
-		MaxActionPoints = 10 + (GotCentralBuilding * UKismetMathLibrary::Clamp(TurnPassed, 0, 5));
-		CurrentPA = MaxActionPoints;
-		//PlayerControllerRef->CurrentPA = CurrentPA;
-
 }
 	
 	// ----------------------------
