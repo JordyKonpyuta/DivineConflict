@@ -516,9 +516,6 @@ protected:
 	UFUNCTION()
 	void MoveGhosts(float DeltaTime);
 
-	UFUNCTION(Server,Reliable)
-	void Server_MoveGhosts(float DeltaTime ,const TArray<FIntPoint> &PathToFollowGhost);
-
 	UFUNCTION()
 	void MoveGhostsAction(float DeltaTime,const TArray<FIntPoint> &PathToFollowGhost);
 

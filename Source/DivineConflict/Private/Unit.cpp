@@ -572,8 +572,16 @@ void AUnit::MoveUnitEndTurn()
 
 void AUnit::Multi_HiddeGhosts_Implementation()
 {
+	if(HasAuthority())
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Server_HiddeGhosts"));
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Client_HiddeGhosts"));
+	}
 	GhostsMesh->SetVisibility(false);
 	GhostsFinaleLocationMesh->SetVisibility(false);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("GhostFinaleLocationMesh visibility : ") + FString::FromInt(GhostsFinaleLocationMesh->IsVisible()));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("GhostsMesh visibility : ") + FString::FromInt(GhostsMesh->IsVisible()));
 	bIsGhosts = false;
 }
 
@@ -598,15 +606,9 @@ void AUnit::MoveGhosts(float DeltaTime)
 {
 	if(HasMoved)
 		MoveGhostsAction(DeltaTime, FutureMovementWithSpecial);
-		
-	//Server_MoveGhosts(DeltaTime, FutureMovementWithSpecial);
+
 }
 
-void AUnit::Server_MoveGhosts_Implementation(float DeltaTime ,const TArray<FIntPoint> &PathToFollowGhost)
-{
-	
-	//	MoveGhostsMulticast(DeltaTime, PathToFollowGhost);
-}
 void AUnit::MoveGhostsAction(float DeltaTime, const TArray<FIntPoint>& PathToFollowGhost)
 
 {
@@ -633,7 +635,7 @@ void AUnit::MoveGhostsAction(float DeltaTime, const TArray<FIntPoint>& PathToFol
 		{
 			CurrentIndexGhost = 0;
 			GhostsMesh->SetWorldLocation(GetActorLocation());
-			GhostsFinaleLocationMesh->SetVisibility(true);
+
 		}
 	}
 }
@@ -858,6 +860,7 @@ void AUnit::Multi_CancelAttack_Implementation()
 
 void AUnit::Server_CancelSpecial_Implementation()
 {
+	
 	Multi_CancelSpecial();
 }
 
