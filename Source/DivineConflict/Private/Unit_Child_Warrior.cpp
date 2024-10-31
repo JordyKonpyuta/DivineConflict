@@ -93,10 +93,9 @@ void AUnit_Child_Warrior::DisplayWidgetTutorial()
 
 
 
-
 void AUnit_Child_Warrior::Special()
 {
-	Super::Special();
+
 	//Special ability
 	if (HasMoved)
 	{
@@ -105,7 +104,8 @@ void AUnit_Child_Warrior::Special()
 		{
 			if (WallToClimb->GetClimbLocation() != FIntPoint(-999, -999))
 			{
-				Server_SpecialMove(WallToClimb->GetClimbLocation());
+				FutureMovementWithSpecial.AddUnique(WallToClimb->GetClimbLocation());
+				Multi_SpecialMove(WallToClimb->GetClimbLocation());
 				GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(WallToClimb->GetClimbLocation()));
 				WallToClimb = nullptr;
 			}
@@ -119,7 +119,8 @@ void AUnit_Child_Warrior::Special()
 			if (WallToClimb->GetClimbLocation() != FIntPoint(-999, -999))
 			{
 				TArray<FIntPoint> NewMove;
-				Server_SpecialMove(WallToClimb->GetClimbLocation());
+				FutureMovementWithSpecial.AddUnique(WallToClimb->GetClimbLocation());
+				Multi_SpecialMove(WallToClimb->GetClimbLocation());
 				SetIsSelected(false);
 				//PlayerControllerRef->Server_PrepareMoveUnit(NewMove, this);
 				//FutureMovement.Add(WallToClimb->GetClimbLocation());
@@ -137,12 +138,20 @@ void AUnit_Child_Warrior::Server_SpecialMove_Implementation(FIntPoint NewPos)
 
 void AUnit_Child_Warrior::Multi_SpecialMove_Implementation(FIntPoint NewPos)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("NewPos : ") + NewPos.ToString());
-	FutureMovementWithSpecial.Add(NewPos);
+	FutureMovementWithSpecial.AddUnique(NewPos);
 }
 
 void AUnit_Child_Warrior::MoveToClimb()
 {
+	if(FutureMovementWithSpecial.Last() == IndexPosition)
+	{
+		if(Grid->GetGridData()->Find(FutureMovementWithSpecial.Last())->UpwallOnTile)
+		{
+			FutureMovementWithSpecial.Add(Grid->GetGridData()->Find(FutureMovementWithSpecial.Last())->UpwallOnTile->GetClimbLocation());
+		}
+	}
+
+	
 	InitializeFullMove(TArray<FIntPoint>{FutureMovementWithSpecial.Last()});
 	FutureMovementWithSpecial.Empty();
 	Server_GetBuffs();

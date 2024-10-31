@@ -353,8 +353,11 @@ TArray<FIntPoint> UGridPath::NewFindPath(FIntPoint Start, ACustomPlayerControlle
 	TArray<FIntPoint> NewCases = {Start};
 	if (CPC->UnitRef->GetIsGarrison())
 	{
-		AllMoveCases = CPC->UnitRef->GetBuildingRef()->SpawnLocRef;
-		NewCases = CPC->UnitRef->GetBuildingRef()->SpawnLocRef;
+		if(CPC->UnitRef->GetBuildingRef())
+		{
+			AllMoveCases = CPC->UnitRef->GetBuildingRef()->SpawnLocRef;
+			NewCases = CPC->UnitRef->GetBuildingRef()->SpawnLocRef;
+		}
 	}
 	TArray<FIntPoint> NewNewCases;
 	int AllMovement = CPC->UnitRef->GetPM();

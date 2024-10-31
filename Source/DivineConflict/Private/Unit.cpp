@@ -14,6 +14,7 @@
 #include "Tower.h"
 #include "Unit_Child_Leader.h"
 #include "Unit_Child_Tank.h"
+#include "Upwall.h"
 #include "WidgetDamage2.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -117,7 +118,7 @@ void AUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 		
-	if(HasAuthority())
+	//if(HasAuthority())
 		MoveGhosts(DeltaTime);
 
 	// Widget Damage
@@ -156,6 +157,7 @@ void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProp
 
 // ----------------------------
 // Initial Tests
+
 
 void AUnit::testOnTower()
 {
@@ -337,7 +339,10 @@ void AUnit::Multi_PrepareMove_Implementation(const TArray<FIntPoint>& NewPos)
 	FutureMovement = NewPos;
 	FutureMovementPos = FutureMovement.Last();
 	FutureMovementWithSpecial = FutureMovement;
-	InitGhosts();
+
+	GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovementPos));
+	
+	//InitGhosts();
 	HasMoved = true;
 }
 // ----------------------------
@@ -414,6 +419,7 @@ void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 
 void AUnit::UnitMoveAnim_Implementation()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("UnitMoveAnim"));
 	// Monte
 	if (MoveSequencePos == 0)
 	{
@@ -422,7 +428,7 @@ void AUnit::UnitMoveAnim_Implementation()
 	}
 	
 	// Déplacement
-	else if (MoveSequencePos == 1)
+	else if (MoveSequencePos == 1 && PathToCrossPosition < PathToCross.Num() && PathToCrossPosition > -1 )
 	{
 		WillMove = true;
 		Grid->GridVisual->RemoveStateFromTile(PathToCross[PathToCrossPosition], EDC_TileState::Pathfinding);
@@ -539,6 +545,7 @@ void AUnit::UnitMoveAnim_Implementation()
 			}
 		}
 	}
+	else PathToCrossPosition = 0;
 }
 
 void AUnit::MoveUnitEndTurn()
@@ -573,27 +580,37 @@ void AUnit::InitGhosts_Implementation()
 
 	// Set ghost's position as unit's position on grid ;
 	// Grid->GridInfo->Server_setUnitIndexOnGrid(FutureMovementPos, this);
-	bIsGhosts = true;
+	//bIsGhosts = true;
 }
 
 void AUnit::MoveGhosts(float DeltaTime)
 {
-
-	Server_MoveGhosts(DeltaTime, FutureMovementWithSpecial);
+	if(HasMoved)
+		MoveGhostsAction(DeltaTime, FutureMovementWithSpecial);
+		
+	//Server_MoveGhosts(DeltaTime, FutureMovementWithSpecial);
 }
 
 void AUnit::Server_MoveGhosts_Implementation(float DeltaTime ,const TArray<FIntPoint> &PathToFollowGhost)
 {
-	if(bIsGhosts)
-		MoveGhostsMulticast(DeltaTime, PathToFollowGhost);
+	
+	//	MoveGhostsMulticast(DeltaTime, PathToFollowGhost);
 }
+void AUnit::MoveGhostsAction(float DeltaTime, const TArray<FIntPoint>& PathToFollowGhost)
 
-void AUnit::MoveGhostsMulticast_Implementation(float DeltaTime,const TArray<FIntPoint> &PathToFollowGhost)
 {
 	if(PathToFollowGhost.IsEmpty())
 	{
 		return;
 	}
+	if(HasActed)
+	{
+		if(Grid->GetGridData()->Find(FutureMovementWithSpecial.Last())->UpwallOnTile)
+		{
+			FutureMovementWithSpecial.Add(Grid->GetGridData()->Find(FutureMovementWithSpecial.Last())->UpwallOnTile->GetClimbLocation());
+		}
+	}
+	
 	if(PathToFollowGhost.Num() <= CurrentIndexGhost)
 		CurrentIndexGhost = 0;
 	
