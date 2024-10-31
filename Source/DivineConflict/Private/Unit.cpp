@@ -403,6 +403,14 @@ void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
             {
                 break;
             }
+    		
+		}
+		else if(Grid->GetGridData()->Find(index)->TowerOnTile)
+		{
+			if(Grid->GetGridData()->Find(index)->TowerOnTile->GetPlayerOwner() != GetPlayerOwner())
+            {
+                break;
+            }
 		}
 		PathToCrossTemp.Add(index);
     }
