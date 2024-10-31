@@ -110,7 +110,6 @@ void ACustomPlayerController::OnRep_PlayerTeam()
 //interract system of element on grid
 void ACustomPlayerController::ControllerInteraction()
 {
-	
 	if(!PlayerStateRef)
 	{
 		PlayerStateRef = Cast<ACustomPlayerState>(PlayerState);
@@ -266,6 +265,17 @@ void ACustomPlayerController::ControllerInteraction()
 					PlayerAction = EDC_ActionPlayer::None;
 					DisplayWidget();
 				}
+				if (!UnitRef->HasMoved)
+				{
+					CameraPlayerRef->FullMoveDirection.X = UnitRef->GetActorLocation().X;
+					CameraPlayerRef->FullMoveDirection.Y = UnitRef->GetActorLocation().Y;
+					CameraPlayerRef->FullMoveDirection.Z = (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
+				} else
+				{
+					CameraPlayerRef->FullMoveDirection.X = UnitRef->GetFinalGhostMesh()->GetComponentLocation().X;
+					CameraPlayerRef->FullMoveDirection.Y = UnitRef->GetFinalGhostMesh()->GetComponentLocation().Y;
+					CameraPlayerRef->FullMoveDirection.Z = (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
+				}
 			}
 			break;
 		case EDC_ActionPlayer::MoveUnit:
@@ -352,6 +362,8 @@ void ACustomPlayerController::ControllerInteraction()
 			break;
 		}
 	}
+	UpdateUi();
+	RemoveAttackWidget();
 }
 //check if player can interact with element on grid for widget 3D
 void ACustomPlayerController::VerifyBuildInteraction()
@@ -432,16 +444,12 @@ void ACustomPlayerController::SelectModeMovement()
 	FindReachableTiles();
 	if (UnitRef)
 	{
-		
 		if (Cast<AUnit_Child_Warrior>(UnitRef))
 		{
 			//si use a Special action
 			if (UnitRef->HasActed &&  UnitRef->GetFinalGhostMesh()->IsVisible())
 			{
 				CameraPlayerRef->Path.Add(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()));
-				CameraPlayerRef->FullMoveDirection.X = UnitRef->GetFinalGhostMesh()->GetComponentLocation().X;
-				CameraPlayerRef->FullMoveDirection.Y = UnitRef->GetFinalGhostMesh()->GetComponentLocation().Y;
-				CameraPlayerRef->FullMoveDirection.Z = (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
 			}
 			else
 				CameraPlayerRef->Path.Add(UnitRef->GetIndexPosition());
@@ -458,7 +466,7 @@ void ACustomPlayerController::SelectModeAttack()
 	PlayerAction = EDC_ActionPlayer::AttackUnit;
 	CameraPlayerRef->IsAttacking = true;
 
-	//si unit has move
+	//si unit has moved
 	if (UnitRef->HasMoved)
 	{
 		PathReachable = Grid->GridPath->FindTileNeighbors(
