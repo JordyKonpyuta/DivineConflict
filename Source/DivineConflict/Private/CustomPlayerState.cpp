@@ -16,6 +16,7 @@ void ACustomPlayerState::BeginPlay()
 
 	GameStateRef = GetWorld()->GetGameState<ACustomGameState>();
 
+	if(GameStateRef)
 	GameStateRef->AllPlayerStates.Add(this);
 
 	SetPopulation();

@@ -20,7 +20,7 @@ AUnit_Child_Leader::AUnit_Child_Leader()
 	
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjectHell(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Leader_Hell.T_Icon_Leader_Hell'"));
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Leader_Paradise.T_Icon_Leader_Paradise'"));
-	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjectNeutral(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Leader_Paradise.T_Icon_Leader_Neutral'"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjectNeutral(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Leader_Neutral.T_Icon_Leader_Neutral'"));
 	if (IconTexObjectHell.Object != NULL)
 		HellIcon = IconTexObjectHell.Object;
 	if (IconTexObject.Object != NULL)
