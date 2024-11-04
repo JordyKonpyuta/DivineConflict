@@ -14,6 +14,7 @@
 #include "Tower.h"
 #include "Unit_Child_Leader.h"
 #include "Unit_Child_Tank.h"
+#include "Unit_Child_Warrior.h"
 #include "Upwall.h"
 #include "WidgetDamage2.h"
 #include "Camera/CameraComponent.h"
@@ -835,12 +836,6 @@ void AUnit::Multi_GetBuffs_Implementation()
 // ----------------------------
 // Cancel Actions
 
-
-void AUnit::Server_CancelMove_Implementation()
-{
-	Multi_CancelMove();
-}
-
 void AUnit::Multi_CancelMove_Implementation()
 {
 	HasMoved = false;
@@ -848,25 +843,20 @@ void AUnit::Multi_CancelMove_Implementation()
 	FutureMovement.Empty();
 }
 
-void AUnit::Server_CancelAttack_Implementation()
-{
-	Multi_CancelAttack();
-}
-
 void AUnit::Multi_CancelAttack_Implementation()
 {
 	HasActed = false;
 }
 
-void AUnit::Server_CancelSpecial_Implementation()
-{
-	
-	Multi_CancelSpecial();
-}
-
 void AUnit::Multi_CancelSpecial_Implementation()
 {
 	HasActed = false;
+
+	if (Cast<AUnit_Child_Warrior>(this))
+	{
+		FutureMovementWithSpecial.RemoveAt(FutureMovementWithSpecial.Num() - 1);
+		GetFinalGhostMesh()->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovementWithSpecial.Last()));
+	}
 }
 
 

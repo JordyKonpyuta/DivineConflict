@@ -309,8 +309,11 @@ public:
 	// ----------------------------
 	// Cancel Actions
 	
-	UFUNCTION()
-	void CancelLastAction();
+	UFUNCTION(Server, Reliable)
+	void Server_CancelLastAction();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_CancelLastAction();
 	
 	// ----------------------------
 	// Actions - End Turn

@@ -39,7 +39,6 @@ void AUnit_Child_Warrior::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&O
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AUnit_Child_Warrior, WallToClimb);
-
 }
 
 	// ----------------------------
@@ -132,7 +131,6 @@ void AUnit_Child_Warrior::Special()
 
 void AUnit_Child_Warrior::Server_SpecialMove_Implementation(FIntPoint NewPos)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("NewPos : ") + NewPos.ToString());
 	Multi_SpecialMove(NewPos);
 }
 

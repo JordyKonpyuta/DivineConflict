@@ -706,7 +706,6 @@ void ACustomPlayerController::Server_SpecialUnit_Implementation(AUnit* UnitSpeci
 	else
 		UnitSpecial->Special();
 }
-
 	
 	// ----------------------------
 	// Actions - Passive
@@ -948,7 +947,12 @@ void ACustomPlayerController::Multi_RessourceChange_Implementation(const ACustom
 	// Cancel Actions
 
 //cancel action (on final version)
-void ACustomPlayerController::CancelLastAction()
+void ACustomPlayerController::Server_CancelLastAction_Implementation()
+{
+	Multi_CancelLastAction();
+}
+
+void ACustomPlayerController::Multi_CancelLastAction_Implementation()
 {
 	if (!AllPlayerActions.IsEmpty() && PlayerStateRef->bIsActiveTurn)
 	{
@@ -956,19 +960,20 @@ void ACustomPlayerController::CancelLastAction()
 		switch(AllPlayerActions.Last().UnitAction)
 		{
 			case EDC_ActionPlayer::MoveUnit:
-				ActorThatStops->Server_CancelMove();
+				ActorThatStops->Multi_CancelMove();
 				PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 1);
 				break;
 			case EDC_ActionPlayer::Special:
-				ActorThatStops->Server_CancelSpecial();
+				ActorThatStops->Multi_CancelSpecial();
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("Ya :D"));
 				PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 2);
 				break;
 			case EDC_ActionPlayer::AttackUnit:
-				ActorThatStops->Server_CancelAttack();
+				ActorThatStops->Multi_CancelAttack();
 				PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 1);
 				break;
 			case EDC_ActionPlayer::AttackBuilding:
-				ActorThatStops->Server_CancelAttack();
+				ActorThatStops->Multi_CancelAttack();
 				PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 1);
 				break;
 		default: break;

@@ -360,20 +360,11 @@ public:
 	// ----------------------------
 	// Cancel Actions
 
-	UFUNCTION(Server, Reliable)
-	void Server_CancelMove();
-
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_CancelMove();
 
-	UFUNCTION(Server, Reliable)
-	void Server_CancelAttack();
-
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_CancelAttack();
-
-	UFUNCTION(Server, Reliable)
-	void Server_CancelSpecial();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_CancelSpecial();

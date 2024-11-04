@@ -41,7 +41,6 @@ ACameraPlayer::ACameraPlayer()
 void ACameraPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Camera Player Begin Play"));
 	CameraBoom->AttachToComponent(CameraRoot, FAttachmentTransformRules::KeepRelativeTransform);
 	CameraBoom->SetRelativeRotation( FRotator(-25, 10, 0));
 	FullMoveDirection = GetActorLocation();
@@ -333,10 +332,8 @@ void ACameraPlayer::PathRemove(const FInputActionValue& Value)
 		}
 	}
 	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("Ya :D"));
-		
-		CustomPlayerController->CancelLastAction();
+	{		
+		CustomPlayerController->Server_CancelLastAction();
 	}
 }
 
