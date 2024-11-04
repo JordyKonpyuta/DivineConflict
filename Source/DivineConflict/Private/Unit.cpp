@@ -549,7 +549,10 @@ void AUnit::UnitMoveAnim_Implementation()
 			if(PlayerControllerRef != nullptr)
 			{
 				FutureMovement.Empty();
-				PlayerControllerRef->Server_ActionActiveTurn();
+				if(HasAuthority())
+				{
+					PlayerControllerRef->Server_ActionActiveTurn();
+				}
 				Server_GetBuffs();
 
 				if (TObjectPtr<AUnit_Child_Leader> Leader = Cast<AUnit_Child_Leader>(this))
@@ -573,16 +576,8 @@ void AUnit::MoveUnitEndTurn()
 
 void AUnit::Multi_HiddeGhosts_Implementation()
 {
-	if(HasAuthority())
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Server_HiddeGhosts"));
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Client_HiddeGhosts"));
-	}
 	GhostsMesh->SetVisibility(false);
 	GhostsFinaleLocationMesh->SetVisibility(false);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("GhostFinaleLocationMesh visibility : ") + FString::FromInt(GhostsFinaleLocationMesh->IsVisible()));
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("GhostsMesh visibility : ") + FString::FromInt(GhostsMesh->IsVisible()));
 	bIsGhosts = false;
 }
 

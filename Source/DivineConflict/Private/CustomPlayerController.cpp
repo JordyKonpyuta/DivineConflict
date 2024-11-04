@@ -700,11 +700,17 @@ void ACustomPlayerController::ServerAttackTower_Implementation(ATower* TowerToAt
 void ACustomPlayerController::Server_SpecialUnit_Implementation(AUnit* UnitSpecial,AActor* ThingToAttack)
 {
 	if(AUnit_Child_Mage* MageSp =  Cast<AUnit_Child_Mage>(UnitSpecial))
+	{
 		MageSp->SpecialMage(ThingToAttack);
+		GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurn, 0.5f, false);
+	}
 	else if(AUnit_Child_Warrior* WarriorSp =  Cast<AUnit_Child_Warrior>(UnitSpecial))
         WarriorSp->MoveToClimb();
 	else
+	{
 		UnitSpecial->Special();
+		GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurn, 0.5f, false);
+	}
 }
 	
 	// ----------------------------
@@ -1032,7 +1038,6 @@ void ACustomPlayerController::Multi_ActionActiveTurn_Implementation()
 				if (TowerAction)
 				{
 					TowerAction->CanAttack = TowerAction->IsGarrisoned;
-					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TowerAction->CanAttack ? TEXT("Trueeee") : TEXT("Falseeee"));
 				}
 				//switch on action
 				switch (AllPlayerActions[0].UnitAction)
@@ -1082,8 +1087,6 @@ void ACustomPlayerController::Multi_ActionActiveTurn_Implementation()
 					{
 						Server_SpecialUnit(UnitAction,AllPlayerActions[0].UnitAttacking);
 					}
-						
-					GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurn, 0.5f, false);
 					AllPlayerActions.RemoveAt(0);
 					break;
 				default:
