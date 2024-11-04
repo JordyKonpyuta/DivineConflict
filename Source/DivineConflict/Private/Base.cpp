@@ -161,7 +161,7 @@ void ABase::Upgrade()
 		{
 			UE_LOG( LogTemp, Warning, TEXT("1"));
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("1")));
-			if (PlayerStateRef->GetMaxUnits() < 15 && Level < MaxLevel)
+			if (Level < MaxLevel)
 			{
 				UE_LOG( LogTemp, Warning, TEXT("0!!!"));
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("0!!!")));
