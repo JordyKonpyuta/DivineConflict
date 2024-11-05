@@ -39,36 +39,36 @@ enum class EDC_ActionPlayer : uint8
 	SelectBuilding UMETA(DisplayNmae = "SelectBuilding"),
 };
 
-USTRUCT()
+USTRUCT(Blueprintable)
 struct FStructActions
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<AActor> ActorRef;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	EDC_ActionPlayer UnitAction;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<AUnit> UnitAttacking;
 };
 
-USTRUCT()
+USTRUCT(Blueprintable)
 struct FStructPassive
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<AActor> ActorRef;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	EUnitType UnitType = EUnitType::U_Leader;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	FIntPoint TilePosition;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<AGhostUnitSpawning> GhostRef;
 };
 
@@ -115,10 +115,10 @@ public:
 	// ----------------------------
 	// Actions at Turn End
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, BlueprintReadWrite)
 	TArray<FStructActions> AllPlayerActions;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, BlueprintReadWrite)
 	TArray<FStructPassive> AllPlayerPassive;
 
 		// Possible Things to Interact with
@@ -355,6 +355,10 @@ public:
 	void Client_UpdateUi();
 	UFUNCTION(BlueprintNativeEvent)
 	void UpdateWidget3D(int Index, bool bVisibility);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void ActionMemory(EDC_ActionPlayer Action);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void RemoveLastActionMemory();
 
 		// Stats
 	UFUNCTION(BlueprintNativeEvent)

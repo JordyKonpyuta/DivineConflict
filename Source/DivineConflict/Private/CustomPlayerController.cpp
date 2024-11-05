@@ -983,20 +983,24 @@ void ACustomPlayerController::Multi_CancelLastAction_Implementation()
 		switch(AllPlayerActions.Last().UnitAction)
 		{
 			case EDC_ActionPlayer::MoveUnit:
+				RemoveLastActionMemory();
 				ActorThatStops->Multi_CancelMove();
 				PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 1);
 				if (UnitRef->FirstActionIsMove)
 					UnitRef->FirstActionIsMove = false;
 				break;
 			case EDC_ActionPlayer::Special:
+				RemoveLastActionMemory();
 				ActorThatStops->Multi_CancelSpecial();
 				PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 2);
 				break;
 			case EDC_ActionPlayer::AttackUnit:
+				RemoveLastActionMemory();
 				ActorThatStops->Multi_CancelAttack();
 				PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 1);
 				break;
 			case EDC_ActionPlayer::AttackBuilding:
+				RemoveLastActionMemory();
 				ActorThatStops->Multi_CancelAttack();
 				PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 1);
 				break;
@@ -1011,6 +1015,8 @@ void ACustomPlayerController::Multi_CancelLastAction_Implementation()
 		
 		AllPlayerPassive.RemoveAt(AllPlayerPassive.Num() - 1);
 	}
+
+	RemoveLastActionMemory();
 }
 
 	// ----------------------------
@@ -1289,6 +1295,10 @@ void ACustomPlayerController::HiddeWidget_Implementation()
 
 		// Turns
 
+void ACustomPlayerController::RemoveLastActionMemory_Implementation()
+{
+}
+
 bool ACustomPlayerController::GetIsInActiveTurn()
 {
 	return IsInActiveTurn;
@@ -1312,6 +1322,10 @@ EPlayer ACustomPlayerController::GetPlayerTeam()
 EDC_ActionPlayer ACustomPlayerController::GetPlayerAction()
 {
 	return PlayerAction;
+}
+
+void ACustomPlayerController::ActionMemory_Implementation(EDC_ActionPlayer Action)
+{
 }
 
 		// "PathFinding"
