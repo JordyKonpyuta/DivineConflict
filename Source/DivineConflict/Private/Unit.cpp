@@ -135,24 +135,25 @@ void AUnit::Tick(float DeltaTime)
 void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProps) const{
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AUnit, UnitMesh);
-	DOREPLIFETIME(AUnit, PlayerOwner);
-	DOREPLIFETIME(AUnit, bIsClimbing);
-	DOREPLIFETIME(AUnit, CurrentHealth);
-	DOREPLIFETIME(AUnit, IsGarrison);
-	DOREPLIFETIME(AUnit, PM);
-	DOREPLIFETIME(AUnit, bBuffTank);
-	DOREPLIFETIME(AUnit, bIsCommandeerBuffed);
-	DOREPLIFETIME(AUnit, PlayerControllerRef);
-	DOREPLIFETIME(AUnit, bIsGhosts);
-	DOREPLIFETIME(AUnit, PathToCross);
-	DOREPLIFETIME(AUnit, PathToCrossPosition);
 	DOREPLIFETIME(AUnit, bJustBecameGarrison);
-	DOREPLIFETIME(AUnit, MoveSequencePos);
+	DOREPLIFETIME(AUnit, bBuffTank);
+	DOREPLIFETIME(AUnit, bIsClimbing);
+	DOREPLIFETIME(AUnit, bIsCommandeerBuffed);
+	DOREPLIFETIME(AUnit, bIsGhosts);
+	DOREPLIFETIME(AUnit, CurrentHealth);
+	DOREPLIFETIME(AUnit, FirstActionIsMove);
 	DOREPLIFETIME(AUnit, FutureMovement);
 	DOREPLIFETIME(AUnit, FutureMovementWithSpecial);
 	DOREPLIFETIME(AUnit, HasActed);
 	DOREPLIFETIME(AUnit, HasMoved);
+	DOREPLIFETIME(AUnit, IsGarrison);
+	DOREPLIFETIME(AUnit, MoveSequencePos);
+	DOREPLIFETIME(AUnit, PathToCross);
+	DOREPLIFETIME(AUnit, PathToCrossPosition);
+	DOREPLIFETIME(AUnit, PlayerControllerRef);
+	DOREPLIFETIME(AUnit, PlayerOwner);
+	DOREPLIFETIME(AUnit, PM);
+	DOREPLIFETIME(AUnit, UnitMesh);
 
 }
 
@@ -337,15 +338,28 @@ void AUnit::SetGrid(AGrid* NewGrid)
 
 void AUnit::Multi_PrepareMove_Implementation(const TArray<FIntPoint>& NewPos)
 {
-	FutureMovement = NewPos;
-	FutureMovementPos = FutureMovement.Last();
-	FutureMovementWithSpecial = FutureMovement;
+	if (!FirstActionIsMove)
+	{
+		FutureMovement = NewPos;
+		FutureMovementWithSpecial += FutureMovement;
+		FutureMovementPos = FutureMovementWithSpecial.Last();
+		FirstActionIsMove = false;
+	}
+	else
+	{
+		FutureMovement = NewPos;
+		FutureMovementPos = FutureMovement.Last();
+		FutureMovementWithSpecial = FutureMovement;
+		FirstActionIsMove = true;
+
+	}
 
 	GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovementPos));
 	
 	//InitGhosts();
 	HasMoved = true;
 }
+
 // ----------------------------
 // Movements
 
@@ -361,7 +375,10 @@ void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 	bIsGhosts = false;
 	bJustBecameGarrison = false;
 	MoveSequencePos = 0;
-	PathToCrossPosition = 0;
+	if (Cast<AUnit_Child_Warrior>(this) && HasActed)
+		PathToCrossPosition = 1;
+	else
+		PathToCrossPosition = 0;
 
 	if (IsGarrison && !bJustBecameGarrison)
 	{
@@ -522,7 +539,17 @@ void AUnit::UnitMoveAnim_Implementation()
 		
 
 		// If is last move
-		if (PathToCross[PathToCrossPosition] == PathToCross.Last())
+		if (Cast<AUnit_Child_Warrior>(this) && HasActed && PathToCross[PathToCrossPosition] == PathToCross.Last(1))
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("4")));
+		
+		if (Cast<AUnit_Child_Warrior>(this) && HasActed && PathToCross[PathToCrossPosition] == PathToCross.Last(1))
+		{
+			Grid->GridInfo->Multi_setUnitIndexOnGrid(PathToCross.Last(1), this);
+			PathToCross.Empty();
+			PathToCrossPosition = 0;
+			MoveSequencePos = 2;
+		}
+		else if (PathToCross[PathToCrossPosition] == PathToCross.Last())
 		{
 			Grid->GridInfo->Multi_setUnitIndexOnGrid(PathToCross.Last(), this);
 			PathToCross.Empty();
@@ -606,18 +633,10 @@ void AUnit::MoveGhosts(float DeltaTime)
 }
 
 void AUnit::MoveGhostsAction(float DeltaTime, const TArray<FIntPoint>& PathToFollowGhost)
-
 {
 	if(PathToFollowGhost.IsEmpty())
 	{
 		return;
-	}
-	if(HasActed)
-	{
-		if(Grid->GetGridData()->Find(FutureMovementWithSpecial.Last())->UpwallOnTile)
-		{
-			FutureMovementWithSpecial.Add(Grid->GetGridData()->Find(FutureMovementWithSpecial.Last())->UpwallOnTile->GetClimbLocation());
-		}
 	}
 	
 	if(PathToFollowGhost.Num() <= CurrentIndexGhost)
@@ -769,7 +788,7 @@ void AUnit::AnimAttack(AActor* ThingToAttack)
 // ----------------------------
 // Specials
 
-void AUnit::Special()
+void AUnit::Special_Implementation()
 {
 	
 }

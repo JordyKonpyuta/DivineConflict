@@ -292,12 +292,15 @@ void ACustomPlayerController::ControllerInteraction()
 					{
 						Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Pathfinding);
 					}
+					
+					UnitRef->FirstActionIsMove = !UnitRef->HasActed;
 
 					if (CameraPlayerRef->Path.Num() > 1)
 					{
 						UnitRef->SetIsSelected(false);
 						Server_PrepareMoveUnit(CameraPlayerRef->Path,UnitRef);
-						UnitRef->InitGhosts_Implementation();
+						if (!UnitRef->HasActed)
+							UnitRef->InitGhosts_Implementation();
 						AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::MoveUnit));
 						UnitRef->HasMoved = true;
 						PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 1);
@@ -338,6 +341,8 @@ void ACustomPlayerController::ControllerInteraction()
 					{
 						AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::Special, Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile));
 						UnitRef->HasActed = true;
+						if (!HasAuthority())
+							GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("HAS ACTED!!!"));
 						PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 2);
 					}
 					if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile)
@@ -446,10 +451,14 @@ void ACustomPlayerController::SelectModeMovement()
 	{
 		if (Cast<AUnit_Child_Warrior>(UnitRef))
 		{
-			//si use a Special action
+			// if use a Special action
 			if (UnitRef->HasActed &&  UnitRef->GetFinalGhostMesh()->IsVisible())
 			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("3")));
 				CameraPlayerRef->Path.Add(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()));
+				CameraPlayerRef->FullMoveDirection.X = UnitRef->GetFinalGhostMesh()->GetComponentLocation().X;
+				CameraPlayerRef->FullMoveDirection.Y = UnitRef->GetFinalGhostMesh()->GetComponentLocation().Y;
+				CameraPlayerRef->FullMoveDirection.Z = (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
 			}
 			else
 				CameraPlayerRef->Path.Add(UnitRef->GetIndexPosition());
@@ -512,7 +521,9 @@ void ACustomPlayerController::SelectModeSpecial()
 		UnitRef->Special();
 		//AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::MoveUnit));
 		UnitRef->HasActed = true;
+		
 		PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 2);
+		UnitRef->FirstActionIsMove = UnitRef->HasMoved;
 		break;
 	case EUnitName::Tank:
 		//Tank
@@ -705,12 +716,21 @@ void ACustomPlayerController::Server_SpecialUnit_Implementation(AUnit* UnitSpeci
 		GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurn, 0.5f, false);
 	}
 	else if(AUnit_Child_Warrior* WarriorSp =  Cast<AUnit_Child_Warrior>(UnitSpecial))
-        WarriorSp->MoveToClimb();
+	{
+		WarriorSp->Server_MoveToClimb();
+		//if (!WarriorSp->FirstActionIsMove)
+			GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurn, 0.5f, false);
+	}
 	else
 	{
 		UnitSpecial->Special();
 		GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurn, 0.5f, false);
 	}
+}
+
+void ACustomPlayerController::Server_ActivateSpecial_Implementation(AUnit* Unit, FIntPoint NewPos)
+{
+	Cast<AUnit_Child_Warrior>(Unit)->Server_SpecialMove(NewPos);
 }
 	
 	// ----------------------------
@@ -915,8 +935,8 @@ void ACustomPlayerController::Server_RessourceChange_Implementation(const ACusto
 	Multi_RessourceChange(PSR, UnitType);
 }
 
-// ----------------------------
-// Cancel Actions
+	// ----------------------------
+	// Cancel Actions
 
 void ACustomPlayerController::Multi_RessourceChange_Implementation(const ACustomPlayerState* PSR,
 	EUnitType UnitType)
@@ -948,9 +968,6 @@ void ACustomPlayerController::Multi_RessourceChange_Implementation(const ACustom
 		break;
 	}
 }
-	
-	// ----------------------------
-	// Cancel Actions
 
 //cancel action (on final version)
 void ACustomPlayerController::Server_CancelLastAction_Implementation()
@@ -968,10 +985,11 @@ void ACustomPlayerController::Multi_CancelLastAction_Implementation()
 			case EDC_ActionPlayer::MoveUnit:
 				ActorThatStops->Multi_CancelMove();
 				PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 1);
+				if (UnitRef->FirstActionIsMove)
+					UnitRef->FirstActionIsMove = false;
 				break;
 			case EDC_ActionPlayer::Special:
 				ActorThatStops->Multi_CancelSpecial();
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("Ya :D"));
 				PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 2);
 				break;
 			case EDC_ActionPlayer::AttackUnit:

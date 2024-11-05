@@ -225,7 +225,7 @@ public:
 	UFUNCTION( BlueprintCallable)
 	void SelectModeAttackBuilding();
 
-	UFUNCTION(	BlueprintCallable)
+	UFUNCTION(BlueprintCallable)
 	void SelectModeSpecial();
 	
 	UFUNCTION( BlueprintCallable)
@@ -275,6 +275,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_SpecialUnit(AUnit* UnitSpecial, AActor* ThingToAttack);
+
+	UFUNCTION(Server, Reliable)
+	void Server_ActivateSpecial(AUnit* Unit, FIntPoint NewPos);
 	
 	// ----------------------------
 	// Actions - Passive

@@ -40,8 +40,17 @@ public:
 	// ----------------------------
 	// Climbing
 
-	UFUNCTION()
-	void MoveToClimb();
+	UFUNCTION(Server, Reliable)
+	void Server_MoveToClimb();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_MoveToClimb();
+
+	UFUNCTION(Server,Reliable)
+	void Server_SpecialMove(FIntPoint NewPos);
+
+	UFUNCTION(NetMulticast,Reliable)
+	void Multi_SpecialMove(FIntPoint NewPos);
 	
 protected:
 	// ----------------------------
@@ -50,11 +59,5 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void DisplayWidgetTutorial() override;
-
-	UFUNCTION(Server,Reliable)
-	void Server_SpecialMove(FIntPoint NewPos);
-
-	UFUNCTION(NetMulticast,Reliable)
-	void Multi_SpecialMove(FIntPoint NewPos);
 	
 };

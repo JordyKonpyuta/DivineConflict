@@ -20,6 +20,8 @@
 
 AUnit_Child_Warrior::AUnit_Child_Warrior()
 {
+	SetReplicates(true);
+	
 	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/ange_guerrier/gerrier.gerrier'")).Object);
 	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	
@@ -105,6 +107,7 @@ void AUnit_Child_Warrior::Special()
 			{
 				FutureMovementWithSpecial.AddUnique(WallToClimb->GetClimbLocation());
 				Multi_SpecialMove(WallToClimb->GetClimbLocation());
+				InitGhosts();
 				GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(WallToClimb->GetClimbLocation()));
 				WallToClimb = nullptr;
 			}
@@ -115,11 +118,11 @@ void AUnit_Child_Warrior::Special()
 		WallToClimb = Grid->GetGridData()->Find(GetIndexPosition())->UpwallOnTile;
 		if (WallToClimb)
 		{
-			if (WallToClimb->GetClimbLocation() != FIntPoint(-999, -999))
-			{
-				TArray<FIntPoint> NewMove;
+			if (WallToClimb->GetClimbLocation() != FIntPoint(-999, -999)){
+				const TArray<FIntPoint> NewMove;
+				InitGhosts();
 				FutureMovementWithSpecial.AddUnique(WallToClimb->GetClimbLocation());
-				Multi_SpecialMove(WallToClimb->GetClimbLocation());
+				PlayerControllerRef->Server_ActivateSpecial(this, WallToClimb->GetClimbLocation());
 				SetIsSelected(false);
 				//PlayerControllerRef->Server_PrepareMoveUnit(NewMove, this);
 				//FutureMovement.Add(WallToClimb->GetClimbLocation());
@@ -131,27 +134,39 @@ void AUnit_Child_Warrior::Special()
 
 void AUnit_Child_Warrior::Server_SpecialMove_Implementation(FIntPoint NewPos)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("1")));
+		
 	Multi_SpecialMove(NewPos);
 }
 
 void AUnit_Child_Warrior::Multi_SpecialMove_Implementation(FIntPoint NewPos)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("2")));
+	FutureMovementPos = NewPos;
+	InitGhosts();
 	FutureMovementWithSpecial.AddUnique(NewPos);
 }
 
-void AUnit_Child_Warrior::MoveToClimb()
+void AUnit_Child_Warrior::Server_MoveToClimb_Implementation()
 {
-	if(FutureMovementWithSpecial.Last() == IndexPosition)
-	{
-		if(Grid->GetGridData()->Find(FutureMovementWithSpecial.Last())->UpwallOnTile)
-		{
-			FutureMovementWithSpecial.Add(Grid->GetGridData()->Find(FutureMovementWithSpecial.Last())->UpwallOnTile->GetClimbLocation());
-		}
-	}
+	Multi_MoveToClimb();
+}
 
+void AUnit_Child_Warrior::Multi_MoveToClimb_Implementation()
+{
+	if (FirstActionIsMove)
+	{
+		InitializeFullMove(TArray<FIntPoint>{FutureMovementWithSpecial.Last()});
+		FutureMovementWithSpecial.Empty();
+		Server_GetBuffs();
+	}
+	else
+	{
+		InitializeFullMove(TArray<FIntPoint>{FutureMovementWithSpecial[0]});
+		Server_GetBuffs();
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("NAH!!!"));
+	}
+		
 	
-	InitializeFullMove(TArray<FIntPoint>{FutureMovementWithSpecial.Last()});
-	FutureMovementWithSpecial.Empty();
-	Server_GetBuffs();
 }
 

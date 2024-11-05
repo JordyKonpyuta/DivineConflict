@@ -102,6 +102,9 @@ public:
 	UPROPERTY(Blueprintable, BlueprintReadOnly, Replicated)
 	bool HasActed = false;
 
+	UPROPERTY(Blueprintable, BlueprintReadOnly, Replicated)
+	bool FirstActionIsMove = false;
+
 	// ----------------------------
 	// Ints
 	
@@ -341,7 +344,7 @@ public:
 	// ----------------------------
 	// Special
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	virtual void Special();
 	
 	virtual void SpecialUnit(AUnit* UnitToAttack);
