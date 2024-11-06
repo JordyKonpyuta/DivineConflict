@@ -3,6 +3,7 @@
 
 #include "CustomGameState.h"
 
+#include "CameraPlayer.h"
 #include "CustomPlayerController.h"
 #include "EnumsList.h"
 #include "CustomPlayerState.h"
@@ -196,6 +197,7 @@ void ACustomGameState::CheckPlayerActionActive()
 				if(ACustomPlayerController* PlayerController = Cast<ACustomPlayerController>(PlayerState->GetPlayerController()))
 				{
 					PlayerController->Server_ActionActiveTurn();
+					PlayerController->CameraPlayerRef->ClearMoveMode();
 				}
 			}
 		}

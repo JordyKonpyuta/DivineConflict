@@ -161,6 +161,9 @@ public:
 
 	void PathClear();
 
+	UFUNCTION()
+	void ClearMoveMode();
+
 	// TIMER
 	UFUNCTION()
 	void RepeatMoveTimerCamera(const FInputActionValue& Value);

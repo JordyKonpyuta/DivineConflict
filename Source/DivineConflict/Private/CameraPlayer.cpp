@@ -342,7 +342,27 @@ void ACameraPlayer::PathClear()
 	Path.Empty();
 }
 
-	// ----------------------------
+void ACameraPlayer::ClearMoveMode()
+{
+	IsMovingUnit = false;
+	IsAttacking = false;
+	IsTowering = false;
+	IsSpawningUnit = false;
+	IsSpelling = false;
+	for(FIntPoint Point : CustomPlayerController->GetPathReachable())
+	{
+		CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(Point, EDC_TileState::Reachable);
+	}
+	for(FIntPoint Point : Path)
+	{
+		CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(Point, EDC_TileState::Pathfinding);
+	}
+	PathClear();
+	CustomPlayerController->SetPlayerAction(EDC_ActionPlayer::None);
+	CustomPlayerController->GetPathReachable().Empty();
+}
+
+// ----------------------------
 	// Camera Movement - TIMER
 
 void ACameraPlayer::RepeatMoveTimerCamera(const FInputActionValue& Value)
