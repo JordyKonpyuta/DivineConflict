@@ -20,6 +20,10 @@ void ATutorialGameMode::BeginPlay()
 
 void ATutorialGameMode::HilightUnit(AUnit* UnitToHilight)
 {
+	if (UnitToHilight == nullptr)
+    {
+        return;
+    }
 	Grid->GridVisual->addStateToTile(Grid->ConvertLocationToIndex(UnitToHilight->GetActorLocation()), EDC_TileState::Selected);
 }
 

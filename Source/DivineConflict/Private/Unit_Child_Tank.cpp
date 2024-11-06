@@ -63,7 +63,7 @@ void AUnit_Child_Tank::BeginPlay()
 			{
 				SetCurrentHealth(4);
 				if (PlayerOwner == EPlayer::P_Heaven)
-					GetWorld()->GetAuthGameMode<ATutorialGameMode>()->HilightUnit(this);
+					GetWorld()->GetAuthGameMode<ATutorialGameMode>()->Tank = this;
 			}
 			else if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
 				SetCurrentHealth(MaxHealth);

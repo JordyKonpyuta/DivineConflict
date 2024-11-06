@@ -368,6 +368,8 @@ public:
 	void ActionMemory(EDC_ActionPlayer Action);
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void RemoveLastActionMemory();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void FailedTutorial();
 
 		// Stats
 	UFUNCTION(BlueprintNativeEvent)

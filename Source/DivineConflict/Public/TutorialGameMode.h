@@ -20,6 +20,10 @@ class DIVINECONFLICT_API ATutorialGameMode : public AGameModeBase
 
 	// UPROPERTIES
 public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<AUnit> Tank;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<AUnit> Warrior1;
 	
@@ -31,6 +35,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<AUnit> Leader;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int UnitProduced = 0;
 	
 protected:
 	UPROPERTY()

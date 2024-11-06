@@ -1265,6 +1265,12 @@ void ACustomPlayerController::UpdateWidget3D_Implementation(int Index, bool bVis
 {
 }
 
+
+void ACustomPlayerController::FailedTutorial_Implementation()
+{
+}
+
+
 		// Stats
 
 void ACustomPlayerController::DisplayWidget_Implementation()

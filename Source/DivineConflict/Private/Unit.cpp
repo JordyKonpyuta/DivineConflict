@@ -229,8 +229,10 @@ void AUnit::Server_DestroyUnit_Implementation()
 		}
 	Destroyed();
 	GetWorld()->DestroyActor(this);
-	if (GetWorld()->GetFirstPlayerController()->GetPlayerState<ACustomPlayerState>()->bIsInTutorial)
+	if (GetWorld()->GetFirstPlayerController()->GetPlayerState<ACustomPlayerState>()->bIsInTutorial && PlayerOwner == EPlayer::P_Heaven)
 		DisplayWidgetTutorial();
+	else if (PlayerControllerRef)
+        PlayerControllerRef->FailedTutorial();
 }
 
 // Called to bind functionality to input
@@ -703,6 +705,12 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 				Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
 				InitializeFullMove(MoveInBuilding);
 			}
+
+			else if (UnitToAttack->GetCurrentHealth() > 0 && PlayerControllerRef->PlayerStateRef->bIsInTutorial)
+			{
+				PlayerControllerRef->FailedTutorial();
+			}
+			
 			Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
 			UnitToAttack->Server_DestroyUnit();
 		}
