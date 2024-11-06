@@ -59,6 +59,9 @@ public:
 	
 	UPROPERTY()
 	bool bIsReadyToSiwtchTurn = false;
+
+	UPROPERTY(Replicated)
+	bool bIsBlockTimerNewBeginTurn = false;
 	
 	// ----------------------------
 	// Timers
@@ -142,6 +145,11 @@ protected:
 	UPROPERTY(Replicated)
 	int LeaderCount = 0;
 
+	//---------------------------
+	// Timer
+
+	UPROPERTY()
+	FTimerHandle BlockNewTurnbeginTimerHandle;
 	
 	// UFUNCTIONS //
 public:
@@ -160,6 +168,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Turn")
 	void NewTurnBegin();
+
+	UFUNCTION()
+	void BlockNewTurnBegin();
 	
 	// ----------------------------
 	// UI

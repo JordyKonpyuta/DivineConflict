@@ -107,6 +107,7 @@ void ACustomGameState::SwitchPlayerTurn()
 			if(CurrentCustomPlayerState)
 			{
 				CurrentCustomPlayerState->bIsActiveTurn = !CurrentCustomPlayerState->bIsActiveTurn;
+				CurrentCustomPlayerState->bIsBlockTimerNewBeginTurn = false;
 				CurrentCustomPlayerState->SetIsReadyToSwitchTurn(false);
 				CurrentCustomPlayerState->OnRep_bIsActiveTurn();
 			}

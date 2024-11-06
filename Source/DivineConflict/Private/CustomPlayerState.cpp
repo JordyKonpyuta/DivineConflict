@@ -54,6 +54,7 @@ void ACustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	DOREPLIFETIME(ACustomPlayerState, MageCount);
 	DOREPLIFETIME(ACustomPlayerState, TankCount);
 	DOREPLIFETIME(ACustomPlayerState, LeaderCount);
+	DOREPLIFETIME(ACustomPlayerState, bIsBlockTimerNewBeginTurn);
 	
 
 }
@@ -64,11 +65,15 @@ void ACustomPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 void ACustomPlayerState::OnRep_bIsActiveTurn()
 {
 	
-	if(!bIsActiveTurn)
+	if(!bIsActiveTurn && !bIsBlockTimerNewBeginTurn)
 	{
 		NewTurnBegin();
+		bIsBlockTimerNewBeginTurn = true;
+		GetWorldTimerManager().SetTimer(BlockNewTurnbeginTimerHandle, this, &ACustomPlayerState::BlockNewTurnBegin, 5, false);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("BIsBlockTimerNewBeginTurn %d"), bIsBlockTimerNewBeginTurn));
 	}
 	UpdateUI();
+		
 	bIsReadyToSiwtchTurn = false;
 	if (GameStateRef)
 	{
@@ -93,8 +98,13 @@ void ACustomPlayerState::NewTurnBegin()
 	ChangeStonePoints(20 + (StoneBuildingOwned * 15), true);
 	ChangeGoldPoints(20 + (GoldBuildingOwned * 15), true);
 }
-	
-	// ----------------------------
+
+void ACustomPlayerState::BlockNewTurnBegin()
+{
+	bIsBlockTimerNewBeginTurn = false;
+}
+
+// ----------------------------
 	// UI
 
 void ACustomPlayerState::UpdateUI()
