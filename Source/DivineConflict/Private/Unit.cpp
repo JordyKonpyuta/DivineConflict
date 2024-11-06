@@ -138,6 +138,7 @@ void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProp
 
 	DOREPLIFETIME(AUnit, bJustBecameGarrison);
 	DOREPLIFETIME(AUnit, bBuffTank);
+	DOREPLIFETIME(AUnit, bHasClimbed);
 	DOREPLIFETIME(AUnit, bIsClimbing);
 	DOREPLIFETIME(AUnit, bIsCommandeerBuffed);
 	DOREPLIFETIME(AUnit, bIsGhosts);
@@ -345,21 +346,18 @@ void AUnit::SetGrid(AGrid* NewGrid)
 
 void AUnit::Multi_PrepareMove_Implementation(const TArray<FIntPoint>& NewPos)
 {
-	if (!FirstActionIsMove)
+	if (bHasClimbed)
 	{
 		FutureMovement = NewPos;
 		FutureMovementWithSpecial += FutureMovement;
-		FutureMovementPos = FutureMovementWithSpecial.Last();
-		FirstActionIsMove = false;
 	}
 	else
 	{
 		FutureMovement = NewPos;
-		FutureMovementPos = FutureMovement.Last();
 		FutureMovementWithSpecial = FutureMovement;
-		FirstActionIsMove = true;
-
 	}
+	
+	FutureMovementPos = FutureMovement.Last();
 
 	GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovementPos));
 	
@@ -382,10 +380,7 @@ void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 	bIsGhosts = false;
 	bJustBecameGarrison = false;
 	MoveSequencePos = 0;
-	if (Cast<AUnit_Child_Warrior>(this) && HasActed)
-		PathToCrossPosition = 1;
-	else
-		PathToCrossPosition = 0;
+	PathToCrossPosition = 0;
 
 	if (IsGarrison && !bJustBecameGarrison)
 	{
@@ -452,7 +447,6 @@ void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 
 void AUnit::UnitMoveAnim_Implementation()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("UnitMoveAnim"));
 	// Monte
 	if (MoveSequencePos == 0)
 	{
@@ -461,7 +455,7 @@ void AUnit::UnitMoveAnim_Implementation()
 	}
 	
 	// Déplacement
-	else if (MoveSequencePos == 1 && PathToCrossPosition < PathToCross.Num() && PathToCrossPosition > -1 )
+	else if (MoveSequencePos == 1 && PathToCrossPosition < PathToCross.Num() && PathToCrossPosition >= 0 )
 	{
 		WillMove = true;
 		Grid->GridVisual->RemoveStateFromTile(PathToCross[PathToCrossPosition], EDC_TileState::Pathfinding);
@@ -546,17 +540,7 @@ void AUnit::UnitMoveAnim_Implementation()
 		
 
 		// If is last move
-		if (Cast<AUnit_Child_Warrior>(this) && HasActed && PathToCross[PathToCrossPosition] == PathToCross.Last(1))
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("4")));
-		
-		if (Cast<AUnit_Child_Warrior>(this) && HasActed && PathToCross[PathToCrossPosition] == PathToCross.Last(1))
-		{
-			Grid->GridInfo->Multi_setUnitIndexOnGrid(PathToCross.Last(1), this);
-			PathToCross.Empty();
-			PathToCrossPosition = 0;
-			MoveSequencePos = 2;
-		}
-		else if (PathToCross[PathToCrossPosition] == PathToCross.Last())
+		if (PathToCross[PathToCrossPosition] == PathToCross.Last())
 		{
 			Grid->GridInfo->Multi_setUnitIndexOnGrid(PathToCross.Last(), this);
 			PathToCross.Empty();
@@ -582,7 +566,10 @@ void AUnit::UnitMoveAnim_Implementation()
 			// EndTurn
 			if(PlayerControllerRef != nullptr)
 			{
-				FutureMovement.Empty();
+				if (FirstActionIsMove)
+					FutureMovement.Empty();
+				else
+					FirstActionIsMove = false;
 				if(HasAuthority())
 				{
 					PlayerControllerRef->Server_ActionActiveTurn();
@@ -867,6 +854,8 @@ void AUnit::Multi_GetBuffs_Implementation()
 void AUnit::Multi_CancelMove_Implementation()
 {
 	HasMoved = false;
+	if (FirstActionIsMove)
+		FirstActionIsMove = false;
 	Multi_HiddeGhosts();
 	FutureMovement.Empty();
 }
@@ -883,7 +872,7 @@ void AUnit::Multi_CancelSpecial_Implementation()
 	if (Cast<AUnit_Child_Warrior>(this))
 	{
 		FutureMovementWithSpecial.RemoveAt(FutureMovementWithSpecial.Num() - 1);
-		GetFinalGhostMesh()->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovementWithSpecial.Last()));
+		GetFinalGhostMesh()->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovement.Last()));
 	}
 }
 

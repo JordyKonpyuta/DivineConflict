@@ -293,7 +293,11 @@ void ACustomPlayerController::ControllerInteraction()
 						Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Pathfinding);
 					}
 					
-					UnitRef->FirstActionIsMove = !UnitRef->HasActed;
+					if (UnitRef->HasActed)
+						UnitRef->FirstActionIsMove = false;
+					else
+						UnitRef->FirstActionIsMove = true;
+					
 
 					if (CameraPlayerRef->Path.Num() > 1)
 					{
@@ -521,9 +525,7 @@ void ACustomPlayerController::SelectModeSpecial()
 		UnitRef->Special();
 		//AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::MoveUnit));
 		UnitRef->HasActed = true;
-		
 		PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 2);
-		UnitRef->FirstActionIsMove = UnitRef->HasMoved;
 		break;
 	case EUnitName::Tank:
 		//Tank
@@ -738,7 +740,7 @@ void ACustomPlayerController::Server_SpecialUnit_Implementation(AUnit* UnitSpeci
 	{
 		WarriorSp->Server_MoveToClimb();
 		//if (!WarriorSp->FirstActionIsMove)
-			GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurn, 0.5f, false);
+			//GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurn, 0.5f, false);
 	}
 	else
 	{

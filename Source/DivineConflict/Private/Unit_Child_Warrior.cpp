@@ -144,7 +144,6 @@ void AUnit_Child_Warrior::Multi_SpecialMove_Implementation(FIntPoint NewPos)
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("2")));
 	FutureMovementPos = NewPos;
 	InitGhosts();
-	FutureMovementWithSpecial.AddUnique(NewPos);
 }
 
 void AUnit_Child_Warrior::Server_MoveToClimb_Implementation()
@@ -162,9 +161,14 @@ void AUnit_Child_Warrior::Multi_MoveToClimb_Implementation()
 	}
 	else
 	{
-		InitializeFullMove(TArray<FIntPoint>{FutureMovementWithSpecial[0]});
+		TArray<FIntPoint> TempFullMoveSave = FutureMovement;
+		FutureMovement = FutureMovementWithSpecial;
+		InitializeFullMove(TArray<FIntPoint> {FutureMovement[0]});
+		FutureMovementWithSpecial.Empty();
+		FutureMovement = TempFullMoveSave;
+		GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red, FString::Printf(TEXT("FuturemoveWthinSpecial = %d"), FutureMovement.Num()));
+		
 		Server_GetBuffs();
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("NAH!!!"));
 	}
 		
 	

@@ -104,6 +104,9 @@ public:
 
 	UPROPERTY(Blueprintable, BlueprintReadOnly, Replicated)
 	bool FirstActionIsMove = false;
+	
+	UPROPERTY(Blueprintable, BlueprintReadOnly, Replicated)
+	bool bHasClimbed = false;
 
 	// ----------------------------
 	// Ints
