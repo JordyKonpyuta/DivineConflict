@@ -286,6 +286,7 @@ void ACameraPlayer::PathRemove(const FInputActionValue& Value)
 		{
 			IsAttacking = false;
 			IsTowering = false;
+			IsSpelling = false;
 			for(FIntPoint Point : CustomPlayerController->GetPathReachable())
 			{
 				CustomPlayerController->SetPlayerAction(EDC_ActionPlayer::None);
