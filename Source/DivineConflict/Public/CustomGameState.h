@@ -94,8 +94,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "TurnSystem")
 	void SwitchPlayerTurn();
 
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastSwitchPlayerTurn();
+	UFUNCTION(Server, Reliable)
+	void Server_SwitchPlayerTurn();
 
 	UFUNCTION()
 	void CheckSwitchPlayerTurn();

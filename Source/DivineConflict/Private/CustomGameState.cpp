@@ -116,11 +116,12 @@ void ACustomGameState::SwitchPlayerTurn()
 		// Timer to switch turns
 		GetWorld()->GetTimerManager().ClearTimer(TurnTimerHandle);
 		GetWorld()->GetTimerManager().SetTimer(TurnTimerHandle,this,&ACustomGameState::BeginTimer,TurnTimerLength,false);
-		GetWorld()->GetTimerManager().SetTimer(SwitchPlayerTurnHandle,	this,	&ACustomGameState::SwitchIsBlockTurnSwitchTimer,	BlockTurnSwitchTimerLength,	false);
+		GetWorld()->GetTimerManager().SetTimer(SwitchPlayerTurnHandle,this,&ACustomGameState::SwitchIsBlockTurnSwitchTimer,BlockTurnSwitchTimerLength,false);
+		Server_SwitchPlayerTurn();
 	}
 }
 
-void ACustomGameState::MulticastSwitchPlayerTurn_Implementation()
+void ACustomGameState::Server_SwitchPlayerTurn_Implementation()
 {
 	OnTurnSwitchDelegate.Broadcast();
 }
