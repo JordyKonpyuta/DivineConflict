@@ -25,14 +25,16 @@ ABase::ABase()
 void ABase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(ABase, AllSpawnLoc);
+	DOREPLIFETIME(ABase, GridPosition);
 	DOREPLIFETIME(ABase, Health);
+	DOREPLIFETIME(ABase, Level);
+	DOREPLIFETIME(ABase, MaxHealth);
+	DOREPLIFETIME(ABase, PlayerOwner);
 	DOREPLIFETIME(ABase, GoldCostUpgrade);
 	DOREPLIFETIME(ABase, StoneCostUpgrade);
 	DOREPLIFETIME(ABase, WoodCostUpgrade);
-	DOREPLIFETIME(ABase, GridPosition);
-	DOREPLIFETIME(ABase, AllSpawnLoc);
-	DOREPLIFETIME(ABase, PlayerOwner);
-	DOREPLIFETIME(ABase, MaxHealth);
 }
 
 // Called when the game starts or when spawned
@@ -148,7 +150,13 @@ void ABase::VisualSpawn()
 	// ----------------------------
 	// Upgrade
 
-void ABase::Upgrade()
+void ABase::Server_Upgrade_Implementation()
+{
+	Multi_Upgrade();
+}
+
+
+void ABase::Multi_Upgrade_Implementation()
 {
 	UE_LOG( LogTemp, Warning, TEXT("3"));
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("3")));
@@ -166,6 +174,7 @@ void ABase::Upgrade()
 				UE_LOG( LogTemp, Warning, TEXT("0!!!"));
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("0!!!")));
 				PlayerStateRef->SetMaxUnits(PlayerStateRef->GetMaxUnits() + 5);
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("MaxUnitCount = %d"), PlayerStateRef->GetMaxUnits()));
 				PlayerStateRef->ChangeWoodPoints(WoodCostUpgrade, false);
 				PlayerStateRef->ChangeStonePoints(StoneCostUpgrade, false);
 				PlayerStateRef->ChangeGoldPoints(GoldCostUpgrade, false);

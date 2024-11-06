@@ -288,6 +288,9 @@ public:
 	UFUNCTION(Blueprintable)
 	bool SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen, ABase* BaseToSpawn, ABuilding* BuildingToSpawn);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_InitServerSpawn(EUnitType UnitToSpawn, FIntPoint SpawnChosen, ABase* BaseToSpawn, ABuilding* BuildingToSpawn,ACustomPlayerState* PlayerStat);
+	
 	UFUNCTION(Server, Reliable)
 	void Server_SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnChosen, ABase* BaseToSpawn, ABuilding* BuildingToSpawn,ACustomPlayerState* PlayerStat);
 

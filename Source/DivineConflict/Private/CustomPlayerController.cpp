@@ -755,18 +755,25 @@ bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnCh
 {
 	if(PlayerStateRef->GetUnits() < PlayerStateRef->GetMaxUnits())
     {
-		Server_SpawnUnit(UnitToSpawn, SpawnChosen, BaseToSpawn, BuildingToSpawn,PlayerStateRef);
+		Multi_InitServerSpawn(UnitToSpawn, SpawnChosen, BaseToSpawn, BuildingToSpawn,PlayerStateRef);
 		return Grid->GetGridData()->Find(SpawnChosen)->UnitOnTile != nullptr;
     }
 	return false;
 
 }
 
+void ACustomPlayerController::Multi_InitServerSpawn_Implementation(EUnitType UnitToSpawn, FIntPoint SpawnChosen,
+	ABase* BaseToSpawn, ABuilding* BuildingToSpawn, ACustomPlayerState* PlayerStat)
+{
+	if (PlayerStateRef->GetUnits() <= PlayerStateRef->GetMaxUnits())
+	Server_SpawnUnit(UnitToSpawn, SpawnChosen, BaseToSpawn, BuildingToSpawn, PlayerStateRef);
+}
+
 //spawn unit with server
 void ACustomPlayerController::Server_SpawnUnit_Implementation(EUnitType UnitToSpawn, FIntPoint SpawnChosen , ABase* BaseToSpawn, ABuilding* BuildingToSpawn, ACustomPlayerState* PlayerStatRef)
 {
 	
-	if (Grid->GetGridData()->Find(SpawnChosen)->UnitOnTile == nullptr && PlayerStatRef->GetUnits() <= PlayerStatRef->GetMaxUnits())
+	if (Grid->GetGridData()->Find(SpawnChosen)->UnitOnTile == nullptr)
 	{
 	
 		AUnit* UnitThatSpawned;
@@ -836,7 +843,7 @@ void ACustomPlayerController::Server_SpawnBaseUnit_Implementation(EUnitType Unit
 		}
 		if(SpawnLoc != FIntPoint(-999,-999))
 		{
-			SpawnUnit(UnitToSpawn, SpawnLoc, BaseToSpawn, nullptr);
+			Multi_InitServerSpawn(UnitToSpawn, SpawnLoc, BaseToSpawn, nullptr, PlayerStateRef);
 			GridSer->GridVisual->RemoveStateFromTile(SpawnLoc, EDC_TileState::Spawnable);
 		}
 	}

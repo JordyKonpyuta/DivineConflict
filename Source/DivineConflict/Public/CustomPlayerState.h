@@ -131,9 +131,9 @@ protected:
 	int LeaderGoldCost = 30;
 
 		// Units Count
-	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Units")
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Units")
 	int MaxUnitCount = 10;
-	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Units")
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Units")
 	int CurrentUnitCount = 0;
 	
 	UPROPERTY(Replicated)

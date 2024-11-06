@@ -31,7 +31,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	TObjectPtr<AGrid> Grid;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ref", meta = (AllowPrivate = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Ref", meta = (AllowPrivate = "true"))
 	TObjectPtr<ACustomPlayerState> PlayerStateRef;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Controller")
@@ -80,7 +80,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 	int MaxLevel = 3;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Stats")
 	int Level = 1;
 
 		// Costs
@@ -123,8 +123,11 @@ public:
 	// ----------------------------
 	// Upgrade
 
-	UFUNCTION(BlueprintCallable)
-	void Upgrade();
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void Server_Upgrade();
+
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	void Multi_Upgrade();
 
 	// ----------------------------
 	// Take Damage
