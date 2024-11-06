@@ -257,6 +257,12 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void FeedbackEndTurn(bool visibility);
+
+	UFUNCTION(Server, Reliable)
+	void Server_ClearMode();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_ClearMode();
 	
 	// ----------------------------
 	// Actions - Active

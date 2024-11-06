@@ -197,7 +197,7 @@ void ACustomGameState::CheckPlayerActionActive()
 				if(ACustomPlayerController* PlayerController = Cast<ACustomPlayerController>(PlayerState->GetPlayerController()))
 				{
 					PlayerController->Server_ActionActiveTurn();
-					PlayerController->CameraPlayerRef->ClearMoveMode();
+					PlayerController->Server_ClearMode();
 				}
 			}
 		}

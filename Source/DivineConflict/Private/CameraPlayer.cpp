@@ -349,17 +349,11 @@ void ACameraPlayer::ClearMoveMode()
 	IsTowering = false;
 	IsSpawningUnit = false;
 	IsSpelling = false;
-	for(FIntPoint Point : CustomPlayerController->GetPathReachable())
-	{
-		CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(Point, EDC_TileState::Reachable);
-	}
 	for(FIntPoint Point : Path)
 	{
 		CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(Point, EDC_TileState::Pathfinding);
 	}
 	PathClear();
-	CustomPlayerController->SetPlayerAction(EDC_ActionPlayer::None);
-	CustomPlayerController->GetPathReachable().Empty();
 }
 
 // ----------------------------

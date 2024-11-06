@@ -645,6 +645,25 @@ void ACustomPlayerController::EndTurn()
 	FeedbackEndTurn(true);
 }
 
+void ACustomPlayerController::Server_ClearMode_Implementation()
+{
+	Multi_ClearMode();
+}
+
+void ACustomPlayerController::Multi_ClearMode_Implementation()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ClearMode"));
+	if(CameraPlayerRef)
+		CameraPlayerRef->ClearMoveMode();
+	for(FIntPoint Index : PathReachable)
+	{
+		Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Reachable);
+	}
+	PathReachable.Empty();
+	PlayerAction = EDC_ActionPlayer::None;
+}
+
+
 //call player end turn for GameState
 void ACustomPlayerController::Server_EndTurn_Implementation()
 {
