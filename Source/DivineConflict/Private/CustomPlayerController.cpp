@@ -910,6 +910,7 @@ void ACustomPlayerController::SpawnGhostUnit(EUnitType UnitToSpawn, FIntPoint Sp
 				GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 				GhostUnit->SetUnitType(UnitToSpawn);
 				GhostUnit->Spawn();
+				ActionMemory(EDC_ActionPlayer::SelectBuilding);
 			}
 			break;
 		case EUnitType::U_Tank:
@@ -919,6 +920,7 @@ void ACustomPlayerController::SpawnGhostUnit(EUnitType UnitToSpawn, FIntPoint Sp
 				GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 				GhostUnit->SetUnitType(UnitToSpawn);
 				GhostUnit->Spawn();
+				ActionMemory(EDC_ActionPlayer::SelectBuilding);
 			}
 			break;
 		case EUnitType::U_Mage:
@@ -928,6 +930,7 @@ void ACustomPlayerController::SpawnGhostUnit(EUnitType UnitToSpawn, FIntPoint Sp
 				GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 				GhostUnit->SetUnitType(UnitToSpawn);
 				GhostUnit->Spawn();
+				ActionMemory(EDC_ActionPlayer::SelectBuilding);
 			}
 			break;
 		case EUnitType::U_Leader:
@@ -937,6 +940,7 @@ void ACustomPlayerController::SpawnGhostUnit(EUnitType UnitToSpawn, FIntPoint Sp
 				GhostUnit = GetWorld()->SpawnActor<AGhostUnitSpawning>(Grid->GetGridData()->Find(SpawnChosen)->TileTransform.GetLocation(), FRotator(0,0,0));
 				GhostUnit->SetUnitType(UnitToSpawn);
 				GhostUnit->Spawn();
+				ActionMemory(EDC_ActionPlayer::SelectBuilding);
 			}
 			break;
 		default:

@@ -38,6 +38,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int UnitProduced = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool isDead = false;
 	
 protected:
 	UPROPERTY()

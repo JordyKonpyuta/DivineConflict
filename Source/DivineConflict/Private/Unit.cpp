@@ -12,6 +12,7 @@
 #include "GridPath.h"
 #include "GridVisual.h"
 #include "Tower.h"
+#include "TutorialGameMode.h"
 #include "Unit_Child_Leader.h"
 #include "Unit_Child_Tank.h"
 #include "Unit_Child_Warrior.h"
@@ -229,10 +230,14 @@ void AUnit::Server_DestroyUnit_Implementation()
 		}
 	Destroyed();
 	GetWorld()->DestroyActor(this);
-	if (GetWorld()->GetFirstPlayerController()->GetPlayerState<ACustomPlayerState>()->bIsInTutorial && PlayerOwner == EPlayer::P_Heaven)
+	if (GetWorld()->GetFirstPlayerController()->GetPlayerState<ACustomPlayerState>()->bIsInTutorial && PlayerOwner == EPlayer::P_Heaven && GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead == false)
 		DisplayWidgetTutorial();
-	else if (PlayerControllerRef)
-        PlayerControllerRef->FailedTutorial();
+	else if (PlayerControllerRef && PlayerControllerRef->PlayerStateRef->bIsInTutorial)
+	{
+		PlayerControllerRef->FailedTutorial();
+		GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead = true;
+	}
+        
 }
 
 // Called to bind functionality to input
@@ -709,6 +714,7 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 			else if (UnitToAttack->GetCurrentHealth() > 0 && PlayerControllerRef->PlayerStateRef->bIsInTutorial)
 			{
 				PlayerControllerRef->FailedTutorial();
+				GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead = true;
 			}
 			
 			Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
