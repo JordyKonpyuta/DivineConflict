@@ -303,6 +303,10 @@ void ACustomPlayerController::ControllerInteraction()
 
 					if (CameraPlayerRef->Path.Num() > 1)
 					{
+						if (UnitRef->GetIsGarrison())
+						{
+							CameraPlayerRef->Path.RemoveAt(0);
+						}
 						UnitRef->SetIsSelected(false);
 						Server_PrepareMoveUnit(CameraPlayerRef->Path,UnitRef);
 						//if (!UnitRef->HasActed)

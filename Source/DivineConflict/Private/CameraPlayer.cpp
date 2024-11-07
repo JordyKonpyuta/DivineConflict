@@ -190,9 +190,11 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 				{
 					if (!CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection))->BuildingOnTile)
 					{
+						if (FirstMove)
+							FirstMove = false;
+
 						Path.AddUnique(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection));
 						CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection), EDC_TileState::Hovered);
-						FirstMove = false;
 					}
 					if (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0)))->BuildingOnTile && !FirstMove)
 					{
