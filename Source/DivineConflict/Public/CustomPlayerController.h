@@ -349,7 +349,7 @@ public:
 	void UpdateUi();
 	UFUNCTION(Client, Reliable)
 	void Client_UpdateUi();
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void UpdateWidget3D(int Index, bool bVisibility);
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void ActionMemory(EDC_ActionPlayer Action);
