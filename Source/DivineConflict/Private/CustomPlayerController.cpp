@@ -304,8 +304,8 @@ void ACustomPlayerController::ControllerInteraction()
 					{
 						UnitRef->SetIsSelected(false);
 						Server_PrepareMoveUnit(CameraPlayerRef->Path,UnitRef);
-						if (!UnitRef->HasActed)
-							UnitRef->InitGhosts_Implementation();
+						//if (!UnitRef->HasActed)
+						//	UnitRef->InitGhosts_Implementation();
 						AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::MoveUnit));
 						UnitRef->HasMoved = true;
 						PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 1);
@@ -525,7 +525,7 @@ void ACustomPlayerController::SelectModeSpecial()
 		AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::Special));
 		UnitRef->Special();
 		//AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::MoveUnit));
-		UnitRef->HasActed = true;
+		UnitRef->HasActed = true;		
 		PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 2);
 		break;
 	case EUnitName::Tank:

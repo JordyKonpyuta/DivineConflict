@@ -43,7 +43,7 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_MoveToClimb();
 
-	UFUNCTION(NetMulticast, Reliable)
+	UFUNCTION(Server, Reliable)
 	void Multi_MoveToClimb();
 
 	UFUNCTION(Server,Reliable)

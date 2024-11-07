@@ -106,10 +106,10 @@ void AUnit_Child_Warrior::Special()
 			if (WallToClimb->GetClimbLocation() != FIntPoint(-999, -999))
 			{
 				FutureMovementWithSpecial.AddUnique(WallToClimb->GetClimbLocation());
-				Multi_SpecialMove(WallToClimb->GetClimbLocation());
-				InitGhosts();
+				Server_SpecialMove(WallToClimb->GetClimbLocation());
 				GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(WallToClimb->GetClimbLocation()));
 				WallToClimb = nullptr;
+				InitGhosts();
 			}
 		}
 	}
@@ -120,13 +120,15 @@ void AUnit_Child_Warrior::Special()
 		{
 			if (WallToClimb->GetClimbLocation() != FIntPoint(-999, -999)){
 				const TArray<FIntPoint> NewMove;
-				InitGhosts();
+				
 				FutureMovementWithSpecial.AddUnique(WallToClimb->GetClimbLocation());
+				Server_SpecialMove(WallToClimb->GetClimbLocation());
 				PlayerControllerRef->Server_ActivateSpecial(this, WallToClimb->GetClimbLocation());
 				SetIsSelected(false);
 				//PlayerControllerRef->Server_PrepareMoveUnit(NewMove, this);
 				//FutureMovement.Add(WallToClimb->GetClimbLocation());
 				GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(WallToClimb->GetClimbLocation()));
+				InitGhosts();
 			}
 		}
 	}
@@ -142,8 +144,9 @@ void AUnit_Child_Warrior::Server_SpecialMove_Implementation(FIntPoint NewPos)
 void AUnit_Child_Warrior::Multi_SpecialMove_Implementation(FIntPoint NewPos)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("2")));
-	FutureMovementPos = NewPos;
-	InitGhosts();
+	FutureMovementWithSpecial.AddUnique(NewPos);
+	if(HasMoved)
+		FirstActionIsMove = true;
 }
 
 void AUnit_Child_Warrior::Server_MoveToClimb_Implementation()
@@ -153,21 +156,32 @@ void AUnit_Child_Warrior::Server_MoveToClimb_Implementation()
 
 void AUnit_Child_Warrior::Multi_MoveToClimb_Implementation()
 {
+
 	if (FirstActionIsMove)
 	{
-		InitializeFullMove(TArray<FIntPoint>{FutureMovementWithSpecial.Last()});
-		FutureMovementWithSpecial.Empty();
-		Server_GetBuffs();
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("FirstActionIsMove = %d"), FirstActionIsMove));
+		if(!FutureMovementWithSpecial.IsEmpty())
+		{
+			if(FutureMovementWithSpecial.Last() == IndexPosition)
+			{
+				if(Grid->GetGridData()->Find(FutureMovementWithSpecial.Last())->UpwallOnTile)
+				{
+					FutureMovementWithSpecial.AddUnique(Grid->GetGridData()->Find(FutureMovementWithSpecial.Last())->UpwallOnTile->GetClimbLocation());
+				}
+			}
+			InitializeFullMove(TArray<FIntPoint>{FutureMovementWithSpecial.Last()});
+			FutureMovementWithSpecial.Empty();
+			Server_GetBuffs();
+		}
 	}
 	else
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("FirstActionIsMove = %d"), FirstActionIsMove));
 		TArray<FIntPoint> TempFullMoveSave = FutureMovement;
 		FutureMovement = FutureMovementWithSpecial;
 		InitializeFullMove(TArray<FIntPoint> {FutureMovement[0]});
 		FutureMovementWithSpecial.Empty();
 		FutureMovement = TempFullMoveSave;
-		GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red, FString::Printf(TEXT("FuturemoveWthinSpecial = %d"), FutureMovement.Num()));
-		
 		Server_GetBuffs();
 	}
 		
