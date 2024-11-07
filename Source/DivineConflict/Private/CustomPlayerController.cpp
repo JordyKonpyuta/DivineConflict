@@ -161,6 +161,7 @@ void ACustomPlayerController::ControllerInteraction()
 						if(Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef && Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == PlayerStateRef->PlayerTeam)
 						{
                                 UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef;
+								BuildingRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile;
                                 CameraPlayerRef->SetCustomPlayerController(this);
                                 CameraPlayerRef->UnitMovingCurrentMovNumber = UnitRef->GetPM();
                                 IInteractInterface::Execute_Interact(Grid->GridData.Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef, this);
