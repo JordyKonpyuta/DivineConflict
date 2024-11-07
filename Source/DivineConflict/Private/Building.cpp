@@ -8,6 +8,7 @@
 #include "CustomPlayerController.h"
 #include "Grid.h"
 #include "GridInfo.h"
+#include "GridPath.h"
 #include "GridVisual.h"
 #include "TutorialGameMode.h"
 #include "Unit_Child_Leader.h"
@@ -127,6 +128,7 @@ void ABuilding::BeginPlay()
 			
 			BuildingSpawnLocationRef->GridRef = Grid;
 		}
+		
 		UE_LOG(LogTemp, Warning, TEXT("Building : %d %d "), SpawnLocRef[0].X, SpawnLocRef[0].Y);
 		if(HasAuthority())
 		{
@@ -171,6 +173,8 @@ void ABuilding::Tick(float DeltaTime)
 bool ABuilding::Interact_Implementation(ACustomPlayerController* PlayerController)
 {
 	PlayerControllerRef = PlayerController;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::MakeRandomColor(), TEXT("PLAYER CONTROLLER LOCATED"));
+	PrepareMovements();
 	return true;
 }
 
@@ -190,6 +194,7 @@ void ABuilding::BuildingPreAction(AUnit* UnitSp)
 
 	// ----------------------------
 	// Actions
+
 void ABuilding::BuildingAction()
 {
 	if(UnitSpawned)
@@ -200,7 +205,27 @@ void ABuilding::BuildingAction()
 		bHasSpawned = false;
 	}
 }
-	
+
+	// ----------------------------
+	// Prepare Movement
+
+void ABuilding::PrepareMovements()
+{
+	MovementOptionsReady = true;
+	// Tiles you can walk on after leaving the building
+	if (!AllSpawnLoc.IsEmpty())
+	{
+		for (FIntPoint CurrentBuildingTile : SpawnLocRef)
+		{
+			MovementOptions.AddUnique(CurrentBuildingTile);
+			for (FIntPoint CurrentTileChecked : Grid->GridPath->NewFindPath(CurrentBuildingTile, PlayerControllerRef))
+			{
+				MovementOptions.AddUnique(CurrentTileChecked);
+			}
+		}
+	}
+}
+
 	// ----------------------------
 	// Handling Turns
 // Check if Player is currently passive; will be used to spawn the HUD

@@ -139,11 +139,6 @@ public:
 	FOnTurnChangedSignature OnTurnChangedDelegate;
 	
 protected:
-	// ----------------------------
-	// TO DELETE!!!!!!!!!!!!!!!!!!!
-
-	UPROPERTY()
-	bool IsHell = false;
 	
 	// ----------------------------
 	// Teams
@@ -184,14 +179,6 @@ protected:
 	
 	// UFUNCTIONS
 public:
-	// ----------------------------
-	// TO DELETE!!!!!!!!!!!!!!!!!!!
-	
-	UFUNCTION(BlueprintCallable)
-	bool GetIsHell();
-
-	UFUNCTION(BlueprintCallable)
-	void SetIsHell(bool bH);
 	
 	// ----------------------------
 	// Override

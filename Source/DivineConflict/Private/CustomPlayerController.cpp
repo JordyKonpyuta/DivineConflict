@@ -164,7 +164,8 @@ void ACustomPlayerController::ControllerInteraction()
 								BuildingRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile;
                                 CameraPlayerRef->SetCustomPlayerController(this);
                                 CameraPlayerRef->UnitMovingCurrentMovNumber = UnitRef->GetPM();
-                                IInteractInterface::Execute_Interact(Grid->GridData.Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef, this);
+                                //IInteractInterface::Execute_Interact(Grid->GridData.Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef, this);
+                                IInteractInterface::Execute_Interact(Grid->GridData.Find(PlayerPositionInGrid)->BuildingOnTile, this);
                                 DisplayWidget();
 						}
 					}
@@ -325,6 +326,7 @@ void ACustomPlayerController::ControllerInteraction()
 			BuildingRef->BuildingSpawnLocationRef->DeSpawnGridColors(BuildingRef->AllSpawnLoc);
 			AllCurrentSpawnPoints.Empty();
 			CameraPlayerRef->IsSpawningUnit = false;
+			CameraPlayerRef->FirstMove = true;
 			for (FIntPoint SpawnIndex : AllPossibleSpawns)
 			{
 				if (Grid->GetGridData()->Find(PlayerPositionInGrid)->TilePosition == SpawnIndex)
@@ -470,6 +472,7 @@ void ACustomPlayerController::SelectModeMovement()
 		}
 		else
 			CameraPlayerRef->Path.Add(UnitRef->GetIndexPosition());
+		CameraPlayerRef->FirstMove = true;
 	}
 	PlayerAction = EDC_ActionPlayer::MoveUnit;
 	CameraPlayerRef->IsMovingUnit = true;
@@ -1243,6 +1246,10 @@ void ACustomPlayerController::FindReachableTiles()
 			{
 				PathReachable = Grid->GridPath->NewFindPath(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()), this);
 			}
+			else if(UnitRef->GetIsGarrison())
+			{
+				PathReachable = UnitRef->GetBuildingRef()->MovementOptions;
+			}
 			else
 				PathReachable = Grid->GridPath->NewFindPath(Grid->ConvertLocationToIndex(UnitRef->GetActorLocation()), this);
 
@@ -1413,25 +1420,4 @@ void ACustomPlayerController::AddToPathReachable(FIntPoint NewPoint)
 void ACustomPlayerController::SetPathReachable(TArray<FIntPoint> NewPath)
 {
 	PathReachable = NewPath;
-}
-
-
-
-
-	
-	// ----------------------------
-	// TO DELETE!!!!!!!!!!!!!!!!!!!
-
-/*void ACustomPlayerController::DisplayWidgetEndGame_Implementation()
-{
-}*/
-
-bool ACustomPlayerController::GetIsHell()
-{
-	return IsHell;
-}
-
-void ACustomPlayerController::SetIsHell(bool bH)
-{
-	IsHell = bH;
 }

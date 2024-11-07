@@ -88,6 +88,9 @@ public:
 	UPROPERTY()
 	FVector FullMoveDirection;
 
+	UPROPERTY()
+	bool FirstMove = true;
+
 	// RESTRICTIONS
 	UPROPERTY(VisibleAnywhere , BlueprintReadWrite, Category = "Variable", meta = (AllowPrivate = "true"))
 	bool IsMovingUnit = false;

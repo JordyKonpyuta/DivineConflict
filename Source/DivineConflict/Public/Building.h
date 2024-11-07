@@ -86,6 +86,12 @@ public:
 	UPROPERTY(Blueprintable, BlueprintReadOnly, Category="Grid")
 	TArray<FIntPoint> SpawnLocRef;
 
+	UPROPERTY(Blueprintable, BlueprintReadOnly, Category="Grid")
+	TArray<FIntPoint> MovementOptions;
+
+	UPROPERTY(Blueprintable, BlueprintReadOnly, Category="Grid")
+	bool MovementOptionsReady = false;
+
 	// ----------------------------
 	// Garrison
 
@@ -140,7 +146,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Player")
 	void BuildingAction();
 	
+	// ----------------------------
+	// Prepare Movements
 
+	UFUNCTION()
+	void PrepareMovements();
+	
 	// ----------------------------
 	// GETTERS
 
