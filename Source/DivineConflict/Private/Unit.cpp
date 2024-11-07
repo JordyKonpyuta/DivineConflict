@@ -356,12 +356,9 @@ void AUnit::Multi_PrepareMove_Implementation(const TArray<FIntPoint>& NewPos)
 		FutureMovement = NewPos;
 		FutureMovementWithSpecial = FutureMovement;
 	}
+	GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovementWithSpecial.Last()));
 	
-	FutureMovementPos = FutureMovement.Last();
-
-	GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovementPos));
-	
-	//InitGhosts();
+	InitGhosts();
 	HasMoved = true;
 }
 
@@ -435,7 +432,7 @@ void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 		PathToCrossTemp.Add(index);
     }
 	PathToCross = PathToCrossTemp;
-
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, FString::Printf(TEXT("PathToCross : %s"), *PathToCross[0].ToString()));
 	if (!PathToCross.IsEmpty())
 		GetWorld()->GetTimerManager().SetTimer(
 			MoveTimerHandle, 
@@ -526,15 +523,8 @@ void AUnit::UnitMoveAnim_Implementation()
 				SetIsGarrison(true);
 				bJustBecameGarrison = true;
 			}
-		}/*
-		//If Last Path is a unit on tile and the unit is not the unit moving
-		else if (PathToCross[PathToCrossPosition] == PathToCross.Last())
-		{
-			if(Grid->GetGridData()->Find(PathToCross.Last())->UnitOnTile)
-			{
-				WillMove = false;
-			}
-		}*/
+		}
+		
 		if (WillMove)
 			SetActorLocation(Grid->ConvertIndexToLocation(PathToCross[PathToCrossPosition]) + FVector(0,0,50));
 		
@@ -562,6 +552,7 @@ void AUnit::UnitMoveAnim_Implementation()
 		if (PathToCross.IsEmpty())
 		{
 			GetWorldTimerManager().ClearTimer(MoveTimerHandle);
+			Multi_HiddeGhosts();
 
 			// EndTurn
 			if(PlayerControllerRef != nullptr)
@@ -569,7 +560,7 @@ void AUnit::UnitMoveAnim_Implementation()
 				if (FirstActionIsMove)
 					FutureMovement.Empty();
 				else
-					FirstActionIsMove = false;
+					FirstActionIsMove = true;
 				if(HasAuthority())
 				{
 					PlayerControllerRef->Server_ActionActiveTurn();
@@ -597,6 +588,7 @@ void AUnit::MoveUnitEndTurn()
 
 void AUnit::Multi_HiddeGhosts_Implementation()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, FString::Printf(TEXT("HiddeGhosts")));
 	GhostsMesh->SetVisibility(false);
 	GhostsFinaleLocationMesh->SetVisibility(false);
 	bIsGhosts = false;
@@ -611,7 +603,7 @@ void AUnit::InitGhosts_Implementation()
 {
 	GhostsMesh->SetVisibility(true);
 	GhostsMesh->SetWorldLocation(GetActorLocation());
-	GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovementPos));
+	GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovementWithSpecial.Last()));
 	GhostsFinaleLocationMesh->SetVisibility(true);
 
 	// Set ghost's position as unit's position on grid ;
