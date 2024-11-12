@@ -13,6 +13,7 @@
 #include "Unit.h"
 #include "CustomPlayerController.generated.h"
 
+struct FInputActionValue;
 class AGhostUnitSpawning;
 class ABuilding;
 class ACameraPlayer;
@@ -479,4 +480,15 @@ protected:
 	
 	UFUNCTION()
 	void FindReachableTiles();
+
+	// ----------------------------
+	// ActionPlayer
+	
+	void RotateCamera(const FInputActionValue& Value);
+
+	void RotateCameraPitch(const FInputActionValue& Value);
+
+	void ZoomCamera( const FInputActionValue& Value);
+
+	void PathRemove(const FInputActionValue& Value);
 };

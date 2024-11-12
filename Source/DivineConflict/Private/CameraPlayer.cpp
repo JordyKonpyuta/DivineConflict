@@ -359,6 +359,8 @@ void ACameraPlayer::RotateCamera(const FInputActionValue& Value)
 {
 	FVector2d Input = Value.Get<FVector2d>();
 
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("UpdatedMove"));
+
 	TargetRotationYaw = FRotator(0,TargetRotationYaw.Yaw + UKismetMathLibrary::SignOfFloat(Input.X)*-90, 0);
 	RotateWidget(0, (GetActorLocation().Y+(40*UKismetMathLibrary::SignOfFloat(Input.Y))));
 }

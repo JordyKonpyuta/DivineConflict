@@ -55,24 +55,25 @@ void ACustomPlayerController::SetupInputComponent()
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(this))
 	{
-	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(InputMappingContext, 0);
 		}
 	}
-	
-	if(UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
-	{
-		EnhancedInputComponent->BindAction(AIEndTurn, ETriggerEvent::Started, this, &ACustomPlayerController::EndTurn);
-		EnhancedInputComponent->BindAction(AIMove,ETriggerEvent::Triggered, CameraPlayerRef, "UpdatedMove");
-		EnhancedInputComponent->BindAction(AIMove, ETriggerEvent::Started, CameraPlayerRef, "RepeatMoveTimerCamera");
-		EnhancedInputComponent->BindAction(AIMove, ETriggerEvent::Completed, CameraPlayerRef, "StopRepeatMoveTimerCamera");
-		EnhancedInputComponent->BindAction(AIRotate, ETriggerEvent::Started, CameraPlayerRef, "RotateCamera");
-		EnhancedInputComponent->BindAction(AIRotate, ETriggerEvent::Triggered, CameraPlayerRef, "RotateCameraPitch");
-		EnhancedInputComponent->BindAction(AIZoom, ETriggerEvent::Triggered, CameraPlayerRef, "ZoomCamera");
-		EnhancedInputComponent->BindAction(AIInteraction,ETriggerEvent::Started, this, &ACustomPlayerController::ControllerInteraction);
-		EnhancedInputComponent->BindAction(AIRemovePath,ETriggerEvent::Started, CameraPlayerRef, "PathRemove");
-	}
+
+	if(CameraPlayerRef)
+		if(UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
+		{
+			EnhancedInputComponent->BindAction(AIEndTurn, ETriggerEvent::Started, this, &ACustomPlayerController::EndTurn);
+			EnhancedInputComponent->BindAction(AIMove,ETriggerEvent::Triggered, CameraPlayerRef, "UpdatedMove");
+			EnhancedInputComponent->BindAction(AIMove, ETriggerEvent::Started, CameraPlayerRef, "RepeatMoveTimerCamera");
+			EnhancedInputComponent->BindAction(AIMove, ETriggerEvent::Completed, CameraPlayerRef, "StopRepeatMoveTimerCamera");
+			EnhancedInputComponent->BindAction(AIRotate, ETriggerEvent::Started, this, &ACustomPlayerController::RotateCamera);
+			EnhancedInputComponent->BindAction(AIRotate, ETriggerEvent::Triggered, this, &ACustomPlayerController::RotateCameraPitch );
+			EnhancedInputComponent->BindAction(AIZoom, ETriggerEvent::Triggered, this, &ACustomPlayerController::ZoomCamera);
+			EnhancedInputComponent->BindAction(AIInteraction,ETriggerEvent::Started, this, &ACustomPlayerController::ControllerInteraction);
+			EnhancedInputComponent->BindAction(AIRemovePath,ETriggerEvent::Started, this, &ACustomPlayerController::PathRemove);
+		}
 }
 
 void ACustomPlayerController::Tick(float DeltaTime)
@@ -1284,8 +1285,40 @@ void ACustomPlayerController::FindReachableTiles()
 		}
 	
 }
-	
-	// ----------------------------
+
+void ACustomPlayerController::RotateCamera(const FInputActionValue& Value)
+{
+	if(CameraPlayerRef)
+	{
+		CameraPlayerRef->RotateCamera(Value);
+	}
+}
+
+void ACustomPlayerController::RotateCameraPitch(const FInputActionValue& Value)
+{
+	if(CameraPlayerRef)
+	{
+		CameraPlayerRef->RotateCameraPitch(Value);
+	}
+}
+
+void ACustomPlayerController::ZoomCamera(const FInputActionValue& Value)
+{
+	if(CameraPlayerRef)
+	{
+		CameraPlayerRef->ZoomCamera(Value);
+	}
+}
+
+void ACustomPlayerController::PathRemove(const FInputActionValue& Value)
+{
+	if(CameraPlayerRef)
+	{
+		CameraPlayerRef->PathRemove(Value);
+	}
+}
+
+// ----------------------------
 	// UI
 
 		// General
