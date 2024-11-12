@@ -10,6 +10,7 @@
 #include "CustomGameState.h"
 #include "Engine/LocalPlayer.h"
 #include "CameraPlayer.h"
+#include "EnhancedInputComponent.h"
 #include "EnumsList.h"
 #include "Kismet/GameplayStatics.h"
 #include "Grid.h"
@@ -32,17 +33,17 @@ void ACustomPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UpdateWidget3D(false, false);
-	
 	CameraPlayerRef = Cast<ACameraPlayer>(GetPawn());
+	
+	SetupInputComponent();
+	
+	UpdateWidget3D(false, false);
 	
 	if(CameraPlayerRef != nullptr)
 	{
 		CameraPlayerRef->SetCustomPlayerController(this);
 	}
 	setGrid();
-
-
 	
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACustomPlayerController::AssignPlayerPosition, 2.f, false);
@@ -54,10 +55,23 @@ void ACustomPlayerController::SetupInputComponent()
 
 	if (APlayerController* PlayerController = Cast<APlayerController>(this))
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(InputMappingContext, 0);
 		}
+	}
+	
+	if(UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
+	{
+		EnhancedInputComponent->BindAction(AIEndTurn, ETriggerEvent::Started, this, &ACustomPlayerController::EndTurn);
+		EnhancedInputComponent->BindAction(AIMove,ETriggerEvent::Triggered, CameraPlayerRef, "UpdatedMove");
+		EnhancedInputComponent->BindAction(AIMove, ETriggerEvent::Started, CameraPlayerRef, "RepeatMoveTimerCamera");
+		EnhancedInputComponent->BindAction(AIMove, ETriggerEvent::Completed, CameraPlayerRef, "StopRepeatMoveTimerCamera");
+		EnhancedInputComponent->BindAction(AIRotate, ETriggerEvent::Started, CameraPlayerRef, "RotateCamera");
+		EnhancedInputComponent->BindAction(AIRotate, ETriggerEvent::Triggered, CameraPlayerRef, "RotateCameraPitch");
+		EnhancedInputComponent->BindAction(AIZoom, ETriggerEvent::Triggered, CameraPlayerRef, "ZoomCamera");
+		EnhancedInputComponent->BindAction(AIInteraction,ETriggerEvent::Started, this, &ACustomPlayerController::ControllerInteraction);
+		EnhancedInputComponent->BindAction(AIRemovePath,ETriggerEvent::Started, CameraPlayerRef, "PathRemove");
 	}
 }
 
@@ -651,6 +665,7 @@ void ACustomPlayerController::Server_Delegate_Implementation()
 //call end turn with server
 void ACustomPlayerController::EndTurn()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("EndTurn"));
 	Server_EndTurn();
 	FeedbackEndTurn(true);
 }
@@ -677,6 +692,7 @@ void ACustomPlayerController::Multi_ClearMode_Implementation()
 //call player end turn for GameState
 void ACustomPlayerController::Server_EndTurn_Implementation()
 {
+	
 	PlayerStateRef->SetIsReadyToSwitchTurn(true);
 	Cast<ACustomGameState>(GetWorld()->GetGameState())->CheckSwitchPlayerTurn();
 }
@@ -1071,8 +1087,12 @@ void ACustomPlayerController::Server_ActionActiveTurn_Implementation()
 //execute action active turn with multicast
 void ACustomPlayerController::Multi_ActionActiveTurn_Implementation()
 {
+
+	
 	if(IsLocalController())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Multi_ActionActiveTurn"));
+		DisableInput(this);
 		HiddeWidget();
 		//if PlayerState si set
 		if(PlayerStateRef == nullptr)

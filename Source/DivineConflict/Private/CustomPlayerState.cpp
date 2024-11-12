@@ -70,8 +70,11 @@ void ACustomPlayerState::OnRep_bIsActiveTurn()
 		NewTurnBegin();
 		bIsBlockTimerNewBeginTurn = true;
 		GetWorldTimerManager().SetTimer(BlockNewTurnbeginTimerHandle, this, &ACustomPlayerState::BlockNewTurnBegin, 5, false);
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("BIsBlockTimerNewBeginTurn %d"), bIsBlockTimerNewBeginTurn));
 	}
+
+	if(GetPlayerCustomController())
+		GetPlayerCustomController()->EnableInput(GetPlayerCustomController());
+	
 	UpdateUI();
 		
 	bIsReadyToSiwtchTurn = false;

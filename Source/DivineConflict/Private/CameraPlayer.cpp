@@ -57,41 +57,6 @@ void ACameraPlayer::Tick(float DeltaTime)
 	SetActorLocation(UKismetMathLibrary::VInterpTo(GetActorLocation(),FullMoveDirection,DeltaTime,10));
 }
 
-// Called to bind functionality to input
-void ACameraPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	if(UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		EnhancedInputComponent->BindAction(AIMove, ETriggerEvent::Started, this, &ACameraPlayer::RepeatMoveTimerCamera);
-		EnhancedInputComponent->BindAction(AIMove, ETriggerEvent::Completed, this, &ACameraPlayer::StopRepeatMoveTimerCamera);
-		EnhancedInputComponent->BindAction(AIMove,ETriggerEvent::Triggered, this, &ACameraPlayer::UpdatedMove);
-		EnhancedInputComponent->BindAction(AIRotate, ETriggerEvent::Started, this, &ACameraPlayer::RotateCamera);
-		EnhancedInputComponent->BindAction(AIRotate, ETriggerEvent::Triggered, this, &ACameraPlayer::RotateCameraPitch);
-		EnhancedInputComponent->BindAction(AIZoom, ETriggerEvent::Triggered, this, &ACameraPlayer::ZoomCamera);
-		EnhancedInputComponent->BindAction(AIInteraction,ETriggerEvent::Started, this, &ACameraPlayer::Interaction);
-
-		EnhancedInputComponent->BindAction(AIRemovePath,ETriggerEvent::Started, this, &ACameraPlayer::PathRemove);
-		if(CustomPlayerController)
-			EnhancedInputComponent->BindAction(AIEndTurn,ETriggerEvent::Started, CustomPlayerController, &ACustomPlayerController::EndTurn);
-		else
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("CustomPlayerController is null"));
-			CustomPlayerController = Cast<ACustomPlayerController>(GetController());
-			EnhancedInputComponent->BindAction(AIEndTurn,ETriggerEvent::Started, CustomPlayerController, &ACustomPlayerController::EndTurn);
-		}
-	}
-}
-
-	// ----------------------------
-	// Interactions
-
-void ACameraPlayer::Interaction()
-{
-	CustomPlayerController->ControllerInteraction();
-}
-
 	// ----------------------------
 	// Camera Movement - TRUE MOVEMENT
 

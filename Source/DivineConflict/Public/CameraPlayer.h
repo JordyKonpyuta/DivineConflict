@@ -39,30 +39,6 @@ public:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivate))
 	ACustomPlayerController* CustomPlayerController;
-
-	// ----------------------------
-	// Input Actions
-	
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	TObjectPtr<UInputAction> AIZoom;
-
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	TObjectPtr<UInputAction> AIMove;
-
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	TObjectPtr<UInputAction> AIRotate;
-
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	TObjectPtr<UInputAction> AIFreeCam;
-
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	TObjectPtr<UInputAction> AIInteraction;
-
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	TObjectPtr<UInputAction> AIRemovePath;
-
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	TObjectPtr<UInputAction> AIEndTurn;
 	
 	// ----------------------------
 	// Timers
@@ -203,11 +179,5 @@ protected:
 	// Override
 	
 	virtual void BeginPlay() override;
-	
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
-	// ----------------------------
-	// Interactions
 
-	void Interaction();
 };
