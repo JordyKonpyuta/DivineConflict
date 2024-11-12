@@ -9,6 +9,10 @@
 /**
  * 
  */
+
+class UDC_SaveGameSystem;
+class USaveGame;
+
 UCLASS()
 class DIVINECONFLICT_API UCustomGameInstance : public UGameInstance
 {
@@ -16,6 +20,9 @@ class DIVINECONFLICT_API UCustomGameInstance : public UGameInstance
 
 /* UPROPERTIES */
 public:
+
+	UPROPERTY()
+	UDC_SaveGameSystem* SaveGameInstance;
 	
 
 private:
@@ -25,6 +32,12 @@ private:
 public:
 
 	UCustomGameInstance();
+
+	UFUNCTION()
+	virtual void Init() override;
+
+	UFUNCTION(BlueprintCallable, Category = "CustomGameInstance")
+	void SaveGame();
 
 	UFUNCTION(BlueprintCallable, Category = "CustomGameInstance")
 	void EnableFaceBottomKey(bool enable);
