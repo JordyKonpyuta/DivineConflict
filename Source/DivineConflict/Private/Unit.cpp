@@ -4,7 +4,6 @@
 #include "Unit.h"
 #include "Base.h"
 #include "Building.h"
-#include "CameraPlayer.h"
 #include "CustomPlayerController.h"
 #include "CustomPlayerState.h"
 #include "Grid.h"
@@ -16,9 +15,6 @@
 #include "Unit_Child_Leader.h"
 #include "Unit_Child_Tank.h"
 #include "Unit_Child_Warrior.h"
-#include "Upwall.h"
-#include "WidgetDamage2.h"
-#include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
@@ -114,6 +110,9 @@ void AUnit::BeginPlay()
 		&AUnit::AssignPlayerController_Implementation,
 		0.2,
 		true);
+
+	UnitRotation = GetActorRotation();
+	UnitNewLocation = GetActorLocation();
 }
 
 void AUnit::Tick(float DeltaTime)
@@ -131,6 +130,9 @@ void AUnit::Tick(float DeltaTime)
 			DamageWidgetComponent->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetTargetLocation(), PlayerControllerRef->CameraPlayerRef->FollowCamera->GetComponentLocation()));
 		} 
 	}*/
+	
+	SetActorRotation(UKismetMathLibrary::RInterpTo(GetActorRotation(),UnitRotation,DeltaTime,2.5f));
+	SetActorLocation(UKismetMathLibrary::VInterpTo(GetActorLocation(),UnitNewLocation,DeltaTime,10));
 }
 
 void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProps) const{
@@ -206,39 +208,6 @@ void AUnit::Destroyed()
 {
 		
 	Super::Destroyed();
-}
-
-void AUnit::Server_DestroyUnit_Implementation()
-{
-	Grid->GridInfo->RemoveUnitInGrid(this);
-	if(PlayerControllerRef)
-		switch (UnitName)
-		{
-		case EUnitName::Leader:
-			PlayerControllerRef->PlayerStateRef->SetLeaderCount(PlayerControllerRef->PlayerStateRef->GetLeaderCount() - 1);
-			break;
-		case EUnitName::Tank:
-			PlayerControllerRef->PlayerStateRef->SetTankCount(PlayerControllerRef->PlayerStateRef->GetTankCount() - 1);
-			break;
-		case EUnitName::Warrior:
-			PlayerControllerRef->PlayerStateRef->SetWarriorCount(PlayerControllerRef->PlayerStateRef->GetWarriorCount() - 1);
-			break;
-		case EUnitName::Mage:
-			PlayerControllerRef->PlayerStateRef->SetMageCount(PlayerControllerRef->PlayerStateRef->GetMageCount() - 1);
-			break;
-		default:
-			break;
-		}
-	Destroyed();
-	GetWorld()->DestroyActor(this);
-	if (GetWorld()->GetFirstPlayerController()->GetPlayerState<ACustomPlayerState>()->bIsInTutorial && PlayerOwner == EPlayer::P_Heaven && GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead == false)
-		DisplayWidgetTutorial();
-	else if (PlayerControllerRef && PlayerControllerRef->PlayerStateRef->bIsInTutorial)
-	{
-		PlayerControllerRef->FailedTutorial();
-		GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead = true;
-	}
-        
 }
 
 // Called to bind functionality to input
@@ -463,8 +432,8 @@ void AUnit::UnitMoveAnim_Implementation()
 			if (Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile->GarrisonFull != true)
 			{
 				// Set Unit's visual Location
-				SetActorLocation(Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile->GetActorLocation());
-				SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 50));
+				UnitNewLocation = (Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile->GetActorLocation());
+				UnitNewLocation = (FVector(UnitNewLocation.X, UnitNewLocation.Y, UnitNewLocation.Z + 50));
 				Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile->UnitRef = this;
 				Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile->GarrisonFull = true;
 
@@ -514,7 +483,7 @@ void AUnit::UnitMoveAnim_Implementation()
 		{
 			if (Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->TowerOnTile->IsGarrisoned == false)
 			{
-				SetActorLocation(Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->TowerOnTile->GetActorLocation());
+				UnitNewLocation = (Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->TowerOnTile->GetActorLocation());
 				Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->TowerOnTile->UnitInGarrison = this;
 				Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->TowerOnTile->IsGarrisoned = true;
 				TowerRef = Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->TowerOnTile;
@@ -526,7 +495,32 @@ void AUnit::UnitMoveAnim_Implementation()
 		}
 		
 		if (WillMove)
-			SetActorLocation(Grid->ConvertIndexToLocation(PathToCross[PathToCrossPosition]) + FVector(0,0,50));
+		{
+			UnitNewLocation = (Grid->ConvertIndexToLocation(PathToCross[PathToCrossPosition]) + FVector(0,0,50));
+			
+			if (PathToCrossPosition +1 != PathToCross.Num())
+			{
+				int NewYaw;
+
+				if (-(UnitNewLocation.X - Grid->ConvertIndexToLocation(PathToCross[PathToCrossPosition +1]).X == 0))
+				{
+					if (-(UnitNewLocation.Y - Grid->ConvertIndexToLocation(PathToCross[PathToCrossPosition +1]).Y > 0))
+						NewYaw = 180;
+					else
+						NewYaw = 0;
+				}
+				else
+				{
+					if (-(UnitNewLocation.X - Grid->ConvertIndexToLocation(PathToCross[PathToCrossPosition +1]).X > 0))
+						NewYaw = 90;
+					else
+						NewYaw = -90;
+				}
+			
+			
+				UnitRotation = FRotator(0,NewYaw,0);
+			}
+		}
 		
 
 		// If is last move
@@ -536,6 +530,10 @@ void AUnit::UnitMoveAnim_Implementation()
 			PathToCross.Empty();
 			PathToCrossPosition = 0;
 			MoveSequencePos = 2;
+		}
+		else
+		{
+			
 		}
 		
 		
@@ -547,7 +545,7 @@ void AUnit::UnitMoveAnim_Implementation()
 	// Descend
 	else if (MoveSequencePos == 2)
 	{
-		SetActorLocation(GetActorLocation() + FVector(0,0,-50));
+		UnitNewLocation = (GetActorLocation() + FVector(0,0,-50));
 		MoveSequencePos = 0;
 		if (PathToCross.IsEmpty())
 		{
@@ -697,13 +695,13 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 			}
 			
 			Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
-			UnitToAttack->Server_DestroyUnit();
+			UnitToAttack->Server_DeathAnim();
 		}
 		if(GetCurrentHealth() < 1)
 		{
 			Grid->GridInfo->RemoveUnitInGrid(this);
 			Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
-			Server_DestroyUnit();
+			Server_DeathAnim();
 		}
 		//if (PlayerControllerRef)
 		//	PlayerControllerRef->VerifyBuildInteraction();
@@ -840,8 +838,8 @@ void AUnit::Multi_GetBuffs_Implementation()
 	}
 }
 
-// ----------------------------
-// Cancel Actions
+	// ----------------------------
+	// Cancel Actions
 
 void AUnit::Multi_CancelMove_Implementation()
 {
@@ -868,8 +866,8 @@ void AUnit::Multi_CancelSpecial_Implementation()
 	}
 }
 
-
-
+	// ----------------------------
+	// Textures
 
 void AUnit::SetUnitIcon()
 {
@@ -889,8 +887,64 @@ void AUnit::SetUnitIcon()
 	}
 }
 
+
+
 // ----------------------------
-// GETTERS
+	// Death
+
+
+void AUnit::Server_DeathAnim()
+{
+	Multi_DeathAnim();
+}
+
+void AUnit::Multi_DeathAnim()
+{
+	UnitRotation += FRotator(0,0,-90);
+	
+	GetWorld()->GetTimerManager().SetTimer(
+		DeathTimerHandle,
+		this,
+		&AUnit::Server_DestroyUnit,
+		2.0f,
+		false);
+}
+
+void AUnit::Server_DestroyUnit_Implementation()
+{
+	Grid->GridInfo->RemoveUnitInGrid(this);
+	if(PlayerControllerRef)
+		switch (UnitName)
+		{
+	case EUnitName::Leader:
+		PlayerControllerRef->PlayerStateRef->SetLeaderCount(PlayerControllerRef->PlayerStateRef->GetLeaderCount() - 1);
+			break;
+	case EUnitName::Tank:
+		PlayerControllerRef->PlayerStateRef->SetTankCount(PlayerControllerRef->PlayerStateRef->GetTankCount() - 1);
+			break;
+	case EUnitName::Warrior:
+		PlayerControllerRef->PlayerStateRef->SetWarriorCount(PlayerControllerRef->PlayerStateRef->GetWarriorCount() - 1);
+			break;
+	case EUnitName::Mage:
+		PlayerControllerRef->PlayerStateRef->SetMageCount(PlayerControllerRef->PlayerStateRef->GetMageCount() - 1);
+			break;
+	default:
+		break;
+		}
+	Destroyed();
+	GetWorld()->DestroyActor(this);
+	if (GetWorld()->GetFirstPlayerController()->GetPlayerState<ACustomPlayerState>()->bIsInTutorial && PlayerOwner == EPlayer::P_Heaven && GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead == false)
+		DisplayWidgetTutorial();
+	else if (PlayerControllerRef && PlayerControllerRef->PlayerStateRef->bIsInTutorial)
+	{
+		PlayerControllerRef->FailedTutorial();
+		GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead = true;
+	}
+        
+}
+
+	// ----------------------------
+	// GETTERS
 
 // Static Meshes
 UStaticMeshComponent* AUnit::GetStaticMesh()

@@ -131,7 +131,11 @@ public:
 	
 	UPROPERTY(Replicated)
 	TArray<FIntPoint> PathToCross;
-	
+
+	// ----------------------------
+	// Movement General
+
+	FVector UnitNewLocation;
 
 	// ----------------------------
 	// Unit Spawn FIntPoints
@@ -151,6 +155,13 @@ public:
 	TObjectPtr<UTexture2D> UnitIcon;
 
 	FTimerHandle IconTimerHandle;
+
+	// ----------------------------
+	// Death
+
+	FTimerHandle DeathTimerHandle;
+
+	FRotator UnitRotation = FRotator(0,0,0);
 
 	// ----------------------------
 	// ----------------------------
@@ -266,9 +277,6 @@ public:
 	
 	UFUNCTION()
 	void Destroyed() override;
-
-	UFUNCTION(Server,Reliable)
-	void Server_DestroyUnit();
 	
 	virtual void Tick(float DeltaTime) override;
 
@@ -377,8 +385,21 @@ public:
 
 	// ----------------------------
 	// Textures
+	
 	UFUNCTION()
 	void SetUnitIcon();
+
+	// ----------------------------
+	// Death
+
+	UFUNCTION()
+	void Server_DeathAnim();
+
+	UFUNCTION()
+	void Multi_DeathAnim();
+
+	UFUNCTION(Server,Reliable)
+	void Server_DestroyUnit();
 	
 	// ----------------------------
 	// GETTERS //
@@ -434,7 +455,7 @@ public:
 	// FIntPoint
 	UFUNCTION()
 	FIntPoint GetIndexPosition();
-
+	
 	// ----------------------------
 	// SETTERS //
 
