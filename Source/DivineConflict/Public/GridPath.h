@@ -133,6 +133,11 @@ public:
 	// ----------------------------
 	//Path Reachable
 	TArray<FIntPoint> NewFindPath(FIntPoint Start, ACustomPlayerController* CustomPlayerController);
+
+	//-----------------------------
+	// Path Reachable Sp Mage
+
+	TArray<FIntPoint> NewFindPathSpMage(FIntPoint Start, ACustomPlayerController* CustomPlayerController);
 	
 	// ----------------------------
 	// SETTER

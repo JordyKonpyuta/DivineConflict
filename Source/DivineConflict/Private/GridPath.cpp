@@ -432,7 +432,48 @@ TArray<FIntPoint> UGridPath::NewFindPath(FIntPoint Start, ACustomPlayerControlle
 	return AllMoveCases;
 }
 
-	// ----------------------------
+TArray<FIntPoint> UGridPath::NewFindPathSpMage(FIntPoint Start, ACustomPlayerController* CustomPlayerController)
+{
+	TArray<FIntPoint> AllMoveCases = {Start};
+	TArray<FIntPoint> NewCases = {Start};
+
+	TArray<FIntPoint> NewNewCases;
+	int AllMovement = 2;
+	bool IsWarrior = Cast<AUnit_Child_Warrior>(CustomPlayerController->UnitRef) != nullptr;
+	TMap<FIntPoint, FDC_TileData>* GridData = Grid->GetGridData();
+
+
+	for (int i = 0; i < AllMovement; i++)
+	{
+		for (FIntPoint CaseToCheck : NewCases)
+		{
+			for (FIntPoint NeighbourToCheck : Grid->GridPath->FindTileNeighbors(CaseToCheck))
+			{
+				if (AllMoveCases.Find(NeighbourToCheck)
+					&& Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile)
+				{
+					AllMoveCases += CustomPlayerController->Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile->SpawnLocRef;
+				}
+				else if (AllMoveCases.Find(NeighbourToCheck)
+					&& Grid->IsTileWalkable(NeighbourToCheck,false))
+				{
+					NewNewCases.Add(NeighbourToCheck);
+				}
+				else
+				{
+				}
+			}
+		}
+		AllMoveCases += NewCases;
+		NewCases = NewNewCases;
+		NewNewCases.Empty();
+	}
+
+	AllMoveCases += NewCases;
+	return AllMoveCases;
+}
+
+// ----------------------------
 	// SETTER
 
 void UGridPath::SetGrid(AGrid* GridRef)
