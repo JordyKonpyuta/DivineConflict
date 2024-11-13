@@ -136,18 +136,23 @@ void ABuilding::BeginPlay()
 			{
 			case EBuildingList::B_Gold:
 				UnitRef = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
+				UnitRef->SetPlayerOwner(PlayerOwner);
 				break;
 			case EBuildingList::B_Wood:
 				UnitRef = GetWorld()->SpawnActor<AUnit_Child_Mage>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
+				UnitRef->SetPlayerOwner(PlayerOwner);
 				break;
 			case EBuildingList::B_Stone:
 				UnitRef = GetWorld()->SpawnActor<AUnit_Child_Tank>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
+				UnitRef->SetPlayerOwner(PlayerOwner);
 				break;
 			case EBuildingList::B_AP:
 				UnitRef = GetWorld()->SpawnActor<AUnit_Child_Leader>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
+				UnitRef->SetPlayerOwner(PlayerOwner);
 				break;
 			default:
 				UnitRef = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
+				UnitRef->SetPlayerOwner(PlayerOwner);
 			}
 			GarrisonFull = true;
 			UnitRef->SetIsGarrison(true);

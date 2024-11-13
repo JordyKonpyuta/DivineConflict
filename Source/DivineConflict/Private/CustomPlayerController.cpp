@@ -117,7 +117,7 @@ void ACustomPlayerController::GetLifetimeReplicatedProps( TArray<FLifetimeProper
 void ACustomPlayerController::OnRep_PlayerTeam()
 {
 	AssignPlayerPosition();
-}
+} 
 	
 	// ----------------------------
 	// Interactions
@@ -145,9 +145,23 @@ void ACustomPlayerController::ControllerInteraction()
 			{
 				if(PlayerStateRef->bIsActiveTurn)
 				{
+					bool bIsTower = false;
+					bool bIsBuilding = false;
+					bool bIsUnit = false;
+					if (Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile)
+						bIsTower = true;
+					if (Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile)
+						if (Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetIsGarrison())
+							bIsBuilding = true;
+						else
+							bIsUnit = true;
+					if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile)
+						bIsBuilding = true;
+							
+					
 					//Active Turn
 					//Interract tower
-					if(Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile)
+					if(bIsTower)
 					{
 						if(Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile->GetPlayerOwner() == PlayerStateRef->PlayerTeam)
 						{
@@ -159,7 +173,7 @@ void ACustomPlayerController::ControllerInteraction()
 					}
 						
 					//Interract unit
-					else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile)
+					else if (bIsUnit)
 					{
 						if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() == PlayerStateRef->PlayerTeam)
 						{
@@ -171,12 +185,25 @@ void ACustomPlayerController::ControllerInteraction()
 						}
 					}
 					////Interract building and have an unit on build
-					else if(Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile)
+					else if(bIsBuilding)
 					{
-						if(Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef && Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->PlayerOwner == PlayerStateRef->PlayerTeam)
-						{
-                                UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef;
+						bool bCanInteract = false;
+						if (Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile)
+							if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() == PlayerStateRef->PlayerTeam)
+							{
+								bCanInteract = true;
+								UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile;
+								BuildingRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetBuildingRef();
+							}
+						if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef)
+							if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef->GetPlayerOwner() == PlayerStateRef->PlayerTeam)
+							{
+								bCanInteract = true;
+								UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef;
 								BuildingRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile;
+							}
+						if(bCanInteract)
+						{
                                 CameraPlayerRef->SetCustomPlayerController(this);
                                 CameraPlayerRef->UnitMovingCurrentMovNumber = UnitRef->GetPM();
                                 //IInteractInterface::Execute_Interact(Grid->GridData.Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef, this);
@@ -430,6 +457,15 @@ void ACustomPlayerController::VerifyBuildInteraction()
 		{
 			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TowerOnTile->GetPlayerOwner() == PlayerStateRef->PlayerTeam && PlayerStateRef->bIsActiveTurn)
 			{
+				UpdateWidget3D(0, true);
+			}
+			else UpdateWidget3D(1, true);
+		}
+		
+		else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BuildingOnTile)
+		{
+			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BuildingOnTile->PlayerOwner == PlayerStateRef->PlayerTeam)
+			{			
 				UpdateWidget3D(0, true);
 			}
 			else UpdateWidget3D(1, true);
