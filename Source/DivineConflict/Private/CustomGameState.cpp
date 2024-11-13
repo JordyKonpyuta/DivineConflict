@@ -147,6 +147,7 @@ void ACustomGameState::CheckSwitchPlayerTurn()
 
 void ACustomGameState::CheckPlayerActionPassive()
 {
+	
 	for(APlayerState * CurrentPlayerState : PlayerArray)
 	{
 		if(ACustomPlayerState* PlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
@@ -157,10 +158,12 @@ void ACustomGameState::CheckPlayerActionPassive()
 				if(ACustomPlayerController* PlayerController = Cast<ACustomPlayerController>(PlayerState->GetPlayerController()))                        
 				{
 					PlayerController->Server_ActionPassiveTurn();
+					return;
 				}
 			}
 		}
 	}
+	SwitchPlayerTurn();
 }
 
 void ACustomGameState::PauseTimerUI()
@@ -199,10 +202,12 @@ void ACustomGameState::CheckPlayerActionActive()
 				{
 					PlayerController->Server_ActionActiveTurn();
 					PlayerController->Server_ClearMode();
+					return;
 				}
 			}
 		}
 	}
+	CheckPlayerActionPassive();
 }
 
 // ----------------------------

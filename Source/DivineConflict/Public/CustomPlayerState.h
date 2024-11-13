@@ -189,7 +189,7 @@ public:
 
 	// Turns
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Turn")
 	bool GetIsReadyToSwitchTurn();
 
 	// Ressources
