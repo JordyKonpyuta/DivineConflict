@@ -648,41 +648,40 @@ void AUnit::MoveGhostsAction(float DeltaTime, const TArray<FIntPoint>& PathToFol
 float AUnit::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator,
 	AActor* DamageCauser)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("TakeDamage")));
-
-	if(Grid->GetGridData()->Find(IndexPosition)->TileTransform.GetLocation().Z > Grid->GetGridData()->Find(Cast<AUnit>(DamageCauser)->IndexPosition)->TileTransform.GetLocation().Z)
+	AUnit* UnitDamageCauser = Cast<AUnit>(DamageCauser);
+	if(UnitDamageCauser->IsValidLowLevel())
 	{
-		DamageAmount -= 1;
+		if(Grid->IsValidLowLevel())
+		{
+			if(Grid->GetGridData()->Find(UnitDamageCauser->GetIndexPosition()))
+			{
+				if(Grid->GetGridData()->Find(IndexPosition)->TileTransform.GetLocation().Z > Grid->GetGridData()->Find(UnitDamageCauser->GetIndexPosition())->TileTransform.GetLocation().Z)
+				{
+					DamageAmount -= 1;
+				}
+				else if (Grid->GetGridData()->Find(IndexPosition)->TileTransform.GetLocation().Z < Grid->GetGridData()->Find(UnitDamageCauser->GetIndexPosition())->TileTransform.GetLocation().Z)
+				{
+					DamageAmount += 1;
+				}
+			}
+		}
 	}
-	else
-	{
-		DamageAmount += 1;
-	}
+	
 	if(bBuffTank && (DamageAmount-(Defense+1)) > 0)
 	{
 		CurrentHealth -= DamageAmount-(Defense+1);
 	}
 	else if((DamageAmount-Defense) > 0)
+	{
 		CurrentHealth -= (DamageAmount-Defense);
-
+	}
+	
 	if(CurrentHealth < 1)
 	{
-		Grid->GridInfo->RemoveUnitInGrid(this);
-		Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
 		Server_DeathAnim();
 	}
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
-/*
-void AUnit::TakeDamage(int Damage)
-{/*
-	if(bBuffTank && (Damage-(Defense+1)) > 0)
-	{
-		CurrentHealth -= Damage-(Defense+1);
-	}
-	else if((Damage-Defense) > 0)
-		CurrentHealth -= (Damage-Defense);
-}*/
 
 void AUnit::AttackUnit(AUnit* UnitToAttack)
 {
@@ -696,19 +695,19 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 		FDamageEvent DamageEvent;
 		if (PlayerOwner == EPlayer::P_Hell && bIsCommandeerBuffed)
 		{
-			UnitToAttack->TakeDamage(GetAttack()+1,DamageEvent, nullptr, this);
+			UnitToAttack->TakeDamage(GetAttack()+1,DamageEvent, GetInstigatorController(), this);
 		} else
 		{
-			UnitToAttack->TakeDamage(GetAttack(), DamageEvent, nullptr, this);
+			UnitToAttack->TakeDamage(GetAttack(), DamageEvent, GetInstigatorController(), this);
 		}
 		if (UnitToAttack->PlayerOwner == EPlayer::P_Hell && UnitToAttack->bIsCommandeerBuffed)
 		{
-			TakeDamage(UnitToAttack->GetAttack() + 1 , DamageEvent, nullptr, UnitToAttack);
+			TakeDamage(UnitToAttack->GetAttack() + 1 , DamageEvent, GetInstigatorController(), UnitToAttack);
 		} else
 		{
-			TakeDamage(UnitToAttack->GetAttack(), DamageEvent, nullptr, UnitToAttack);
+			TakeDamage(UnitToAttack->GetAttack(), DamageEvent, GetInstigatorController(), UnitToAttack);
 		}
-
+		
 		if(UnitToAttack->GetCurrentHealth() < 1)
 		{
 			if (UnitToAttack->BuildingRef)
@@ -717,7 +716,7 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 				UnitToAttack->BuildingRef->GarrisonFull = false;
 				UnitToAttack->IsGarrison = false;
 				TArray<FIntPoint> MoveInBuilding = {UnitToAttack->IndexPosition};
-				Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
+				//Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
 				InitializeFullMove(MoveInBuilding);
 			}
 
@@ -726,18 +725,10 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 				PlayerControllerRef->FailedTutorial();
 				GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead = true;
 			}
-			
-			Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
-			//UnitToAttack->Server_DeathAnim();
-		}
-		if(GetCurrentHealth() < 1)
-		{
-
 		}
 		//if (PlayerControllerRef)
 		//	PlayerControllerRef->VerifyBuildInteraction();
 	}
-
 }
 
 void AUnit::AttackBase_Implementation(ABase* BaseToAttack)
@@ -941,7 +932,6 @@ void AUnit::Server_DeathAnim()
 void AUnit::Multi_DeathAnim()
 {
 	UnitRotation += FRotator(0,0,-90);
-	Grid->GridInfo->RemoveUnitInGrid(this);
 	
 	GetWorld()->GetTimerManager().SetTimer(
 		DeathTimerHandle,
@@ -953,7 +943,9 @@ void AUnit::Multi_DeathAnim()
 
 void AUnit::Server_DestroyUnit_Implementation()
 {
+	UE_LOG( LogTemp, Warning, TEXT("Unit %s has been destroyed"), *GetName());
 	Grid->GridInfo->RemoveUnitInGrid(this);
+	Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
 	if(PlayerControllerRef)
 		switch (UnitName)
 		{
@@ -972,6 +964,7 @@ void AUnit::Server_DestroyUnit_Implementation()
 	default:
 		break;
 		}
+
 	Destroyed();
 	GetWorld()->DestroyActor(this);
 	if (GetWorld()->GetFirstPlayerController()->GetPlayerState<ACustomPlayerState>()->bIsInTutorial && PlayerOwner == EPlayer::P_Heaven && GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead == false)
