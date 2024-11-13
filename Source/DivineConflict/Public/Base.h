@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "EnumsList.h"
+#include "Components/ArrowComponent.h"
 #include "Base.generated.h"
 
 class ACustomPlayerController;
@@ -25,6 +26,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Mesh")
 	TObjectPtr<UStaticMeshComponent> Mesh;
+
+	UPROPERTY()
+	TObjectPtr<UArrowComponent> Arrow;
 	
 	// ----------------------------
 	// References

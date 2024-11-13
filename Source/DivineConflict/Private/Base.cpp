@@ -3,6 +3,8 @@
 
 #include "Base.h"
 
+#include <string>
+
 #include "CustomGameState.h"
 #include "CustomPlayerController.h"
 #include "Grid.h"
@@ -19,6 +21,11 @@ ABase::ABase()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
+	RootComponent = Mesh;
+	Arrow->SetupAttachment(Mesh);
+	Arrow->SetVisibility(true);
+	Arrow->SetHiddenInGame(false);
 }
 
 // Replicated properties
@@ -54,6 +61,8 @@ void ABase::BeginPlay()
         }
 	}
 
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%s"), *GetActorRotation().ToString()));
+
 
 	SetMesh();
 	
@@ -68,11 +77,36 @@ void ABase::BeginPlay()
 
 		if (PlayerOwner == EPlayer::P_Heaven) Ratio = -1;
 		else if (PlayerOwner == EPlayer::P_Hell) Ratio = 1;
+
+		if (GetActorRotation() == FRotator(0,0,0))
+		{
+			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, 0));
+			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(0, 1*Ratio));
+			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, -1*Ratio));
+			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 1*Ratio));
+		}
+		else if (GetActorRotation() == FRotator(0,90,0) || GetActorRotation() == FRotator(0,-270,0))
+		{
+			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(0, 1*Ratio));
+			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 0));
+			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, 1*Ratio));
+			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, -1*Ratio));
+		}
+		else if (GetActorRotation() == FRotator(0,180,0) || GetActorRotation() == FRotator(0,-180,0))
+		{
+			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 0));
+			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(0, -1*Ratio));
+			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 1*Ratio));
+			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, -1*Ratio));
+		}
+		else if (GetActorRotation() == FRotator(0,270,0) || GetActorRotation() == FRotator(0,-90,0))
+		{
+			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(0, -1*Ratio));
+			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, 0));
+			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, -1*Ratio));
+			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, 1*Ratio));
+		}
 	
-		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, 0));
-		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(0, 1*Ratio));
-		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, -1*Ratio));
-		AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 1*Ratio));
 	}
 
 	// Get PlayerState
@@ -119,17 +153,6 @@ void ABase::Tick(float DeltaTime)
 
 void ABase::VisualSpawn()
 {
-	AllSpawnLoc.Empty();
-	int Ratio = 0;
-
-	if (PlayerOwner == EPlayer::P_Heaven) Ratio = -1;
-	else if (PlayerOwner == EPlayer::P_Hell) Ratio = 1;
-			
-	AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, 0));
-	AllSpawnLoc.Add(GetGridPosition() + FIntPoint(0, 1*Ratio));
-	AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, -1*Ratio));
-	AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 1*Ratio));
-	
 	for (FIntPoint i : AllSpawnLoc)
 	{
 		if (IsSelected)

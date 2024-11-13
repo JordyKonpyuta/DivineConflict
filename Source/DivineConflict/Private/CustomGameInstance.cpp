@@ -18,21 +18,20 @@ UCustomGameInstance::UCustomGameInstance()
 void UCustomGameInstance::Init()
 {
 	Super::Init();
-	SaveGameInstance = NewObject<UDC_SaveGameSystem>();
 }
 
 void UCustomGameInstance::SaveGame()
 {
 	SaveGameInstance->SaveSlotName = "Global";
-	/*//SaveGameInstance->PlayerLocation = Cast<ACameraPlayer>()->GetActorLocation();
-	//SaveGameInstance->PlayerRotation = Cast<ACameraPlayer>->GetActorRotation();
-	SaveGameInstance->CurrentUnits = Cast<ACustomPlayerState>->CurrentUnitCount;
-	SaveGameInstance->MaxUnits = Cast<ACustomPlayerState>->MaxUnitCount;
-	SaveGameInstance->bIsInActiveTurn = Cast<ACustomPlayerState>->bIsActiveTurn;
-	SaveGameInstance->CurrentTurn = Cast<ACustomPlayerState>->TurnPassed;
-	SaveGameInstance->PlayerGold = Cast<ACustomPlayerState>->GoldPoints;
-	SaveGameInstance->PlayerWood = Cast<ACustomPlayerState>->WoodPoints;
-	SaveGameInstance->PlayerStone = Cast<ACustomPlayerState>->StonePoints;*/
+	SaveGameInstance->PlayerLocation = CameraPlayer->GetActorLocation();
+	SaveGameInstance->PlayerRotation = CameraPlayer->GetActorRotation();
+	SaveGameInstance->CurrentUnits = CustomPlayerState->GetUnits();
+	SaveGameInstance->MaxUnits = CustomPlayerState->GetMaxUnits();
+	SaveGameInstance->bIsInActiveTurn = CustomPlayerState->bIsActiveTurn;
+	SaveGameInstance->CurrentTurn = CustomPlayerState->TurnPassed;
+	SaveGameInstance->PlayerGold = CustomPlayerState->GetGoldPoints();
+	SaveGameInstance->PlayerWood = CustomPlayerState->GetWoodPoints();
+	SaveGameInstance->PlayerStone = CustomPlayerState->GetStonePoints();
 
 	TArray<AActor*> Units;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), Units);

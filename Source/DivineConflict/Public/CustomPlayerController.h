@@ -405,7 +405,7 @@ public:
 	void PauseTimerUI();
 
 		// Hide
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void HiddeWidget();
 	
 	// ----------------------------

@@ -12,6 +12,8 @@
 
 class UDC_SaveGameSystem;
 class USaveGame;
+class ACameraPlayer;
+class ACustomPlayerState;
 
 UCLASS()
 class DIVINECONFLICT_API UCustomGameInstance : public UGameInstance
@@ -21,8 +23,14 @@ class DIVINECONFLICT_API UCustomGameInstance : public UGameInstance
 /* UPROPERTIES */
 public:
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CustomGameInstance")
 	UDC_SaveGameSystem* SaveGameInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CustomGameInstance")
+	ACameraPlayer* CameraPlayer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CustomGameInstance")
+	ACustomPlayerState* CustomPlayerState;
 	
 
 private:
@@ -35,6 +43,7 @@ public:
 
 	UFUNCTION()
 	virtual void Init() override;
+	
 
 	UFUNCTION(BlueprintCallable, Category = "CustomGameInstance")
 	void SaveGame();
