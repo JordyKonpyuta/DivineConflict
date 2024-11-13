@@ -188,14 +188,16 @@ void ABase::Multi_Upgrade_Implementation()
 	// ----------------------------
 	// Take Damage
 
-void ABase::BaseTakeDamage(int Damage)
+float ABase::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator,
+	AActor* DamageCauser)
 {
-	Health -= Damage;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Base Health : %d"), Health));
+	Health -= DamageAmount;
 	ServerCheckIfDead(Health);
+	
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
-	// ----------------------------
+// ----------------------------
 	// Check Death
 
 void ABase::ServerCheckIfDead_Implementation(int H)

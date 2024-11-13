@@ -10,6 +10,8 @@
 #include "GridInfo.h"
 #include "Projectile.h"
 #include "TutorialGameMode.h"
+#include "Engine/DamageEvents.h"
+
 #include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -90,8 +92,9 @@ void AUnit_Child_Mage::SpecialMage(AActor* Target)
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("MAGE SPECIAL"));
 	if(ABase* BaseAttack = Cast<ABase>(Target))
 	{
+		FDamageEvent DamageEvent;
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("BASE TO ATTACK DAMAGE"));
-		BaseAttack->BaseTakeDamage(5);
+		BaseAttack->TakeDamage(5.f, DamageEvent, nullptr, this);
 	}
 	if(AUnit* UnitAttack = Cast<AUnit>(Target))
 	{

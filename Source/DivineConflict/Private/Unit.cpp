@@ -15,6 +15,7 @@
 #include "Unit_Child_Leader.h"
 #include "Unit_Child_Tank.h"
 #include "Unit_Child_Warrior.h"
+#include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
@@ -597,6 +598,8 @@ UStaticMeshComponent* AUnit::GetFinalGhostMesh()
 	return GhostsFinaleLocationMesh;
 }
 
+
+
 void AUnit::InitGhosts_Implementation()
 {
 	GhostsMesh->SetVisibility(true);
@@ -642,15 +645,44 @@ void AUnit::MoveGhostsAction(float DeltaTime, const TArray<FIntPoint>& PathToFol
 // ----------------------------
 // Attack
 
-void AUnit::TakeDamage(int Damage)
+float AUnit::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator,
+	AActor* DamageCauser)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("TakeDamage")));
+
+	if(Grid->GetGridData()->Find(IndexPosition)->TileTransform.GetLocation().Z > Grid->GetGridData()->Find(Cast<AUnit>(DamageCauser)->IndexPosition)->TileTransform.GetLocation().Z)
+	{
+		DamageAmount -= 1;
+	}
+	else
+	{
+		DamageAmount += 1;
+	}
+	if(bBuffTank && (DamageAmount-(Defense+1)) > 0)
+	{
+		CurrentHealth -= DamageAmount-(Defense+1);
+	}
+	else if((DamageAmount-Defense) > 0)
+		CurrentHealth -= (DamageAmount-Defense);
+
+	if(CurrentHealth < 1)
+	{
+		Grid->GridInfo->RemoveUnitInGrid(this);
+		Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
+		Server_DeathAnim();
+	}
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+}
+/*
+void AUnit::TakeDamage(int Damage)
+{/*
 	if(bBuffTank && (Damage-(Defense+1)) > 0)
 	{
 		CurrentHealth -= Damage-(Defense+1);
 	}
 	else if((Damage-Defense) > 0)
 		CurrentHealth -= (Damage-Defense);
-}
+}*/
 
 void AUnit::AttackUnit(AUnit* UnitToAttack)
 {
@@ -661,19 +693,20 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 	if (Grid->GridPath->FindTileNeighbors(GetIndexPosition()).Contains(UnitToAttack->GetIndexPosition())
 		|| UnitToAttack->IsGarrison)
 	{
+		FDamageEvent DamageEvent;
 		if (PlayerOwner == EPlayer::P_Hell && bIsCommandeerBuffed)
 		{
-			UnitToAttack->TakeDamage(GetAttack() + 1);
+			UnitToAttack->TakeDamage(GetAttack()+1,DamageEvent, nullptr, this);
 		} else
 		{
-			UnitToAttack->TakeDamage(GetAttack());
+			UnitToAttack->TakeDamage(GetAttack(), DamageEvent, nullptr, this);
 		}
 		if (UnitToAttack->PlayerOwner == EPlayer::P_Hell && UnitToAttack->bIsCommandeerBuffed)
 		{
-			TakeDamage(UnitToAttack->GetAttack() + 1);
+			TakeDamage(UnitToAttack->GetAttack() + 1 , DamageEvent, nullptr, UnitToAttack);
 		} else
 		{
-			TakeDamage(UnitToAttack->GetAttack());
+			TakeDamage(UnitToAttack->GetAttack(), DamageEvent, nullptr, UnitToAttack);
 		}
 
 		if(UnitToAttack->GetCurrentHealth() < 1)
@@ -695,13 +728,11 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 			}
 			
 			Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
-			UnitToAttack->Server_DeathAnim();
+			//UnitToAttack->Server_DeathAnim();
 		}
 		if(GetCurrentHealth() < 1)
 		{
-			Grid->GridInfo->RemoveUnitInGrid(this);
-			Grid->GridVisual->RemoveStateFromTile(IndexPosition, EDC_TileState::Selected);
-			Server_DeathAnim();
+
 		}
 		//if (PlayerControllerRef)
 		//	PlayerControllerRef->VerifyBuildInteraction();
@@ -715,7 +746,16 @@ void AUnit::AttackBase_Implementation(ABase* BaseToAttack)
 	{
 		return;
 	}
-	BaseToAttack->BaseTakeDamage(/*GetAttack()*/100);
+	FDamageEvent DamageEvent;
+	
+	if (PlayerOwner == EPlayer::P_Hell && bIsCommandeerBuffed)
+	{
+		BaseToAttack->TakeDamage(GetAttack()+1,DamageEvent, nullptr, this);
+	} else
+	{
+		BaseToAttack->TakeDamage(GetAttack(), DamageEvent, nullptr, this);
+	}
+	
 	//if (PlayerControllerRef)
 	//	PlayerControllerRef->VerifyBuildInteraction();
 }
@@ -901,6 +941,7 @@ void AUnit::Server_DeathAnim()
 void AUnit::Multi_DeathAnim()
 {
 	UnitRotation += FRotator(0,0,-90);
+	Grid->GridInfo->RemoveUnitInGrid(this);
 	
 	GetWorld()->GetTimerManager().SetTimer(
 		DeathTimerHandle,

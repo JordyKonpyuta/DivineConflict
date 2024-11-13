@@ -71,7 +71,7 @@ protected:
 
 		// Health
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
-	int Health = 200;
+	int Health = 50;
 
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
 	int MaxHealth = Health;
@@ -131,9 +131,8 @@ public:
 
 	// ----------------------------
 	// Take Damage
-
-	UFUNCTION(BlueprintCallable)
-	void BaseTakeDamage(int Damage);
+	
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	// ----------------------------
 	// Check Death

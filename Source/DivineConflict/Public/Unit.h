@@ -338,8 +338,8 @@ public:
 	// Attack
 
 	UFUNCTION()
-	void TakeDamage(int Damage);
-
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	
 	UFUNCTION(BlueprintCallable)
 	void AttackUnit(AUnit* UnitToAttack);
 
