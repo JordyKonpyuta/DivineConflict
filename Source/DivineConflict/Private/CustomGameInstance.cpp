@@ -24,15 +24,15 @@ void UCustomGameInstance::Init()
 void UCustomGameInstance::SaveGame()
 {
 	SaveGameInstance->SaveSlotName = "Global";
-	SaveGameInstance->PlayerLocation = Cast<ACameraPlayer>->GetActorLocation();
-	SaveGameInstance->PlayerRotation = Cast<ACameraPlayer>->GetActorRotation();
+	/*//SaveGameInstance->PlayerLocation = Cast<ACameraPlayer>()->GetActorLocation();
+	//SaveGameInstance->PlayerRotation = Cast<ACameraPlayer>->GetActorRotation();
 	SaveGameInstance->CurrentUnits = Cast<ACustomPlayerState>->CurrentUnitCount;
 	SaveGameInstance->MaxUnits = Cast<ACustomPlayerState>->MaxUnitCount;
 	SaveGameInstance->bIsInActiveTurn = Cast<ACustomPlayerState>->bIsActiveTurn;
 	SaveGameInstance->CurrentTurn = Cast<ACustomPlayerState>->TurnPassed;
 	SaveGameInstance->PlayerGold = Cast<ACustomPlayerState>->GoldPoints;
 	SaveGameInstance->PlayerWood = Cast<ACustomPlayerState>->WoodPoints;
-	SaveGameInstance->PlayerStone = Cast<ACustomPlayerState>->StonePoints;
+	SaveGameInstance->PlayerStone = Cast<ACustomPlayerState>->StonePoints;*/
 
 	TArray<AActor*> Units;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), Units);
