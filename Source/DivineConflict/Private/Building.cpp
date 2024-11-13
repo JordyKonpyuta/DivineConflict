@@ -217,8 +217,9 @@ void ABuilding::BuildingAction()
 void ABuilding::PrepareMovements()
 {
 	MovementOptionsReady = true;
+		GEngine->AddOnScreenDebugMessage(-1,5.f, FColor::Red, TEXT("PrepareMovements"));
 	// Tiles you can walk on after leaving the building
-	if (!AllSpawnLoc.IsEmpty())
+	if (!SpawnLocRef.IsEmpty())
 	{
 		for (FIntPoint CurrentBuildingTile : SpawnLocRef)
 		{

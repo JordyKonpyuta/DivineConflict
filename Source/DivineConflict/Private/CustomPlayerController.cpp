@@ -464,7 +464,7 @@ void ACustomPlayerController::VerifyBuildInteraction()
 		
 		else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BuildingOnTile)
 		{
-			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BuildingOnTile->PlayerOwner == PlayerStateRef->PlayerTeam)
+			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BuildingOnTile->PlayerOwner == PlayerStateRef->PlayerTeam && PlayerStateRef->bIsActiveTurn)
 			{			
 				UpdateWidget3D(0, true);
 			}
@@ -511,12 +511,12 @@ void ACustomPlayerController::SelectModeMovement()
 	FindReachableTiles();
 	if (UnitRef)
 	{
+		CameraPlayerRef->FirstMove = true;
 		if (Cast<AUnit_Child_Warrior>(UnitRef))
 		{
 			// if use a Special action
 			if (UnitRef->HasActed &&  UnitRef->GetFinalGhostMesh()->IsVisible())
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("3")));
 				CameraPlayerRef->Path.Add(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()));
 				CameraPlayerRef->FullMoveDirection.X = UnitRef->GetFinalGhostMesh()->GetComponentLocation().X;
 				CameraPlayerRef->FullMoveDirection.Y = UnitRef->GetFinalGhostMesh()->GetComponentLocation().Y;
@@ -527,7 +527,6 @@ void ACustomPlayerController::SelectModeMovement()
 		}
 		else
 			CameraPlayerRef->Path.Add(UnitRef->GetIndexPosition());
-		CameraPlayerRef->FirstMove = true;
 	}
 	PlayerAction = EDC_ActionPlayer::MoveUnit;
 	CameraPlayerRef->IsMovingUnit = true;
