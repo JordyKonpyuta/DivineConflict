@@ -168,10 +168,15 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 						Path.AddUnique(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection));
 						CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection), EDC_TileState::Hovered);
 					}
+
+					if (!CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection))->BuildingOnTile)
+						FirstMove = false;
+					
 					if (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0)))->BuildingOnTile && !FirstMove)
 					{
 						FullMoveDirection = CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0)))->BuildingOnTile->GetActorLocation();
 						FullMoveDirection.Z = (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 275;
+						Path.AddUnique(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection));
 					}
 					else
 					{
