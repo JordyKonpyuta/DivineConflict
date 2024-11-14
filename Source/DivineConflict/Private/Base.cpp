@@ -61,7 +61,7 @@ void ABase::BeginPlay()
         }
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%s"), *GetActorRotation().ToString()));
+	
 
 
 	SetMesh();
@@ -78,33 +78,38 @@ void ABase::BeginPlay()
 		if (PlayerOwner == EPlayer::P_Heaven) Ratio = -1;
 		else if (PlayerOwner == EPlayer::P_Hell) Ratio = 1;
 
-		if (GetActorRotation() == FRotator(0,0,0))
+		if (GetActorRotation().Yaw == 0)
 		{
 			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, 0));
 			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(0, 1*Ratio));
 			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, -1*Ratio));
 			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 1*Ratio));
 		}
-		else if (GetActorRotation() == FRotator(0,90,0) || GetActorRotation() == FRotator(0,-270,0))
+		else if (GetActorRotation().Yaw > 80 && GetActorRotation().Yaw < 100)
 		{
 			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(0, 1*Ratio));
 			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 0));
 			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, 1*Ratio));
 			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, -1*Ratio));
 		}
-		else if (GetActorRotation() == FRotator(0,180,0) || GetActorRotation() == FRotator(0,-180,0))
+		else if (GetActorRotation().Yaw == 180 || GetActorRotation().Yaw == -180)
 		{
 			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 0));
 			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(0, -1*Ratio));
 			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 1*Ratio));
 			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, -1*Ratio));
 		}
-		else if (GetActorRotation() == FRotator(0,270,0) || GetActorRotation() == FRotator(0,-90,0))
+		else if (GetActorRotation().Yaw > -100 && GetActorRotation().Yaw < -80)
 		{
 			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(0, -1*Ratio));
 			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, 0));
 			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, -1*Ratio));
 			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, 1*Ratio));
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("*ERROR*")));
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Rotation : %f"), GetActorRotation().Yaw));;
 		}
 	
 	}

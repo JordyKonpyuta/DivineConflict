@@ -65,9 +65,9 @@ void AUnit_Child_Warrior::BeginPlay()
 			if (CurrentCustomPlayerState->bIsInTutorial)
 			{
 				SetCurrentHealth(6);
-				if (UKismetSystemLibrary::GetDisplayName(this) == "HeavenWarrior1")
+				if (GetActorLocation() == FVector(1600, 300, 100))
 					GetWorld()->GetAuthGameMode<ATutorialGameMode>()->Warrior1 = this;
-				else if (UKismetSystemLibrary::GetDisplayName(this) == "HeavenWarrior2")
+				else if (GetActorLocation() == FVector(1100, 300, 100))
 					GetWorld()->GetAuthGameMode<ATutorialGameMode>()->Warrior2 = this;
 			}
 			else if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
@@ -86,9 +86,9 @@ void AUnit_Child_Warrior::DisplayWidgetTutorial()
 	Super::DisplayWidgetTutorial();
 
 	Grid->GridVisual->RemoveStateFromTile(Grid->ConvertLocationToIndex(this->GetActorLocation()), EDC_TileState::Selected);
-	if (UKismetSystemLibrary::GetDisplayName(this) == "HeavenWarrior1")
+	if (GetWorld()->GetAuthGameMode<ATutorialGameMode>()->Warrior1 == this && !GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead)
 		GetWorld()->GetAuthGameMode<ATutorialGameMode>()->DisplayTutorialWidget(3);
-	else if (UKismetSystemLibrary::GetDisplayName(this) == "HeavenWarrior2")
+	else if (GetWorld()->GetAuthGameMode<ATutorialGameMode>()->Warrior2 == this && !GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead)
 		GetWorld()->GetAuthGameMode<ATutorialGameMode>()->DisplayTutorialWidget(6);
 }
 

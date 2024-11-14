@@ -107,7 +107,8 @@ void AUnit_Child_Tank::DisplayWidgetTutorial()
 	Super::DisplayWidgetTutorial();
 
 	Grid->GridVisual->RemoveStateFromTile(Grid->ConvertLocationToIndex(this->GetActorLocation()), EDC_TileState::Selected);
-	GetWorld()->GetAuthGameMode<ATutorialGameMode>()->DisplayTutorialWidget(1);
+	if (!GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead)
+		GetWorld()->GetAuthGameMode<ATutorialGameMode>()->DisplayTutorialWidget(1);
 }
 
 
