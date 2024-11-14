@@ -200,6 +200,7 @@ void ACustomGameState::CheckPlayerActionActive()
 			{
 				if(ACustomPlayerController* PlayerController = Cast<ACustomPlayerController>(PlayerState->GetPlayerController()))
 				{
+					DisableInput(PlayerController);
 					PlayerController->Server_ActionActiveTurn();
 					PlayerController->Server_ClearMode();
 					return;

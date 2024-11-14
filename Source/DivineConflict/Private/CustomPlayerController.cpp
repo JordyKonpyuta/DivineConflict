@@ -1127,7 +1127,6 @@ void ACustomPlayerController::Multi_ActionActiveTurn_Implementation()
 	if(IsLocalController())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Multi_ActionActiveTurn"));
-		DisableInput(this);
 		HiddeWidget();
 		//if PlayerState si set
 		if(PlayerStateRef == nullptr)
