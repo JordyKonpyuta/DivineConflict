@@ -583,11 +583,8 @@ void AUnit::UnitMoveAnim_Implementation()
 		{
 			
 		}
-		
-		
 		PathToCrossPosition++;
 
-		
 	}
 
 	// Descend
@@ -599,7 +596,8 @@ void AUnit::UnitMoveAnim_Implementation()
 		{
 			GetWorldTimerManager().ClearTimer(MoveTimerHandle);
 			Multi_HiddeGhosts();
-
+			Grid->GridInfo->Multi_setUnitIndexOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+			
 			// EndTurn
 			if(PlayerControllerRef != nullptr)
 			{
@@ -941,7 +939,7 @@ void AUnit::Multi_GetBuffsVisual_Implementation()
 	// {
 	// 	GEngine->AddOnScreenDebugMessage(-1,5.f, FColor::Blue, TEXT("Client"));
 	// }
-	//
+	
 	if (BuffTankComp_NS)
 	{
 		if (bBuffTank)
