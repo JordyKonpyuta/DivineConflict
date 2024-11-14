@@ -22,6 +22,7 @@ protected:
 	// ----------------------------
 	// Special
 
+	UPROPERTY(Replicated)
 	bool bIsUsingSpecial = false;
 
 	FTimerHandle TimerHandle;

@@ -10,6 +10,8 @@
 #include "GridInfo.h"
 #include "GridPath.h"
 #include "GridVisual.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Tower.h"
 #include "TutorialGameMode.h"
 #include "Unit_Child_Leader.h"
@@ -27,12 +29,16 @@ AUnit::AUnit()
 	PrimaryActorTick.bCanEverTick = true;
 
 	SetReplicates(true);
+
+	// Meshes
 	
 	UnitMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Unit Mesh"));
 	SetRootComponent(UnitMesh);
 	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/tank_ange_pose.tank_ange_pose'")).Object);
 	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	UnitMesh->SetIsReplicated(true);
+
+	// Materials
 	
 	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture_DEBUG/M_NeutralPlayer.M_NeutralPlayer'")).Object);
 	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HeavenPlayer.Mi_HeavenPlayer'")).Object);
@@ -40,6 +46,8 @@ AUnit::AUnit()
 
 	MaterialToGhosts = ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture/M_Ghosts.M_Ghosts'")).Object;
 
+	// Ghosts Meshes
+	
 	GhostsMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ghosts Mesh"));
 	GhostsMesh->SetStaticMesh(UnitMesh->GetStaticMesh());
 	GhostsMesh->SetMaterial(0, MaterialToGhosts);
@@ -52,6 +60,12 @@ AUnit::AUnit()
 	GhostsFinaleLocationMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	GhostsFinaleLocationMesh->SetVisibility(false);
 
+	// BuffTank
+	
+	BuffTankComp_NS = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComponent"));
+	BuffTankSys_NS = ConstructorHelpers::FObjectFinder<UNiagaraSystem>(TEXT("NiagaraSystem'/Game/Core/FX/Tank/NS_TankBuff.NS_TankBuff'")).Object;
+	
+	
 	// Widget Damage
 	/*DamageWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetDamage"));
 	static ConstructorHelpers::FClassFinder<UWidgetDamage2> classWidgetDamage(TEXT("/Game/Core/Blueprints/Widget/Units/WBP_WidgetDamage"));
@@ -114,6 +128,20 @@ void AUnit::BeginPlay()
 
 	UnitRotation = GetActorRotation();
 	UnitNewLocation = GetActorLocation();
+
+	// Buff Tank FX
+	
+	BuffTankComp_NS = UNiagaraFunctionLibrary::SpawnSystemAttached(
+		BuffTankSys_NS,
+		UnitMesh,
+		NAME_None,
+		FVector(0.f),
+		FRotator(0.f),
+		EAttachLocation::Type::KeepRelativeOffset,
+		false,
+		true);
+
+	BuffTankComp_NS->Deactivate();
 }
 
 void AUnit::Tick(float DeltaTime)
@@ -145,6 +173,7 @@ void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProp
 	DOREPLIFETIME(AUnit, bIsClimbing);
 	DOREPLIFETIME(AUnit, bIsCommandeerBuffed);
 	DOREPLIFETIME(AUnit, bIsGhosts);
+	DOREPLIFETIME(AUnit, BuffTankSys_NS);
 	DOREPLIFETIME(AUnit, CurrentHealth);
 	DOREPLIFETIME(AUnit, FirstActionIsMove);
 	DOREPLIFETIME(AUnit, FutureMovement);
@@ -295,8 +324,26 @@ void AUnit::NewTurn()
 		{
 			CurrentHealth = UKismetMathLibrary::Clamp(CurrentHealth + 2, 0, MaxHealth +2);
 		}
+	
+	if (TObjectPtr<AUnit_Child_Tank> TempSelf = Cast<AUnit_Child_Tank>(this))
+		TempSelf->SetIsUsingSpecial(false);
+
+	Multi_NewTurn();
 }
 
+void AUnit::Multi_NewTurn_Implementation()
+{
+	Server_GetBuffsVisual();
+
+	if (HasAuthority())
+	{
+		GEngine->AddOnScreenDebugMessage(-1,5.f, FColor::Blue, TEXT("Server"));
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1,5.f, FColor::Blue, TEXT("Client"));
+	}
+}
 
 // ----------------------------
 // Grid
@@ -655,11 +702,11 @@ float AUnit::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEve
 		{
 			if(Grid->GetGridData()->Find(UnitDamageCauser->GetIndexPosition()))
 			{
-				if(Grid->GetGridData()->Find(IndexPosition)->TileTransform.GetLocation().Z > Grid->GetGridData()->Find(UnitDamageCauser->GetIndexPosition())->TileTransform.GetLocation().Z)
+				if(Grid->GetGridData()->Find(IndexPosition)->TileTransform.GetLocation().Z > Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(UnitDamageCauser->GetActorLocation()))->TileTransform.GetLocation().Z)
 				{
 					DamageAmount -= 1;
 				}
-				else if (Grid->GetGridData()->Find(IndexPosition)->TileTransform.GetLocation().Z < Grid->GetGridData()->Find(UnitDamageCauser->GetIndexPosition())->TileTransform.GetLocation().Z)
+				else if (Grid->GetGridData()->Find(IndexPosition)->TileTransform.GetLocation().Z < Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(UnitDamageCauser->GetActorLocation()))->TileTransform.GetLocation().Z)
 				{
 					DamageAmount += 1;
 				}
@@ -716,7 +763,7 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 				UnitToAttack->BuildingRef->GarrisonFull = false;
 				UnitToAttack->IsGarrison = false;
 				TArray<FIntPoint> MoveInBuilding = {UnitToAttack->IndexPosition};
-				//Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
+				Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
 				InitializeFullMove(MoveInBuilding);
 			}
 
@@ -823,6 +870,8 @@ void AUnit::SpecialBase(ABase* BaseToAttack)
 {
 }
 
+
+
 // ----------------------------
 // Get Buffs
 
@@ -835,7 +884,11 @@ void AUnit::Server_GetBuffs_Implementation()
 void AUnit::Multi_GetBuffs_Implementation()
 {
 	if (bIsCommandeerBuffed) bIsCommandeerBuffed = false;
-	if (bBuffTank) bBuffTank = false;
+	if (bBuffTank)
+	{
+		bBuffTank = false;
+		Server_GetBuffsVisual();
+	}
 	for (FIntPoint CurrentLoc : Grid->GridPath->FindPath(GetIndexPosition(), FIntPoint(-999,-999), true, 3, false, false))
 	{
 		AUnit_Child_Leader* UnitToBuff = Cast<AUnit_Child_Leader> (Grid->GetGridData()->Find(CurrentLoc)->UnitOnTile);
@@ -860,12 +913,42 @@ void AUnit::Multi_GetBuffs_Implementation()
 						AUnit_Child_Tank* TankToCheck = Cast<AUnit_Child_Tank>(Grid->GetGridData()->Find(CurrentPos)->UnitOnTile);
 						if (TankToCheck)
 						{
-							if (TankToCheck->GetIsUsingSpecial() && TankToCheck->GetPlayerOwner() == GetPlayerOwner()) bBuffTank = true;
+							if (TankToCheck->GetIsUsingSpecial() && TankToCheck->GetPlayerOwner() == GetPlayerOwner())
+							{
+								bBuffTank = true;
+								Server_GetBuffsVisual();
+							}
 						}
 					}
 				}
 			}
 		}
+	}
+}
+
+void AUnit::Server_GetBuffsVisual_Implementation()
+{
+	Multi_GetBuffsVisual();
+}
+
+void AUnit::Multi_GetBuffsVisual_Implementation()
+{
+	if (HasAuthority())
+	{
+		GEngine->AddOnScreenDebugMessage(-1,5.f, FColor::Blue, TEXT("Server"));
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1,5.f, FColor::Blue, TEXT("Client"));
+	}
+	
+	if (BuffTankComp_NS)
+	{
+		if (bBuffTank)
+			BuffTankComp_NS->Activate();
+		else
+			BuffTankComp_NS->Deactivate();
+		
 	}
 }
 

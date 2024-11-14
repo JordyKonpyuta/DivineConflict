@@ -9,6 +9,7 @@
 #include "GridPath.h"
 #include "GridVisual.h"
 #include "TutorialGameMode.h"
+#include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
 
 	// ----------------------------
@@ -32,6 +33,15 @@ AUnit_Child_Tank::AUnit_Child_Tank()
 		NeutralIcon = IconTexObjectNeutral.Object;
 
 }
+
+void AUnit_Child_Tank::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProps) const{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AUnit_Child_Tank, bIsUsingSpecial);
+}
+
+
+
 
 void AUnit_Child_Tank::SetTimer()
 {
@@ -69,8 +79,6 @@ void AUnit_Child_Tank::BeginPlay()
 				SetCurrentHealth(MaxHealth);
 		}
 	}
-	
-
 	UnitName = EUnitName::Tank;
 
 	GetWorld()->GetTimerManager().SetTimer(IconTimerHandle, this, &AUnit_Child_Tank::SetUnitIcon, 1.0f, false);
@@ -88,6 +96,8 @@ void AUnit_Child_Tank::Special()
 		if(Grid->GetGridData()->Find(Tile)->UnitOnTile && Grid->GetGridData()->Find(Tile)->UnitOnTile != this && Grid->GetGridData()->Find(Tile)->UnitOnTile->GetPlayerOwner() == GetPlayerOwner())
 		{
 			Grid->GetGridData()->Find(Tile)->UnitOnTile->SetBuffTank(true);
+			SetIsUsingSpecial(true);
+			Grid->GetGridData()->Find(Tile)->UnitOnTile->Server_GetBuffs();
 		}
 	}
 }

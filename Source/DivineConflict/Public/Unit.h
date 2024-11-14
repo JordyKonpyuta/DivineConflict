@@ -10,6 +10,8 @@
 #include "Unit.generated.h"
 
 
+class UNiagaraComponent;
+class UNiagaraSystem;
 class UWidgetDamage2;
 class ABuilding;
 class ABase;
@@ -54,6 +56,15 @@ public:
 
 	UPROPERTY()
 	TObjectPtr<UMaterialInterface> MaterialToGhosts;
+	
+	// ----------------------------
+	// Materials
+	
+	UPROPERTY(Replicated)
+	TObjectPtr<UNiagaraSystem> BuffTankSys_NS;
+	
+	UPROPERTY()
+	TObjectPtr<UNiagaraComponent> BuffTankComp_NS;
 	
 	// ----------------------------
 	// References
@@ -298,6 +309,9 @@ public:
 	UFUNCTION()
 	void NewTurn();
 	
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_NewTurn();
+	
 	// ----------------------------
 	// Grid
 	
@@ -370,6 +384,12 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_GetBuffs();
+
+	UFUNCTION(Server, Reliable)
+	void Server_GetBuffsVisual();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_GetBuffsVisual();
 	
 	// ----------------------------
 	// Cancel Actions
