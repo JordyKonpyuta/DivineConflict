@@ -933,15 +933,15 @@ void AUnit::Server_GetBuffsVisual_Implementation()
 
 void AUnit::Multi_GetBuffsVisual_Implementation()
 {
-	if (HasAuthority())
-	{
-		GEngine->AddOnScreenDebugMessage(-1,5.f, FColor::Blue, TEXT("Server"));
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1,5.f, FColor::Blue, TEXT("Client"));
-	}
-	
+	// if (HasAuthority())
+	// {
+	// 	GEngine->AddOnScreenDebugMessage(-1,5.f, FColor::Blue, TEXT("Server"));
+	// }
+	// else
+	// {
+	// 	GEngine->AddOnScreenDebugMessage(-1,5.f, FColor::Blue, TEXT("Client"));
+	// }
+	//
 	if (BuffTankComp_NS)
 	{
 		if (bBuffTank)
