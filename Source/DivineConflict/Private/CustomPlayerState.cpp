@@ -121,6 +121,7 @@ void ACustomPlayerState::UpdateUI()
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player %d is active turn"), PlayerTeam));
 		PlayerControllerRef->UpdateUi();
 		PlayerControllerRef->UpdateUITimer(90);
+		PlayerControllerRef->HiddeWidget();
 	}
 }
 	
