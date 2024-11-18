@@ -160,6 +160,13 @@ public:
 	
 	FOnTurnChangedSignature OnTurnChangedDelegate;
 	
+	// ----------------------------
+	// Timers
+
+	UPROPERTY()
+	FTimerHandle TimerActiveEndTurn;
+
+	
 protected:
 	
 	// ----------------------------
@@ -191,13 +198,6 @@ protected:
 
 	UPROPERTY()
 	TArray<FIntPoint> PathReachable;
-	
-	// ----------------------------
-	// Timers
-
-	UPROPERTY()
-	FTimerHandle TimerActiveEndTurn;
-
 	
 	// UFUNCTIONS
 public:

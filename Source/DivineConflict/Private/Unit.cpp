@@ -384,6 +384,8 @@ void AUnit::Multi_PrepareMove_Implementation(const TArray<FIntPoint>& NewPos)
 
 void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 {
+	GetWorld()->GetTimerManager().ClearTimer(PlayerControllerRef->TimerActiveEndTurn);
+	
 	if (FullMove.IsEmpty())
 		return;
 	
@@ -449,7 +451,7 @@ void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 		PathToCrossTemp.Add(index);
     }
 	PathToCross = PathToCrossTemp;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, FString::Printf(TEXT("PathToCross : %s"), *PathToCross[0].ToString()));
+	
 	if (!PathToCross.IsEmpty())
 		GetWorld()->GetTimerManager().SetTimer(
 			MoveTimerHandle, 
