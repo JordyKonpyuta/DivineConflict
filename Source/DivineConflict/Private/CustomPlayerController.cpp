@@ -547,6 +547,7 @@ void ACustomPlayerController::SelectModeAttack()
 	{
 		PathReachable = Grid->GridPath->FindTileNeighbors(
 			Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()));
+		Grid->GridVisual->RemoveStateFromTile(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection), EDC_TileState::Hovered);
 		CameraPlayerRef->FullMoveDirection.X = UnitRef->GetFinalGhostMesh()->GetComponentLocation().X;
 		CameraPlayerRef->FullMoveDirection.Y = UnitRef->GetFinalGhostMesh()->GetComponentLocation().Y;
 		CameraPlayerRef->FullMoveDirection.Z = (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
@@ -604,6 +605,7 @@ void ACustomPlayerController::SelectModeSpecial()
 			if (UnitRef->HasMoved)
 			{
 				PathReachable =  Grid->GridPath->NewFindPathSpMage(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()),this);
+				Grid->GridVisual->RemoveStateFromTile(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection), EDC_TileState::Hovered);
 				CameraPlayerRef->FullMoveDirection.X = UnitRef->GetFinalGhostMesh()->GetComponentLocation().X;
 				CameraPlayerRef->FullMoveDirection.Y = UnitRef->GetFinalGhostMesh()->GetComponentLocation().Y;
 				CameraPlayerRef->FullMoveDirection.Z = (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
