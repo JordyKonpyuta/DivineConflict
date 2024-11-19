@@ -455,7 +455,7 @@ TArray<FIntPoint> UGridPath::NewFindPathSpMage(FIntPoint Start, ACustomPlayerCon
 					AllMoveCases += CustomPlayerController->Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile->SpawnLocRef;
 				}
 				else if (AllMoveCases.Find(NeighbourToCheck)
-					&& Grid->IsTileWalkable(NeighbourToCheck,false))
+					&& Grid->IsTileWalkable(NeighbourToCheck,true))
 				{
 					NewNewCases.Add(NeighbourToCheck);
 				}

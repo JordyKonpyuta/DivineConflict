@@ -394,17 +394,22 @@ void ACustomPlayerController::ControllerInteraction()
 					{
 						AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::Special, Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile));
 						UnitRef->HasActed = true;
-						if (!HasAuthority())
-							GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("HAS ACTED!!!"));
-						PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 2);
-					}
-					if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile)
-					{
-						AllPlayerActions.Add(FStructActions(Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile, EDC_ActionPlayer::Special, UnitRef));
-						UnitRef->HasActed = true;
 						PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 2);
 					}
 				}
+				else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile)
+				{
+					AllPlayerActions.Add(FStructActions(Grid->GetGridData()->Find(PlayerPositionInGrid)->BaseOnTile, EDC_ActionPlayer::Special, UnitRef));
+					UnitRef->HasActed = true;
+					PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 2);
+				}
+				else if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->GarrisonFull)
+				{
+					AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::Special, Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef));
+					UnitRef->HasActed = true;
+					PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 2);
+				}
+				
 				for(FIntPoint Index : PathReachable)
 				{
 					Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Attacked);

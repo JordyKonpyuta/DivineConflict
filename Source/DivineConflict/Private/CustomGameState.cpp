@@ -53,7 +53,7 @@ void ACustomGameState::AssignTurnOrder()
 		this,
 		&ACustomGameState::BeginTimer,
 		TurnTimerLength,
-		true
+		false
 		);
 }
 
