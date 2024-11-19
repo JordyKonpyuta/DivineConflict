@@ -100,6 +100,7 @@ void ACustomGameState::SwitchPlayerTurn()
 {
 	if(!bBlockTurnSwitch)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"));
 		Turn++;
 		bBlockTurnSwitch = true;
 		for(APlayerState* CurrentPlayerState : PlayerArray)

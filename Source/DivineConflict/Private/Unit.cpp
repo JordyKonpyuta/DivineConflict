@@ -757,7 +757,7 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 		
 		if(UnitToAttack->GetCurrentHealth() < 1)
 		{
-			if (UnitToAttack->BuildingRef)
+			if (UnitToAttack->BuildingRef && GetCurrentHealth() > 1)
 			{
 				UnitToAttack->BuildingRef->UnitRef = nullptr;
 				UnitToAttack->BuildingRef->GarrisonFull = false;
