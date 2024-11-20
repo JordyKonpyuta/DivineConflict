@@ -73,10 +73,8 @@ void ABase::BeginPlay()
 		// Grid : Building
 		timerBeginPlay();
 		// Grid : Spawnable Locations
-		int Ratio = 0;
+		int Ratio = 1;
 
-		if (PlayerOwner == EPlayer::P_Heaven) Ratio = -1;
-		else if (PlayerOwner == EPlayer::P_Hell) Ratio = 1;
 
 		if (GetActorRotation().Yaw == 0)
 		{
@@ -92,7 +90,7 @@ void ABase::BeginPlay()
 			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, 1*Ratio));
 			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, -1*Ratio));
 		}
-		else if (GetActorRotation().Yaw == 180 || GetActorRotation().Yaw == -180)
+		else if ((GetActorRotation().Yaw > 175 && GetActorRotation().Yaw < 185) || (GetActorRotation().Yaw > -185 && GetActorRotation().Yaw < -175))
 		{
 			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 0));
 			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(0, -1*Ratio));

@@ -87,6 +87,7 @@ void ACustomGameState::AssignPlayerTurns()
 
 void ACustomGameState::BeginTimer()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("TIMER END TIMER END TIMER END TIMER END TIMER END "));
 	CheckPlayerActionActive();
 	PauseTimerUI();
 }
@@ -100,7 +101,6 @@ void ACustomGameState::SwitchPlayerTurn()
 {
 	if(!bBlockTurnSwitch)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"));
 		Turn++;
 		bBlockTurnSwitch = true;
 		for(APlayerState* CurrentPlayerState : PlayerArray)
@@ -141,6 +141,7 @@ void ACustomGameState::CheckSwitchPlayerTurn()
 	if(PlayerReadyCount == PlayerArray.Num())
 	{
 		//SwitchPlayerTurn();
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, TEXT("PLAYER END TURN PLAYER END TURN PLAYER END TURN PLAYER END TURN "));
 		CheckPlayerActionActive();
 		PauseTimerUI();
 	}
@@ -164,7 +165,11 @@ void ACustomGameState::CheckPlayerActionPassive()
 			}
 		}
 	}
-	SwitchPlayerTurn();
+	if (PlayerArray.Num() == 1)
+	{
+		SwitchPlayerTurn();
+	}
+
 }
 
 void ACustomGameState::PauseTimerUI()
@@ -209,7 +214,11 @@ void ACustomGameState::CheckPlayerActionActive()
 			}
 		}
 	}
-	CheckPlayerActionPassive();
+	if (PlayerArray.Num() == 1)
+	{
+		CheckPlayerActionPassive();
+	}
+	
 }
 
 // ----------------------------
