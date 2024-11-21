@@ -78,31 +78,31 @@ void ABase::BeginPlay()
 
 		if (GetActorRotation().Yaw == 0)
 		{
-			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, 0));
-			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(0, 1*Ratio));
-			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, -1*Ratio));
-			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 1*Ratio));
+			AllSpawnLoc.AddUnique(GetGridPosition() + FIntPoint(1*Ratio, 0));
+			AllSpawnLoc.AddUnique(GetGridPosition() + FIntPoint(0, 1*Ratio));
+			AllSpawnLoc.AddUnique(GetGridPosition() + FIntPoint(1*Ratio, -1*Ratio));
+			AllSpawnLoc.AddUnique(GetGridPosition() + FIntPoint(-1*Ratio, 1*Ratio));
 		}
 		else if (GetActorRotation().Yaw > 80 && GetActorRotation().Yaw < 100)
 		{
-			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(0, 1*Ratio));
-			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 0));
-			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, 1*Ratio));
-			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, -1*Ratio));
+			AllSpawnLoc.AddUnique(GetGridPosition() + FIntPoint(0, 1*Ratio));
+			AllSpawnLoc.AddUnique(GetGridPosition() + FIntPoint(-1*Ratio, 0));
+			AllSpawnLoc.AddUnique(GetGridPosition() + FIntPoint(1*Ratio, 1*Ratio));
+			AllSpawnLoc.AddUnique(GetGridPosition() + FIntPoint(-1*Ratio, -1*Ratio));
 		}
 		else if ((GetActorRotation().Yaw > 175 && GetActorRotation().Yaw < 185) || (GetActorRotation().Yaw > -185 && GetActorRotation().Yaw < -175))
 		{
-			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 0));
-			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(0, -1*Ratio));
-			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, 1*Ratio));
-			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, -1*Ratio));
+			AllSpawnLoc.AddUnique(GetGridPosition() + FIntPoint(-1*Ratio, 0));
+			AllSpawnLoc.AddUnique(GetGridPosition() + FIntPoint(0, -1*Ratio));
+			AllSpawnLoc.AddUnique(GetGridPosition() + FIntPoint(-1*Ratio, 1*Ratio));
+			AllSpawnLoc.AddUnique(GetGridPosition() + FIntPoint(1*Ratio, -1*Ratio));
 		}
 		else if (GetActorRotation().Yaw > -100 && GetActorRotation().Yaw < -80)
 		{
-			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(0, -1*Ratio));
-			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, 0));
-			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(-1*Ratio, -1*Ratio));
-			AllSpawnLoc.Add(GetGridPosition() + FIntPoint(1*Ratio, 1*Ratio));
+			AllSpawnLoc.AddUnique(GetGridPosition() + FIntPoint(0, -1*Ratio));
+			AllSpawnLoc.AddUnique(GetGridPosition() + FIntPoint(1*Ratio, 0));
+			AllSpawnLoc.AddUnique(GetGridPosition() + FIntPoint(-1*Ratio, -1*Ratio));
+			AllSpawnLoc.AddUnique(GetGridPosition() + FIntPoint(1*Ratio, 1*Ratio));
 		}
 		else
 		{
@@ -110,6 +110,7 @@ void ABase::BeginPlay()
 			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Rotation : %f"), GetActorRotation().Yaw));;
 		}
 	}
+	
 
 	// Get PlayerState
 	GetWorld()->GetTimerManager().SetTimer(
@@ -259,22 +260,18 @@ bool ABase::CheckTiles()
 {
 	int count = 0;
 	CanSpawn = true;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("CheckTiles")));
 	for (FIntPoint i : AllSpawnLoc)
 	{
 		if (Grid->GetGridData()->Find(i)->TileState.Contains(EDC_TileState::Spawned))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Tile Spawned")));
 			count++;
 		}
 	}
 
-	if (count == 4)
+	if (count == AllSpawnLoc.Num())
 	{
 		CanSpawn = false;
 	}
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("CanSpawn : %d"), CanSpawn));
 	return CanSpawn;
 	
 
