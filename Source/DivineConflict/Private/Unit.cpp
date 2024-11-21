@@ -139,6 +139,16 @@ void AUnit::BeginPlay()
 		true);
 
 	BuffTankComp_NS->Deactivate();
+
+	if (IsGarrison)
+	{
+		if (Grid->GetGridData()->Find(IndexPosition)->BuildingOnTile)
+		{
+			BuildingRef = Grid->GetGridData()->Find(IndexPosition)->BuildingOnTile;
+			BuildingRef->GarrisonFull = true;
+			BuildingRef->UnitRef = this;
+		}
+	}
 }
 
 void AUnit::Tick(float DeltaTime)
@@ -600,6 +610,21 @@ void AUnit::UnitMoveAnim_Implementation()
 			Multi_HiddeGhosts();
 			Grid->GridInfo->Multi_setUnitIndexOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
 			
+			if (bJustBecameGarrison)
+			{
+				if (BuildingRef)
+				{
+					BuildingRef->GarrisonFull = true;
+					BuildingRef->UnitRef = this;
+				}
+				else
+				{
+					BuildingRef = Grid->GetGridData()->Find(IndexPosition)->BuildingOnTile;
+					BuildingRef->GarrisonFull = true;
+					BuildingRef->UnitRef = this;
+				}
+			}
+			
 			// EndTurn
 			if(PlayerControllerRef != nullptr)
 			{
@@ -740,10 +765,11 @@ float AUnit::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEve
 
 void AUnit::AttackUnit(AUnit* UnitToAttack)
 {
-	if(UnitToAttack == nullptr || Grid == nullptr || UnitToAttack == this)
+	if(UnitToAttack == nullptr || Grid == nullptr || UnitToAttack == this || UnitToAttack->GetCurrentHealth() < 1)
 	{
 		return;
 	}
+	
 	if (Grid->GridPath->FindTileNeighbors(GetIndexPosition()).Contains(UnitToAttack->GetIndexPosition())
 		|| UnitToAttack->IsGarrison)
 	{
@@ -770,6 +796,7 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 				UnitToAttack->BuildingRef->UnitRef = nullptr;
 				UnitToAttack->BuildingRef->GarrisonFull = false;
 				UnitToAttack->IsGarrison = false;
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("UnitToAttack->IndexPosition : %s"), *UnitToAttack->IndexPosition.ToString()));
 				TArray<FIntPoint> MoveInBuilding = {UnitToAttack->IndexPosition};
 				Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
 				InitializeFullMove(MoveInBuilding);

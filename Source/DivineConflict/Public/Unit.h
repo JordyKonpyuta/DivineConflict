@@ -197,7 +197,7 @@ protected:
 	UPROPERTY(Replicated)
 	TObjectPtr<ACustomPlayerController> PlayerControllerRef;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
 	TObjectPtr<ABuilding> BuildingRef = nullptr;
 
 	UPROPERTY()
@@ -218,7 +218,7 @@ protected:
 	UPROPERTY()
 	bool IsSelected = false;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
 	bool IsGarrison = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Unit")

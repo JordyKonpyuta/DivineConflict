@@ -187,14 +187,15 @@ void ACustomPlayerController::ControllerInteraction()
 					////Interract building and have an unit on build
 					else if(bIsBuilding)
 					{
+						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Building"));
 						bool bCanInteract = false;
-						if (Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile)
-							if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() == PlayerStateRef->PlayerTeam)
-							{
-								bCanInteract = true;
-								UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile;
-								BuildingRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetBuildingRef();
-							}
+						// if (Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile)
+						// 	if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() == PlayerStateRef->PlayerTeam)
+						// 	{
+						// 		bCanInteract = true;
+						// 		UnitRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile;
+						// 		BuildingRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetBuildingRef();
+						// 	}
 						if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef)
 							if (Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef->GetPlayerOwner() == PlayerStateRef->PlayerTeam)
 							{
@@ -208,7 +209,7 @@ void ACustomPlayerController::ControllerInteraction()
                                 CameraPlayerRef->UnitMovingCurrentMovNumber = UnitRef->GetPM();
                                 //IInteractInterface::Execute_Interact(Grid->GridData.Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef, this);
                                 IInteractInterface::Execute_Interact(Grid->GridData.Find(PlayerPositionInGrid)->BuildingOnTile, this);
-                                DisplayWidget();
+                                DisplayWidgetBuilding();
 						}
 					}
 				}
@@ -801,7 +802,7 @@ void ACustomPlayerController::Server_SpecialUnit_Implementation(AUnit* UnitSpeci
 	if(AUnit_Child_Mage* MageSp =  Cast<AUnit_Child_Mage>(UnitSpecial))
 	{
 		MageSp->SpecialMage(ThingToAttack);
-		GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurn, 0.5f, false);
+		GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurn, 1.5f, false);
 	}
 	else if(AUnit_Child_Warrior* WarriorSp =  Cast<AUnit_Child_Warrior>(UnitSpecial))
 	{

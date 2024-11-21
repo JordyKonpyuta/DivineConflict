@@ -6,6 +6,7 @@
 #include "CustomPlayerState.h"
 #include "EnumsList.h"
 #include "InteractInterface.h"
+#include "Unit.h"
 #include "GameFramework/Actor.h"
 #include "Building.generated.h"
 
@@ -126,6 +127,9 @@ public:
 	// Initialisation
 
 	ABuilding();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_InitStartBuilding(AUnit* UnitSp);
 	
 	// ----------------------------
 	// Overrides

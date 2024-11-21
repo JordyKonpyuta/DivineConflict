@@ -46,7 +46,8 @@ ABuilding::ABuilding()
 
 }
 
-	// ----------------------------
+
+// ----------------------------
 	// Overrides
 // Called when the game starts or when spawned
 void ABuilding::BeginPlay()
@@ -154,11 +155,11 @@ void ABuilding::BeginPlay()
 				UnitRef = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
 				UnitRef->SetPlayerOwner(PlayerOwner);
 			}
-			GarrisonFull = true;
-			UnitRef->SetIsGarrison(true);
-			UnitRef->SetBuildingRef(this);
-			UnitRef->SetActorLocation(GetActorLocation());
+			Multi_InitStartBuilding(UnitRef);
+
 		}
+
+		
 		StaticMeshBuilding->SetMaterial(0, AllMaterials[0]);
 		
 		GameStateRef = Cast<ACustomGameState>(GetWorld()->GetGameState());
@@ -174,6 +175,19 @@ void ABuilding::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+void ABuilding::Multi_InitStartBuilding_Implementation(AUnit* UnitSp)
+{
+	if (UnitSp)
+	{
+		GarrisonFull = true;
+		UnitSp->SetIsGarrison(true);
+		UnitSp->SetBuildingRef(this);
+		UnitSp->SetActorLocation(GetActorLocation());
+		GEngine->AddOnScreenDebugMessage(-1,5.f, FColor::Red, FString::Printf(TEXT("GarrisonFull : %d"), GarrisonFull));
+	}
+}
+
 
 bool ABuilding::Interact_Implementation(ACustomPlayerController* PlayerController)
 {
