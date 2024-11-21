@@ -82,14 +82,11 @@ void AUnit::BeginPlay()
 		{
 			return;
 		}
-
-
-		//Grid->GridInfo->AddUnitInGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+		
 		//Timer 2s
 		FTimerHandle TimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AUnit::Server_AddOnGrid_Implementation, 2.0f, false);
-
-		//Grid->GridInfo->AddUnitInGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+		
 		Server_AddOnGrid();
 		
 		switch (PlayerOwner)
@@ -375,7 +372,10 @@ void AUnit::Multi_PrepareMove_Implementation(const TArray<FIntPoint>& NewPos)
 	}
 	GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovementWithSpecial.Last()));
 	
-	InitGhosts();
+
+
+
+	
 	HasMoved = true;
 }
 
@@ -645,18 +645,15 @@ UStaticMeshComponent* AUnit::GetFinalGhostMesh()
 	return GhostsFinaleLocationMesh;
 }
 
-
-
 void AUnit::InitGhosts_Implementation()
 {
 	GhostsMesh->SetVisibility(true);
 	GhostsMesh->SetWorldLocation(GetActorLocation());
-	GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovementWithSpecial.Last()));
-	GhostsFinaleLocationMesh->SetVisibility(true);
+	GhostsMesh->SetWorldRotation(GetActorRotation());
 
-	// Set ghost's position as unit's position on grid ;
-	// Grid->GridInfo->Server_setUnitIndexOnGrid(FutureMovementPos, this);
-	//bIsGhosts = true;
+	GhostsFinaleLocationMesh->SetVisibility(true);
+	
+	CurrentIndexGhost = 0;
 }
 
 void AUnit::MoveGhosts(float DeltaTime)
@@ -672,11 +669,21 @@ void AUnit::MoveGhostsAction(float DeltaTime, const TArray<FIntPoint>& PathToFol
 	{
 		return;
 	}
+	if (GhostsFinaleLocationMesh->GetComponentLocation() != Grid->ConvertIndexToLocation(PathToFollowGhost.Last()))
+	{
+		GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(PathToFollowGhost.Last()));
+	}
 	
 	if(PathToFollowGhost.Num() <= CurrentIndexGhost)
 		CurrentIndexGhost = 0;
 	
 	GhostsMesh->SetWorldLocation(UKismetMathLibrary::VInterpTo_Constant(GhostsMesh->GetComponentLocation(), Grid->ConvertIndexToLocation(PathToFollowGhost[CurrentIndexGhost]), DeltaTime, 70.0f));
+
+	FRotator GhostRot = FRotator(0, UKismetMathLibrary::FindLookAtRotation(GhostsMesh->GetComponentLocation(), Grid->ConvertIndexToLocation(PathToFollowGhost[CurrentIndexGhost])).Yaw - 90, 0);
+	
+	GhostsMesh->SetWorldRotation(UKismetMathLibrary::RInterpTo(GhostsMesh->GetComponentRotation(), GhostRot , DeltaTime, 10.0f));
+	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Cyan, FString::Printf(TEXT("GhostRot.Yaw : %s"), *GhostRot.ToString()));
+	
 	if(GhostsMesh->GetComponentLocation() == Grid->ConvertIndexToLocation(PathToFollowGhost[CurrentIndexGhost]))
 	{
 		CurrentIndexGhost++;
@@ -684,6 +691,7 @@ void AUnit::MoveGhostsAction(float DeltaTime, const TArray<FIntPoint>& PathToFol
 		{
 			CurrentIndexGhost = 0;
 			GhostsMesh->SetWorldLocation(GetActorLocation());
+			GhostsMesh->SetWorldRotation(GetActorRotation());
 
 		}
 	}

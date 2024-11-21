@@ -109,7 +109,6 @@ void ABase::BeginPlay()
 			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("*ERROR*")));
 			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Rotation : %f"), GetActorRotation().Yaw));;
 		}
-	
 	}
 
 	// Get PlayerState

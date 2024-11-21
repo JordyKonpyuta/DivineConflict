@@ -351,6 +351,7 @@ void ACustomPlayerController::ControllerInteraction()
 						}
 						UnitRef->SetIsSelected(false);
 						Server_PrepareMoveUnit(CameraPlayerRef->Path,UnitRef);
+						UnitRef->InitGhosts_Implementation();
 						//if (!UnitRef->HasActed)
 						//	UnitRef->InitGhosts_Implementation();
 						AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::MoveUnit));
