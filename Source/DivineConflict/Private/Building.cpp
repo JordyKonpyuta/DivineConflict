@@ -260,13 +260,13 @@ void ABuilding::OnTurnChanged()
 	{
 		if (OwnerPlayerState->bIsActiveTurn == false)
 		{
-			if (UnitRef->GetCurrentHealth() + 3 > UnitRef->GetMaxHealth())
+			if (UnitRef->GetCurrentHealth() + 2 > UnitRef->GetMaxHealth())
 			{
 				UnitRef->SetCurrentHealth(UnitRef->GetMaxHealth());
 			}
 			else
 			{
-				UnitRef->SetCurrentHealth(UnitRef->GetCurrentHealth() + 3);
+				UnitRef->SetCurrentHealth(UnitRef->GetCurrentHealth() + 2);
 			}
 		}
 	}
