@@ -406,7 +406,7 @@ void ACameraPlayer::RotateCamera(const FInputActionValue& Value)
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("UpdatedMove"));
 
 	TargetRotationYaw = FRotator(0,TargetRotationYaw.Yaw + UKismetMathLibrary::SignOfFloat(Input.X)*-90, 0);
-	RotateWidget(0, (GetActorLocation().Y+(40*UKismetMathLibrary::SignOfFloat(Input.Y))));
+	RotateWidget();
 }
 
 void ACameraPlayer::RotateCameraPitch(const FInputActionValue& Value)
@@ -414,7 +414,7 @@ void ACameraPlayer::RotateCameraPitch(const FInputActionValue& Value)
 	FVector2d Input = Value.Get<FVector2d>();
 	
 	TargetRotationPitch = FRotator(UKismetMathLibrary::Clamp(TargetRotationPitch.Pitch + Input.Y, -75.0f, -20.0f),0, 0);
-	RotateWidget(0, UKismetMathLibrary::SignOfFloat(Input.Y));
+	RotateWidget();
 }
 
 	// ----------------------------
@@ -433,7 +433,7 @@ void ACameraPlayer::ZoomCamera( const FInputActionValue& Value)
 	// ----------------------------
 	// Widget
 
-void ACameraPlayer::RotateWidget_Implementation(float ValueX, float ValueY)
+void ACameraPlayer::RotateWidget_Implementation()
 {
 }
 

@@ -93,6 +93,15 @@ public:
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Variable", meta = (AllowPrivate = "true"))
 	FRotator SnapRotation;
 	
+	// ----------------------------
+	// Camera's Rotation
+
+	UPROPERTY(Blueprintable, BlueprintReadWrite)
+	FRotator TargetRotationPitch=FRotator( -20, 0 ,0 );
+
+	UPROPERTY(Blueprintable, BlueprintReadWrite)
+	FRotator TargetRotationYaw=FRotator( 0, 10 ,0 );
+	
 protected:
 
 	// ----------------------------
@@ -106,13 +115,6 @@ protected:
 
 	UPROPERTY()
 	FVector OldMoveDirection;
-	
-	// ----------------------------
-	// Camera's Rotation
-	
-	FRotator TargetRotationPitch=FRotator( -20, 0 ,0 );
-	FRotator TargetRotationYaw=FRotator( 0, 10 ,0 );
-
 	
 	// UFUNCTIONS
 public:
@@ -165,7 +167,7 @@ public:
 	// Widget
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Widget")
-	void RotateWidget(float ValueX, float ValueY);
+	void RotateWidget();
 	
 	// ----------------------------
 	// Setter
