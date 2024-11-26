@@ -168,6 +168,7 @@ void ACustomPlayerController::ControllerInteraction()
 							TowerRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile;
 							TowerRef->IsSelected = true;
 							TowerRef->PlayerController = this;
+							UnitRef = TowerRef->UnitInGarrison;
 							DisplayWidgetTower();
 						}
 					}
@@ -1316,7 +1317,10 @@ void ACustomPlayerController::FindReachableTiles()
 			}
 			else if(UnitRef->GetIsGarrison())
 			{
-				PathReachable = UnitRef->GetBuildingRef()->MovementOptions;
+				if (UnitRef->GetBuildingRef())
+					PathReachable = UnitRef->GetBuildingRef()->MovementOptions;
+				else if (UnitRef->GetTowerRef())
+					PathReachable = Grid->GridPath->NewFindPath(Grid->ConvertLocationToIndex(UnitRef->GetActorLocation()), this);
 			}
 			else
 				PathReachable = Grid->GridPath->NewFindPath(Grid->ConvertLocationToIndex(UnitRef->GetActorLocation()), this);

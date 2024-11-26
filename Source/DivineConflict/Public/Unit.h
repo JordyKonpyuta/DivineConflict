@@ -431,6 +431,9 @@ public:
 	// References
 	UFUNCTION(BlueprintCallable)
 	ABuilding* GetBuildingRef();
+
+	UFUNCTION(BlueprintCallable)
+	ATower* GetTowerRef();
 	
 	// Int
 	UFUNCTION(BlueprintCallable)

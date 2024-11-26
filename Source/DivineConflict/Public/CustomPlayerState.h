@@ -87,13 +87,13 @@ protected:
 	int CurrentPA = 10;
 
 	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Ressources")
-	int WoodPoints = 2000;
+	int WoodPoints = 0;
 
 	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Ressources")
-	int StonePoints = 2000;
+	int StonePoints = 0;
 
 	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Ressources")
-	int GoldPoints = 2000;
+	int GoldPoints = 0;
 	
 	// ----------------------------
 	// UNITS

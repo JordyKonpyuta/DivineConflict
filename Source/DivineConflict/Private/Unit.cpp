@@ -37,7 +37,7 @@ AUnit::AUnit()
 	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/tank_ange_pose.tank_ange_pose'")).Object);
 	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	UnitMesh->SetIsReplicated(true);
-
+	
 	// Materials
 	
 	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture_DEBUG/M_NeutralPlayer.M_NeutralPlayer'")).Object);
@@ -617,11 +617,18 @@ void AUnit::UnitMoveAnim_Implementation()
 					BuildingRef->GarrisonFull = true;
 					BuildingRef->UnitRef = this;
 				}
-				else
+				else if (Grid->GetGridData()->Find(IndexPosition)->BuildingOnTile)
 				{
 					BuildingRef = Grid->GetGridData()->Find(IndexPosition)->BuildingOnTile;
 					BuildingRef->GarrisonFull = true;
 					BuildingRef->UnitRef = this;
+				}
+				else if (Grid->GetGridData()->Find(IndexPosition)->TowerOnTile)
+				{
+					TowerRef = Grid->GetGridData()->Find(IndexPosition)->TowerOnTile;
+					TowerRef->IsGarrisoned = true;
+					TowerRef->UnitInGarrison = this;
+					SetIsGarrison(true);
 				}
 			}
 			
@@ -1108,6 +1115,11 @@ UStaticMeshComponent* AUnit::GetStaticMesh()
 ABuilding* AUnit::GetBuildingRef()
 {
 	return BuildingRef;
+}
+
+ATower* AUnit::GetTowerRef()
+{
+	return TowerRef;
 }
 
 // Int
