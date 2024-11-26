@@ -58,7 +58,7 @@ public:
 	TObjectPtr<UMaterialInterface> MaterialToGhosts;
 	
 	// ----------------------------
-	// Materials
+	// Niagaras
 	
 	UPROPERTY(Replicated)
 	TObjectPtr<UNiagaraSystem> BuffTankSys_NS;

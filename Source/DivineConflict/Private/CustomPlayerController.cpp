@@ -1067,6 +1067,7 @@ void ACustomPlayerController::Multi_RessourceChange_Implementation(const ACustom
 	default:
 		break;
 	}
+	PlayerStateR->PlayerControllerRef->UpdateUi();
 }
 
 //cancel action (on final version)
