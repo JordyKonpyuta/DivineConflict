@@ -246,6 +246,7 @@ void ACustomPlayerController::ControllerInteraction()
 					
 				}
 			}
+			RemoveAttackWidget();
 			break;
 		case EDC_ActionPlayer::AttackBuilding:
 			//Attack tower
@@ -262,6 +263,7 @@ void ACustomPlayerController::ControllerInteraction()
 				}
 				CameraPlayerRef->IsTowering = false;
 			}
+			RemoveAttackWidget();
 			break;
 		case EDC_ActionPlayer::AttackUnit:
 			if (UnitRef)
@@ -323,6 +325,7 @@ void ACustomPlayerController::ControllerInteraction()
 					CameraPlayerRef->FullMoveDirection.Y = UnitRef->GetFinalGhostMesh()->GetComponentLocation().Y;
 					CameraPlayerRef->FullMoveDirection.Z = (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
 				}
+				RemoveAttackWidget();
 			}
 			break;
 		case EDC_ActionPlayer::MoveUnit:
@@ -369,6 +372,7 @@ void ACustomPlayerController::ControllerInteraction()
 					DisplayWidget();
 				}
 			}
+			RemoveAttackWidget();
 			break;
 		case EDC_ActionPlayer::SelectBuilding:
 			//slect position for spawn unit
@@ -387,6 +391,7 @@ void ACustomPlayerController::ControllerInteraction()
 				}
 			}
 			PlayerAction = EDC_ActionPlayer::None;
+			RemoveAttackWidget();
 			break;
 		case EDC_ActionPlayer::Special:
 			//Special wizard
@@ -424,6 +429,7 @@ void ACustomPlayerController::ControllerInteraction()
 				PlayerAction = EDC_ActionPlayer::None;
 				DisplayWidget();
 			}
+			RemoveAttackWidget();
 			break;
 		default:
 			break;
@@ -1083,6 +1089,8 @@ void ACustomPlayerController::Multi_CancelLastAction_Implementation()
 	if (!AllPlayerActions.IsEmpty() && PlayerStateRef->bIsActiveTurn)
 	{
 		AUnit* ActorThatStops = Cast<AUnit>(AllPlayerActions.Last().ActorRef);
+		ABuilding* BuildingThatStops = Cast<ABuilding>(AllPlayerActions.Last().ActorRef);
+		ATower* TowerThatStops = Cast<ATower>(AllPlayerActions.Last().ActorRef);
 		switch(AllPlayerActions.Last().UnitAction)
 		{
 			case EDC_ActionPlayer::MoveUnit:
@@ -1107,6 +1115,11 @@ void ACustomPlayerController::Multi_CancelLastAction_Implementation()
 				if (ActorThatStops)
 				{
 					ActorThatStops->Multi_CancelAttack();
+					PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 1);
+				}
+				if (TowerThatStops)
+				{
+					TowerThatStops->CanAttack = false;
 					PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 1);
 				}
 				break;

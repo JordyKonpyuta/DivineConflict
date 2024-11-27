@@ -107,6 +107,7 @@ void AUnit_Child_Mage::SpecialMage(AActor* Target)
 			{
 				if (UnitAttack->GetIsGarrison())
 				{
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UNIT TO ATTACK GARRISON"));
 					UnitAttack->GetBuildingRef()->UnitRef = nullptr;
 					UnitAttack->GetBuildingRef()->GarrisonFull = false;
 					UnitAttack->SetIsGarrison(false);

@@ -425,7 +425,10 @@ void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 		TowerRef = nullptr;
 	}
 
-	while (true)
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("PathToCross : %d"), PathToCross.Num()));
+	UE_LOG( LogTemp, Warning, TEXT("PathToCross : %d"), PathToCross.Num());
+
+	while (!PathToCross.IsEmpty())
 	{
 		if(Grid->GetGridData()->Find(PathToCross.Last())->UnitOnTile && Grid->GetGridData()->Find(PathToCross.Last())->UnitOnTile != this)
 		{
@@ -809,9 +812,10 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 				if (GetCurrentHealth() >= 1)
 				{
 					TArray<FIntPoint> MoveInBuilding = {UnitToAttack->IndexPosition};
+					Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
 					InitializeFullMove(MoveInBuilding);
 				}
-				Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
+
 			}
 		}
 		else if (UnitToAttack->GetCurrentHealth() > 0 && PlayerControllerRef->PlayerStateRef->bIsInTutorial)
