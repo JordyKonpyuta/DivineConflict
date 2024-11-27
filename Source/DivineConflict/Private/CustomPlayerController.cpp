@@ -1089,6 +1089,7 @@ void ACustomPlayerController::Multi_CancelLastAction_Implementation()
 		AUnit* ActorThatStops = Cast<AUnit>(AllPlayerActions.Last().ActorRef);
 		ABuilding* BuildingThatStops = Cast<ABuilding>(AllPlayerActions.Last().ActorRef);
 		ATower* TowerThatStops = Cast<ATower>(AllPlayerActions.Last().ActorRef);
+		ABase* BaseThatStops = Cast<ABase>(AllPlayerActions.Last().ActorRef);
 		switch(AllPlayerActions.Last().UnitAction)
 		{
 			case EDC_ActionPlayer::MoveUnit:
@@ -1118,6 +1119,11 @@ void ACustomPlayerController::Multi_CancelLastAction_Implementation()
 				if (TowerThatStops)
 				{
 					TowerThatStops->CanAttack = false;
+					PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 1);
+				}
+				if (BaseThatStops)
+				{
+					AllPlayerActions.Last().UnitAttacking->HasActed = false;
 					PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 1);
 				}
 				break;
