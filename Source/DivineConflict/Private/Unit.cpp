@@ -804,14 +804,14 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 				UnitToAttack->BuildingRef->UnitRef = nullptr;
 				UnitToAttack->BuildingRef->GarrisonFull = false;
 				UnitToAttack->IsGarrison = false;
-				Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("UnitToAttack->IndexPosition : %s"), *UnitToAttack->IndexPosition.ToString()));
 
-				if (GetCurrentHealth() > 1)
+				if (GetCurrentHealth() >= 1)
 				{
 					TArray<FIntPoint> MoveInBuilding = {UnitToAttack->IndexPosition};
 					InitializeFullMove(MoveInBuilding);
 				}
+				Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
 			}
 		}
 		else if (UnitToAttack->GetCurrentHealth() > 0 && PlayerControllerRef->PlayerStateRef->bIsInTutorial)
