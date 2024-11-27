@@ -422,6 +422,7 @@ void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 		}
 		IsGarrison = false;
 		BuildingRef = nullptr;
+		TowerRef = nullptr;
 	}
 
 	while (true)
@@ -798,23 +799,27 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 		
 		if(UnitToAttack->GetCurrentHealth() < 1)
 		{
-			if (UnitToAttack->BuildingRef && GetCurrentHealth() > 1)
+			if (UnitToAttack->BuildingRef)
 			{
 				UnitToAttack->BuildingRef->UnitRef = nullptr;
 				UnitToAttack->BuildingRef->GarrisonFull = false;
 				UnitToAttack->IsGarrison = false;
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("UnitToAttack->IndexPosition : %s"), *UnitToAttack->IndexPosition.ToString()));
-				TArray<FIntPoint> MoveInBuilding = {UnitToAttack->IndexPosition};
 				Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
-				InitializeFullMove(MoveInBuilding);
-			}
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("UnitToAttack->IndexPosition : %s"), *UnitToAttack->IndexPosition.ToString()));
 
-			else if (UnitToAttack->GetCurrentHealth() > 0 && PlayerControllerRef->PlayerStateRef->bIsInTutorial)
-			{
-				PlayerControllerRef->FailedTutorial();
-				GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead = true;
+				if (GetCurrentHealth() > 1)
+				{
+					TArray<FIntPoint> MoveInBuilding = {UnitToAttack->IndexPosition};
+					InitializeFullMove(MoveInBuilding);
+				}
 			}
 		}
+		else if (UnitToAttack->GetCurrentHealth() > 0 && PlayerControllerRef->PlayerStateRef->bIsInTutorial)
+		{
+			PlayerControllerRef->FailedTutorial();
+			GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead = true;
+		}
+		
 		//if (PlayerControllerRef)
 		//	PlayerControllerRef->VerifyBuildInteraction();
 	}
@@ -1089,7 +1094,7 @@ void AUnit::Server_DestroyUnit_Implementation()
 	default:
 		break;
 		}
-
+	
 	Destroyed();
 	GetWorld()->DestroyActor(this);
 	if (GetWorld()->GetFirstPlayerController()->GetPlayerState<ACustomPlayerState>()->bIsInTutorial && PlayerOwner == EPlayer::P_Heaven && GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead == false)
