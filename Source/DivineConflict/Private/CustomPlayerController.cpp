@@ -309,6 +309,7 @@ void ACustomPlayerController::ControllerInteraction()
 					PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 1);
 					CameraPlayerRef->IsAttacking = false;
 					PlayerAction = EDC_ActionPlayer::None;
+					RemoveAttackWidget();
 					DisplayWidget();
 				}
 				if (!UnitRef->HasMoved)
@@ -1103,8 +1104,11 @@ void ACustomPlayerController::Multi_CancelLastAction_Implementation()
 				break;
 			case EDC_ActionPlayer::AttackBuilding:
 				RemoveLastActionMemory();
-				ActorThatStops->Multi_CancelAttack();
-				PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 1);
+				if (ActorThatStops)
+				{
+					ActorThatStops->Multi_CancelAttack();
+					PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 1);
+				}
 				break;
 		default: break;
 		}
