@@ -593,11 +593,28 @@ void ACustomPlayerController::SelectModeSpecial()
 	{
 	case EUnitName::Warrior:
 		//Warrior
-		AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::Special));
-		UnitRef->Special();
-		//AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::MoveUnit));
-		UnitRef->HasActed = true;		
-		PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 2);
+			if (UnitRef->HasMoved)
+			{
+				if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()))->UpwallOnTile)
+				{
+					AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::Special));
+					UnitRef->Special();
+					//AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::MoveUnit));
+					UnitRef->HasActed = true;		
+					PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 2);
+				}
+			}
+			else
+			{
+				if (Grid->GetGridData()->Find(UnitRef->GetIndexPosition())->UpwallOnTile)
+				{
+					AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::Special));
+					UnitRef->Special();
+					//AllPlayerActions.Add(FStructActions(UnitRef, EDC_ActionPlayer::MoveUnit));
+					UnitRef->HasActed = true;		
+					PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 2);
+				}
+			}
 		break;
 	case EUnitName::Tank:
 		//Tank

@@ -1027,8 +1027,15 @@ void AUnit::Multi_CancelSpecial_Implementation()
 	if (Cast<AUnit_Child_Warrior>(this))
 	{
 		FutureMovementWithSpecial.RemoveAt(FutureMovementWithSpecial.Num() - 1);
-		GetFinalGhostMesh()->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovement.Last()));
+		GetFinalGhostMesh()->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovementWithSpecial.Last()));
 	}
+
+	if (FutureMovementWithSpecial.Last() == IndexPosition)
+	{
+		FutureMovementWithSpecial.Empty();
+		Multi_HiddeGhosts();
+	}
+
 }
 
 	// ----------------------------
