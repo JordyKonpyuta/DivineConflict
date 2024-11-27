@@ -132,7 +132,7 @@ protected:
 
 		// Units Count
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Units")
-	int MaxUnitCount = 10;
+	int MaxUnitCount = 5;
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Units")
 	int CurrentUnitCount = 0;
 	

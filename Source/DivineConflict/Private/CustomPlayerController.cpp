@@ -555,21 +555,19 @@ void ACustomPlayerController::SelectModeAttack()
 	//si unit has moved
 	if (UnitRef->HasMoved)
 	{
-		PathReachable = Grid->GridPath->FindTileNeighbors(
-			Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()));
+		PathReachable = Grid->GridPath->FindPath(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()),FIntPoint(-999,-999),true,2,false, true);
 		Grid->GridVisual->RemoveStateFromTile(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection), EDC_TileState::Hovered);
 		CameraPlayerRef->FullMoveDirection.X = UnitRef->GetFinalGhostMesh()->GetComponentLocation().X;
 		CameraPlayerRef->FullMoveDirection.Y = UnitRef->GetFinalGhostMesh()->GetComponentLocation().Y;
 		CameraPlayerRef->FullMoveDirection.Z = (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
 	} else
 	{
-		PathReachable = Grid->GridPath->FindTileNeighbors(UnitRef->GetIndexPosition());
+		PathReachable = Grid->GridPath->FindPath(UnitRef->GetIndexPosition(),FIntPoint(-999,-999),true,2,false, true);
 	}
 	//set color on grid
 	for(FIntPoint Index : PathReachable)
     {
         Grid->GridVisual->addStateToTile(Index, EDC_TileState::Attacked);
-
     }
 	PathReachable.Add(UnitRef->GetIndexPosition());
 }
@@ -862,7 +860,7 @@ bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnCh
 void ACustomPlayerController::Multi_InitServerSpawn_Implementation(EUnitType UnitToSpawn, FIntPoint SpawnChosen,
 	ABase* BaseToSpawn, ABuilding* BuildingToSpawn, ACustomPlayerState* PlayerStat)
 {
-	if (PlayerStateRef->GetUnits() <= PlayerStateRef->GetMaxUnits())
+	if (PlayerStateRef->GetUnits() < PlayerStateRef->GetMaxUnits())
 	Server_SpawnUnit(UnitToSpawn, SpawnChosen, BaseToSpawn, BuildingToSpawn, PlayerStateRef);
 }
 
@@ -1164,6 +1162,7 @@ void ACustomPlayerController::Multi_ActionActiveTurn_Implementation()
 		//if player is active
 		if(PlayerStateRef->bIsActiveTurn)
 		{
+			DisableInput(this);
 			//if there is action to do
 			if(AllPlayerActions.Num() > 0)
 			{
