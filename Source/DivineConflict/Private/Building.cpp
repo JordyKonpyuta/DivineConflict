@@ -15,8 +15,9 @@
 #include "Unit_Child_Warrior.h"
 #include "Unit_Child_Mage.h"
 #include "Unit_Child_Tank.h"
+#include "Net/UnrealNetwork.h"
 
-	// ----------------------------
+// ----------------------------
 	// Initialisation
 ABuilding::ABuilding()
 {
@@ -174,6 +175,13 @@ void ABuilding::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ABuilding::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ABuilding, GarrisonFull);
 }
 
 void ABuilding::Multi_InitStartBuilding_Implementation(AUnit* UnitSp)

@@ -96,7 +96,7 @@ public:
 	// ----------------------------
 	// Garrison
 
-	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitSelection")
+	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Replicated, Category = "UnitSelection")
 	bool GarrisonFull = false;
 	
 	UPROPERTY(Blueprintable, BlueprintReadOnly, Category="Grid")
