@@ -148,6 +148,12 @@ void AUnit::BeginPlay()
 			BuildingRef->GarrisonFull = true;
 			BuildingRef->UnitRef = this;
 		}
+		if (Grid->GetGridData()->Find(IndexPosition)->TowerOnTile)
+		{
+			TowerRef = Grid->GetGridData()->Find(IndexPosition)->TowerOnTile;
+			TowerRef->IsGarrisoned = true;
+			TowerRef->UnitInGarrison = this;
+		}
 	}
 }
 
@@ -213,6 +219,7 @@ void AUnit::testOnTower()
 				Grid->GetGridData()->Find(IndexPosition)->TowerOnTile->UnitInGarrison = this;
 				Grid->GetGridData()->Find(IndexPosition)->TowerOnTile->IsGarrisoned = true;
 				TowerRef = Grid->GetGridData()->Find(IndexPosition)->TowerOnTile;
+				IsGarrison = true;
 			}
 
 		}
@@ -408,25 +415,10 @@ void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 	MoveSequencePos = 0;
 	PathToCrossPosition = 0;
 
-	if (IsGarrison && !bJustBecameGarrison)
+	if (IsGarrison)
 	{
-		if(BuildingRef)
-		{
-			BuildingRef->UnitRef = nullptr;
-			BuildingRef->GarrisonFull = false;
-		}
-		if(TowerRef)
-		{
-			TowerRef->UnitInGarrison = nullptr;
-			TowerRef->IsGarrisoned = false;
-		}
-		IsGarrison = false;
-		BuildingRef = nullptr;
-		TowerRef = nullptr;
+		Multi_REmoveGarison();
 	}
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("PathToCross : %d"), PathToCross.Num()));
-	UE_LOG( LogTemp, Warning, TEXT("PathToCross : %d"), PathToCross.Num());
 
 	while (!PathToCross.IsEmpty())
 	{
@@ -1120,6 +1112,23 @@ void AUnit::Server_DestroyUnit_Implementation()
 
 	// ----------------------------
 	// GETTERS
+
+void AUnit::Multi_REmoveGarison_Implementation()
+{
+	if(BuildingRef)
+	{
+		BuildingRef->UnitRef = nullptr;
+		BuildingRef->GarrisonFull = false;
+	}
+	if(TowerRef)
+	{
+		TowerRef->UnitInGarrison = nullptr;
+		TowerRef->IsGarrisoned = false;
+	}
+	IsGarrison = false;
+	BuildingRef = nullptr;
+	TowerRef = nullptr;
+}
 
 // Static Meshes
 UStaticMeshComponent* AUnit::GetStaticMesh()

@@ -420,6 +420,11 @@ public:
 
 	UFUNCTION(Server,Reliable)
 	void Server_DestroyUnit();
+
+	//---------------------------
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_REmoveGarison();
 	
 	// ----------------------------
 	// GETTERS //

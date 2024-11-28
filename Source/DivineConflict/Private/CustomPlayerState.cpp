@@ -27,6 +27,7 @@ void ACustomPlayerState::BeginPlay()
 		StonePoints = 20;
 		WoodPoints = 20;
 	}
+	SetReplicates(true);
 	
 }
 	

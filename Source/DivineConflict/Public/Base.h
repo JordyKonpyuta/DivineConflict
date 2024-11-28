@@ -132,6 +132,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void Multi_Upgrade();
+	
 
 	// ----------------------------
 	// Take Damage

@@ -3,8 +3,6 @@
 
 #include "Base.h"
 
-#include <string>
-
 #include "CustomGameState.h"
 #include "CustomPlayerController.h"
 #include "Grid.h"
@@ -26,6 +24,8 @@ ABase::ABase()
 	Arrow->SetupAttachment(Mesh);
 	Arrow->SetVisibility(true);
 	Arrow->SetHiddenInGame(false);
+
+	SetReplicates(true);
 }
 
 // Replicated properties
@@ -178,7 +178,7 @@ void ABase::VisualSpawn()
 
 void ABase::Server_Upgrade_Implementation()
 {
-	Multi_Upgrade();
+	PlayerStateRef->SetMaxUnits(PlayerStateRef->GetMaxUnits() + 5);
 }
 
 
@@ -200,6 +200,8 @@ void ABase::Multi_Upgrade_Implementation()
 				UE_LOG( LogTemp, Warning, TEXT("0!!!"));
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("0!!!")));
 				PlayerStateRef->SetMaxUnits(PlayerStateRef->GetMaxUnits() + 5);
+				Server_Upgrade();
+				PlayerStateRef->PlayerControllerRef->UnitMax = PlayerStateRef->GetMaxUnits();
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("MaxUnitCount = %d"), PlayerStateRef->GetMaxUnits()));
 				PlayerStateRef->ChangeWoodPoints(WoodCostUpgrade, false);
 				PlayerStateRef->ChangeStonePoints(StoneCostUpgrade, false);
