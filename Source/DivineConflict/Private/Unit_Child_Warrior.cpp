@@ -37,12 +37,23 @@ AUnit_Child_Warrior::AUnit_Child_Warrior()
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjHell(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Warrior_Hell.T_Icon_Warrior_Hell'"));
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObj(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Warrior_Paradise.T_Icon_Warrior_Paradise'"));
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjNeutral(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Warrior_Neutral.T_Icon_Warrior_Neutral'"));
-	if (IconTexObjHell.Object)
+
+	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjNeutralDead(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Warrior_Neutral_Dead.T_Icon_Warrior_Neutral_Dead'"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjHeavenDead(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Warrior_Paradise_Dead.T_Icon_Warrior_Paradise_Dead'"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjHellDead(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Warrior_Hell_Dead.T_Icon_Warrior_Hell_Dead'"));
+	
+	if (IconTexObjHell.Object != NULL)
 		HellIcon = IconTexObjHell.Object;
-	if (IconTexObj.Object)
+	if (IconTexObj.Object != NULL)
 		HeavenIcon = IconTexObj.Object;
-	if (IconTexObjNeutral.Object)
+	if (IconTexObjNeutral.Object != NULL)
 		NeutralIcon = IconTexObjNeutral.Object;
+	if (IconTexObjNeutralDead.Object != NULL)
+		NeutralIconDead = IconTexObjNeutralDead.Object;
+	if (IconTexObjHeavenDead.Object != NULL)
+		HeavenIconDead = IconTexObjHeavenDead.Object;
+	if (IconTexObjHellDead.Object != NULL)
+		HellIconDead = IconTexObjHellDead.Object;
 	
 
 }

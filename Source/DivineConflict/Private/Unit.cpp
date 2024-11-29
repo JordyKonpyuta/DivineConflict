@@ -1040,16 +1040,19 @@ void AUnit::SetUnitIcon()
 	if (PlayerOwner == EPlayer::P_Hell)
 	{
 		UnitIcon = HellIcon;
+		UnitIconDead = HellIconDead;
 	}
 
 	else if (PlayerOwner == EPlayer::P_Heaven)
 	{
 		UnitIcon = HeavenIcon;
+		UnitIconDead = HeavenIconDead;
 	}
 
 	else if (PlayerOwner == EPlayer::P_Neutral)
 	{
 		UnitIcon = NeutralIcon;
+		UnitIconDead = NeutralIconDead;
 	}
 }
 

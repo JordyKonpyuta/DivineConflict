@@ -159,11 +159,22 @@ public:
 	UPROPERTY()
 	TObjectPtr<UTexture2D> HeavenIcon;
 	UPROPERTY()
+	TObjectPtr<UTexture2D> HeavenIconDead;
+	
+	UPROPERTY()
 	TObjectPtr<UTexture2D> HellIcon;
 	UPROPERTY()
+	TObjectPtr<UTexture2D> HellIconDead;
+	
+	UPROPERTY()
 	TObjectPtr<UTexture2D> NeutralIcon;
+	UPROPERTY()
+	TObjectPtr<UTexture2D> NeutralIconDead;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Texture")
 	TObjectPtr<UTexture2D> UnitIcon;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Texture")
+	TObjectPtr<UTexture2D> UnitIconDead;
 
 	FTimerHandle IconTimerHandle;
 
