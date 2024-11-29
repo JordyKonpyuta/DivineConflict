@@ -38,6 +38,8 @@ AUnit::AUnit()
 	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	UnitMesh->SetIsReplicated(true);
 	
+	UnitMeshDistinction = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Unit Mesh Distinction"));
+	
 	// Materials
 	
 	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture_DEBUG/M_NeutralPlayer.M_NeutralPlayer'")).Object);

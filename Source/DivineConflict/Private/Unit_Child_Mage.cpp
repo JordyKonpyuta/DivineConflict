@@ -23,6 +23,15 @@ AUnit_Child_Mage::AUnit_Child_Mage()
 	UnitMesh->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Game_Art/Asset_temp/Character/Paradis/ange_mage/mage.mage'")).Object);
 	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 
+	// Distinction Mesh (temporary)
+	
+	UnitMeshDistinction->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'")).Object);
+	UnitMeshDistinction->SetCollisionResponseToAllChannels(ECR_Ignore);
+	UnitMeshDistinction->SetIsReplicated(true);
+	UnitMeshDistinction->SetupAttachment(UnitMesh);
+	UnitMeshDistinction->SetRelativeLocation(FVector(0, 0, 90));
+	UnitMeshDistinction->SetRelativeScale3D(FVector(.5, .5, .5));
+
 
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjectHell(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Mage_Hell.T_Icon_Mage_Hell'"));
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Mage_Paradise.T_Icon_Mage_Paradise'"));
@@ -79,7 +88,19 @@ void AUnit_Child_Mage::BeginPlay()
 	UnitName = EUnitName::Mage;
 
 	GetWorld()->GetTimerManager().SetTimer(IconTimerHandle, this, &AUnit_Child_Mage::SetUnitIcon, 1.0f, false);
-
+	
+	switch (PlayerOwner)
+	{
+	case EPlayer::P_Hell:
+		UnitMeshDistinction->SetMaterial(0, AllMaterials[2]);
+		break;
+	case EPlayer::P_Heaven:
+		UnitMeshDistinction->SetMaterial(0, AllMaterials[1]);
+		break;
+	case EPlayer::P_Neutral:
+		UnitMeshDistinction->SetMaterial(0, AllMaterials[0]);
+		break;
+	}
 }
 
 void AUnit_Child_Mage::SpecialMage(AActor* Target)

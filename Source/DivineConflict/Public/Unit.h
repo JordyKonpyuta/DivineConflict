@@ -185,6 +185,9 @@ protected:
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Unit", Replicated, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> UnitMesh;
 
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Unit", Replicated, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UStaticMeshComponent> UnitMeshDistinction;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
 	TObjectPtr<UStaticMeshComponent> GhostsMesh;
 
