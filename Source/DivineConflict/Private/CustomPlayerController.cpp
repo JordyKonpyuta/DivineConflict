@@ -654,8 +654,44 @@ void ACustomPlayerController::SelectModeSelectBuilding()
 {
 	PlayerAction = EDC_ActionPlayer::SelectBuilding;
 }
-	
-	// ----------------------------
+
+void ACustomPlayerController::UpgradeBase(ABase* BaseToUpgrade)
+{
+	if (BaseToUpgrade)
+	{
+		if(PlayerStateRef){
+			// Check if player has enough resources
+			UE_LOG( LogTemp, Warning, TEXT("2"));
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("2")));
+			if (PlayerStateRef->GetWoodPoints() >= BaseToUpgrade->GetWoodCostUpgrade() && PlayerStateRef->GetStonePoints() >= BaseToUpgrade->GetStoneCostUpgrade() && PlayerStateRef->GetGoldPoints() >= BaseToUpgrade->GetGoldCostUpgrade())
+			{
+				UE_LOG( LogTemp, Warning, TEXT("1"));
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("1")));
+				if (BaseToUpgrade->Level < BaseToUpgrade->MaxLevel)
+				{
+					UE_LOG( LogTemp, Warning, TEXT("0!!!"));
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("0!!!")));
+					if (!HasAuthority())
+						PlayerStateRef->SetMaxUnits(PlayerStateRef->GetMaxUnits() + 5);
+					Server_UpgradeBase();
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("MaxUnitCount = %d"), PlayerStateRef->GetMaxUnits()));
+					PlayerStateRef->ChangeWoodPoints(BaseToUpgrade->GetWoodCostUpgrade(), false);
+					PlayerStateRef->ChangeStonePoints(BaseToUpgrade->GetStoneCostUpgrade(), false);
+					PlayerStateRef->ChangeGoldPoints(BaseToUpgrade->GetGoldCostUpgrade(), false);
+					BaseToUpgrade->SetCostsUpgrade(BaseToUpgrade->GetGoldCostUpgrade() + 10, BaseToUpgrade->GetStoneCostUpgrade() + 10, BaseToUpgrade->GetWoodCostUpgrade() + 10);
+					BaseToUpgrade->Level++;
+				}
+			}
+		}
+	}
+}
+
+void ACustomPlayerController::Server_UpgradeBase_Implementation()
+{
+	PlayerStateRef->SetMaxUnits(PlayerStateRef->GetMaxUnits() + 5);
+}
+
+// ----------------------------
 	// Turns - Set-up
 
 //set player position on grid on start
@@ -877,8 +913,8 @@ bool ACustomPlayerController::SpawnUnit(EUnitType UnitToSpawn, FIntPoint SpawnCh
 void ACustomPlayerController::Multi_InitServerSpawn_Implementation(EUnitType UnitToSpawn, FIntPoint SpawnChosen,
 	ABase* BaseToSpawn, ABuilding* BuildingToSpawn, ACustomPlayerState* PlayerStat)
 {
-	if (PlayerStateRef->GetUnits() < PlayerStateRef->GetMaxUnits())
-	Server_SpawnUnit(UnitToSpawn, SpawnChosen, BaseToSpawn, BuildingToSpawn, PlayerStateRef);
+	if (PlayerStat->GetUnits() < PlayerStat->GetMaxUnits())
+		Server_SpawnUnit(UnitToSpawn, SpawnChosen, BaseToSpawn, BuildingToSpawn, PlayerStat);
 }
 
 //spawn unit with server

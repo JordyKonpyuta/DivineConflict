@@ -62,6 +62,13 @@ public:
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Enum")
 	EPlayer PlayerOwner = EPlayer::P_Neutral;
 
+	// Levels
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	int MaxLevel = 3;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Stats")
+	int Level = 1;
+
 protected:
 
 	// ----------------------------
@@ -79,13 +86,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
 	int MaxHealth = Health;
-
-		// Levels
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
-	int MaxLevel = 3;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Stats")
-	int Level = 1;
 
 		// Costs
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")

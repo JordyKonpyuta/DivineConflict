@@ -239,6 +239,12 @@ public:
 	
 	UFUNCTION( BlueprintCallable)
 	void SelectModeSelectBuilding();
+
+	UFUNCTION(BlueprintCallable)
+	void UpgradeBase(ABase* BaseToUpgrade);
+
+	UFUNCTION(Server, Reliable)
+	void Server_UpgradeBase();
 	
 	// ----------------------------
 	// Turns - Set-up

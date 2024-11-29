@@ -201,7 +201,6 @@ void ABase::Multi_Upgrade_Implementation()
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("0!!!")));
 				PlayerStateRef->SetMaxUnits(PlayerStateRef->GetMaxUnits() + 5);
 				Server_Upgrade();
-				PlayerStateRef->PlayerControllerRef->UnitMax = PlayerStateRef->GetMaxUnits();
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("MaxUnitCount = %d"), PlayerStateRef->GetMaxUnits()));
 				PlayerStateRef->ChangeWoodPoints(WoodCostUpgrade, false);
 				PlayerStateRef->ChangeStonePoints(StoneCostUpgrade, false);
