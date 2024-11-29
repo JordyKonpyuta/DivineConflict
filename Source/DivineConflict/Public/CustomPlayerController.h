@@ -113,7 +113,7 @@ public:
 	TObjectPtr<UInputAction> AIInteraction;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	TObjectPtr<UInputAction> AIRemovePath;
+	TObjectPtr<UInputAction> AICancel;
 	
 	// ----------------------------
 	// Inputs Context
@@ -198,6 +198,12 @@ protected:
 
 	UPROPERTY()
 	TArray<FIntPoint> PathReachable;
+	
+	// ----------------------------
+	// UI
+
+	UPROPERTY()
+	bool bIsUIVisible = false;
 	
 	// UFUNCTIONS
 public:
@@ -496,5 +502,5 @@ protected:
 
 	void ZoomCamera( const FInputActionValue& Value);
 
-	void PathRemove(const FInputActionValue& Value);
+	void CancelAction(const FInputActionValue& Value);
 };

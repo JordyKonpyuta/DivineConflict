@@ -46,6 +46,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RemoveStateFromTile(FIntPoint Index, EDC_TileState TileState);
 	
+	UFUNCTION(BlueprintCallable)
+	void RemoveAllStateFromTile(FIntPoint Index);
+	
 	// ----------------------------
 	// SETTER
 	

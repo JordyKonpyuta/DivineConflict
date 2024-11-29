@@ -72,7 +72,7 @@ void ACustomPlayerController::SetupInputComponent()
 			EnhancedInputComponent->BindAction(AIRotate, ETriggerEvent::Triggered, this, &ACustomPlayerController::RotateCameraPitch );
 			EnhancedInputComponent->BindAction(AIZoom, ETriggerEvent::Triggered, this, &ACustomPlayerController::ZoomCamera);
 			EnhancedInputComponent->BindAction(AIInteraction,ETriggerEvent::Started, this, &ACustomPlayerController::ControllerInteraction);
-			EnhancedInputComponent->BindAction(AIRemovePath,ETriggerEvent::Started, this, &ACustomPlayerController::PathRemove);
+			EnhancedInputComponent->BindAction(AICancel,ETriggerEvent::Started, this, &ACustomPlayerController::CancelAction);
 		}
 }
 
@@ -311,9 +311,11 @@ void ACustomPlayerController::ControllerInteraction()
 					PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 1);
 					CameraPlayerRef->IsAttacking = false;
 					PlayerAction = EDC_ActionPlayer::None;
+		
 					RemoveAttackWidget();
 					DisplayWidget();
 				}
+				Grid->GridVisual->RemoveStateFromTile(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection), EDC_TileState::Hovered);
 				if (!UnitRef->HasMoved)
 				{
 					CameraPlayerRef->FullMoveDirection.X = UnitRef->GetActorLocation().X;
@@ -325,6 +327,7 @@ void ACustomPlayerController::ControllerInteraction()
 					CameraPlayerRef->FullMoveDirection.Y = UnitRef->GetFinalGhostMesh()->GetComponentLocation().Y;
 					CameraPlayerRef->FullMoveDirection.Z = (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
 				}
+				Grid->GridVisual->addStateToTile(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection), EDC_TileState::Hovered);
 				RemoveAttackWidget();
 			}
 			break;
@@ -448,6 +451,7 @@ void ACustomPlayerController::VerifyBuildInteraction()
 	
 	if (PlayerAction == EDC_ActionPlayer::None)
 	{
+		bIsUIVisible = false;
 		RemoveAttackWidget();
 		
 		if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile != nullptr)
@@ -491,15 +495,16 @@ void ACustomPlayerController::VerifyBuildInteraction()
 	
 	else if (PlayerAction == EDC_ActionPlayer::AttackUnit)
 	{
-		if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile != nullptr)
+		if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile != nullptr
+			&& !bIsUIVisible)
 		{
 			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile->GetPlayerOwner() != PlayerStateRef->PlayerTeam)
 			{
 				Opponent = Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->UnitOnTile;
 				DisplayAttackWidget();
+				bIsUIVisible = true;
 			}
 		}
-		
 		else if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BuildingOnTile)
 		{
 			if (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->BuildingOnTile->PlayerOwner != PlayerStateRef->PlayerTeam)
@@ -508,8 +513,11 @@ void ACustomPlayerController::VerifyBuildInteraction()
 			}
 			else UpdateWidget3D(0, false);
 		}
-
-		else RemoveAttackWidget();
+		else
+		{
+			RemoveAttackWidget();
+			bIsUIVisible = false;
+		}
 	}
 
 	else
@@ -1432,11 +1440,12 @@ void ACustomPlayerController::ZoomCamera(const FInputActionValue& Value)
 	}
 }
 
-void ACustomPlayerController::PathRemove(const FInputActionValue& Value)
+void ACustomPlayerController::CancelAction(const FInputActionValue& Value)
 {
 	if(CameraPlayerRef)
 	{
-		CameraPlayerRef->PathRemove(Value);
+		CameraPlayerRef->CancelAction(Value);
+		GEngine->AddOnScreenDebugMessage(-1,5.f, FColor::Red, TEXT("Nah I'd Win"));
 	}
 }
 

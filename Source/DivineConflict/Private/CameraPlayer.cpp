@@ -8,8 +8,10 @@
 #include "Grid.h"
 #include "GridPath.h"
 #include "GridVisual.h"
+#include "ScreenPass.h"
 #include "Unit.h"
 #include "Unit_Child_Warrior.h"
+#include "DSP/WaveTableOsc.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -301,61 +303,48 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 	}
 }
 
-void ACameraPlayer::PathRemove(const FInputActionValue& Value)
+void ACameraPlayer::CancelAction(const FInputActionValue& Value)
 {
-	if (CustomPlayerController->GetPlayerAction() != EDC_ActionPlayer::None){
-		if (Path.Num() == 0)
+	if (CustomPlayerController->GetPlayerAction() != EDC_ActionPlayer::None)
+	{
+		// Cancel Action Type
+		
+		IsAttacking = false;
+		IsTowering = false;
+		IsSpelling = false;
+
+		// Clear Path and Pathfinding
+		
+		for(FIntPoint Point : CustomPlayerController->GetPathReachable())
 		{
-			IsAttacking = false;
-			IsTowering = false;
-			IsSpelling = false;
-			for(FIntPoint Point : CustomPlayerController->GetPathReachable())
-			{
-				CustomPlayerController->SetPlayerAction(EDC_ActionPlayer::None);
-				CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(Point, EDC_TileState::Attacked);
-			}
-			if (CustomPlayerController)
-			{
-				if (CustomPlayerController->UnitRef)
-				{
-					FullMoveDirection.X = CustomPlayerController->UnitRef->GetActorLocation().X;
-					FullMoveDirection.Y = CustomPlayerController->UnitRef->GetActorLocation().Y;
-					FullMoveDirection.Z = CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->UnitRef->GetIndexPosition())->TileTransform.GetLocation().Z * 0.8 + 175;
-					CustomPlayerController->VerifyBuildInteraction();
-				}
-			}
-			return;
-		}
-		CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(Path.Last(), EDC_TileState::Pathfinding);
-		Path.RemoveAt(Path.Num() - 1);
-		if (!Path.IsEmpty())
-		{
-			if (Path.Last() != Path[0])
-			{
-				OldMoveDirection.X = Path.Last(1).X * 100;
-				OldMoveDirection.Y = Path.Last(1).Y * 100;
-				OldMoveDirection.Z = CustomPlayerController->Grid->GetGridData()->Find(Path.Last(1))->TileTransform.GetLocation().Z * 0.8 + 175;
-			}
-			else
-				FirstMove = true;
-			
-			UnitMovingCurrentMovNumber++;
-			FullMoveDirection.X = Path.Last().X * 100;
-			FullMoveDirection.Y = Path.Last().Y * 100;
-			FullMoveDirection.Z = CustomPlayerController->Grid->GetGridData()->Find(Path.Last())->TileTransform.GetLocation().Z * 0.8 + 175;
+			CustomPlayerController->SetPlayerAction(EDC_ActionPlayer::None);
+			CustomPlayerController->Grid->GridVisual->RemoveAllStateFromTile(Point);
 		}
 
-		if(Path.Num() == 0)
+		// Prepare Camera
+
+		CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection), EDC_TileState::Hovered);
+		
+		if (CustomPlayerController)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Path Remove: Empty!!"));
-			for(FIntPoint Point : CustomPlayerController->GetPathReachable())
+			if (CustomPlayerController->UnitRef)
 			{
-				CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(Point, EDC_TileState::Reachable);
+				FullMoveDirection.X = CustomPlayerController->UnitRef->GetActorLocation().X;
+				FullMoveDirection.Y = CustomPlayerController->UnitRef->GetActorLocation().Y;
+				FullMoveDirection.Z = CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->UnitRef->GetIndexPosition())->TileTransform.GetLocation().Z * 0.8 + 175;
+				CustomPlayerController->VerifyBuildInteraction();
 			}
-			CustomPlayerController->SetPlayerAction(EDC_ActionPlayer::None);
-			IsMovingUnit = false;
-			return;
 		}
+		
+		CustomPlayerController->Grid->GridVisual->addStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection), EDC_TileState::Hovered);
+		
+		OldMoveDirection = FullMoveDirection;
+
+		// Remove Action Type
+
+		Path.Empty();
+		CustomPlayerController->SetPlayerAction(EDC_ActionPlayer::None);
+		IsMovingUnit = false;
 	}
 	else
 	{		

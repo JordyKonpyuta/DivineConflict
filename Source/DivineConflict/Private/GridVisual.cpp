@@ -118,10 +118,29 @@ void UGridVisual::RemoveStateFromTile(FIntPoint Index, EDC_TileState TileState)
 			UpdateVisuals(Index);
 		}
 	}
-	
 }
 
-	// ----------------------------
+void UGridVisual::RemoveAllStateFromTile(FIntPoint Index)
+{
+	if (Grid)
+	{
+		if(Grid->GetGridData()->Find(Index))
+		{
+			FDC_TileData* Data = Grid->GetGridData()->Find(Index);
+			
+			Data->TileState.Remove(EDC_TileState::Selected);
+			Data->TileState.Remove(EDC_TileState::Reachable);
+			Data->TileState.Remove(EDC_TileState::Pathfinding);
+			Data->TileState.Remove(EDC_TileState::Attacked);
+			Data->TileState.Remove(EDC_TileState::Spawned);
+			
+			Grid->GetGridData()->Add(Index, *Data);
+			UpdateVisuals(Index);
+		}
+	}
+}
+
+// ----------------------------
 	// SETTER
 
 void UGridVisual::SetGrid(AGrid* GridRef)

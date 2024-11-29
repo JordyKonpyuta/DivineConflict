@@ -138,7 +138,7 @@ public:
 	UFUNCTION()
 	void MoveCamera(/* const FInputActionValue& Value*/);
 
-	void PathRemove(const FInputActionValue& Value);
+	void CancelAction(const FInputActionValue& Value);
 
 	void PathClear();
 
