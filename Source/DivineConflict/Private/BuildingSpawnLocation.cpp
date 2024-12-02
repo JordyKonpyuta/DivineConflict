@@ -62,15 +62,6 @@ void UBuildingSpawnLocation::SpawnGridColors(TArray<FIntPoint> AllSpawnLocationI
 				}
 			}
 		}
-		else
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("AllSpawnLocationIndex is Empty, that's an oomfie"));
-		}
-	}
-	else
-	{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("BuildingRef is Quantic and both exists and doesn't"));
-		
 	}
 }
 
@@ -95,11 +86,7 @@ void UBuildingSpawnLocation::DeSpawnGridColors(TArray<FIntPoint> AllSpawnLocatio
 				}
 			}
 		}
-		else
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("AllSpawnLocationIndex is Empty, that's an oomfie"));
-		}
-		
+		/*
 		for (FIntPoint BuildingIndex : BuildingRef->SpawnLocRef)
 		{
 			GridRef->GridVisual->RemoveStateFromTile(BuildingIndex, EDC_TileState::Selected);
@@ -107,11 +94,6 @@ void UBuildingSpawnLocation::DeSpawnGridColors(TArray<FIntPoint> AllSpawnLocatio
 		for (FIntPoint Index : BuildingRef->SpawnLocRef)
 		{
 			GridRef->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Spawnable);
-		}
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Turquoise, TEXT("BuildingRef is Quantic and both exists and doesn't"));
-		
+		}*/
 	}
 }
