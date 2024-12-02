@@ -786,22 +786,34 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 	if (Grid->GridPath->FindTileNeighbors(GetIndexPosition()).Contains(UnitToAttack->GetIndexPosition())
 		|| UnitToAttack->IsGarrison)
 	{
-		FDamageEvent DamageEvent;
-		if (PlayerOwner == EPlayer::P_Hell && bIsCommandeerBuffed)
-		{
-			UnitToAttack->TakeDamage(GetAttack()+1,DamageEvent, GetInstigatorController(), this);
-		} else
-		{
-			UnitToAttack->TakeDamage(GetAttack(), DamageEvent, GetInstigatorController(), this);
-		}
-		if (UnitToAttack->PlayerOwner == EPlayer::P_Hell && UnitToAttack->bIsCommandeerBuffed)
-		{
-			TakeDamage(UnitToAttack->GetAttack() + 1 , DamageEvent, GetInstigatorController(), UnitToAttack);
-		} else
-		{
-			TakeDamage(UnitToAttack->GetAttack(), DamageEvent, GetInstigatorController(), UnitToAttack);
-		}
+		int DamageCaused = 0;
+		int DamageTaken = 0;
 		
+		// Calculate Damage Inflicted
+		if (!Cast<AUnit_Child_Leader>(this))
+			DamageCaused = GetAttack();
+		else
+			DamageCaused = UnitToAttack->GetDefense() + GetAttack();
+
+		if (PlayerOwner == EPlayer::P_Hell && bIsCommandeerBuffed)
+			DamageCaused++;
+
+		// Calculate Damage Taken
+		if (!Cast<AUnit_Child_Leader>(UnitToAttack))
+			DamageTaken = UnitToAttack->GetAttack();
+		else
+			DamageTaken = UnitToAttack->GetAttack() + GetDefense();
+		
+		if (UnitToAttack->PlayerOwner == EPlayer::P_Hell && UnitToAttack->bIsCommandeerBuffed)
+			DamageTaken++;
+
+		// Apply Damage
+		FDamageEvent DamageEvent;
+
+		UnitToAttack->TakeDamage(DamageCaused, DamageEvent, GetInstigatorController(), this);
+		TakeDamage(DamageTaken, DamageEvent, GetInstigatorController(), UnitToAttack);
+		
+		// Check For Death before moving into building
 		if(UnitToAttack->GetCurrentHealth() < 1)
 		{
 			if (UnitToAttack->BuildingRef)

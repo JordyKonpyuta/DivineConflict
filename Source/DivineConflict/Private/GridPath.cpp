@@ -160,7 +160,7 @@ bool UGridPath::IsValidHeigh(FDC_TileData* IndextestData, FDC_TileData* CurrentI
 
 bool UGridPath::IsValidHeighWarrior(FDC_TileData* IndextestData, FDC_TileData* CurrentIndexData)
 {
-	if (IndextestData->TileTransform.GetLocation().Z - CurrentIndexData->TileTransform.GetLocation().Z >= -100/1.75 && IndextestData->TileTransform.GetLocation().Z - CurrentIndexData->TileTransform.GetLocation().Z <= 200/1.75)
+	if (IndextestData->TileTransform.GetLocation().Z - CurrentIndexData->TileTransform.GetLocation().Z >= -100/0.9 && IndextestData->TileTransform.GetLocation().Z - CurrentIndexData->TileTransform.GetLocation().Z <= 100/0.9)
 		return true;
 	
 	return false;

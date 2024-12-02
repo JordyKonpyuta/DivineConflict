@@ -79,7 +79,7 @@ void AUnit_Child_Mage::BeginPlay()
 	if (MaxHealth == 0)
 		SetMaxHealth(10);
 	if (PM == 0)
-		SetPM(4);
+		SetPM(5);
 	
 	for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState<ACustomGameState>()->PlayerArray)
 	{

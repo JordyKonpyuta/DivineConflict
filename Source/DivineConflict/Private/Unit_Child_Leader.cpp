@@ -56,13 +56,13 @@ void AUnit_Child_Leader::BeginPlay()
 	Super::BeginPlay();
 
 	if (Attack == 0)
-		SetAttack(7);
+		SetAttack(3);
 	if (Defense == 0)
 		SetDefense(0);
 	if (MaxHealth == 0)
 		SetMaxHealth(20);
 	if (PM == 0)
-		SetPM(3);
+		SetPM(5);
 	for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState<ACustomGameState>()->PlayerArray)
 	{
 		if (ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))

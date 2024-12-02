@@ -77,7 +77,7 @@ void AUnit_Child_Warrior::BeginPlay()
 	if (MaxHealth == 0)
 		SetMaxHealth(11);
 	if (PM == 0)
-		SetPM(5);
+		SetPM(6);
 	for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState<ACustomGameState>()->PlayerArray)
 	{
 		if (ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))

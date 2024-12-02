@@ -75,13 +75,13 @@ void AUnit_Child_Tank::BeginPlay()
 	Super::BeginPlay();
 
 	if (Attack == 0)
-		SetAttack(10);
+		SetAttack(11);
 	if (Defense == 0)
-		SetDefense(9);
+		SetDefense(10);
 	if (MaxHealth == 0)
-		SetMaxHealth(12);
+		SetMaxHealth(7);
 	if (PM == 0)
-		SetPM(3);
+		SetPM(4);
 
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AUnit_Child_Tank::SetTimer, 1.0f, true);
 	for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState<ACustomGameState>()->PlayerArray)
