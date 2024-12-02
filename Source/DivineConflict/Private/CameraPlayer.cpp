@@ -315,6 +315,8 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 			}
 		}
 		CustomPlayerController->VerifyBuildInteraction();
+		CustomPlayerController->InactivityTimer = 0;
+		CustomPlayerController->DisplayInputsOnHUD();
 	}
 }
 

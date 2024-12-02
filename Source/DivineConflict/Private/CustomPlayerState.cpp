@@ -119,7 +119,7 @@ void ACustomPlayerState::UpdateUI()
 	if(PlayerControllerRef)
 	{
 		PlayerControllerRef->UpdateUi();
-		PlayerControllerRef->UpdateUITimer(90);
+		PlayerControllerRef->UpdateUITimer(60);
 		PlayerControllerRef->HiddeWidget();
 	}
 }

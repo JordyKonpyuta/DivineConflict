@@ -174,6 +174,12 @@ public:
 
 	UPROPERTY()
 	FTimerHandle TimerActiveEndTurn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int InactivityTimer = 0;
+
+	UPROPERTY()
+	FTimerHandle InactivityTimerHandle;
 	
 	// ----------------------------
 	// UI
@@ -396,16 +402,27 @@ public:
 		// General
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void UpdateUi();
+	
 	UFUNCTION(Client, Reliable)
 	void Client_UpdateUi();
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void UpdateWidget3D(int Index, bool bVisibility);
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void ActionMemory(EDC_ActionPlayer Action);
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void RemoveLastActionMemory();
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void FailedTutorial();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void DisplayInputsOnHUD();
+
+	UFUNCTION()
+	void IncrementInactivityTimer();
 
 	// Stats
 	UFUNCTION(BlueprintNativeEvent)

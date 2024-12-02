@@ -47,6 +47,7 @@ void ACustomPlayerController::BeginPlay()
 	
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACustomPlayerController::AssignPlayerPosition, 2.f, false);
+	GetWorld()->GetTimerManager().SetTimer(InactivityTimerHandle, this, &ACustomPlayerController::IncrementInactivityTimer, 1.0f, true);
 }
 
 void ACustomPlayerController::SetupInputComponent()
@@ -1433,6 +1434,8 @@ void ACustomPlayerController::RotateCamera(const FInputActionValue& Value)
 	if(CameraPlayerRef)
 	{
 		CameraPlayerRef->RotateCamera(Value);
+		InactivityTimer = 0;
+		DisplayInputsOnHUD();
 	}
 }
 
@@ -1441,6 +1444,8 @@ void ACustomPlayerController::RotateCameraPitch(const FInputActionValue& Value)
 	if(CameraPlayerRef)
 	{
 		CameraPlayerRef->RotateCameraPitch(Value);
+		InactivityTimer = 0;
+		DisplayInputsOnHUD();
 	}
 }
 
@@ -1449,6 +1454,8 @@ void ACustomPlayerController::ZoomCamera(const FInputActionValue& Value)
 	if(CameraPlayerRef)
 	{
 		CameraPlayerRef->ZoomCamera(Value);
+		InactivityTimer = 0;
+		DisplayInputsOnHUD();
 	}
 }
 
@@ -1458,6 +1465,8 @@ void ACustomPlayerController::CancelAction(const FInputActionValue& Value)
 	{
 		CameraPlayerRef->CancelAction(Value);
 		GEngine->AddOnScreenDebugMessage(-1,5.f, FColor::Red, TEXT("Nah I'd Win"));
+		InactivityTimer = 0;
+		DisplayInputsOnHUD();
 	}
 }
 
@@ -1553,6 +1562,16 @@ void ACustomPlayerController::HiddeWidget_Implementation()
 
 void ACustomPlayerController::RemoveLastActionMemory_Implementation()
 {
+}
+
+void ACustomPlayerController::DisplayInputsOnHUD_Implementation()
+{
+}
+
+void ACustomPlayerController::IncrementInactivityTimer()
+{
+	InactivityTimer++;
+	DisplayInputsOnHUD();
 }
 
 bool ACustomPlayerController::GetIsInActiveTurn()
