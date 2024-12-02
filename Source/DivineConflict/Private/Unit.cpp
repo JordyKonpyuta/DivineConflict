@@ -42,11 +42,37 @@ AUnit::AUnit()
 	UnitMeshDistinction = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Unit Mesh Distinction"));
 	
 	// Materials
+	if (Cast<AUnit_Child_Leader>(this))
+	{
+		AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture_DEBUG/M_NeutralPlayer.M_NeutralPlayer'")).Object);
+		AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HeavenLeader.Mi_HeavenLeader'")).Object);
+		AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HellLeader.Mi_HellLeader'")).Object);
+	}
+	else if (Cast<AUnit_Child_Mage>(this))
+	{
+		AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture_DEBUG/M_NeutralPlayer.M_NeutralPlayer'")).Object);
+		AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/MI_HeavenMage.MI_HeavenMage'")).Object);
+		AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/MI_HellMage.MI_HellMage'")).Object);
+	}
+	else if (Cast<AUnit_Child_Tank>(this))
+	{
+		AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture_DEBUG/M_NeutralPlayer.M_NeutralPlayer'")).Object);
+		AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/MI_HeavenTank.MI_HeavenTank'")).Object);
+		AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/MI_HellTank.MI_HellTank'")).Object);
+	}
+	else if (Cast<AUnit_Child_Warrior>(this))
+	{
+		AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture_DEBUG/M_NeutralPlayer.M_NeutralPlayer'")).Object);
+		AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/MI_HeavenWarrior.MI_HeavenWarrior'")).Object);
+		AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/MI_HellWarrior.MI_HellWarrior'")).Object);
+	}
+	else 
+	{
+		AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture_DEBUG/M_NeutralPlayer.M_NeutralPlayer'")).Object);
+		AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HeavenPlayer.Mi_HeavenPlayer'")).Object);
+		AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HellPlayer.Mi_HellPlayer'")).Object);
+	}
 	
-	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture_DEBUG/M_NeutralPlayer.M_NeutralPlayer'")).Object);
-	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HeavenPlayer.Mi_HeavenPlayer'")).Object);
-	AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HellPlayer.Mi_HellPlayer'")).Object);
-
 	MaterialToGhosts = ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture/M_Ghosts.M_Ghosts'")).Object;
 
 	// Ghosts Meshes
@@ -1319,12 +1345,15 @@ void AUnit::SetPlayerOwnerMulticast_Implementation(EPlayer po)
 	{
 	case EPlayer::P_Hell:
 		UnitMesh->SetMaterial(0, AllMaterials[2]);
+		UnitMeshDistinction->SetMaterial(0, AllMaterials[2]);
 		break;
 	case EPlayer::P_Heaven:
 		UnitMesh->SetMaterial(0, AllMaterials[1]);
+		UnitMeshDistinction->SetMaterial(0, AllMaterials[1]);
 		break;
 	case EPlayer::P_Neutral:
 		UnitMesh->SetMaterial(0, AllMaterials[0]);
+		UnitMeshDistinction->SetMaterial(0, AllMaterials[0]);
 		break;
 	}
 }

@@ -33,6 +33,8 @@ AUnit_Child_Warrior::AUnit_Child_Warrior()
 	UnitMeshDistinction->SetupAttachment(UnitMesh);
 	UnitMeshDistinction->SetRelativeLocation(FVector(0, 0, 90));
 	UnitMeshDistinction->SetRelativeScale3D(FVector(.5, .5, .5));
+		
+	// Icons
 	
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjHell(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Warrior_Hell.T_Icon_Warrior_Hell'"));
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObj(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Warrior_Paradise.T_Icon_Warrior_Paradise'"));

@@ -29,6 +29,8 @@ AUnit_Child_Tank::AUnit_Child_Tank()
 	UnitMeshDistinction->SetRelativeLocation(FVector(0, 0, 90));
 	UnitMeshDistinction->SetRelativeScale3D(FVector(.5, .5, .5));
 
+	// Icons
+	
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjectHell(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Tank_Hell.T_Icon_Tank_Hell'"));
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Tank_Paradise.T_Icon_Tank_Paradise'"));
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjectNeutral(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Tank_Neutral.T_Icon_Tank_Neutral'"));

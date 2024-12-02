@@ -24,15 +24,15 @@ AUnit_Child_Mage::AUnit_Child_Mage()
 	UnitMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 
 	// Distinction Mesh (temporary)
-	
 	UnitMeshDistinction->SetStaticMesh( ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'")).Object);
 	UnitMeshDistinction->SetCollisionResponseToAllChannels(ECR_Ignore);
 	UnitMeshDistinction->SetIsReplicated(true);
 	UnitMeshDistinction->SetupAttachment(UnitMesh);
 	UnitMeshDistinction->SetRelativeLocation(FVector(0, 0, 90));
 	UnitMeshDistinction->SetRelativeScale3D(FVector(.5, .5, .5));
-
-
+	
+	// Icons
+	
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjectHell(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Mage_Hell.T_Icon_Mage_Hell'"));
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObject(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Mage_Paradise.T_Icon_Mage_Paradise'"));
 	static ConstructorHelpers::FObjectFinder<UTexture2D> IconTexObjectNeutral(TEXT("/Script/Engine.Texture2D'/Game/AssetImport/Textures/UnitIcons/T_Icon_Mage_Neutral.T_Icon_Mage_Neutral'"));
