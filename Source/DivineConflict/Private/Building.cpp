@@ -9,7 +9,6 @@
 #include "Grid.h"
 #include "GridInfo.h"
 #include "GridPath.h"
-#include "GridVisual.h"
 #include "TutorialGameMode.h"
 #include "Unit_Child_Leader.h"
 #include "Unit_Child_Warrior.h"
@@ -67,6 +66,8 @@ void ABuilding::BeginPlay()
 		break;
 	case EBuildingList::B_AP:
 		break;
+	case EBuildingList::B_Smol:
+		break;
 	default:
 		break;
 	}
@@ -99,6 +100,18 @@ void ABuilding::BeginPlay()
 			Grid->GridInfo->addBuildingOnGrid(SpawnLocRef[7], this);
 			Grid->GridInfo->addBuildingOnGrid(SpawnLocRef[8], this);
 
+			// Unit
+			UnitPosition = GetActorLocation();
+		}
+		else if (BuildingList == EBuildingList::B_Smol)
+		{
+			// Get Position Stocked
+			SpawnLocRef.Add(Grid->ConvertLocationToIndex(GetActorLocation()));
+			
+			// Grid : Building
+			Grid->GridInfo->addBuildingOnGrid(SpawnLocRef[0], this);
+
+			// Unit
 			UnitPosition = GetActorLocation();
 		}
 		else
@@ -131,7 +144,6 @@ void ABuilding::BeginPlay()
 			BuildingSpawnLocationRef->GridRef = Grid;
 		}
 		
-		UE_LOG(LogTemp, Warning, TEXT("Building : %d %d "), SpawnLocRef[0].X, SpawnLocRef[0].Y);
 		if(HasAuthority())
 		{
 			switch (BuildingList)
@@ -151,6 +163,8 @@ void ABuilding::BeginPlay()
 			case EBuildingList::B_AP:
 				UnitRef = GetWorld()->SpawnActor<AUnit_Child_Leader>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
 				UnitRef->SetPlayerOwner(PlayerOwner);
+				break;
+			case EBuildingList::B_Smol:
 				break;
 			default:
 				UnitRef = GetWorld()->SpawnActor<AUnit_Child_Warrior>(Grid->ConvertIndexToLocation(SpawnLocRef[0]), FRotator(0, 0, 0));
@@ -192,7 +206,6 @@ void ABuilding::Multi_InitStartBuilding_Implementation(AUnit* UnitSp)
 		UnitSp->SetIsGarrison(true);
 		UnitSp->SetBuildingRef(this);
 		UnitSp->SetActorLocation(GetActorLocation());
-		GEngine->AddOnScreenDebugMessage(-1,5.f, FColor::Red, FString::Printf(TEXT("GarrisonFull : %d"), GarrisonFull));
 	}
 }
 
@@ -200,7 +213,6 @@ void ABuilding::Multi_InitStartBuilding_Implementation(AUnit* UnitSp)
 bool ABuilding::Interact_Implementation(ACustomPlayerController* PlayerController)
 {
 	PlayerControllerRef = PlayerController;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::MakeRandomColor(), TEXT("PLAYER CONTROLLER LOCATED"));
 	PrepareMovements();
 	return true;
 }
@@ -239,7 +251,6 @@ void ABuilding::BuildingAction()
 void ABuilding::PrepareMovements()
 {
 	MovementOptionsReady = true;
-		GEngine->AddOnScreenDebugMessage(-1,5.f, FColor::Red, TEXT("PrepareMovements"));
 	// Tiles you can walk on after leaving the building
 	if (!SpawnLocRef.IsEmpty())
 	{
@@ -328,6 +339,10 @@ void ABuilding::Multi_SwitchOwner_Implementation(ACustomPlayerState* NewOwner)
 	case EBuildingList::B_Gold:
 		if (OwnerPlayerState){OwnerPlayerState->GoldBuildingOwned -= 1;}
 		NewOwner->GoldBuildingOwned += 1;
+		break;
+	case EBuildingList::B_Smol:
+		if (OwnerPlayerState){OwnerPlayerState->SmolBuildingOwned -= 1;}
+		NewOwner->SmolBuildingOwned += 1;
 		break;
 	case EBuildingList::B_AP:
 		if (OwnerPlayerState){OwnerPlayerState->GotCentralBuilding = false;}

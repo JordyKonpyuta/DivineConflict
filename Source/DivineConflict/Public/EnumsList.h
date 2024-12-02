@@ -20,7 +20,8 @@ enum class EBuildingList : uint8 {
 	B_Wood	= 0		UMETA(DisplayName="Wood"),
 	B_Stone	= 1		UMETA(DisplayName="Stone"),
 	B_Gold	= 2		UMETA(DisplayName="Gold"),
-	B_AP	= 3		UMETA(DisplayName="AP")
+	B_AP	= 3		UMETA(DisplayName="AP"),
+	B_Smol	= 4		UMETA(DisplayName="Smol")
 };
 
 UENUM(BlueprintType)

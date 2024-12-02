@@ -45,6 +45,9 @@ public:
 	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "RessourceGathering")
 	int GoldBuildingOwned = 0;
 	
+	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "RessourceGathering")
+	int SmolBuildingOwned = 0;
+	
 	// ----------------------------
 	// Turns
 

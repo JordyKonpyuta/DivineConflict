@@ -98,9 +98,9 @@ void ACustomPlayerState::OnRep_PlayerTeam()
 
 void ACustomPlayerState::NewTurnBegin()
 {
-	ChangeWoodPoints(20 + (WoodBuildingOwned * 15), true);
-	ChangeStonePoints(20 + (StoneBuildingOwned * 15), true);
-	ChangeGoldPoints(20 + (GoldBuildingOwned * 15), true);
+	ChangeWoodPoints(15 + (WoodBuildingOwned * 15) + (SmolBuildingOwned * 5), true);
+	ChangeStonePoints(15 + (StoneBuildingOwned * 15) + (SmolBuildingOwned * 5), true);
+	ChangeGoldPoints(15 + (GoldBuildingOwned * 15) + (SmolBuildingOwned * 5), true);
 }
 
 void ACustomPlayerState::BlockNewTurnBegin()
@@ -108,7 +108,7 @@ void ACustomPlayerState::BlockNewTurnBegin()
 	bIsBlockTimerNewBeginTurn = false;
 }
 
-// ----------------------------
+	// ----------------------------
 	// UI
 
 void ACustomPlayerState::UpdateUI()
@@ -116,10 +116,8 @@ void ACustomPlayerState::UpdateUI()
 
 	if(!PlayerControllerRef)
 		PlayerControllerRef = Cast<ACustomPlayerController>(GetPlayerController());
-	UE_LOG( LogTemp, Warning, TEXT("PlayerControllerRef"));
 	if(PlayerControllerRef)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Player %d is active turn"), PlayerTeam));
 		PlayerControllerRef->UpdateUi();
 		PlayerControllerRef->UpdateUITimer(90);
 		PlayerControllerRef->HiddeWidget();
