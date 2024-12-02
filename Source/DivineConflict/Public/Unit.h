@@ -183,6 +183,7 @@ public:
 
 	FTimerHandle DeathTimerHandle;
 
+	UPROPERTY(Replicated)
 	FRotator UnitRotation = FRotator(0,0,0);
 
 	// ----------------------------

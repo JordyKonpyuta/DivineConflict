@@ -15,6 +15,7 @@
 #include "Tower.h"
 #include "TutorialGameMode.h"
 #include "Unit_Child_Leader.h"
+#include "Unit_Child_Mage.h"
 #include "Unit_Child_Tank.h"
 #include "Unit_Child_Warrior.h"
 #include "Engine/DamageEvents.h"
@@ -203,6 +204,7 @@ void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProp
 	DOREPLIFETIME(AUnit, PlayerOwner);
 	DOREPLIFETIME(AUnit, PM);
 	DOREPLIFETIME(AUnit, UnitMesh);
+	DOREPLIFETIME(AUnit, UnitRotation);
 
 }
 
@@ -734,7 +736,13 @@ float AUnit::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEve
 	AActor* DamageCauser)
 {
 	AUnit* UnitDamageCauser = Cast<AUnit>(DamageCauser);
-	if(UnitDamageCauser->IsValidLowLevel())
+	
+	// Rotate after attack
+	float NewRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), DamageCauser->GetActorLocation()).Yaw;
+	NewRot = UKismetMathLibrary::GridSnap_Float(NewRot, 45) - 90;
+	UnitRotation = FRotator(0, NewRot, 0);
+	
+	if(UnitDamageCauser->IsValidLowLevel() && Cast<AUnit_Child_Mage>(UnitDamageCauser) == nullptr)
 	{
 		if(Grid->IsValidLowLevel())
 		{
@@ -867,6 +875,7 @@ void AUnit::AnimAttack(AActor* ThingToAttack)
 		MoveTimerDelegate,
 		0.2,
 		false);
+		
 		if (Cast<AUnit>(ThingToAttack)){
 			AUnit* UnitToAttack = Cast<AUnit>(ThingToAttack);
 			SetActorLocation(FVector(

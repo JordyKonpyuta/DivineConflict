@@ -118,28 +118,29 @@ void AUnit_Child_Mage::SpecialMage(AActor* Target)
 {
 	if (Target)
 	{
+		float NewRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Target->GetActorLocation()).Yaw;
+		NewRot = UKismetMathLibrary::GridSnap_Float(NewRot, 45) - 90;
+		UnitRotation = FRotator(0, NewRot, 0);
+		
 		FireBall = GetWorld()->SpawnActor<AProjectile>(AProjectile::StaticClass(), GetActorLocation(), GetActorRotation());
 		FireBall->UnitOwner = this;
 		FireBall->IsMageAttack = true;
 		FireBall->Server_CreateProjectile();
 		FireBall->MoveProjectile(Target);
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("MAGE SPECIAL"));
 		if(ABase* BaseAttack = Cast<ABase>(Target))
 		{
 			FDamageEvent DamageEvent;
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("BASE TO ATTACK DAMAGE"));
 			BaseAttack->TakeDamage(5.f, DamageEvent, nullptr, this);
 		}
 		if(AUnit* UnitAttack = Cast<AUnit>(Target))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UNIT TO ATTACK DAMAGE"));
-			UnitAttack->SetCurrentHealth(UnitAttack->GetCurrentHealth() - 5);
+			FDamageEvent DamageEvent;
+			UnitAttack->TakeDamage(UnitAttack->GetDefense() + 5, DamageEvent, nullptr, this);
 
 			if(UnitAttack->GetCurrentHealth() <= 0)
 			{
 				if (UnitAttack->GetIsGarrison())
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UNIT TO ATTACK GARRISON"));
 					UnitAttack->GetBuildingRef()->UnitRef = nullptr;
 					UnitAttack->GetBuildingRef()->GarrisonFull = false;
 					UnitAttack->SetIsGarrison(false);
