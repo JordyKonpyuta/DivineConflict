@@ -314,7 +314,8 @@ void ACustomPlayerController::ControllerInteraction()
 					PlayerAction = EDC_ActionPlayer::None;
 		
 					RemoveAttackWidget();
-					DisplayWidget();
+					if (!UnitRef->HasActed || !UnitRef)
+						DisplayWidget();
 				}
 				Grid->GridVisual->RemoveStateFromTile(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection), EDC_TileState::Hovered);
 				if (!UnitRef->HasMoved)
@@ -373,6 +374,7 @@ void ACustomPlayerController::ControllerInteraction()
 					CameraPlayerRef->Path.Empty();
 					
 					PlayerAction = EDC_ActionPlayer::None;
+					if (!UnitRef->HasActed || !UnitRef)
 					DisplayWidget();
 				}
 			}
@@ -431,6 +433,7 @@ void ACustomPlayerController::ControllerInteraction()
 				UnitRef->SetIsSelected(false);
 				CameraPlayerRef->IsSpelling = false;
 				PlayerAction = EDC_ActionPlayer::None;
+				if (!UnitRef->HasActed || !UnitRef)
 				DisplayWidget();
 			}
 			RemoveAttackWidget();
