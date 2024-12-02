@@ -285,7 +285,7 @@ public:
 	// ----------------------------
 	// End Turn
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void EndTurn();
 
 	UFUNCTION(Server, Reliable)
