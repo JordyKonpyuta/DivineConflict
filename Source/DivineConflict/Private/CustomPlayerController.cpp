@@ -183,6 +183,7 @@ void ACustomPlayerController::ControllerInteraction()
 							CameraPlayerRef->UnitMovingCurrentMovNumber = UnitRef->GetPM();
 							IInteractInterface::Execute_Interact(Grid->GridData.Find(PlayerPositionInGrid)->UnitOnTile, this);
 							DisplayWidget();
+							
 						}
 					}
 					////Interract building and have an unit on build
@@ -531,6 +532,9 @@ void ACustomPlayerController::VerifyBuildInteraction()
 
 void ACustomPlayerController::SelectModeMovement()
 {
+	bHoveringOverUnit = false;
+	DisplayWidgetHovering();
+	
 	FindReachableTiles();
 	if (UnitRef)
 	{
@@ -557,6 +561,9 @@ void ACustomPlayerController::SelectModeMovement()
 
 void ACustomPlayerController::SelectModeAttack()
 {
+	bHoveringOverUnit = false;
+	DisplayWidgetHovering();
+	
 	PlayerAction = EDC_ActionPlayer::AttackUnit;
 	CameraPlayerRef->IsAttacking = true;
 
@@ -582,6 +589,9 @@ void ACustomPlayerController::SelectModeAttack()
 
 void ACustomPlayerController::SelectModeAttackBuilding()
 {
+	bHoveringOverUnit = false;
+	DisplayWidgetHovering();
+	
 	PlayerAction = EDC_ActionPlayer::AttackBuilding;
 	PathReachable = Grid->GridPath->FindPath(TowerRef->GetGridPosition(),FIntPoint(-999,-999),true,3,false, false);
 	for(FIntPoint Index : PathReachable)
@@ -593,6 +603,9 @@ void ACustomPlayerController::SelectModeAttackBuilding()
 
 void ACustomPlayerController::SelectModeSpecial()
 {
+	bHoveringOverUnit = false;
+	DisplayWidgetHovering();
+	
 	if (PlayerStateRef)
 		if (PlayerStateRef->GetActionPoints() < 2)
 			return;
@@ -660,6 +673,9 @@ void ACustomPlayerController::SelectModeSpecial()
 
 void ACustomPlayerController::SelectModeSelectBuilding()
 {
+	bHoveringOverUnit = false;
+	DisplayWidgetHovering();
+	
 	PlayerAction = EDC_ActionPlayer::SelectBuilding;
 }
 
@@ -669,20 +685,13 @@ void ACustomPlayerController::UpgradeBase(ABase* BaseToUpgrade)
 	{
 		if(PlayerStateRef){
 			// Check if player has enough resources
-			UE_LOG( LogTemp, Warning, TEXT("2"));
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("2")));
 			if (PlayerStateRef->GetWoodPoints() >= BaseToUpgrade->GetWoodCostUpgrade() && PlayerStateRef->GetStonePoints() >= BaseToUpgrade->GetStoneCostUpgrade() && PlayerStateRef->GetGoldPoints() >= BaseToUpgrade->GetGoldCostUpgrade())
 			{
-				UE_LOG( LogTemp, Warning, TEXT("1"));
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("1")));
 				if (BaseToUpgrade->Level < BaseToUpgrade->MaxLevel)
 				{
-					UE_LOG( LogTemp, Warning, TEXT("0!!!"));
-					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("0!!!")));
 					if (!HasAuthority())
 						PlayerStateRef->SetMaxUnits(PlayerStateRef->GetMaxUnits() + 5);
 					Server_UpgradeBase();
-					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, FString::Printf(TEXT("MaxUnitCount = %d"), PlayerStateRef->GetMaxUnits()));
 					PlayerStateRef->ChangeWoodPoints(BaseToUpgrade->GetWoodCostUpgrade(), false);
 					PlayerStateRef->ChangeStonePoints(BaseToUpgrade->GetStoneCostUpgrade(), false);
 					PlayerStateRef->ChangeGoldPoints(BaseToUpgrade->GetGoldCostUpgrade(), false);
@@ -1465,11 +1474,13 @@ void ACustomPlayerController::Client_UpdateUi_Implementation()
 
 void ACustomPlayerController::UpdateWidget3D_Implementation(int Index, bool bVisibility)
 {
+	
 }
 
 
 void ACustomPlayerController::FailedTutorial_Implementation()
 {
+	
 }
 
 
@@ -1477,6 +1488,12 @@ void ACustomPlayerController::FailedTutorial_Implementation()
 
 void ACustomPlayerController::DisplayWidget_Implementation()
 {
+	
+}
+
+void ACustomPlayerController::DisplayWidgetHovering_Implementation()
+{
+	
 }
 
 void ACustomPlayerController::DisplayWidgetBuilding_Implementation()
@@ -1486,10 +1503,12 @@ void ACustomPlayerController::DisplayWidgetBuilding_Implementation()
 
 void ACustomPlayerController::DisplayWidgetBase_Implementation()
 {
+	
 }
 
 void ACustomPlayerController::DisplayWidgetTower_Implementation()
 {
+	
 }
 
 		// Attack

@@ -23,6 +23,8 @@ ACameraPlayer::ACameraPlayer()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	SetReplicates(true);
+	
 	CameraRoot = CreateDefaultSubobject<USceneComponent>(TEXT("CameraRoot"));
 	RootComponent = CameraRoot;
 	
@@ -108,8 +110,8 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 		{
 			FVector Right = FVector(UKismetMathLibrary::Round(CameraBoom->GetRightVector().X), UKismetMathLibrary::Round(CameraBoom->GetRightVector().Y), 0);
 			MoveDirection = Right * (UKismetMathLibrary::SignOfFloat(Input.Y) * 100);
-
 		}
+		
 		if(!CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection)))
 		{
 			return;
@@ -297,8 +299,19 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 			FullMoveDirection = OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0);
 			FullMoveDirection.Z = (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
 			CustomPlayerController->Grid->GridVisual->addStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection), EDC_TileState::Hovered);
+			
+			if (CustomPlayerController->Grid->GridData.Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->UnitOnTile)
+			{
+				CustomPlayerController->UnitRef = CustomPlayerController->Grid->GridData.Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->UnitOnTile;
+				CustomPlayerController->bHoveringOverUnit = true;
+				CustomPlayerController->DisplayWidgetHovering();
+			}
+			else
+			{
+				CustomPlayerController->bHoveringOverUnit = false;
+				CustomPlayerController->DisplayWidgetHovering();
+			}
 		}
-
 		CustomPlayerController->VerifyBuildInteraction();
 	}
 }

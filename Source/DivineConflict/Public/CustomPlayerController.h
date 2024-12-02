@@ -93,6 +93,9 @@ public:
 	
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
 	TObjectPtr<ACustomPlayerState> PlayerStateRef;
+	
+	// ----------------------------
+	// Input Actions
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
 	TObjectPtr<UInputAction> AIEndTurn;
@@ -121,7 +124,6 @@ public:
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
 	TObjectPtr<UInputMappingContext> InputMappingContext;
 	
-	
 	// ----------------------------
 	// Unit Spawning
 
@@ -143,15 +145,22 @@ public:
 	UPROPERTY(Replicated, BlueprintReadWrite)
 	TArray<FStructPassive> AllPlayerPassive;
 
-		// Possible Things to Interact with
+	// Possible Things to Interact with
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Ref", meta = (AllowPrivate = "true"))
 	TObjectPtr<AUnit> UnitRef;
+	
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Ref", meta = (AllowPrivate = "true"))
+	TObjectPtr<AUnit> UnitHovering;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ref", meta = (AllowPrivate = "true"))
 	TObjectPtr<AUnit> Opponent;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly,Replicated , Category = "Ref", meta = (AllowPrivate = "true"))
 	TObjectPtr<ABase> BaseRef;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
 	TObjectPtr<ATower> TowerRef;
+	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Replicated, Category = "Input", meta = (AllowPrivate = "true"))
 	TObjectPtr<ABuilding> BuildingRef;
 	
@@ -165,6 +174,12 @@ public:
 
 	UPROPERTY()
 	FTimerHandle TimerActiveEndTurn;
+	
+	// ----------------------------
+	// UI
+
+	UPROPERTY(Blueprintable, EditAnywhere, BlueprintReadWrite)
+	bool bHoveringOverUnit = false;
 
 	
 protected:
@@ -392,13 +407,19 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void FailedTutorial();
 
-		// Stats
+	// Stats
 	UFUNCTION(BlueprintNativeEvent)
 	void DisplayWidget();
+	
+	UFUNCTION(BlueprintNativeEvent)
+	void DisplayWidgetHovering();
+	
 	UFUNCTION(BlueprintNativeEvent)
 	void DisplayWidgetBuilding();
+	
 	UFUNCTION(BlueprintNativeEvent)
 	void DisplayWidgetBase();
+	
 	UFUNCTION(BlueprintNativeEvent)
 	void DisplayWidgetTower();
 
