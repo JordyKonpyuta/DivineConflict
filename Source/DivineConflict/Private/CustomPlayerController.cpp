@@ -814,6 +814,40 @@ void ACustomPlayerController::Multi_SetPositionInBase_Implementation(ABase* Curr
 	CameraPlayerRef->FullMoveDirection = CurrentBase->GetActorLocation();
 }
 
+void ACustomPlayerController::SetPositionOnUnit()
+{
+	TArray<AActor*> ActorFounds;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), ActorFounds);
+	for(AActor* CurrentActor : ActorFounds)
+	{
+		if(AUnit* CurrentUnit = Cast<AUnit>(CurrentActor))
+		{
+			if (PlayerStateRef)
+			{
+				if(CurrentUnit->GetPlayerOwner() == PlayerStateRef->PlayerTeam)
+				{
+					if (CameraPlayerRef)
+					{
+						Multi_SetPositionOnUnit(CurrentUnit);
+						return;
+					}
+					else
+					{
+						CameraPlayerRef = Cast<ACameraPlayer>(GetPawn());
+						SetPositionOnUnit();
+					}
+				}
+			}
+		}
+	}
+}
+
+void ACustomPlayerController::Multi_SetPositionOnUnit_Implementation(AUnit* CurrentUnit)
+{
+	CameraPlayerRef->FullMoveDirection = CurrentUnit->GetActorLocation();
+}
+
+
 // ----------------------------
 	// End Turns
 

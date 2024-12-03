@@ -74,6 +74,11 @@ void ACustomPlayerState::OnRep_bIsActiveTurn()
 		if (GetPlayerCustomController())
 			GetPlayerCustomController()->SetPositionInBase();
 	}
+	else if(bIsActiveTurn && !bIsBlockTimerNewBeginTurn)
+	{
+		if (GetPlayerCustomController())
+			GetPlayerCustomController()->SetPositionOnUnit();
+	}
 
 	if(GetPlayerCustomController())
 		GetPlayerCustomController()->EnableInput(GetPlayerCustomController());

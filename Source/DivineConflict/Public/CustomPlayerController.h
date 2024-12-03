@@ -293,6 +293,12 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_SetPositionInBase(ABase* CurrentBase);
+
+	UFUNCTION()
+	void SetPositionOnUnit();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_SetPositionOnUnit(AUnit* CurrentUnit);
 	
 	
 	// ----------------------------
