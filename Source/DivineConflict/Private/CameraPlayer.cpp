@@ -308,10 +308,20 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 				CustomPlayerController->bHoveringOverUnit = true;
 				CustomPlayerController->DisplayWidgetHovering();
 			}
+			else if (CustomPlayerController->Grid->GridData.Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->BaseOnTile)
+			{
+				CustomPlayerController->BaseRef = CustomPlayerController->Grid->GridData.Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->BaseOnTile;
+				CustomPlayerController->bHoveringOverBase = true;
+				CustomPlayerController->DisplayWidgetHovering();
+			}
 			else
 			{
-				CustomPlayerController->bHoveringOverUnit = false;
-				CustomPlayerController->DisplayWidgetHovering();
+				if (CustomPlayerController->bHoveringOverUnit || CustomPlayerController->bHoveringOverBase)
+				{
+					CustomPlayerController->bHoveringOverBase = false;	
+					CustomPlayerController->bHoveringOverUnit = false;
+					CustomPlayerController->DisplayWidgetHovering();
+				}
 			}
 		}
 		CustomPlayerController->VerifyBuildInteraction();

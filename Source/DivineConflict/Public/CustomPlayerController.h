@@ -187,6 +187,8 @@ public:
 	UPROPERTY(Blueprintable, EditAnywhere, BlueprintReadWrite)
 	bool bHoveringOverUnit = false;
 
+	UPROPERTY(Blueprintable, EditAnywhere, BlueprintReadWrite)
+	bool bHoveringOverBase = false;
 	
 protected:
 	
