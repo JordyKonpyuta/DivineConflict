@@ -4,6 +4,7 @@
 #include "Unit.h"
 #include "Base.h"
 #include "Building.h"
+#include "CameraPlayer.h"
 #include "CustomPlayerController.h"
 #include "CustomPlayerState.h"
 #include "Grid.h"
@@ -204,6 +205,9 @@ void AUnit::Tick(float DeltaTime)
 	
 	SetActorRotation(UKismetMathLibrary::RInterpTo(GetActorRotation(),UnitRotation,DeltaTime,2.5f));
 	SetActorLocation(UKismetMathLibrary::VInterpTo(GetActorLocation(),UnitNewLocation,DeltaTime,10));
+
+	if (bIsMoving)
+		MoveCamera();
 }
 
 void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProps) const{
@@ -444,6 +448,7 @@ void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 	bJustBecameGarrison = false;
 	MoveSequencePos = 0;
 	PathToCrossPosition = 0;
+	bIsMoving = true;
 
 	if (IsGarrison)
 	{
@@ -635,6 +640,8 @@ void AUnit::UnitMoveAnim_Implementation()
 			GetWorldTimerManager().ClearTimer(MoveTimerHandle);
 			Multi_HiddeGhosts();
 			Grid->GridInfo->Multi_setUnitIndexOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+
+			bIsMoving = false;
 			
 			if (bJustBecameGarrison)
 			{
@@ -685,6 +692,25 @@ void AUnit::MoveUnitEndTurn()
 	InitializeFullMove(FutureMovement);
 	FutureMovement.Empty();
 	Server_GetBuffs();
+}
+
+void AUnit::MoveCamera()
+{
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraPlayer::StaticClass(), FoundActors);
+	for (AActor* CurrentActor : FoundActors)
+	{
+		if (ACameraPlayer* CameraPlayer = Cast<ACameraPlayer>(CurrentActor))
+		{
+			Multi_MoveCamera(CameraPlayer);
+		}
+	}
+	
+}
+
+void AUnit::Multi_MoveCamera_Implementation(ACameraPlayer* CameraPlayer)
+{
+	CameraPlayer->SetActorLocation(GetActorLocation());
 }
 
 // ----------------------------

@@ -10,6 +10,7 @@
 #include "Unit.generated.h"
 
 
+class ACameraPlayer;
 class UNiagaraComponent;
 class UNiagaraSystem;
 class UWidgetDamage2;
@@ -118,6 +119,9 @@ public:
 	
 	UPROPERTY(Blueprintable, BlueprintReadOnly, Replicated)
 	bool bHasClimbed = false;
+
+	UPROPERTY()
+	bool bIsMoving = false;
 
 	// ----------------------------
 	// Ints
@@ -353,6 +357,12 @@ public:
 	
 	UFUNCTION()
 	virtual void MoveUnitEndTurn();
+
+	UFUNCTION()
+	void MoveCamera();
+
+	UFUNCTION(NetMulticast,Reliable)
+	void Multi_MoveCamera(ACameraPlayer* CameraPlayer);
 
 	// ----------------------------
 	// Ghosts
