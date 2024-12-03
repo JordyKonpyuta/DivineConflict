@@ -67,23 +67,6 @@ public:
 	
 	UPROPERTY()
 	TObjectPtr<AProjectile> CannonBall;
-
-protected:
-	// ----------------------------
-	// Stat
-	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
-	int Attack = 0;
-
-	// ----------------------------
-	// Owner
-	UPROPERTY(EditAnywhere, Replicated, BlueprintReadOnly, Category = "Enum")
-	EPlayer PlayerOwner = EPlayer::P_Neutral;
-	
-	// ----------------------------
-	// Position
-	
-	UPROPERTY(EditAnywhere, Replicated, BlueprintReadOnly, Category = "Grid")
-	FIntPoint GridPosition = FIntPoint(-999, -999);
 	
 	// ----------------------------
 	// Tower Upgrade
@@ -102,6 +85,23 @@ protected:
 
 	UPROPERTY()
 	int GoldUpgradePrice = -1000000;
+
+protected:
+	// ----------------------------
+	// Stat
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
+	int Attack = 0;
+
+	// ----------------------------
+	// Owner
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadOnly, Category = "Enum")
+	EPlayer PlayerOwner = EPlayer::P_Neutral;
+	
+	// ----------------------------
+	// Position
+	
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadOnly, Category = "Grid")
+	FIntPoint GridPosition = FIntPoint(-999, -999);
 
 	// UFUNCTIONS
 public:	
