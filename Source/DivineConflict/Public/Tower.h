@@ -5,8 +5,6 @@
 #include "CoreMinimal.h"
 #include "CustomPlayerController.h"
 #include "EnumsList.h"
-#include "Grid.h"
-#include "GridVisual.h"
 #include "GameFramework/Actor.h"
 #include "Tower.generated.h"
 
@@ -74,7 +72,7 @@ protected:
 	// ----------------------------
 	// Stat
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
-	int Attack = 5;
+	int Attack = 0;
 
 	// ----------------------------
 	// Owner
@@ -86,7 +84,24 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadOnly, Category = "Grid")
 	FIntPoint GridPosition = FIntPoint(-999, -999);
+	
+	// ----------------------------
+	// Tower Upgrade
 
+	UPROPERTY()
+	int Level = 0;
+
+	UPROPERTY()
+	bool bCanAttack = false;
+	
+	UPROPERTY()
+	int WoodUpgradePrice = -1000000;
+
+	UPROPERTY()
+	int StoneUpgradePrice = -1000000;
+
+	UPROPERTY()
+	int GoldUpgradePrice = -1000000;
 
 	// UFUNCTIONS
 public:	
@@ -122,6 +137,12 @@ public:
 	void UpdateVisuals();
 	
 	// ----------------------------
+	// Tower Upgrade
+
+	UFUNCTION()
+	void UpgradeTower();
+	
+	// ----------------------------
 	// GETTERS
 	
 	UFUNCTION(BlueprintCallable)
@@ -147,6 +168,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetCanAttack(bool NewCanAttack);
 
+	UFUNCTION()
 	void SetGridPosition(FIntPoint NewGridPosition);
 
 protected:

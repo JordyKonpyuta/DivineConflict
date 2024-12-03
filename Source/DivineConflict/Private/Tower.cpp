@@ -6,6 +6,7 @@
 #include "CustomPlayerController.h"
 #include "GridInfo.h"
 #include "GridPath.h"
+#include "GridVisual.h"
 #include "IMovieSceneTracksModule.h"
 #include "Projectile.h"
 #include "Unit.h"
@@ -84,18 +85,19 @@ void ATower::PreprareAttack(AUnit* UnitAttack)
 
 void ATower::AttackUnit(AUnit* UnitToAttacking, ACustomPlayerController* PlayerControllerAttacking)
 {
-	CannonBall = GetWorld()->SpawnActor<AProjectile>(AProjectile::StaticClass(), GetActorLocation(), GetActorRotation());
-	CannonBall->TowerOwner = this;
-	CannonBall->MoveProjectile(UnitToAttacking);
-	
-	UnitToAttacking->SetCurrentHealth(UnitToAttacking->GetCurrentHealth() - Attack);
-	if(UnitToAttacking->GetCurrentHealth() < 1)
+	if (bCanAttack)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Black, TEXT("UnitToAttack Destroyed"));
-		UnitToAttacking->Server_DestroyUnit();
-		UnitToAttacking = nullptr;
-	}
+		CannonBall = GetWorld()->SpawnActor<AProjectile>(AProjectile::StaticClass(), GetActorLocation(), GetActorRotation());
+		CannonBall->TowerOwner = this;
+		CannonBall->MoveProjectile(UnitToAttacking);
 	
+		UnitToAttacking->SetCurrentHealth(UnitToAttacking->GetCurrentHealth() - Attack);
+		if(UnitToAttacking->GetCurrentHealth() < 1)
+		{
+			UnitToAttacking->Server_DestroyUnit();
+			UnitToAttacking = nullptr;
+		}
+	}
 }
 
 	// ----------------------------
@@ -120,10 +122,47 @@ void ATower::UpdateVisuals()
 			Grid->GridVisual->RemoveStateFromTile(Tile, EDC_TileState::Attacked);
 		}
 	}
+}
 	
+// ----------------------------
+// Tower Upgrade
+
+void ATower::UpgradeTower()
+{
+	if (	PlayerController->PlayerStateRef->GetWoodPoints() >= WoodUpgradePrice
+		&&	PlayerController->PlayerStateRef->GetStonePoints() >= StoneUpgradePrice
+		&&	PlayerController->PlayerStateRef->GetGoldPoints() >= GoldUpgradePrice
+		&& Level < 3)
+	{
+		PlayerController->PlayerStateRef->ChangeWoodPoints(WoodUpgradePrice, false);
+		PlayerController->PlayerStateRef->ChangeStonePoints(StoneUpgradePrice, false);
+		PlayerController->PlayerStateRef->ChangeGoldPoints(GoldUpgradePrice, false);
+
+		Level++;
+		WoodUpgradePrice += 10 + Level * 5;
+		StoneUpgradePrice += 10 + Level * 5;
+		GoldUpgradePrice += 10 + Level * 5;
+		
+		switch(Level)
+		{
+		case 1:
+			bCanAttack = true;
+			SetAttack(2);
+			break;
+		case 2:
+			SetAttack(3);
+			break;
+		case 3:
+			SetAttack(5);
+			break;
+		default:
+			SetAttack(5);
+			break;
+		}
+	}
 }
 
-	// ----------------------------
+// ----------------------------
 	// GETTERS
 
 int ATower::GetAttack()
