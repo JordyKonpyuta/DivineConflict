@@ -55,7 +55,7 @@ public:
 	
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timer", meta = (AllowPrivateAccess = "true"))
-	int TurnTimerLength = 90;
+	int TurnTimerLength = 60;
 
 	UPROPERTY()
 	int BlockTurnSwitchTimerLength = 1;

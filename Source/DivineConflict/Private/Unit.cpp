@@ -20,6 +20,7 @@
 #include "Unit_Child_Tank.h"
 #include "Unit_Child_Warrior.h"
 #include "Engine/DamageEvents.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
@@ -710,6 +711,7 @@ void AUnit::MoveCamera()
 
 void AUnit::Multi_MoveCamera_Implementation(ACameraPlayer* CameraPlayer)
 {
+	CameraPlayer->CameraBoom->bEnableCameraLag = true;
 	CameraPlayer->SetActorLocation(GetActorLocation());
 }
 

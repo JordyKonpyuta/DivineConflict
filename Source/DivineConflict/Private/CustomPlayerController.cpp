@@ -811,6 +811,7 @@ void ACustomPlayerController::SetPositionInBase()
 
 void ACustomPlayerController::Multi_SetPositionInBase_Implementation(ABase* CurrentBase)
 {
+	Grid->GridVisual->RemoveStateFromTile(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection), EDC_TileState::Hovered);
 	CameraPlayerRef->FullMoveDirection = CurrentBase->GetActorLocation();
 }
 
@@ -844,6 +845,7 @@ void ACustomPlayerController::SetPositionOnUnit()
 
 void ACustomPlayerController::Multi_SetPositionOnUnit_Implementation(AUnit* CurrentUnit)
 {
+	Grid->GridVisual->RemoveStateFromTile(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection), EDC_TileState::Hovered);
 	CameraPlayerRef->FullMoveDirection = CurrentUnit->GetActorLocation();
 }
 

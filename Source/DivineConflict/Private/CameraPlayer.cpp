@@ -66,6 +66,7 @@ void ACameraPlayer::Tick(float DeltaTime)
 
 void ACameraPlayer::UpdatedMove(const FInputActionValue& Value)
 {
+	CameraBoom->bEnableCameraLag = false;
 	ValueInput = Value;
 }
 
