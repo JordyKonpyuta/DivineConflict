@@ -109,6 +109,7 @@ void ACustomPlayerController::GetLifetimeReplicatedProps( TArray<FLifetimeProper
 	DOREPLIFETIME(ACustomPlayerController, PlayerTeam);
 	DOREPLIFETIME(ACustomPlayerController, BaseRef);
 	DOREPLIFETIME(ACustomPlayerController, BuildingRef);
+	DOREPLIFETIME(ACustomPlayerController, CameraPlayerRef);
 
 }
 
@@ -783,7 +784,37 @@ void ACustomPlayerController::Server_Delegate_Implementation()
 	OnTurnChangedDelegate.Broadcast();
 }
 	
-	// ----------------------------
+void ACustomPlayerController::SetPositionInBase()
+{	
+	TArray<AActor*> ActorFounds;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABase::StaticClass(), ActorFounds);
+	for(AActor* CurrentActor : ActorFounds)
+	{
+		if(ABase* CurrentBase = Cast<ABase>(CurrentActor))
+		{
+			if (PlayerStateRef)
+			{
+				if(CurrentBase->PlayerOwner == PlayerStateRef->PlayerTeam)
+				{
+					if (CameraPlayerRef)
+						Multi_SetPositionInBase(CurrentBase);
+					else
+					{
+						CameraPlayerRef = Cast<ACameraPlayer>(GetPawn());
+						SetPositionInBase();
+					}
+				}
+			}
+		}
+	}
+}
+
+void ACustomPlayerController::Multi_SetPositionInBase_Implementation(ABase* CurrentBase)
+{
+	CameraPlayerRef->FullMoveDirection = CurrentBase->GetActorLocation();
+}
+
+// ----------------------------
 	// End Turns
 
 //call end turn with server

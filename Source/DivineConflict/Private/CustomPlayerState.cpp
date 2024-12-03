@@ -71,6 +71,8 @@ void ACustomPlayerState::OnRep_bIsActiveTurn()
 		NewTurnBegin();
 		bIsBlockTimerNewBeginTurn = true;
 		GetWorldTimerManager().SetTimer(BlockNewTurnbeginTimerHandle, this, &ACustomPlayerState::BlockNewTurnBegin, 5, false);
+		if (GetPlayerCustomController())
+			GetPlayerCustomController()->SetPositionInBase();
 	}
 
 	if(GetPlayerCustomController())

@@ -88,7 +88,7 @@ public:
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<AGrid> Grid;
 	
-	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivate = "true"))
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivate = "true"),Replicated)
 	TObjectPtr<ACameraPlayer> CameraPlayerRef;
 	
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
@@ -287,6 +287,13 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_Delegate();
+
+	UFUNCTION()
+	void SetPositionInBase();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_SetPositionInBase(ABase* CurrentBase);
+	
 	
 	// ----------------------------
 	// End Turn
