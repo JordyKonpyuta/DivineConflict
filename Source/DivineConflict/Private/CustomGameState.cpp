@@ -8,8 +8,9 @@
 #include "EnumsList.h"
 #include "CustomPlayerState.h"
 #include "Net/UnrealNetwork.h"
+#include "Tuto/SequenceTuto.h"
 
-	// ----------------------------
+// ----------------------------
 	// Overrides
 
 void ACustomGameState::BeginPlay()
@@ -119,6 +120,15 @@ void ACustomGameState::SwitchPlayerTurn()
 		GetWorld()->GetTimerManager().SetTimer(TurnTimerHandle,this,&ACustomGameState::BeginTimer,TurnTimerLength,false);
 		GetWorld()->GetTimerManager().SetTimer(SwitchPlayerTurnHandle,this,&ACustomGameState::SwitchIsBlockTurnSwitchTimer,BlockTurnSwitchTimerLength,false);
 		Server_SwitchPlayerTurn();
+
+		if (SequenceTutoRef)
+		{
+			SequenceTutoRef->EndSequence();
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, TEXT("SequenceTutoRef is null"));
+		}
 	}
 }
 

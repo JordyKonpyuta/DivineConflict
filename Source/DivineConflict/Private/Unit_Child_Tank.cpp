@@ -84,22 +84,11 @@ void AUnit_Child_Tank::BeginPlay()
 		SetMaxHealth(7);
 	if (PM == 0)
 		SetPM(4);
-
+	if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
+		SetCurrentHealth(MaxHealth);
+	
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AUnit_Child_Tank::SetTimer, 1.0f, true);
-	for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState<ACustomGameState>()->PlayerArray)
-	{
-		if (ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
-		{
-			if (CurrentCustomPlayerState->bIsInTutorial)
-			{
-				SetCurrentHealth(4);
-				if (PlayerOwner == EPlayer::P_Heaven)
-					GetWorld()->GetAuthGameMode<ATutorialGameMode>()->Tank = this;
-			}
-			else if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
-				SetCurrentHealth(MaxHealth);
-		}
-	}
+
 	UnitName = EUnitName::Tank;
 	
 	switch (PlayerOwner)

@@ -63,20 +63,8 @@ void AUnit_Child_Leader::BeginPlay()
 		SetMaxHealth(20);
 	if (PM == 0)
 		SetPM(5);
-	for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState<ACustomGameState>()->PlayerArray)
-	{
-		if (ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
-		{
-			if (CurrentCustomPlayerState->bIsInTutorial)
-			{
-				SetCurrentHealth(4);
-				if (PlayerOwner == EPlayer::P_Heaven)
-					GetWorld()->GetAuthGameMode<ATutorialGameMode>()->Leader = this;
-			}
-			else if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
-				SetCurrentHealth(MaxHealth);
-		}
-	}
+	if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
+		SetCurrentHealth(MaxHealth);
 
 	UnitName = EUnitName::Leader;
 	Server_PushBuff();

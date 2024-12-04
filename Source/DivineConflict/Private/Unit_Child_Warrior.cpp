@@ -80,22 +80,8 @@ void AUnit_Child_Warrior::BeginPlay()
 		SetMaxHealth(11);
 	if (PM == 0)
 		SetPM(6);
-	for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState<ACustomGameState>()->PlayerArray)
-	{
-		if (ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
-		{
-			if (CurrentCustomPlayerState->bIsInTutorial)
-			{
-				SetCurrentHealth(6);
-				if (GetActorLocation() == FVector(1600, 300, 100))
-					GetWorld()->GetAuthGameMode<ATutorialGameMode>()->Warrior1 = this;
-				else if (GetActorLocation() == FVector(1100, 300, 100))
-					GetWorld()->GetAuthGameMode<ATutorialGameMode>()->Warrior2 = this;
-			}
-			else if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
-				SetCurrentHealth(MaxHealth);
-		}
-	}
+	if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
+		SetCurrentHealth(MaxHealth);
 
 	UnitName = EUnitName::Warrior;
 

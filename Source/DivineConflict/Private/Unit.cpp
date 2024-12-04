@@ -1180,13 +1180,6 @@ void AUnit::Server_DestroyUnit_Implementation()
 	
 	Destroyed();
 	GetWorld()->DestroyActor(this);
-	if (GetWorld()->GetFirstPlayerController()->GetPlayerState<ACustomPlayerState>()->bIsInTutorial && PlayerOwner == EPlayer::P_Heaven && GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead == false)
-		DisplayWidgetTutorial();
-	else if (PlayerControllerRef && PlayerControllerRef->PlayerStateRef->bIsInTutorial)
-	{
-		PlayerControllerRef->FailedTutorial();
-		GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead = true;
-	}
         
 }
 

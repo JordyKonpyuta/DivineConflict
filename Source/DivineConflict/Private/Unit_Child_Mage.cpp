@@ -80,21 +80,8 @@ void AUnit_Child_Mage::BeginPlay()
 		SetMaxHealth(10);
 	if (PM == 0)
 		SetPM(5);
-	
-	for (APlayerState* CurrentPlayerState : GetWorld()->GetGameState<ACustomGameState>()->PlayerArray)
-	{
-		if (ACustomPlayerState* CurrentCustomPlayerState = Cast<ACustomPlayerState>(CurrentPlayerState))
-		{
-			if (CurrentCustomPlayerState->bIsInTutorial)
-			{
-				SetCurrentHealth(4);
-				if (PlayerOwner == EPlayer::P_Heaven)
-					GetWorld()->GetAuthGameMode<ATutorialGameMode>()->Mage = this;
-			}
-			else if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
-				SetCurrentHealth(MaxHealth);
-		}
-	}
+	if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
+		SetCurrentHealth(MaxHealth);
 
 	UnitName = EUnitName::Mage;
 

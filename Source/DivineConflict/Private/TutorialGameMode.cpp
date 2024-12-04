@@ -15,7 +15,6 @@ void ATutorialGameMode::BeginPlay()
 	AActor* FoundActor;
 	FoundActor = UGameplayStatics::GetActorOfClass(GetWorld(), AGrid::StaticClass());
 	Grid = Cast<AGrid>(FoundActor);
-	BeginTutorial();
 }
 
 void ATutorialGameMode::HilightUnit(AUnit* UnitToHilight)

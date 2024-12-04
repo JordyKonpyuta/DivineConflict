@@ -8,6 +8,7 @@
 #include "CustomGameState.generated.h"
 
 
+class ASequenceTuto;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTurnSwitchDelegate);
 
 class ACustomPlayerController;
@@ -31,12 +32,15 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Refs")
 	TArray<TObjectPtr<ACustomPlayerState>> AllPlayerStates;
 
+	TObjectPtr<ASequenceTuto> SequenceTutoRef = nullptr;
+
 	// WIN/LOSE CON
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Game")
 	TObjectPtr<ACustomPlayerState> PWinner = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Game")
 	TObjectPtr<ACustomPlayerState> PLoser = nullptr;
+	
 
 	// ----------------------------
 	// Loading Timer
