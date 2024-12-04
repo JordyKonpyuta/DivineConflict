@@ -20,41 +20,21 @@ class DIVINECONFLICT_API AUnit_Child_Warrior : public AUnit
 
 	// UPROPERTIES
 public:
-	UPROPERTY(Replicated)
-	TObjectPtr<AUpwall> WallToClimb;
 	
 protected:
 
 	// UFUNCTIONS
 public:
 	// ----------------------------
-	// Constructor
+	// --       Constructor      --
+	// ----------------------------
 	
 	AUnit_Child_Warrior();
 	
-	// ----------------------------
-	// Overrides
-
-	virtual void Special() override;
-
-	// ----------------------------
-	// Climbing
-
-	UFUNCTION(Server, Reliable)
-	void Server_MoveToClimb();
-
-	UFUNCTION(Server, Reliable)
-	void Multi_MoveToClimb();
-
-	UFUNCTION(Server,Reliable)
-	void Server_SpecialMove(FIntPoint NewPos);
-
-	UFUNCTION(NetMulticast,Reliable)
-	void Multi_SpecialMove(FIntPoint NewPos);
-	
 protected:
 	// ----------------------------
-	// Overrides
+	// --        Overrides       --
+	// ----------------------------
 	
 	virtual void BeginPlay() override;
 

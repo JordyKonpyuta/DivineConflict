@@ -14,11 +14,14 @@ class DIVINECONFLICT_API AClimbActor : public AActor
 	// UPROPERTIES
 public:	
 	// ----------------------------
-	// Constructor
+	// --       Constructor       --
+	// ----------------------------
+	
 	AClimbActor();
 	
 	// ----------------------------
-	// Components
+	// --       Components       --
+	// ----------------------------
 	
 	UPROPERTY(Blueprintable, BlueprintReadWrite, Category = "Appearance")
 	TObjectPtr<UStaticMeshComponent> StaticMeshClimbable;
@@ -29,13 +32,15 @@ protected:
 	// UFUNCTIONS
 public:	
 	// ----------------------------
-	// Override
+	// --        Override        --
+	// ----------------------------
 	
 	virtual void Tick(float DeltaTime) override;
 
 protected:
 	// ----------------------------
-	// Override
+	// --        Override        --
+	// ----------------------------
 
 	virtual void BeginPlay() override;
 	

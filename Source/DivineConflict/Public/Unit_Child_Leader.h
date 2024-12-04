@@ -17,26 +17,27 @@ class DIVINECONFLICT_API AUnit_Child_Leader : public AUnit
 public:
 
 	UPROPERTY(Replicated)
-	TArray<AUnit*> AllUnitsToBuff;
+	TArray<AUnit*> AllUnitsToBuff = {nullptr};
 	
 protected:
 
 	// UFUNCTIONS
 public:
 	// ----------------------------
-	// Constructor
+	// --       Constructor      --
+	// ----------------------------
 	
 	AUnit_Child_Leader();
-
-	// ----------------------------
-	// Overrides
 	
-	virtual void Special() override;
+	// ----------------------------
+	// --        Overrides       --
+	// ----------------------------
 
 	virtual void MoveUnitEndTurn() override;
 	
 	// ----------------------------
-	// Buff
+	// --          Buffs         --
+	// ----------------------------
 
 	UFUNCTION(Server, Reliable)
 	void Server_PushBuff();
@@ -46,6 +47,8 @@ public:
 	
 protected:
 	// ----------------------------
-	// Overrides
+	// --        Overrides       --
+	// ----------------------------
+	
 	virtual void BeginPlay() override;
 };

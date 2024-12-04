@@ -168,7 +168,7 @@ bool AGrid::IsTileWalkable(FIntPoint Index,bool Attacking)
 {
 	if (Attacking)
 	{
-		return IsTileTypeAttackable(GetGridData()->Find(Index)->TileType);
+		return CanAttackTileType(GetGridData()->Find(Index)->TileType);
 	}
 	return IsTileTypeWalkable(GetGridData()->Find(Index)->TileType);
 }
@@ -181,7 +181,7 @@ bool AGrid::IsTileTypeWalkable(EDC_TileType Type)
 	return !WalkableTypes.Contains(Type);
 }
 
-bool AGrid::IsTileTypeAttackable(EDC_TileType Type)
+bool AGrid::CanAttackTileType(EDC_TileType Type)
 {
 	TArray<EDC_TileType> WalkableTypes = { EDC_TileType::None, EDC_TileType::Obstacle};
 

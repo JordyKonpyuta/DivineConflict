@@ -42,15 +42,15 @@ void UGridPath::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 void UGridPath::DiscoverTile(FPathData TilePath)
 {
 	PathData.Add(TilePath.Index, TilePath);
-	InserTileDiscoverList(TilePath);
+	InsertTileDiscoverList(TilePath);
 }
 
-int UGridPath::MinimulCostBetweenTwoTile(FIntPoint Index1, FIntPoint Index2)
+int UGridPath::MinimalCostBetweenTwoTile(FIntPoint Index1, FIntPoint Index2)
 {
 	return FMath::Abs(Index1.X - Index2.X) + FMath::Abs(Index1.Y - Index2.Y);
 }
 
-void UGridPath::InserTileDiscoverList(FPathData TilePath)
+void UGridPath::InsertTileDiscoverList(FPathData TilePath)
 {
 	//stock the sorting cost of the tile
 	int SortingCost = TilePath.MinCostToTarget + TilePath.CostFormStart;
@@ -105,11 +105,11 @@ bool UGridPath::IsInputDataValid(FIntPoint Start, FIntPoint End)
 		return false;
 	}
 	//check if the start and end are walkable
-	if(!Grid->IsTileWalkable(Start, bIsAttackable))
+	if(!Grid->IsTileWalkable(Start, bCanBeAttacked))
 	{
 		return false;
 	}
-	if(!Grid->IsTileWalkable(End, bIsAttackable))
+	if(!Grid->IsTileWalkable(End, bCanBeAttacked))
 	{
 		return false;
 	}
@@ -136,12 +136,12 @@ bool UGridPath::AnalyseNextDiscoverTile()
 {
 	CurrentDiscoverTile = PullCheapestTileOutOfDiscoverList();
 
-	CurrentsNeighbors = GetValidTileNeighbors(CurrentDiscoverTile.Index);
+	CurrentsNeighbors = GetValidTileNeighbours(CurrentDiscoverTile.Index);
 	
 	while (CurrentsNeighbors.Num() > 0)
 	{
 		//UE_LOG( LogTemp, Warning, TEXT("Current Neighbors : %d %d"), CurrentsNeighbors[0].Index.X, CurrentsNeighbors[0].Index.Y);
-		if(DiscoverNextNeighbors())
+		if(DiscoverNextNeighbours())
 		{
 			return true;
 		}
@@ -153,14 +153,14 @@ bool UGridPath::AnalyseNextDiscoverTile()
 	// ----------------------------
 // Height Check
 
-bool UGridPath::IsValidHeigh(FDC_TileData* IndextestData, FDC_TileData* CurrentIndexData)
+bool UGridPath::IsValidHeight(FDC_TileData* IndexTestData, FDC_TileData* CurrentIndexData)
 {
-	return FMath::Abs(IndextestData->TileTransform.GetLocation().Z - CurrentIndexData->TileTransform.GetLocation().Z) <= (100/1.75);
+	return FMath::Abs(IndexTestData->TileTransform.GetLocation().Z - CurrentIndexData->TileTransform.GetLocation().Z) <= (100/1.75);
 }
 
-bool UGridPath::IsValidHeighWarrior(FDC_TileData* IndextestData, FDC_TileData* CurrentIndexData)
+bool UGridPath::IsValidHeightWarrior(FDC_TileData* IndexTestData, FDC_TileData* CurrentIndexData)
 {
-	if (IndextestData->TileTransform.GetLocation().Z - CurrentIndexData->TileTransform.GetLocation().Z >= -100/0.9 && IndextestData->TileTransform.GetLocation().Z - CurrentIndexData->TileTransform.GetLocation().Z <= 100/0.9)
+	if (IndexTestData->TileTransform.GetLocation().Z - CurrentIndexData->TileTransform.GetLocation().Z >= -100/0.9 && IndexTestData->TileTransform.GetLocation().Z - CurrentIndexData->TileTransform.GetLocation().Z <= 100/0.9)
 		return true;
 	
 	return false;
@@ -169,7 +169,7 @@ bool UGridPath::IsValidHeighWarrior(FDC_TileData* IndextestData, FDC_TileData* C
 	// ----------------------------
 	// Neighbours
 
-bool UGridPath::DiscoverNextNeighbors()
+bool UGridPath::DiscoverNextNeighbours()
 {
 	CurrentNeighbors = CurrentsNeighbors[0];
 	CurrentsNeighbors.RemoveAt(0);
@@ -178,7 +178,7 @@ bool UGridPath::DiscoverNextNeighbors()
 	if(!AnalyseTileIndex.Contains(CurrentNeighbors.Index))
 	{
 		
-		int CostFormStart = CurrentDiscoverTile.CostFormStart + CurrentNeighbors.costEntrerToTile;
+		int CostFormStart = CurrentDiscoverTile.CostFormStart + CurrentNeighbors.CostEntryInTile;
 		if(CostFormStart >= MaxLenght) return false;
 
 		// if the neighbor is not already in the DiscoverTileIndex or if the cost to reach the neighbor is lower than the previous cost
@@ -186,7 +186,7 @@ bool UGridPath::DiscoverNextNeighbors()
 		{
 			if (PathData.Find(CurrentNeighbors.Index))
 			{
-				if(PathData.Find(CurrentNeighbors.Index)->costEntrerToTile < CostFormStart)
+				if(PathData.Find(CurrentNeighbors.Index)->CostEntryInTile < CostFormStart)
 				{
 					return false;
 				}
@@ -194,7 +194,7 @@ bool UGridPath::DiscoverNextNeighbors()
 		}
 
 		// if the neighbor is the end tile
-		DiscoverTile(FPathData(CurrentNeighbors.Index, CurrentNeighbors.CostFormStart, MinimulCostBetweenTwoTile(CurrentNeighbors.Index, CurrentDiscoverTile.Index), CostFormStart));
+		DiscoverTile(FPathData(CurrentNeighbors.Index, CurrentNeighbors.CostFormStart, MinimalCostBetweenTwoTile(CurrentNeighbors.Index, CurrentDiscoverTile.Index), CostFormStart));
 		if(CurrentNeighbors.Index == EndPoint)
 		{
 			return true;
@@ -207,7 +207,7 @@ bool UGridPath::DiscoverNextNeighbors()
 	return false;
 }
 
-TArray<FPathData> UGridPath::GetValidTileNeighbors(FIntPoint Index)
+TArray<FPathData> UGridPath::GetValidTileNeighbours(FIntPoint Index)
 {
 	//initialize the neighbors
 	TArray<FPathData> Ret;
@@ -216,7 +216,7 @@ TArray<FPathData> UGridPath::GetValidTileNeighbors(FIntPoint Index)
 	FDC_TileData* TileData = Grid->GetGridData()->Find(Index);
 	
 	//get the neighbors of the index
-	TArray<FIntPoint> Neighbors = FindTileNeighbors(Index);
+	TArray<FIntPoint> Neighbors = FindTileNeighbours(Index);
 
 	//for each neighbor
 	for(FIntPoint Neighbor : Neighbors)
@@ -230,9 +230,9 @@ TArray<FPathData> UGridPath::GetValidTileNeighbors(FIntPoint Index)
 
 		FDC_TileData* NeighborTileData = Grid->GetGridData()->Find(Neighbor);
 		//check if the neighbor is walkable
-		if(bIsAttackable)
+		if(bCanBeAttacked)
 		{
-			if(!Grid->IsTileTypeAttackable(NeighborTileData->TileType))
+			if(!Grid->CanAttackTileType(NeighborTileData->TileType))
 			{
 				continue;
 			}
@@ -251,7 +251,7 @@ TArray<FPathData> UGridPath::GetValidTileNeighbors(FIntPoint Index)
 			Ret.Add(FPathData(NeighborTileData->TilePosition,1,99999,99999));
 		}
 		//check if the heigh is valid
-		if (IsValidHeigh(NeighborTileData, TileData))
+		if (IsValidHeight(NeighborTileData, TileData))
 		{
 			Ret.Add(FPathData(NeighborTileData->TilePosition,1,99999,99999));
 		}
@@ -262,7 +262,7 @@ TArray<FPathData> UGridPath::GetValidTileNeighbors(FIntPoint Index)
 
 	// ----------------------------
 	// Find Neighbours
-TArray<FIntPoint> UGridPath::FindTileNeighbors(FIntPoint Index)
+TArray<FIntPoint> UGridPath::FindTileNeighbours(FIntPoint Index)
 {
 	TArray<FIntPoint> Neighbors;
 	if(Index.X < Grid->GridSize.X-1) Neighbors.Add(FIntPoint(Index.X + 1, Index.Y));
@@ -300,15 +300,15 @@ void UGridPath::ClearGeneratedPath()
 	// ----------------------------
 	// Movement
 
-TArray<FIntPoint> UGridPath::FindPath(FIntPoint Start, FIntPoint End, bool IsReachable, int PathLenght,	bool IsEscalation, bool attackable)
+TArray<FIntPoint> UGridPath::FindPath(FIntPoint Start, FIntPoint End, bool bReachable, int PathLenght,	bool bEscalation, bool bAttackable)
 {
 	//initialize the path
 	StartPoint = Start;
 	EndPoint = End;
-	bIsReachable = IsReachable;
+	bIsReachable = bReachable;
 	MaxLenght = PathLenght;
-	bIsEscalation = IsEscalation;
-	bIsAttackable = attackable;
+	bIsEscalation = bEscalation;
+	bCanBeAttacked = bAttackable;
 
 	ClearGeneratedPath();
 
@@ -319,7 +319,7 @@ TArray<FIntPoint> UGridPath::FindPath(FIntPoint Start, FIntPoint End, bool IsRea
 	}
 
 	//discover the start tile
-	DiscoverTile(FPathData(Start,1 ,MinimulCostBetweenTwoTile(StartPoint,EndPoint),0));
+	DiscoverTile(FPathData(Start,1 ,MinimalCostBetweenTwoTile(StartPoint,EndPoint),0));
 
 	//while we have not reached the end tile
 	while (DiscoverTileIndex.Num() > 0)
@@ -362,7 +362,6 @@ TArray<FIntPoint> UGridPath::NewFindPath(FIntPoint Start, ACustomPlayerControlle
 	TArray<FIntPoint> NewNewCases;
 	int AllMovement = CPC->UnitRef->GetPM();
 	bool IsWarrior = Cast<AUnit_Child_Warrior>(CPC->UnitRef) != nullptr;
-	TMap<FIntPoint, FDC_TileData>* GridData = Grid->GetGridData();
 
 	if(IsWarrior)
 	{
@@ -370,17 +369,17 @@ TArray<FIntPoint> UGridPath::NewFindPath(FIntPoint Start, ACustomPlayerControlle
 		{
 			for (FIntPoint CaseToCheck : NewCases)
 			{
-				for (FIntPoint NeighbourToCheck : Grid->GridPath->FindTileNeighbors(CaseToCheck))
+				for (FIntPoint NeighbourToCheck : Grid->GridPath->FindTileNeighbours(CaseToCheck))
 				{
 					if (AllMoveCases.Find(NeighbourToCheck)
-						&& Grid->GridPath->IsValidHeighWarrior(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck)) 
+						&& Grid->GridPath->IsValidHeightWarrior(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck)) 
 						&& Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile 
 						)
 					{
 						AllMoveCases += CPC->Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile->SpawnLocRef;
 					}
 					else if (AllMoveCases.Find(NeighbourToCheck)
-						&& Grid->GridPath->IsValidHeighWarrior(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck))
+						&& Grid->GridPath->IsValidHeightWarrior(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck))
 						&& Grid->IsTileWalkable(NeighbourToCheck,false)
 						)
 					{
@@ -401,17 +400,17 @@ TArray<FIntPoint> UGridPath::NewFindPath(FIntPoint Start, ACustomPlayerControlle
 		{
 			for (FIntPoint CaseToCheck : NewCases)
 			{
-				for (FIntPoint NeighbourToCheck : Grid->GridPath->FindTileNeighbors(CaseToCheck))
+				for (FIntPoint NeighbourToCheck : Grid->GridPath->FindTileNeighbours(CaseToCheck))
 				{
 					if (AllMoveCases.Find(NeighbourToCheck)
-						&& Grid->GridPath->IsValidHeigh(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck)) 
+						&& Grid->GridPath->IsValidHeight(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck)) 
 						&& Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile 
 						)
 					{
 						AllMoveCases += CPC->Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile->SpawnLocRef;
 					}
 					else if (AllMoveCases.Find(NeighbourToCheck)
-						&& Grid->GridPath->IsValidHeigh(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck))
+						&& Grid->GridPath->IsValidHeight(Grid->GetGridData()->Find(CaseToCheck), Grid->GetGridData()->Find(NeighbourToCheck))
 						&& Grid->IsTileWalkable(NeighbourToCheck,false)
 						)
 					{
@@ -439,15 +438,13 @@ TArray<FIntPoint> UGridPath::NewFindPathSpMage(FIntPoint Start, ACustomPlayerCon
 
 	TArray<FIntPoint> NewNewCases;
 	int AllMovement = 2;
-	bool IsWarrior = Cast<AUnit_Child_Warrior>(CustomPlayerController->UnitRef) != nullptr;
-	TMap<FIntPoint, FDC_TileData>* GridData = Grid->GetGridData();
 
 
 	for (int i = 0; i < AllMovement; i++)
 	{
 		for (FIntPoint CaseToCheck : NewCases)
 		{
-			for (FIntPoint NeighbourToCheck : Grid->GridPath->FindTileNeighbors(CaseToCheck))
+			for (FIntPoint NeighbourToCheck : Grid->GridPath->FindTileNeighbours(CaseToCheck))
 			{
 				if (AllMoveCases.Find(NeighbourToCheck)
 					&& Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile)

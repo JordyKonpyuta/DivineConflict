@@ -17,17 +17,19 @@ class DIVINECONFLICT_API UBuildingSpawnLocation : public UActorComponent
 	//UPROPERTIES
 public:	
 	// ----------------------------
-	// References
+	// --       References       --
+	// ----------------------------
 	UPROPERTY(NotBlueprintable)
-	TObjectPtr<ABuilding> BuildingRef;
+	TObjectPtr<ABuilding> BuildingRef = nullptr;
 
 	UPROPERTY(Blueprintable, BlueprintReadOnly, Category="Refs")
-	TObjectPtr<AGrid> GridRef;
+	TObjectPtr<AGrid> GridRef = nullptr;
 
 	
 protected:
 	// ----------------------------
-	// Grid Reader
+	// --       Grid Reader      --
+	// ----------------------------
 	
 	UPROPERTY(NotBlueprintable)
 	int GridInstance;
@@ -35,27 +37,30 @@ protected:
 	// UFUNCTIONS
 public:	
 	// ----------------------------
-	// Initialisation
+	// --     Initialisation     --
+	// ----------------------------
 	
 	UBuildingSpawnLocation();
 	
 	// ----------------------------
-	// Overrides
+	// --        Override        --
+	// ----------------------------
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	// ----------------------------
-	// Grid Colors
+	// --       Grid Colors      --
+	// ----------------------------
 	
 	UFUNCTION(Blueprintable, BlueprintCallable)
 	void SpawnGridColors(TArray<FIntPoint> AllSpawnLocationIndex);
 	
 	UFUNCTION(Blueprintable, BlueprintCallable)
-	void DeSpawnGridColors(TArray<FIntPoint> AllSpawnLocationIndex);
+	void DespawnGridColors(TArray<FIntPoint> AllSpawnLocationIndex);
 
 private:
-	
 	// ----------------------------
-	// Overrides
+	// --        Override        --
+	// ----------------------------
 	virtual void BeginPlay() override;
 };

@@ -18,12 +18,6 @@ class DIVINECONFLICT_API AUnit_Child_Tank : public AUnit
 public:
 	
 protected:
-	
-	// ----------------------------
-	// Special
-
-	UPROPERTY(Replicated)
-	bool bIsUsingSpecial = false;
 
 	FTimerHandle TimerHandle;
 
@@ -34,25 +28,11 @@ public:
 	
 	AUnit_Child_Tank();
 
-	UFUNCTION()
-	void SetTimer();
-
 
 	// ----------------------------
 	// Overrides
-
-	void Special() override;
+	
 	virtual void DisplayWidgetTutorial() override;
-	
-	// ----------------------------
-	// GETTERS
-
-	bool GetIsUsingSpecial();
-	
-	// ----------------------------
-	// SETTERS
-
-	void SetIsUsingSpecial(bool bIsBoosting);
 
 private:
 	// ----------------------------

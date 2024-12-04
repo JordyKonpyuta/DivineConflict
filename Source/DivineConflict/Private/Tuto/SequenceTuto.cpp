@@ -150,7 +150,7 @@ void ASequenceTuto::EndSequence()
 		if (ACustomPlayerController* PlayerController = Cast<ACustomPlayerController>(GameStateRef->PlayerArray[0]->GetPlayerController()))
 		{
 			PlayerController->FailedTutorial();
-			GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead = true;
+			GetWorld()->GetAuthGameMode<ATutorialGameMode>()->bIsDead = true;
 		}
 	}
 }

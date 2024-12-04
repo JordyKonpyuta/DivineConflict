@@ -21,29 +21,34 @@ class DIVINECONFLICT_API ACustomGameState : public AGameStateBase
 	GENERATED_BODY()
 
 	
-/* UPROPERTIES */
+	/* UPROPERTIES */
 public:
 	// ----------------------------
-	// References
+	// --       References       --
+	// ----------------------------
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PlayerControllers", meta = (AllowPrivateAccess = "true"))
-	TArray<TObjectPtr<ACustomPlayerController>> PlayerControllers;
+	TArray<TObjectPtr<ACustomPlayerController>> PlayerControllers = {nullptr};
 
 	UPROPERTY(BlueprintReadOnly, Category = "Refs")
-	TArray<TObjectPtr<ACustomPlayerState>> AllPlayerStates;
+	TArray<TObjectPtr<ACustomPlayerState>> AllPlayerStates = {nullptr};
 
+	UPROPERTY()
 	TObjectPtr<ASequenceTuto> SequenceTutoRef = nullptr;
-
-	// WIN/LOSE CON
+	
+	// ----------------------------
+	// --   WIN/LOSE Condition   --
+	// ----------------------------
+	
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Game")
 	TObjectPtr<ACustomPlayerState> PWinner = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Game")
 	TObjectPtr<ACustomPlayerState> PLoser = nullptr;
 	
-
 	// ----------------------------
-	// Loading Timer
+	// --     Timer - Loading    --
+	// ----------------------------
 	
 	FTimerHandle BeginningTimerHandle;
 	
@@ -51,27 +56,32 @@ public:
 	int LoadingTimer = 2;
 	
 	// ----------------------------
-	// Turns
+	// --      Timer - Turns     --
+	// ----------------------------
 	
 	FTimerHandle TurnTimerHandle;
 
 	FTimerHandle SwitchPlayerTurnHandle;
 	
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timer", meta = (AllowPrivateAccess = "true"))
-	int TurnTimerLength = 60;
-
-	UPROPERTY()
-	int BlockTurnSwitchTimerLength = 1;
-
-	UPROPERTY(BlueprintReadOnly,Replicated, Category = "Turns")
-	bool bBlockTurnSwitch = false;
+	// ----------------------------
+	// --         Turns          --
+	// ----------------------------
 
 	UPROPERTY(Blueprintable,Replicated, BlueprintReadWrite, Category = "Turns")
 	int Turn = 0;
+
+	UPROPERTY(BlueprintReadOnly,Replicated, Category = "Turns")
+	bool bBlockTurnSwitch = false;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timer", meta = (AllowPrivateAccess = "true"))
+	int TurnTimerLength = 60;
+	
+	UPROPERTY()
+	int BlockTurnSwitchTimerLength = 1;
 	
 	// ----------------------------
-	// Delegates
+	// --        Delegates       --
+	// ----------------------------
 	
 	UPROPERTY(BlueprintAssignable, Category = "Delegate")
 	FOnTurnSwitchDelegate OnTurnSwitchDelegate;
@@ -81,7 +91,8 @@ private:
 /* UFUNCTIONS */	
 public:
 	// ----------------------------
-	// Turns
+	// --          Turns         --
+	// ----------------------------
 	
 	UFUNCTION(NotBlueprintable, Category = "TurnSystem")
 	void AssignTurnOrder();
@@ -104,9 +115,9 @@ public:
 	UFUNCTION()
 	void CheckSwitchPlayerTurn();
 
-
 	// ----------------------------
-	// Action EndTurn
+	// --   Actions (End Turn)   --
+	// ----------------------------
 
 	UFUNCTION()
 	void CheckPlayerActionActive();
@@ -121,7 +132,8 @@ public:
 	void PauseTimerUI();
 
 	// ----------------------------
-	// Widgets
+	// --         Widgets        --
+	// ----------------------------
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void DisplayWidget();
@@ -133,7 +145,8 @@ public:
 	void ServerDisplayWidget();
 	
 	// ----------------------------
-	// End Game
+	// --        End Game        --
+	// ----------------------------
 	
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void ServerVictoryScreen(EPlayer Loser);
@@ -143,7 +156,8 @@ public:
 	
 private:
 	// ----------------------------
-	// Overrides
+	// --        Overrides       --
+	// ----------------------------
 
 	virtual void BeginPlay() override;
 };

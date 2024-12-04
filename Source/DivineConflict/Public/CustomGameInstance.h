@@ -22,15 +22,18 @@ class DIVINECONFLICT_API UCustomGameInstance : public UGameInstance
 
 /* UPROPERTIES */
 public:
+	// ----------------------------
+	// --       References       --
+	// ----------------------------
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CustomGameInstance")
+	TObjectPtr<UDC_SaveGameSystem> SaveGameInstance = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CustomGameInstance")
-	UDC_SaveGameSystem* SaveGameInstance;
+	TObjectPtr<ACameraPlayer> CameraPlayer = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CustomGameInstance")
-	ACameraPlayer* CameraPlayer;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CustomGameInstance")
-	ACustomPlayerState* CustomPlayerState;
+	TObjectPtr<ACustomPlayerState> CustomPlayerState = nullptr;
 	
 
 private:
@@ -38,16 +41,30 @@ private:
 	
 /* UFUNCTIONS */	
 public:
-
+	// ----------------------------
+	// --       Constructor      --
+	// ----------------------------
+	
 	UCustomGameInstance();
-
+	
+	// ----------------------------
+	// --        Overrides       --
+	// ----------------------------
+	
 	UFUNCTION()
 	virtual void Init() override;
 	
-
+	// ----------------------------
+	// --       Save States      --
+	// ----------------------------
+	
 	UFUNCTION(BlueprintCallable, Category = "CustomGameInstance")
 	void SaveGame();
-
+	
+	// ----------------------------
+	// --           ???          --
+	// ----------------------------
+	
 	UFUNCTION(BlueprintCallable, Category = "CustomGameInstance")
 	void EnableFaceBottomKey(bool enable);
 	

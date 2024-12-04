@@ -24,10 +24,11 @@ class ACustomPlayerController;
 UENUM(BlueprintType)
 enum class EUnitName : uint8
 {
-	Tank UMETA(DisplayName = "Tank"),
-	Warrior UMETA(DisplayName = "Warrior"),
-	Mage UMETA(DisplayName = "Mage"),
-	Leader UMETA(DisplayName = "Leader"),
+	None		UMETA(DisplayName = "None"),
+	Tank		UMETA(DisplayName = "Tank"),
+	Warrior		UMETA(DisplayName = "Warrior"),
+	Mage		UMETA(DisplayName = "Mage"),
+	Leader		UMETA(DisplayName = "Leader"),
 };
 
 
@@ -40,150 +41,148 @@ class DIVINECONFLICT_API AUnit : public APawn , public IInteractInterface
 
 	// UPROPERTIES
 public:
-	// Sets default values for this pawn's properties
-	AUnit();
-	
 	// ----------------------------
-	// Components
+	// --       Components       --
+	// ----------------------------
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Widget")
-	TObjectPtr<UWidgetComponent> DamageWidgetComponent;
+	TObjectPtr<UWidgetComponent> DamageWidgetComponent = nullptr;
 	
 	// ----------------------------
-	// Materials
+	// --        Materials       --
+	// ----------------------------
 
 	UPROPERTY()
-	TArray<TObjectPtr<UMaterialInterface>> AllMaterials;
+	TArray<TObjectPtr<UMaterialInterface>> AllMaterials = {nullptr};
 
 	UPROPERTY()
-	TObjectPtr<UMaterialInterface> MaterialToGhosts;
+	TObjectPtr<UMaterialInterface> MaterialForGhosts = nullptr;
 	
 	// ----------------------------
-	// Niagaras
+	// --        Niagaras        --
+	// ----------------------------
 	
 	UPROPERTY(Replicated)
-	TObjectPtr<UNiagaraSystem> BuffTankSys_NS;
+	TObjectPtr<UNiagaraSystem> BuffTankSys_NS = nullptr;
 	
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> BuffTankComp_NS;
+	TObjectPtr<UNiagaraComponent> BuffTankComp_NS = nullptr;
 	
 	// ----------------------------
-	// References
+	// --       References       --
+	// ----------------------------
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly ,Category = "Unit")
-	TObjectPtr<AGrid> Grid;
+	TObjectPtr<AGrid> Grid = nullptr;
 	
 	UPROPERTY()
-	TObjectPtr<AUnit> UnitToAttackRef;
+	TObjectPtr<AUnit> UnitToAttackRef = nullptr;
 	
 	UPROPERTY()
-	TObjectPtr<ABuilding> BuildingToAttackRef;
+	TObjectPtr<ABuilding> BuildingToAttackRef = nullptr;
 	
 	UPROPERTY()
-	TObjectPtr<ABase> EnemyBase;
+	TObjectPtr<ABase> EnemyBase = nullptr;
 
 	// ----------------------------
-	// Enums
+	// --          Enums         --
+	// ----------------------------
 
 	UPROPERTY(BlueprintReadOnly)
-	EUnitName UnitName;
-
+	EUnitName UnitName = EUnitName::None;
+	
 	// ----------------------------
-	// Timer Handles
+	// --      Timer Handles     --
+	// ----------------------------
 
 	FTimerHandle MoveTimerHandle;
-	FTimerDelegate MoveTimerDelegate;
+	FTimerDelegate MoveTimerDelegate = nullptr;
 
 	FTimerHandle UnitAttackAnimTimer;
-	FTimerDelegate UnitAttackAnimDelegate;
+	FTimerDelegate UnitAttackAnimDelegate = nullptr;
 
 	FTimerHandle InitializationTimer;
-
-	// ----------------------------
-	// Booleans
 	
-	UPROPERTY()
-	bool UsedSpecial;
-
-	UPROPERTY(Replicated)
-	bool bJustBecameGarrison = false;
-
-	UPROPERTY(Blueprintable, BlueprintReadOnly,Replicated)
-	bool HasMoved = false;
+	// ----------------------------
+	// --        Booleans        --
+	// ----------------------------
 
 	UPROPERTY(Blueprintable, BlueprintReadOnly, Replicated)
-	bool HasActed = false;
+	bool bFirstActionIsMove = false;
 
 	UPROPERTY(Blueprintable, BlueprintReadOnly, Replicated)
-	bool FirstActionIsMove = false;
+	bool bHasActed = false;
 	
 	UPROPERTY(Blueprintable, BlueprintReadOnly, Replicated)
 	bool bHasClimbed = false;
 
+	UPROPERTY(Blueprintable, BlueprintReadOnly,Replicated)
+	bool bHasMoved = false;
+
 	UPROPERTY()
 	bool bIsMoving = false;
 
+	UPROPERTY(Replicated)
+	bool bJustBecameGarrison = false;
+	
 	// ----------------------------
-	// Ints
+	// --          Ints          --
+	// ----------------------------
 	
 	UPROPERTY(Replicated)
 	int PathToCrossPosition = 0;
 
 	UPROPERTY(Replicated)
 	int MoveSequencePos = 0;
-
+	
 	// ----------------------------
-	// Movement FIntPoints
+	// -- Movements - FIntPoints --
+	// ----------------------------
 
 	UPROPERTY()
-	FIntPoint FutureMovementPos;
+	FIntPoint FutureMovementPos = FIntPoint(-999, -999);
 	
 	UPROPERTY(Replicated)
-	TArray<FIntPoint> FutureMovement;
-
-	UPROPERTY(Replicated)
-	TArray<FIntPoint> FutureMovementWithSpecial;
+	TArray<FIntPoint> FutureMovement = {FIntPoint(-999,-999)};
 	
 	UPROPERTY(Replicated)
-	TArray<FIntPoint> PathToCross;
+	TArray<FIntPoint> PathToCross = {FIntPoint(-999,-999)};
 
 	// ----------------------------
-	// Movement General
-
-	FVector UnitNewLocation;
-
+	// --   Movements - General  --
 	// ----------------------------
-	// Unit Spawn FIntPoints
-	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitType")
-	TArray<int> UnitCost;
 
+	FVector UnitNewLocation = FVector(0,0,0);
+	
 	// ----------------------------
-	// Textures
+	// --        Textures        --
+	// ----------------------------
 
 	UPROPERTY()
-	TObjectPtr<UTexture2D> HeavenIcon;
+	TObjectPtr<UTexture2D> HeavenIcon = nullptr;
 	UPROPERTY()
-	TObjectPtr<UTexture2D> HeavenIconDead;
+	TObjectPtr<UTexture2D> HeavenIconDead = nullptr;
 	
 	UPROPERTY()
-	TObjectPtr<UTexture2D> HellIcon;
+	TObjectPtr<UTexture2D> HellIcon= nullptr;
 	UPROPERTY()
-	TObjectPtr<UTexture2D> HellIconDead;
+	TObjectPtr<UTexture2D> HellIconDead = nullptr;
 	
 	UPROPERTY()
-	TObjectPtr<UTexture2D> NeutralIcon;
+	TObjectPtr<UTexture2D> NeutralIcon = nullptr;
 	UPROPERTY()
-	TObjectPtr<UTexture2D> NeutralIconDead;
+	TObjectPtr<UTexture2D> NeutralIconDead = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Texture")
-	TObjectPtr<UTexture2D> UnitIcon;
+	TObjectPtr<UTexture2D> UnitIcon = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Texture")
-	TObjectPtr<UTexture2D> UnitIconDead;
+	TObjectPtr<UTexture2D> UnitIconDead = nullptr;
 
 	FTimerHandle IconTimerHandle;
-
+	
 	// ----------------------------
-	// Death
+	// --         Death          --
+	// ----------------------------
 
 	FTimerHandle DeathTimerHandle;
 
@@ -191,71 +190,71 @@ public:
 	FRotator UnitRotation = FRotator(0,0,0);
 
 	// ----------------------------
-	// ----------------------------
-	
 protected:
-	
 	// ----------------------------
-	// Meshes
+	// --         Meshes         --
+	// ----------------------------
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Unit", Replicated, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UStaticMeshComponent> UnitMesh;
+	TObjectPtr<UStaticMeshComponent> UnitMesh = nullptr;
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Unit", Replicated, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UStaticMeshComponent> UnitMeshDistinction;
+	TObjectPtr<UStaticMeshComponent> UnitMeshDistinction = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
-	TObjectPtr<UStaticMeshComponent> GhostsMesh;
+	TObjectPtr<UStaticMeshComponent> GhostsMesh = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
-	TObjectPtr<UStaticMeshComponent> GhostsFinaleLocationMesh;
+	TObjectPtr<UStaticMeshComponent> GhostsFinaleLocationMesh = nullptr;
 	
 	// ----------------------------
-	// References
+	// --       References       --
+	// ----------------------------
 	
 	UPROPERTY(Replicated)
-	TObjectPtr<ACustomPlayerController> PlayerControllerRef;
+	TObjectPtr<ACustomPlayerController> PlayerControllerRef = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
 	TObjectPtr<ABuilding> BuildingRef = nullptr;
-
-	UPROPERTY()
-	TObjectPtr<ATower> TowerRef = nullptr;
-
+	
 	// ----------------------------
-	// Enums
+	// --         Enums          --
+	// ----------------------------
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Category = "Unit")
 	EPlayer PlayerOwner = EPlayer::P_Neutral;
-
+	
 	// ----------------------------
-	// Booleans
+	// --        Booleans        --
+	// ----------------------------
+
+	UPROPERTY()
+	bool bBeganAttack = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Unit")
+	bool bBuffTank = false;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Unit")
 	bool bIsClimbing = false;
 
-	UPROPERTY()
-	bool IsSelected = false;
+	UPROPERTY(Replicated)
+	bool bIsCommandeerBuffed = false;
 
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
-	bool IsGarrison = false;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Unit")
-	bool bBuffTank = false;
+	bool bIsGarrison = false;
 
 	UPROPERTY(Replicated)
 	bool bIsGhosts = false;
 
-	UPROPERTY(Replicated)
-	bool bIsCommandeerBuffed = false;
+	UPROPERTY()
+	bool bIsSelected = false;
 
 	UPROPERTY()
-	bool bBeganAttack = false;
-	
-	bool WillMove = true;
+	bool bWillMove = true;
 	
 	// ----------------------------
-	// Units stats
+	// --       Unit Stats       --
+	// ----------------------------
 	
 	UPROPERTY(Replicated,VisibleAnywhere, BlueprintReadOnly, Category = "Unit")
 	int CurrentHealth = 0;
@@ -276,19 +275,21 @@ protected:
 	FString Name = "";
 
 	UPROPERTY()
-	FVector UnitLocationInWorld;
-
+	FVector UnitLocationInWorld = FVector(0,0,0);
+	
 	// ----------------------------
-	// Position in Grid
+	// --    Position in Grid    --
+	// ----------------------------
 
 	UPROPERTY()
 	FIntPoint IndexPosition = FIntPoint(-999, -999);
 
 	UPROPERTY()
-	TArray<FIntPoint> Path;
-
+	TArray<FIntPoint> Path = {FIntPoint(-999,-999)};
+	
 	// ----------------------------
-	// Ghosts
+	// --         Ghosts         --
+	// ----------------------------
 	
 	UPROPERTY()
 	float DeltaTimeGhosts = 0.0f;
@@ -296,14 +297,17 @@ protected:
 	UPROPERTY()
 	int CurrentIndexGhost = 0;
 
-	
-	// ----------------------------
-	// ----------------------------
-	// ----------------------------
 	// UFUNCTIONS
 public:
-
-	// Overrides
+	// ----------------------------
+	// --       Constructor      --
+	// ----------------------------
+	
+	AUnit();
+	
+	// ----------------------------
+	// --        Overrides       --
+	// ----------------------------
 	
 	UFUNCTION()
 	void Destroyed() override;
@@ -314,16 +318,19 @@ public:
 
 	virtual bool Interact_Implementation(ACustomPlayerController* PlayerController) override;
 
+	UFUNCTION()
 	virtual void DisplayWidgetTutorial();
 	
 	// ----------------------------
-	// Interactions
+	// --      Interactions      --
+	// ----------------------------
 	
 	UFUNCTION()
 	void interaction(ACustomPlayerController *PlayerController);
 	
 	// ----------------------------
-	// Turn Switch
+	// --       Turn Switch      --
+	// ----------------------------
 	
 	UFUNCTION()
 	void NewTurn();
@@ -332,22 +339,25 @@ public:
 	void Multi_NewTurn();
 	
 	// ----------------------------
-	// Grid
+	// --          Grid          --
+	// ----------------------------
 	
 	UFUNCTION(Server,Reliable)
 	void Server_AddOnGrid();
 
 	UFUNCTION(BlueprintCallable)
 	void SetGrid(AGrid* NewGrid);
-
+	
 	// ----------------------------
-	// Pre Movement
+	// --      Pre-Movement      --
+	// ----------------------------
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_PrepareMove(const TArray<FIntPoint>& NewPos);
 	
 	// ----------------------------
-	// Movement
+	// --        Movement        --
+	// ----------------------------
 
 	UFUNCTION()
 	void InitializeFullMove(TArray <FIntPoint> FullMove);
@@ -363,18 +373,20 @@ public:
 
 	UFUNCTION(NetMulticast,Reliable)
 	void Multi_MoveCamera(ACameraPlayer* CameraPlayer);
-
+	
 	// ----------------------------
-	// Ghosts
+	// --         Ghosts         --
+	// ----------------------------
 
 	UFUNCTION(NetMulticast,Reliable)
 	void Multi_HiddeGhosts();
 	
 	UFUNCTION()
 	UStaticMeshComponent* GetFinalGhostMesh();
-
+	
 	// ----------------------------
-	// Attack
+	// --         Attack         --
+	// ----------------------------
 
 	UFUNCTION()
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
@@ -390,19 +402,10 @@ public:
 	
 	UFUNCTION()
 	void AnimAttack(AActor* ThingToAttack);
-
-	// ----------------------------
-	// Special
-
-	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-	virtual void Special();
-	
-	virtual void SpecialUnit(AUnit* UnitToAttack);
-	
-	virtual void SpecialBase(ABase *BaseToAttack);
 	
 	// ----------------------------
-	// Get Buffs
+	// --          Buffs         --
+	// ----------------------------
 
 	UFUNCTION(Server, Reliable)
 	void Server_GetBuffs();
@@ -417,25 +420,25 @@ public:
 	void Multi_GetBuffsVisual();
 	
 	// ----------------------------
-	// Cancel Actions
+	// --     Cancel Action      --
+	// ----------------------------
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_CancelMove();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_CancelAttack();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multi_CancelSpecial();
-
+	
 	// ----------------------------
-	// Textures
+	// --        Textures        --
+	// ----------------------------
 	
 	UFUNCTION()
 	void SetUnitIcon();
-
+	
 	// ----------------------------
-	// Death
+	// --          Death         --
+	// ----------------------------
 
 	UFUNCTION()
 	void Server_DeathAnim();
@@ -445,14 +448,17 @@ public:
 
 	UFUNCTION(Server,Reliable)
 	void Server_DestroyUnit();
-
-	//---------------------------
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multi_REmoveGarison();
 	
 	// ----------------------------
-	// GETTERS //
+	// --     Leave Garrison     --
+	// ----------------------------
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_RemoveGarrison();
+	
+	// ---------------------------- //
+	// ---        GETTERS       --- //
+	// ---------------------------- //
 
 	// StaticMesh
 	UFUNCTION()
@@ -461,9 +467,6 @@ public:
 	// References
 	UFUNCTION(BlueprintCallable)
 	ABuilding* GetBuildingRef();
-
-	UFUNCTION(BlueprintCallable)
-	ATower* GetTowerRef();
 	
 	// Int
 	UFUNCTION(BlueprintCallable)
@@ -497,6 +500,9 @@ public:
 	UFUNCTION()
 	bool GetIsCommandeerBuffed();
 
+	UFUNCTION()
+	bool GetWillMove();
+
 	// Enums
 	UFUNCTION()
 	EPlayer GetPlayerOwner();
@@ -509,8 +515,9 @@ public:
 	UFUNCTION()
 	FIntPoint GetIndexPosition();
 	
-	// ----------------------------
-	// SETTERS //
+	// ---------------------------- //
+	// ---        SETTERS       --- //
+	// ---------------------------- //
 
 	// References
 	UFUNCTION(BlueprintCallable)
@@ -548,6 +555,9 @@ public:
 	UFUNCTION()
 	void SetIsCommandeerBuffed(bool bC);
 
+	UFUNCTION()
+	void SetWillMove(bool bWM);
+
 	// Enums
 
 	UFUNCTION(BlueprintCallable)
@@ -565,21 +575,25 @@ public:
 	void SetIndexPosition(FIntPoint ip);
 	
 	// ----------------------------
-	// ----------------------------
 protected:
-	// Overrides
+	// ----------------------------
+	// --        Override        --
+	// ----------------------------
 	
 	virtual void BeginPlay() override;
 	
 	virtual void NotifyActorOnClicked(FKey ButtonPressed) override;
-
-	//-----------------------------
-	// Initialization
+	
+	// ----------------------------
+	// --     Initialisation     --
+	// ----------------------------
 
 	UFUNCTION(Server, Reliable)
 	void AssignPlayerController();
 	
-	// Movement
+	// ----------------------------
+	// --        Movement        --
+	// ----------------------------
 
 	UFUNCTION(Client,Reliable)
 	void InitGhosts();
@@ -589,12 +603,10 @@ protected:
 
 	UFUNCTION()
 	void MoveGhostsAction(float DeltaTime,const TArray<FIntPoint> &PathToFollowGhost);
-
+	
 	// ----------------------------
-	// Initial tests
-	
-	UFUNCTION()
-	void testOnTower();
-	
+	// --      Initial Tests     --
+	// ----------------------------
+
 	void SetGrid();
 };

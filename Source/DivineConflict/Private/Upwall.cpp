@@ -2,7 +2,6 @@
 
 
 #include "Upwall.h"
-
 #include "Grid.h"
 #include "GridInfo.h"
 #include "Net/UnrealNetwork.h"

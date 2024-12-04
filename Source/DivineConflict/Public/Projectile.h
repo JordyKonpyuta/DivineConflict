@@ -22,7 +22,8 @@ class DIVINECONFLICT_API AProjectile : public AActor
 	// UPROPERTIES
 public:	
 	// ----------------------------
-	// Components
+	// --       Components       --
+	// ----------------------------
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> CannonBallMesh;
@@ -34,7 +35,8 @@ public:
 	TObjectPtr<UNiagaraComponent> FireBallComp_NS;
 	
 	// ----------------------------
-	// Projectile Properties
+	// --  Projectile Properties --
+	// ----------------------------
 
 	UPROPERTY(Replicated)
 	bool IsMageAttack;
@@ -49,7 +51,8 @@ public:
 	FVector MoveVelocity;
 	
 	// ----------------------------
-	// Owner
+	// --         Owner          --
+	// ----------------------------
 
 	UPROPERTY(Replicated)
 	TObjectPtr<ATower> TowerOwner;
@@ -59,7 +62,8 @@ public:
 	
 protected:
 	// ----------------------------
-	// Components
+	// --       Components       --
+	// ----------------------------
 
 	UPROPERTY(Replicated)
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
@@ -67,26 +71,37 @@ protected:
 	// UFUNCTIONS
 public:
 	// ----------------------------
-	// Constructor
+	// --       Constructor      --
+	// ----------------------------
 	
 	AProjectile();
 	
 	// ----------------------------
-	// Overrides
+	// --        Overrides       --
+	// ----------------------------
 	
 	virtual void Tick(float DeltaTime) override;
 	
 	// ----------------------------
-	// Projectile LifeSpan
-
+	// --   Projectile Lifespan  --
+	// ----------------------------
+	
 	FTimerHandle CannonBallTimer;
 	FTimerHandle CannonBallTimer2;
+	
+	// ----------------------------
+	// --   Projectile Creation  --
+	// ----------------------------
 	
 	UFUNCTION(Server,Reliable)
 	void Server_CreateProjectile();
 	
 	UFUNCTION(NetMulticast,Reliable)
 	void Multi_CreateProjectile();
+	
+	// ----------------------------
+	// --   Projectile Movement  --
+	// ----------------------------
 	
 	UFUNCTION()
 	void CalculateProjectileDirection (AActor* Target);
@@ -99,6 +114,10 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_MoveProjectile(AActor* Actor);
+	
+	// ----------------------------
+	// --   Projectile Removal   --
+	// ----------------------------
 	
 	UFUNCTION(Server, Reliable)
 	void Server_RemoveProjectile();
@@ -114,7 +133,8 @@ public:
 	
 protected:
 	// ----------------------------
-	// Overrides
+	// --        Overrides       --
+	// ----------------------------
 	
 	virtual void BeginPlay() override;
 };

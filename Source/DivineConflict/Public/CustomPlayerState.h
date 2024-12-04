@@ -22,16 +22,18 @@ class DIVINECONFLICT_API ACustomPlayerState : public APlayerState
 	// UPROPERTIES //
 public:
 	// ----------------------------
-	// References
+	// --       References       --
+	// ----------------------------
 
 	UPROPERTY(VisibleAnywhere, Replicated, Category = "Ref", meta = (AllowPrivate = "true"))
-	TObjectPtr<ACustomPlayerController> PlayerControllerRef;
+	TObjectPtr<ACustomPlayerController> PlayerControllerRef = nullptr;
 	
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
-	TObjectPtr<ACustomGameState> GameStateRef;
+	TObjectPtr<ACustomGameState> GameStateRef = nullptr;
 	
 	// ----------------------------
-	// Buildings
+	// --       Buildings       --
+	// ----------------------------
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actions")
 	bool GotCentralBuilding = false;
@@ -49,7 +51,8 @@ public:
 	int SmolBuildingOwned = 0;
 	
 	// ----------------------------
-	// Turns
+	// --          Turns         --
+	// ----------------------------
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing = OnRep_PlayerTeam, Category = "Turn")
 	EPlayer PlayerTeam = EPlayer::P_Hell;
@@ -61,19 +64,21 @@ public:
 	bool bIsActiveTurn = false;
 	
 	UPROPERTY()
-	bool bIsReadyToSiwtchTurn = false;
+	bool bIsReadyToSwitchTurn = false;
 
 	UPROPERTY(Replicated)
 	bool bIsBlockTimerNewBeginTurn = false;
 	
 	// ----------------------------
-	// Timers
+	// --         Timers         --
+	// ----------------------------
 
 	UPROPERTY(EditAnywhere, NotBlueprintable, Category = "Timer", meta = (AllowPrivateAccess = "true"))
 	int LoadingTimer = 1;
 	
 	// ----------------------------
-	// Tutorial
+	// --        Tutorial        --
+	// ----------------------------
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actions")
 	bool bIsInTutorial = false;
@@ -81,7 +86,8 @@ public:
 	
 protected:
 	// ----------------------------
-	// Ressources
+	// --       Ressources       --
+	// ----------------------------
 	
 	UPROPERTY(EditAnywhere,Replicated, BlueprintReadWrite, Category = "Actions")
 	int MaxActionPoints = 10;
@@ -99,7 +105,8 @@ protected:
 	int GoldPoints = 5;
 	
 	// ----------------------------
-	// UNITS
+	// --          Units         --
+	// ----------------------------
 	
 		// Warrior Costs
 	UPROPERTY()
@@ -147,27 +154,28 @@ protected:
 	int WarriorCount = 1;
 	UPROPERTY(Replicated)
 	int LeaderCount = 0;
-
-	//---------------------------
-	// Timer
+	
+	// ----------------------------
+	// --          Timer         --
+	// ----------------------------
 
 	UPROPERTY()
-	FTimerHandle BlockNewTurnbeginTimerHandle;
+	FTimerHandle BlockNewTurnBeginTimerHandle;
 	
 	// UFUNCTIONS //
 public:
-	
 	// ----------------------------
-	// On_Reps
+	// --         On_Reps        --
+	// ----------------------------
 	
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	void OnRep_bIsActiveTurn();
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	void OnRep_PlayerTeam();
-	
 	// ----------------------------
-	// Turns
+	// --          Turns         --
+	// ----------------------------
 
 	UFUNCTION(BlueprintCallable, Category = "Turn")
 	void NewTurnBegin();
@@ -176,14 +184,15 @@ public:
 	void BlockNewTurnBegin();
 	
 	// ----------------------------
-	// UI
+	// --           UI           --
+	// ----------------------------
 
 	UFUNCTION()
 	void UpdateUI();
-
-
-	// ----------------------------
-	// GETTERS
+	
+	// ---------------------------- //
+	// --         GETTERS        -- //
+	// ---------------------------- //
 
 	// Refs
 	
@@ -273,10 +282,11 @@ public:
     int GetTankCount();
 	
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Units")
-    int GetLeaderCount();
+	int GetLeaderCount();
 	
-	// ----------------------------
-	// SETTERS
+	// ---------------------------- //
+	// --         SETTERS        -- //
+	// ---------------------------- //
 
 	// Turns
 	
@@ -288,7 +298,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Units")
 	void SetUnits(int UnitNumber);
 	
-	// true to add ; false to remove
 	UFUNCTION(BlueprintCallable, Category = "Units")
 	void SetMaxUnits(int UnitMax);
 
@@ -328,7 +337,8 @@ public:
 	
 protected:
 	// ----------------------------
-	// Overrides
+	// --        Overrides       --
+	// ----------------------------
 
 	virtual void BeginPlay() override;
 };

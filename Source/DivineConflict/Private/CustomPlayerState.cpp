@@ -70,7 +70,7 @@ void ACustomPlayerState::OnRep_bIsActiveTurn()
 	{
 		NewTurnBegin();
 		bIsBlockTimerNewBeginTurn = true;
-		GetWorldTimerManager().SetTimer(BlockNewTurnbeginTimerHandle, this, &ACustomPlayerState::BlockNewTurnBegin, 5, false);
+		GetWorldTimerManager().SetTimer(BlockNewTurnBeginTimerHandle, this, &ACustomPlayerState::BlockNewTurnBegin, 5, false);
 		if (GetPlayerCustomController())
 			GetPlayerCustomController()->SetPositionInBase();
 	}
@@ -85,7 +85,7 @@ void ACustomPlayerState::OnRep_bIsActiveTurn()
 	
 	UpdateUI();
 		
-	bIsReadyToSiwtchTurn = false;
+	bIsReadyToSwitchTurn = false;
 	if (GameStateRef)
 	{
 		MaxActionPoints = 10 + GotCentralBuilding * UKismetMathLibrary::Clamp(1 + UKismetMathLibrary::FTrunc(GameStateRef->Turn / 5), 1, MAX_int32);
@@ -145,7 +145,7 @@ ACustomPlayerController* ACustomPlayerState::GetPlayerCustomController()
 
 bool ACustomPlayerState::GetIsReadyToSwitchTurn()
 {
-	return bIsReadyToSiwtchTurn;
+	return bIsReadyToSwitchTurn;
 }
 
 		// Ressources
@@ -286,7 +286,7 @@ int ACustomPlayerState::GetLeaderCount()
 
 void ACustomPlayerState::SetIsReadyToSwitchTurn(bool Ready)
 {
-	bIsReadyToSiwtchTurn = Ready;
+	bIsReadyToSwitchTurn = Ready;
 }
 
 // Units

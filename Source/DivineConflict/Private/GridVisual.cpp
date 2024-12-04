@@ -91,7 +91,7 @@ void UGridVisual::UpdateVisuals(FIntPoint Index)
 	// ----------------------------
 	// State Modifier
 
-void UGridVisual::addStateToTile(FIntPoint Index, EDC_TileState TileState)
+void UGridVisual::AddStateToTile(FIntPoint Index, EDC_TileState TileState)
 {
 	if(Grid)
 	{

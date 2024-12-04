@@ -2,11 +2,8 @@
 
 
 #include "Unit_Child_Leader.h"
-
-#include "CustomGameState.h"
 #include "Grid.h"
 #include "GridPath.h"
-#include "TutorialGameMode.h"
 #include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -71,21 +68,6 @@ void AUnit_Child_Leader::BeginPlay()
 
 	GetWorld()->GetTimerManager().SetTimer(IconTimerHandle, this, &AUnit_Child_Leader::SetUnitIcon, 1.0f, false);
 	
-}
-
-void AUnit_Child_Leader::Special()
-{
-	Super::Special();
-	//Special ability
-
-	TArray<FIntPoint> PathBuff =  Grid->GridPath->FindPath(GetIndexPosition(),FIntPoint(-999,-999),true,3,false,false);
-	for(FIntPoint Tile : PathBuff)
-	{
-		if(Grid->GetGridData()->Find(Tile)->UnitOnTile  && Grid->GetGridData()->Find(Tile)->UnitOnTile != this && Grid->GetGridData()->Find(Tile)->UnitOnTile->GetPlayerOwner() == GetPlayerOwner())
-		{
-			//Grid->GetGridData()->Find(Tile)->UnitOnTile->SetBuffLeader(true);
-		}
-	}
 }
 
 void AUnit_Child_Leader::MoveUnitEndTurn()

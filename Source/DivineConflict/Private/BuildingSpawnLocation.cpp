@@ -52,20 +52,20 @@ void UBuildingSpawnLocation::SpawnGridColors(TArray<FIntPoint> AllSpawnLocationI
 			{
 				GridRef->RemoveInstance(Index);
 				GridInstance = GridRef->AddInstance(Index, GridRef->GetGridData()->Find(Index)->TileTransform);
-				if (GridRef->GridPath->IsValidHeigh(GridRef->GetGridData()->Find(Index), GridRef->GetGridData()->Find(BuildingRef->SpawnLocRef[0])) && GridRef->GetGridData()->Find(Index)->UnitOnTile == nullptr)
+				if (GridRef->GridPath->IsValidHeight(GridRef->GetGridData()->Find(Index), GridRef->GetGridData()->Find(BuildingRef->SpawnLocRef[0])) && GridRef->GetGridData()->Find(Index)->UnitOnTile == nullptr)
 				{
-					GridRef->GridVisual->addStateToTile(Index, EDC_TileState::Spawnable);
+					GridRef->GridVisual->AddStateToTile(Index, EDC_TileState::Spawnable);
 				}
 				else
 				{
-					GridRef->GridVisual->addStateToTile(Index, EDC_TileState::NotSpawnable);
+					GridRef->GridVisual->AddStateToTile(Index, EDC_TileState::NotSpawnable);
 				}
 			}
 		}
 	}
 }
 
-void UBuildingSpawnLocation::DeSpawnGridColors(TArray<FIntPoint> AllSpawnLocationIndex)
+void UBuildingSpawnLocation::DespawnGridColors(TArray<FIntPoint> AllSpawnLocationIndex)
 {
 	BuildingRef = Cast<ABuilding>(GetOwner()); 
 	if (BuildingRef != nullptr)
@@ -76,7 +76,7 @@ void UBuildingSpawnLocation::DeSpawnGridColors(TArray<FIntPoint> AllSpawnLocatio
 			{
 				GridRef->RemoveInstance(Index);
 				GridInstance = GridRef->AddInstance(Index, GridRef->GetGridData()->Find(Index)->TileTransform);
-				if (GridRef->GridPath->IsValidHeigh(GridRef->GetGridData()->Find(Index), GridRef->GetGridData()->Find(BuildingRef->SpawnLocRef[0])) && GridRef->GetGridData()->Find(Index)->UnitOnTile == nullptr)
+				if (GridRef->GridPath->IsValidHeight(GridRef->GetGridData()->Find(Index), GridRef->GetGridData()->Find(BuildingRef->SpawnLocRef[0])) && GridRef->GetGridData()->Find(Index)->UnitOnTile == nullptr)
 				{
 					GridRef->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Spawnable);
 				}

@@ -24,53 +24,57 @@ class DIVINECONFLICT_API ABuilding : public AActor, public IInteractInterface
 	// UPROPERTIES
 public:
 	// ----------------------------
-	// Components
+	// --       Components       --
+	// ----------------------------
 
 	UPROPERTY(Blueprintable, VisibleAnywhere, BlueprintReadWrite, Category = "Building")
-	TObjectPtr<USkeletalMeshComponent> StaticMeshBuilding;
+	TObjectPtr<USkeletalMeshComponent> StaticMeshBuilding = nullptr;
 
 	UPROPERTY(Blueprintable, EditAnywhere, BlueprintReadWrite, Category = "Building")
-	TObjectPtr<UStaticMeshComponent> StaticMeshPlane;
+	TObjectPtr<UStaticMeshComponent> StaticMeshPlane = nullptr;
 
 	UPROPERTY(Blueprintable, BlueprintReadWrite, Category = "Building")
-	TObjectPtr<USceneComponent> SceneComp;
+	TObjectPtr<USceneComponent> SceneComp = nullptr;
 	
 	// ----------------------------
-	// Materials
+	// --        Materials       --
+	// ----------------------------
 
 	UPROPERTY()
 	TArray<TObjectPtr<UMaterialInterface>> AllMaterials;
 	
 	// ----------------------------
-	// References
+	// --       References       --
+	// ----------------------------
 
 	// Player
 	UPROPERTY(Blueprintable)
-	TObjectPtr<ACustomPlayerController> PlayerControllerRef;
+	TObjectPtr<ACustomPlayerController> PlayerControllerRef = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Player")
-	TObjectPtr<ACustomPlayerState> OwnerPlayerState;
+	TObjectPtr<ACustomPlayerState> OwnerPlayerState = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<ACustomGameState> GameStateRef;
+	TObjectPtr<ACustomGameState> GameStateRef = nullptr;
 	
 	// Units
 	UPROPERTY(Blueprintable, BlueprintReadOnly)
-	TObjectPtr<UBuildingSpawnLocation> BuildingSpawnLocationRef;
+	TObjectPtr<UBuildingSpawnLocation> BuildingSpawnLocationRef = nullptr;
 
 	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Category = "UnitSelection")
 	TObjectPtr<AUnit> UnitRef = nullptr;
 
 	// Grid
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player")
-	TObjectPtr<AGrid> Grid;
+	TObjectPtr<AGrid> Grid = nullptr;
 	
 	// Spawn
 	UPROPERTY()
 	TObjectPtr<AUnit> UnitSpawned = nullptr;
 	
 	// ----------------------------
-	// Enumerators
+	// --       Enumerators      --
+	// ----------------------------
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Player")
 	EPlayer PlayerOwner = EPlayer::P_Neutral;
@@ -79,7 +83,8 @@ public:
 	EUnitType UnitProduced;
 	
 	// ----------------------------
-	// Tile Management
+	// --     Tile Management    --
+	// ----------------------------
 	
 	UPROPERTY(Blueprintable, BlueprintReadOnly, Category="Grid")
 	TArray<FIntPoint>AllSpawnLoc;
@@ -94,29 +99,33 @@ public:
 	bool MovementOptionsReady = false;
 
 	// ----------------------------
-	// Garrison
+	// --        Garrison        --
+	// ----------------------------
 
 	UPROPERTY(VisibleAnywhere , BlueprintReadOnly, Replicated, Category = "UnitSelection")
 	bool GarrisonFull = false;
 	
 	UPROPERTY(Blueprintable, BlueprintReadOnly, Category="Grid")
-	FVector UnitPosition;
+	FVector UnitPosition = FVector(0,0,0);
 
 	// ----------------------------
-	// Spawn
+	// --         Spawn          --
+	// ----------------------------
 
 	UPROPERTY()
 	bool bHasSpawned = false;
 	
 protected:
 	// ----------------------------
-	// UnitType
+	// --      Unit (Type)       --
+	// ----------------------------
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building")
 	EBuildingList BuildingList;
 
 	// ----------------------------
-	// Unit Position
+	// --     Unit (Position)    --
+	// ----------------------------
 	
 	UPROPERTY()
 	FIntPoint GridPosition = FIntPoint(0, 0);
@@ -124,7 +133,8 @@ protected:
 	// UFUNCTIONS
 public:	
 	// ----------------------------
-	// Initialisation
+	// --     Initialisation     --
+	// ----------------------------
 
 	ABuilding();
 
@@ -132,32 +142,37 @@ public:
 	void Multi_InitStartBuilding(AUnit* UnitSp);
 	
 	// ----------------------------
-	// Overrides
+	// --        Overrides       --
+	// ----------------------------
 	
 	virtual void Tick(float DeltaTime) override;
 	
 	virtual bool Interact_Implementation(ACustomPlayerController* PlayerController) override;
 	
 	// ----------------------------
-	// Prepare Actions
+	// --  Actions (Preparation) --
+	// ----------------------------
 
 	UFUNCTION()
 	void BuildingPreAction(AUnit* UnitSp);
 
 	// ----------------------------
-	// Actions
+	// --         Actions        --
+	// ----------------------------
 
 	UFUNCTION(BlueprintCallable, Category = "Player")
 	void BuildingAction();
 	
 	// ----------------------------
-	// Prepare Movements
+	// -  Movements (Preparation) -
+	// ----------------------------
 
 	UFUNCTION()
 	void PrepareMovements();
 	
-	// ----------------------------
-	// GETTERS
+	// ---------------------------- //
+	// --         GETTERS        -- //
+	// ---------------------------- //
 
 	// Grid Position
 	UFUNCTION()
@@ -167,8 +182,9 @@ public:
 	UFUNCTION()
 	EBuildingList GetBuildingList();
 
-	// ----------------------------
-	// SETTERS
+	// ---------------------------- //
+	// --         SETTERS        -- //
+	// ---------------------------- //
 
 	// Grid Position
 	void SetGridPosition(FIntPoint GridPosition);
@@ -185,11 +201,13 @@ public:
 	
 protected:
 	// ----------------------------
-	// Override
+	// --        Override        --
+	// ----------------------------
 	virtual void BeginPlay() override;
 	
 	// ----------------------------
-	// Handling Turns
+	// --          Turns         --
+	// ----------------------------
 	
 	UFUNCTION(Blueprintable, Category = "Player")
 	bool IsPlayerPassive(ACustomPlayerController* PlayerController);

@@ -26,13 +26,15 @@ class DIVINECONFLICT_API AGrid : public AActor , public IInteractInterface
 	// UPROPERTIES
 public:	
 	// ----------------------------
-	// Components
+	// --       Components       --
+	// ----------------------------
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivateAccess = "true"))
-    TObjectPtr<UInstancedStaticMeshComponent> GridMesh;	
+    TObjectPtr<UInstancedStaticMeshComponent> GridMesh = nullptr;	
 	
 	// ----------------------------
-	// References
+	// --       References       --
+	// ----------------------------
 	
 	UPROPERTY(EditAnywhere , Category = "GridElement")
 	TObjectPtr<UGridPath> GridPath = nullptr;
@@ -44,7 +46,8 @@ public:
 	TObjectPtr<UGridVisual> GridVisual = nullptr;
 
 	// ----------------------------
-	// Grid Properties
+	// --     Grid Properties    --
+	// ----------------------------
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "GridElement", meta = (AllowPrivate))
 	TMap <FIntPoint, FDC_TileData> GridData;
@@ -57,7 +60,8 @@ public:
 	
 protected:
 	// ----------------------------
-	// Instances
+	// --        Instances       --
+	// ----------------------------
 	
 	UPROPERTY( EditAnywhere, Category = "GridElement")
 	TArray<FIntPoint> InstanceArray;
@@ -65,68 +69,89 @@ protected:
 	// UFUNCTIONS
 public:	
 	// ----------------------------
-	// Constructor
+	// --       Constructor      --
+	// ----------------------------
 	
 	AGrid();
 	
 	// ----------------------------
-	// Overrides
+	// --        Overrides       --
+	// ----------------------------
+
+	UFUNCTION()
 	virtual void Tick(float DeltaTime) override;
 	
 	// ----------------------------
-	// Check Grid Element
+	// --   Check Grid Elements  --
+	// ----------------------------
 	
 	UFUNCTION( Category = "GridElement")
 	bool IsTileWalkable(FIntPoint Index , bool Attacking);
 
+	UFUNCTION()
 	bool IsTileTypeWalkable(EDC_TileType Type);
 
-	bool IsTileTypeAttackable(EDC_TileType Type);
-
-	// ----------------------------
-	// Converts
+	UFUNCTION()
+	bool CanAttackTileType(EDC_TileType Type);
 	
+	// ----------------------------
+	// --       Conversions      --
+	// ----------------------------
+
+	UFUNCTION()
 	FIntPoint ConvertLocationToIndex(FVector3d Location);
 
+	UFUNCTION()
 	FVector3d ConvertIndexToLocation(FIntPoint Index);
 
-	
 	// ----------------------------
-	// Instances Editor
+	// --    Instances Editor    --
+	// ----------------------------
 
+	UFUNCTION()
 	int AddInstance(FIntPoint Index, FTransform3d Transform);
-	
+
+	UFUNCTION()
 	void RemoveInstance(FIntPoint Index);
 	
 	// ----------------------------
-	// Color
+	// --          Color         --
+	// ----------------------------
 
+	UFUNCTION()
 	void UpdateColor(int I, FLinearColor InColor, float	Alpha);
 
 	// ----------------------------
-	// GETTERS
-
+	// --        Grid Data       --
+	// ----------------------------
+	
 	TMap <FIntPoint, FDC_TileData>* GetGridData();
 	
 	// ----------------------------
-	// SETTERS
-	
+	// --         SETTERS        --
+	// ----------------------------
+
+	UFUNCTION()
 	void SetGridData(TMap <FIntPoint, FDC_TileData> Data);
 
 protected:
 	// ----------------------------
-	// Overrides
+	// --        Overrides       --
+	// ----------------------------
 	
 	virtual void BeginPlay() override;
 	
 	// ----------------------------
-	// Spawn Grid
+	// --       Spawn Grid       --
+	// ----------------------------
 
 	UFUNCTION(Category = "GridElement", BlueprintCallable,CallInEditor)
 	void SpawnGrid();
-	
+
+	UFUNCTION()
 	FHitResult TraceHitGround(FVector Location);
 
+	UFUNCTION()
 	FVector SnapVectorToVector(FVector InVector, const FVector InSnapTo);
 
 };

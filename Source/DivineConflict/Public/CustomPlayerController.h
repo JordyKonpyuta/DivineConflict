@@ -110,61 +110,67 @@ class DIVINECONFLICT_API ACustomPlayerController : public APlayerController , pu
 	// UPROPERTIES
 public:
 	// ----------------------------
-	// References
+	// --       References       --
+	// ----------------------------
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<AGrid> Grid;
+	TObjectPtr<AGrid> Grid = nullptr;
 	
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivate = "true"),Replicated)
-	TObjectPtr<ACameraPlayer> CameraPlayerRef;
+	TObjectPtr<ACameraPlayer> CameraPlayerRef = nullptr;
 	
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
-	TObjectPtr<ACustomPlayerState> PlayerStateRef;
+	TObjectPtr<ACustomPlayerState> PlayerStateRef = nullptr;
 	
 	// ----------------------------
-	// Input Actions
+	// --      Input Actions     --
+	// ----------------------------
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	TObjectPtr<UInputAction> AIEndTurn;
+	TObjectPtr<UInputAction> AIEndTurn = nullptr;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	TObjectPtr<UInputAction> AIMove;
+	TObjectPtr<UInputAction> AIMove = nullptr;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	TObjectPtr<UInputAction> AIZoom;
+	TObjectPtr<UInputAction> AIZoom = nullptr;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	TObjectPtr<UInputAction> AIRotate;
+	TObjectPtr<UInputAction> AIRotate = nullptr;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	TObjectPtr<UInputAction> AIFreeCam;
+	TObjectPtr<UInputAction> AIFreeCam = nullptr;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	TObjectPtr<UInputAction> AIInteraction;
+	TObjectPtr<UInputAction> AIInteraction = nullptr;
 
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	TObjectPtr<UInputAction> AICancel;
+	TObjectPtr<UInputAction> AICancel = nullptr;
 	
 	// ----------------------------
-	// Inputs Context
+	// --      Input Context     --
+	// ----------------------------
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPrivate = "true"))
-	TObjectPtr<UInputMappingContext> InputMappingContext;
+	TObjectPtr<UInputMappingContext> InputMappingContext = nullptr;
 	
 	// ----------------------------
-	// Unit Spawning
+	// --      Unit Spawning     --
+	// ----------------------------
 
 	UPROPERTY()
-	TArray<FIntPoint> AllCurrentSpawnPoints;
+	TArray<FIntPoint> AllCurrentSpawnPoints = {FIntPoint(-999,-999)};
 	
 	// ----------------------------
-	// Actions 
+	// --         Actions        --
+	// ----------------------------
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
 	int CurrentPA = 10;
 	
 	// ----------------------------
-	// Actions at Turn End
+	// --   Actions At Turn End  --
+	// ----------------------------
 
 	UPROPERTY(Replicated, BlueprintReadWrite)
 	TArray<FStructActiveActions> AllPlayerActions;
@@ -174,30 +180,32 @@ public:
 
 	// Possible Things to Interact with
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Ref", meta = (AllowPrivate = "true"))
-	TObjectPtr<AUnit> UnitRef;
+	TObjectPtr<AUnit> UnitRef = nullptr;
 	
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Ref", meta = (AllowPrivate = "true"))
-	TObjectPtr<AUnit> UnitHovering;
+	TObjectPtr<AUnit> UnitHovering = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ref", meta = (AllowPrivate = "true"))
-	TObjectPtr<AUnit> Opponent;
+	TObjectPtr<AUnit> Opponent = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly,Replicated , Category = "Ref", meta = (AllowPrivate = "true"))
-	TObjectPtr<ABase> BaseRef;
+	TObjectPtr<ABase> BaseRef = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ref", meta = (AllowPrivate = "true"))
-	TObjectPtr<ATower> TowerRef;
+	TObjectPtr<ATower> TowerRef = nullptr;
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Replicated, Category = "Input", meta = (AllowPrivate = "true"))
-	TObjectPtr<ABuilding> BuildingRef;
+	TObjectPtr<ABuilding> BuildingRef = nullptr;
 	
 	// ----------------------------
-	// Delegates
+	// --        Delegates       --
+	// ----------------------------
 	
 	FOnTurnChangedSignature OnTurnChangedDelegate;
 	
 	// ----------------------------
-	// Timers
+	// --         Timers         --
+	// ----------------------------
 
 	UPROPERTY()
 	FTimerHandle TimerActiveEndTurn;
@@ -209,7 +217,8 @@ public:
 	FTimerHandle InactivityTimerHandle;
 	
 	// ----------------------------
-	// UI
+	// --           UI           --
+	// ----------------------------
 
 	UPROPERTY(Blueprintable, EditAnywhere, BlueprintReadWrite)
 	bool bHoveringOverUnit = false;
@@ -218,15 +227,16 @@ public:
 	bool bHoveringOverBase = false;
 	
 protected:
-	
 	// ----------------------------
-	// Teams
+	// --          Teams         --
+	// ----------------------------
 	
 	UPROPERTY(ReplicatedUsing = OnRep_PlayerTeam)
 	EPlayer PlayerTeam = EPlayer::P_Neutral;
 	
 	// ----------------------------
-	// Turns
+	// --          Turns         --
+	// ----------------------------
 
 	UPROPERTY()
 	bool bIsInActiveTurn = false;
@@ -235,39 +245,45 @@ protected:
 	bool bIsReady = false;
 	
 	// ----------------------------
-	// Actions
+	// --         Actions        --
+	// ----------------------------
 
 	UPROPERTY()
 	EDC_ActionPlayer PlayerAction = EDC_ActionPlayer::None;
 	
 	// ----------------------------
-	// Pathfinding
+	// --     Path Reachable     --
+	// ----------------------------
 
 	UPROPERTY()
 	TArray<FIntPoint> PathReachable;
 	
 	// ----------------------------
-	// UI
+	// --           UI           --
+	// ----------------------------
 
 	UPROPERTY()
 	bool bIsUIVisible = false;
 	
 	// UFUNCTIONS
 public:
-	
 	// ----------------------------
-	// Override
+	// --        Override        --
+	// ----------------------------
 	
 	UFUNCTION()
 	virtual void Tick(float DeltaTime) override;
 	
 	// ----------------------------
-	// On_Reps
+	// --         On_Reps        --
+	// ----------------------------
+	
 	UFUNCTION()
 	void OnRep_PlayerTeam();
 	
 	// ----------------------------
-	// Interactions
+	// --      Interactions      --
+	// ----------------------------
 
 	UFUNCTION()
 	void ControllerInteraction();
@@ -276,7 +292,8 @@ public:
 	void VerifyBuildInteraction();
 	
 	// ----------------------------
-	// Mode Selection
+	// --     Mode Selection     --
+	// ----------------------------
 	
 	UFUNCTION(BlueprintCallable)
 	void SelectModeMovement();
@@ -300,7 +317,8 @@ public:
 	void Server_UpgradeBase();
 	
 	// ----------------------------
-	// Turns - Set-up
+	// --     Turns (Set-Up)     --
+	// ----------------------------
 	
 	UFUNCTION()
 	void AssignPlayerPosition();
@@ -326,9 +344,9 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_SetPositionOnUnit(AUnit* CurrentUnit);
 	
-	
 	// ----------------------------
-	// End Turn
+	// --        End Turn        --
+	// ----------------------------
 	
 	UFUNCTION(BlueprintCallable)
 	void EndTurn();
@@ -346,7 +364,8 @@ public:
 	void Multi_ClearMode();
 	
 	// ----------------------------
-	// Actions - Active
+	// --    Actions (Active)    --
+	// ----------------------------
 
 	UFUNCTION(Server, Reliable)
 	void AttackBase(ABase* BaseToAttack,AUnit* UnitAttacking);
@@ -362,12 +381,10 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_SpecialUnit(AUnit* UnitSpecial, AActor* ThingToAttack);
-
-	UFUNCTION(Server, Reliable)
-	void Server_ActivateSpecial(AUnit* Unit, FIntPoint NewPos);
 	
 	// ----------------------------
-	// Actions - Passive
+	// --    Actions (Passive)   --
+	// ----------------------------
 
 	UFUNCTION(NotBlueprintable)
 	TArray<FIntPoint> PrepareSpawnArea(TArray<FIntPoint> AllSpawnArea, FIntPoint BaseTile);
@@ -400,16 +417,8 @@ public:
 	void Multi_RessourceChange(const ACustomPlayerState* PSR,EUnitType UnitType);
 	
 	// ----------------------------
-	// Cancel Actions
-	
-	UFUNCTION(Server, Reliable)
-	void Server_CancelLastAction();
-	
-	UFUNCTION(NetMulticast, Reliable)
-	void Multi_CancelLastAction();
-	
+	// --   Actions (End Turn)   --
 	// ----------------------------
-	// Actions - End Turn
 
 	UFUNCTION(Server, Reliable)
 	void Server_ActionActiveTurn();
@@ -430,7 +439,18 @@ public:
 	void Multi_ActionPassiveTurn();
 	
 	// ----------------------------
-	// "Pathfinding"
+	// --     Cancel Actions     --
+	// ----------------------------
+	
+	UFUNCTION(Server, Reliable)
+	void Server_CancelLastAction();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_CancelLastAction();
+	
+	// ----------------------------
+	// --     "PathFinding"      --
+	// ----------------------------
 
 	UFUNCTION(Server, Reliable)
 	void ServerMoveUnit(const AUnit* UnitToMove);
@@ -439,7 +459,8 @@ public:
 	void Server_PrepareMoveUnit(const TArray<FIntPoint> &Path, const AUnit* UnitToMove);
 	
 	// ----------------------------
-	// UI
+	// --           UI           --
+	// ----------------------------
 
 		// General
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
@@ -500,8 +521,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void HideWidget();
 	
-	// ----------------------------
-	// GETTERS
+	// ---------------------------- //
+	// --         GETTERS        -- //
+	// ---------------------------- //
 
 		// Turns
 	UFUNCTION(BlueprintCallable)
@@ -523,9 +545,9 @@ public:
 	UFUNCTION()
 	TArray<FIntPoint> GetPathReachable();
 	
-	
-	// ----------------------------
-	// SETTERS
+	// ---------------------------- //
+	// --         SETTERS        -- //
+	// ---------------------------- //
 
 		// Turns
 
@@ -556,31 +578,39 @@ public:
 	
 protected:
 	// ----------------------------
-	// Overrides
+	// --        Overrides       --
+	// ----------------------------
 	
 	virtual void BeginPlay() override;
 
 	virtual void SetupInputComponent() override;
 	
 	// ----------------------------
-	// Grid
+	// --          Grid          --
+	// ----------------------------
 	
-	void setGrid();
+	void SetGrid();
 	
 	// ----------------------------
-	// "Pathfinding"
+	// --      "PathFinding"     --
+	// ----------------------------
 	
 	UFUNCTION()
 	void FindReachableTiles();
-
-	// ----------------------------
-	// ActionPlayer
 	
+	// ----------------------------
+	// --     Action Players     --
+	// ----------------------------
+
+	UFUNCTION()
 	void RotateCamera(const FInputActionValue& Value);
 
+	UFUNCTION()
 	void RotateCameraPitch(const FInputActionValue& Value);
 
+	UFUNCTION()
 	void ZoomCamera( const FInputActionValue& Value);
 
+	UFUNCTION()
 	void CancelAction(const FInputActionValue& Value);
 };

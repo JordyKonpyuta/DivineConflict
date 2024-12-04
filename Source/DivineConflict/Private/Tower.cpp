@@ -35,7 +35,7 @@ void ATower::BeginPlay()
 
 	if(Grid)
 	{
-		Grid->GridInfo->addTowerOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+		Grid->GridInfo->AddTowerOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
 		// Set Reachable Tiles for Attack
 		TilesInRange = Grid->GridPath->FindPath(GridPosition,FIntPoint(-999,-999),true,4,false,false);
 	}
@@ -54,13 +54,11 @@ void ATower::Tick(float DeltaTime)
 void ATower::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(ATower, UnitInGarrison);
-	DOREPLIFETIME(ATower, IsGarrisoned);
 	DOREPLIFETIME(ATower, Attack);
-	DOREPLIFETIME(ATower, CanAttack);
-	DOREPLIFETIME(ATower, PlayerOwner);
-	DOREPLIFETIME(ATower, Mesh);
+	DOREPLIFETIME(ATower, bCanAttack);
 	DOREPLIFETIME(ATower, GridPosition);
+	DOREPLIFETIME(ATower, Mesh);
+	DOREPLIFETIME(ATower, PlayerOwner);
 	DOREPLIFETIME(ATower, UnitToAttack);
 	DOREPLIFETIME(ATower, UnitToAttackPosition);
 }
@@ -75,22 +73,22 @@ void ATower::SetMesh_Implementation()
 	// ----------------------------
 	// Attack
 
-void ATower::PreprareAttack(AUnit* UnitAttack)
+void ATower::PrepareAttack(AUnit* UnitAttack)
 {
 	UnitToAttack = UnitAttack;
 	UnitToAttackPosition = UnitAttack->GetIndexPosition();
-	IsSelected = false;
+	bIsSelected = false;
 	UpdateVisuals();
 }
 
 void ATower::AttackUnit(AUnit* UnitToAttacking, ACustomPlayerController* PlayerControllerAttacking)
 {
-	if (CanAttack)
+	if (bCanAttack)
 	{
-		CannonBall = GetWorld()->SpawnActor<AProjectile>(AProjectile::StaticClass(), GetActorLocation(), GetActorRotation());
-		CannonBall->TowerOwner = this;
-		CannonBall->MoveProjectile(UnitToAttacking);
-	
+		Projectile = GetWorld()->SpawnActor<AProjectile>(AProjectile::StaticClass(), GetActorLocation(), GetActorRotation());
+		Projectile->TowerOwner = this;
+		Projectile->MoveProjectile(UnitToAttacking);
+
 		UnitToAttacking->SetCurrentHealth(UnitToAttacking->GetCurrentHealth() - Attack);
 		if(UnitToAttacking->GetCurrentHealth() < 1)
 		{
@@ -105,13 +103,13 @@ void ATower::AttackUnit(AUnit* UnitToAttacking, ACustomPlayerController* PlayerC
 
 void ATower::UpdateVisuals()
 {
-	if (IsSelected)
+	if (bIsSelected)
 	{
 		PlayerController->SetPathReachable(TilesInRange);
 		for (FIntPoint Tile : TilesInRange)
 		{
 			// Highlight Tiles
-			Grid->GridVisual->addStateToTile(Tile, EDC_TileState::Attacked);
+			Grid->GridVisual->AddStateToTile(Tile, EDC_TileState::Attacked);
 		}
 	}
 	else
@@ -146,7 +144,7 @@ void ATower::UpgradeTower()
 		switch(Level)
 		{
 		case 1:
-			CanAttack = true;
+			bCanAttack = true;
 			SetAttack(2);
 			break;
 		case 2:
@@ -177,7 +175,7 @@ EPlayer ATower::GetPlayerOwner()
 
 bool ATower::GetCanAttack()
 {
-	return CanAttack;
+	return bCanAttack;
 }
 
 FIntPoint ATower::GetGridPosition()
@@ -200,7 +198,7 @@ void ATower::SetPlayerOwner(EPlayer NewPlayerOwner)
 
 void ATower::SetCanAttack(bool NewCanAttack)
 {
-	CanAttack = NewCanAttack;
+	bCanAttack = NewCanAttack;
 }
 
 void ATower::SetGridPosition(FIntPoint NewGridPosition)

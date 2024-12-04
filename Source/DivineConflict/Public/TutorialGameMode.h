@@ -20,31 +20,53 @@ class DIVINECONFLICT_API ATutorialGameMode : public AGameModeBase
 
 	// UPROPERTIES
 public:
+	// ----------------------------
+	// --       References       --
+	// ----------------------------
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<AUnit> Tank;
+	// Units
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<AUnit> Warrior1;
+	TObjectPtr<AUnit> Tank = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<AUnit> Warrior2;
+	TObjectPtr<AUnit> Warrior1 = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<AUnit> Mage;
+	TObjectPtr<AUnit> Warrior2 = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<AUnit> Leader;
+	TObjectPtr<AUnit> Mage = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<AUnit> Leader = nullptr;
 
+	// Buildings
+
+	// Bases
+
+	
+	// ----------------------------
+	// --       Unit Values      --
+	// ----------------------------
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int UnitProduced = 0;
+	
+	// ----------------------------
+	// --        Booleans        --
+	// ----------------------------
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool isDead = false;
+	bool bIsDead = false;
 	
 protected:
+	// ----------------------
+	// --	 References	   --
+	// ----------------------
+	
 	UPROPERTY()
-	TObjectPtr<AGrid> Grid;
+	TObjectPtr<AGrid> Grid = nullptr;
 
 	// UFUNCTIONS
 public:
@@ -55,7 +77,7 @@ public:
 	void BeginTutorial();
 
 	UFUNCTION(BlueprintCallable)
-	void HilightUnit(AUnit* UnitToHilight);
+	void HighlightUnit(AUnit* UnitToHighlight);
 
 protected:
 	virtual void BeginPlay() override;

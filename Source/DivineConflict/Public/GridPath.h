@@ -20,13 +20,13 @@ struct FPathData
 	UPROPERTY(EditAnywhere, Category = "PathData")
 	FIntPoint Index = FIntPoint(-999, -999);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PathData")
-	int costEntrerToTile = 1;
+	int CostEntryInTile = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PathData")
 	int MinCostToTarget = 9999999;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PathData")
 	int CostFormStart = 9999999;
 	UPROPERTY(EditAnywhere,  Category = "PathData")
-	FIntPoint PreviewsIndex = FIntPoint(-999, -999);
+	FIntPoint PreviewIndex = FIntPoint(-999, -999);
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -36,17 +36,18 @@ class DIVINECONFLICT_API UGridPath : public UActorComponent
 
 		// UPROPERTIES
 public:	
-
 	// ----------------------------
-	// References
+	// --       References       --
+	// ----------------------------
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
 	TObjectPtr<AGrid> Grid = nullptr;
 
 protected:
-
+	
 	// ----------------------------
-	// Pre-Movement Info
+	// --    Pre-Movement Info   --
+	// ----------------------------
 	
 	UPROPERTY( VisibleAnywhere, Category = "Grid", meta = (AllowPrivate = "true"))
 	FIntPoint StartPoint = FIntPoint(-999	,-999);
@@ -64,34 +65,37 @@ protected:
 	bool bIsEscalation = false;
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	bool bIsAttackable = false;
+	bool bCanBeAttacked = false;
 	
 	// ----------------------------
-	// Movement Output
+	// --     Movement Output    --
+	// ----------------------------
 	
 	UPROPERTY( VisibleAnywhere, Category = "Grid", meta = (AllowPrivate = "true"))
-	TArray<FIntPoint> Path;
+	TArray<FIntPoint> Path = {FIntPoint(-999,-999)};
 	
 	UPROPERTY( VisibleAnywhere,  Category = "Grid", meta = (AllowPrivate = "true"))
 	TMap<FIntPoint, FPathData> PathData;
 	
 	// ----------------------------
-	// Tiles Check
+	// --       Tiles Check      --
+	// ----------------------------
 	
 	UPROPERTY( VisibleAnywhere,  Category = "Grid", meta = (AllowPrivate = "true"))
-	TArray<FIntPoint> DiscoverTileIndex;
+	TArray<FIntPoint> DiscoverTileIndex = {FIntPoint(-999,-999)};
 	
 	UPROPERTY(	VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	TArray<int> DiscoverTileSortingCost;
+	TArray<int> DiscoverTileSortingCost = {0};
 	
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
 	FPathData CurrentDiscoverTile;
 	
 	UPROPERTY(	VisibleAnywhere,  Category = "Grid", meta = (AllowPrivate = "true"))
-	TArray<FIntPoint> AnalyseTileIndex;
+	TArray<FIntPoint> AnalyseTileIndex = {FIntPoint(-999,-999)};
 	
 	// ----------------------------
-	// Neighbours
+	// --       Neighbours       --
+	// ----------------------------
 	
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
 	TArray<FPathData> CurrentsNeighbors;
@@ -102,83 +106,113 @@ protected:
 	// UFUNCTIONS
 public:	
 	// ----------------------------
-	// Constructor
+	// --       Constructor      --
+	// ----------------------------
 	
 	UGridPath();
 	
 	// ----------------------------
-	// Overrides
+	// --        Overrides       --
+	// ----------------------------
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-		
+	
 	// ----------------------------
-	// Height Check
-	
-	bool IsValidHeigh(FDC_TileData* IndextestData, FDC_TileData* CurrentIndexData);
-	
-	bool IsValidHeighWarrior(FDC_TileData* IndextestData, FDC_TileData* CurrentIndexData);
+	// --      Height Checks     --
+	// ----------------------------
 
-	// ----------------------------
-	// Find Neighbours
+	bool IsValidHeight(FDC_TileData* IndexTestData, FDC_TileData* CurrentIndexData);
 
-	TArray<FIntPoint> FindTileNeighbors(FIntPoint Index);
+	bool IsValidHeightWarrior(FDC_TileData* IndexTestData, FDC_TileData* CurrentIndexData);
 	
 	// ----------------------------
-	// Generate Pathfinding
+	// --     Find Neighbours    --
+	// ----------------------------
+
+	UFUNCTION()
+	TArray<FIntPoint> FindTileNeighbours(FIntPoint Index);
+	
+	// ----------------------------
+	// --  Generate Pathfinding  --
+	// ----------------------------
 
 	//Pathfinding and Path Reachable
 	UFUNCTION()
-	TArray<FIntPoint> FindPath(FIntPoint Start, FIntPoint End , bool IsReachable, int PathLenght, bool IsEscalation, bool attackable);
-
-	// ----------------------------
-	//Path Reachable
-	TArray<FIntPoint> NewFindPath(FIntPoint Start, ACustomPlayerController* CustomPlayerController);
-
-	//-----------------------------
-	// Path Reachable Sp Mage
-
-	TArray<FIntPoint> NewFindPathSpMage(FIntPoint Start, ACustomPlayerController* CustomPlayerController);
+	TArray<FIntPoint> FindPath(FIntPoint Start, FIntPoint End , bool bReachable, int PathLenght, bool bEscalation, bool bAttackable);
 	
 	// ----------------------------
-	// SETTER
+	// --      Path Reachable    --
+	// ----------------------------
+
+	UFUNCTION()
+	TArray<FIntPoint> NewFindPath(FIntPoint Start, ACustomPlayerController* CustomPlayerController);
+	
+	// ----------------------------
+	// --  Path Reachable - Mage --
+	// ----------------------------
+
+	UFUNCTION()
+	TArray<FIntPoint> NewFindPathSpMage(FIntPoint Start, ACustomPlayerController* CustomPlayerController);
+	
+	// ---------------------------- //
+	// --         SETTERS        -- //
+	// ---------------------------- //
+
+	UFUNCTION()
 	void SetGrid(AGrid* GridRef);
 
 protected:
 	// ----------------------------
-	// Override
+	// --        Overrides       --
+	// ----------------------------
+	
 	virtual void BeginPlay() override;
 	
 	// ----------------------------
-	// Path
-	
+	// --          Path          --
+	// ----------------------------
+
+	UFUNCTION()
 	TArray<FIntPoint> GeneratePath();
-	
+
+	UFUNCTION()
 	void ClearGeneratedPath();
 	
 	// ----------------------------
-	// Tile Discovery (set-up)
-	
-	void DiscoverTile(FPathData TilePath);
-	
-	int MinimulCostBetweenTwoTile(FIntPoint Index1, FIntPoint Index2);
-	
-	void InserTileDiscoverList(FPathData TilePath);
-	
-	bool IsInputDataValid(FIntPoint Start, FIntPoint End);
-
+	// -  Tile Discovery (Set-up) -
 	// ----------------------------
-	// Tile Discovery (Process)
+
+	UFUNCTION()
+	void DiscoverTile(FPathData TilePath);
+
+	UFUNCTION()
+	int MinimalCostBetweenTwoTile(FIntPoint Index1, FIntPoint Index2);
+
+	UFUNCTION()
+	void InsertTileDiscoverList(FPathData TilePath);
+
+	UFUNCTION()
+	bool IsInputDataValid(FIntPoint Start, FIntPoint End);
 	
+	// ----------------------------
+	// - Tile Discovery (Process) -
+	// ----------------------------
+
+	UFUNCTION()
 	FPathData PullCheapestTileOutOfDiscoverList();
-	
+
+	UFUNCTION()
 	bool AnalyseNextDiscoverTile();
 	
 	// ----------------------------
-	// Neighbours
-	
-	bool DiscoverNextNeighbors();
+	// --        Neighbours      --
 	// ----------------------------
-	// Test viladity of Tile for walkable
-	TArray<FPathData> GetValidTileNeighbors(FIntPoint Index);
+
+	UFUNCTION()
+	bool DiscoverNextNeighbours();
+	
+	// Test validity of Tile for walkable
+	UFUNCTION()
+	TArray<FPathData> GetValidTileNeighbours(FIntPoint Index);
 };
 

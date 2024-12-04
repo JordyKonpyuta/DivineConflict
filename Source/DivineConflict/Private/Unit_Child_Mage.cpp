@@ -143,6 +143,6 @@ void AUnit_Child_Mage::SpecialMage(AActor* Target)
 void AUnit_Child_Mage::DisplayWidgetTutorial()
 {
 	Super::DisplayWidgetTutorial();
-	if (!GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead)
+	if (!GetWorld()->GetAuthGameMode<ATutorialGameMode>()->bIsDead)
 		GetWorld()->GetAuthGameMode<ATutorialGameMode>()->DisplayTutorialWidget(4);
 }

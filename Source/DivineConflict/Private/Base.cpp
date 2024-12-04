@@ -69,9 +69,9 @@ void ABase::BeginPlay()
 	// Get Grid
 	if (Grid)
 	{
-		GetWorld()->GetTimerManager().SetTimer( UnusedHandle, this, &ABase::timerBeginPlay, 2.f, false );
+		GetWorld()->GetTimerManager().SetTimer( UnusedHandle, this, &ABase::TimerBeginPlay, 2.f, false );
 		// Grid : Building
-		timerBeginPlay();
+		TimerBeginPlay();
 		// Grid : Spawnable Locations
 		int Ratio = 1;
 
@@ -124,9 +124,9 @@ void ABase::BeginPlay()
 	// ----------------------------
 	// Timer
 
-void ABase::timerBeginPlay()
+void ABase::TimerBeginPlay()
 {
-	Grid->GridInfo->addBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+	Grid->GridInfo->AddBaseOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
 }
 
 void ABase::AssignPlayerState()
@@ -162,7 +162,7 @@ void ABase::VisualSpawn()
 			{
 				if (Grid->GetGridData()->Find(i)->UnitOnTile == nullptr)
 				{
-					Grid->GridVisual->addStateToTile(i, EDC_TileState::Spawnable);
+					Grid->GridVisual->AddStateToTile(i, EDC_TileState::Spawnable);
 					return;
 				}
 			}

@@ -20,29 +20,32 @@ class DIVINECONFLICT_API ABase : public AActor
 
 	// UPROPERTIES //
 public:	
-	
 	// ----------------------------
-	// Components
+	// --       Components       --
+	// ----------------------------
 
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Mesh")
-	TObjectPtr<UStaticMeshComponent> Mesh;
+	TObjectPtr<UStaticMeshComponent> Mesh = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<UArrowComponent> Arrow;
+	TObjectPtr<UArrowComponent> Arrow = nullptr;
 	
 	// ----------------------------
-	// References
+	// --       References       --
+	// ----------------------------
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-	TObjectPtr<AGrid> Grid;
+	TObjectPtr<AGrid> Grid = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Ref", meta = (AllowPrivate = "true"))
-	TObjectPtr<ACustomPlayerState> PlayerStateRef;
+	TObjectPtr<ACustomPlayerState> PlayerStateRef = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Controller")
-	TObjectPtr<ACustomPlayerController> PlayerControllerRef;
+	TObjectPtr<ACustomPlayerController> PlayerControllerRef = nullptr;
 	
 	// ----------------------------
-	// Booleans
+	// --        Booleans        --
+	// ----------------------------
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bool")
 	bool IsSelected = false;
@@ -51,18 +54,23 @@ public:
 	bool CanSpawn = true;
 
 	// ----------------------------
-	// Grid Indexes
+	// --      Index (Grid)      --
+	// ----------------------------
 	
 	UPROPERTY(Blueprintable,Replicated, BlueprintReadOnly, Category = "Grid")
 	TArray<FIntPoint> AllSpawnLoc;
 
 	// ----------------------------
-	// Enums
+	// --          Enums         --
+	// ----------------------------
 	
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Enum")
 	EPlayer PlayerOwner = EPlayer::P_Neutral;
 
-	// Levels
+	// ----------------------------
+	// --         Levels         --
+	// ----------------------------
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 	int MaxLevel = 3;
 	
@@ -70,15 +78,16 @@ public:
 	int Level = 1;
 
 protected:
-
 	// ----------------------------
-	// References
+	// --       References       --
+	// ----------------------------
 
 	UPROPERTY()
 	TObjectPtr<AUnit> UnitSpawned;
 	
 	// ----------------------------
-	// Stats
+	// --          Stats         --
+	// ----------------------------
 
 		// Health
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
@@ -102,30 +111,35 @@ protected:
 	FIntPoint GridPosition= FIntPoint(-999,-999);
 
 	// ----------------------------
-	// Timers
+	// --         Timers         --
+	// ----------------------------
 	
 	FTimerHandle PlayerStateHandle;
 	
 	// UFUNCTIONS //
 public:	
 	// ----------------------------
-	// Constructor
+	// --       Constructor      --
+	// ----------------------------
 	
 	ABase();
 	
 	// ----------------------------
-	// Override
+	// --        Override        --
+	// ----------------------------
 	
 	virtual void Tick(float DeltaTime) override;
 	
 	// ----------------------------
-	// Spawn Visuals
+	// --     Spawn Visuals      --
+	// ----------------------------
 	
 	UFUNCTION(BlueprintCallable)
 	void VisualSpawn();
 	
 	// ----------------------------
-	// Upgrade
+	// --         Upgrade        --
+	// ----------------------------
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void Server_Upgrade();
@@ -133,14 +147,15 @@ public:
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 	void Multi_Upgrade();
 	
-
 	// ----------------------------
-	// Take Damage
+	// --      Damage Taken      --
+	// ----------------------------
 	
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	// ----------------------------
-	// Check Death
+	// --       Check Death      --
+	// ----------------------------
 
 	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void ServerCheckIfDead(int H);
@@ -149,19 +164,22 @@ public:
 	void MulticastCheckIfDead(int h);
 	
 	// ----------------------------
-	// UI
+	// --           UI           --
+	// ----------------------------
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void OnDeath();
 
 	// ----------------------------
-	// Tiles Check
+	// --       Tiles Check      --
+	// ----------------------------
 	
 	UFUNCTION(BlueprintCallable)
 	bool CheckTiles();
 
-	// ----------------------------
-	// GETTERS
+	// ---------------------------- //
+	// --         GETTERS        -- //
+	// ---------------------------- //
 
 		// Stats
 	UFUNCTION(BlueprintCallable, BlueprintPure)
@@ -181,8 +199,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FIntPoint GetGridPosition();
 
-	// ----------------------------
-	// SETTERS
+	// ---------------------------- //
+	// --         SETTERS        -- //
+	// ---------------------------- //
 	
 		// Components
 	UFUNCTION(BlueprintNativeEvent)
@@ -206,15 +225,17 @@ public:
 
 private:
 	// ----------------------------
-	// Override
+	// --        Override        --
+	// ----------------------------
 
 	virtual void BeginPlay() override;
 	
 	// ----------------------------
-	// Timer
+	// --         Timers         --
+	// ----------------------------
 	
 	UFUNCTION()
-	void timerBeginPlay();
+	void TimerBeginPlay();
 
 	UFUNCTION()
 	void AssignPlayerState();

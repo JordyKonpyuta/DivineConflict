@@ -43,7 +43,7 @@ void ACustomPlayerController::BeginPlay()
 	{
 		CameraPlayerRef->SetCustomPlayerController(this);
 	}
-	setGrid();
+	SetGrid();
 	
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACustomPlayerController::AssignPlayerPosition, 2.f, false);
@@ -54,7 +54,7 @@ void ACustomPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	if (APlayerController* PlayerController = Cast<APlayerController>(this))
+	if (Cast<APlayerController>(this))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 		{
@@ -82,7 +82,7 @@ void ACustomPlayerController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ACustomPlayerController::setGrid()
+void ACustomPlayerController::SetGrid()
 {
 	//get the grid
 	AActor* FoundActors = UGameplayStatics::GetActorOfClass(GetWorld(), AGrid::StaticClass());
@@ -94,7 +94,7 @@ void ACustomPlayerController::setGrid()
 	{
 		//delay 0.2s and try again
 		FTimerHandle TimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACustomPlayerController::setGrid, 0.2f, false);
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACustomPlayerController::SetGrid, 0.2f, false);
 		
 	}
 }
@@ -168,9 +168,8 @@ void ACustomPlayerController::ControllerInteraction()
 						if(Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile->GetPlayerOwner() == PlayerStateRef->PlayerTeam)
 						{
 							TowerRef = Grid->GetGridData()->Find(PlayerPositionInGrid)->TowerOnTile;
-							TowerRef->IsSelected = true;
+							TowerRef->bIsSelected = true;
 							TowerRef->PlayerController = this;
-							UnitRef = TowerRef->UnitInGarrison;
 							DisplayWidgetTower();
 						}
 					}
@@ -230,7 +229,7 @@ void ACustomPlayerController::ControllerInteraction()
 							AllCurrentSpawnPoints += BuildingRef->SpawnLocRef;
 							for (FIntPoint BuildingIndex : BuildingRef->SpawnLocRef)
 							{
-								Grid->GridVisual->addStateToTile(BuildingIndex, EDC_TileState::Selected);
+								Grid->GridVisual->AddStateToTile(BuildingIndex, EDC_TileState::Selected);
 							}
 							DisplayWidgetBuilding();
 						}
@@ -258,7 +257,7 @@ void ACustomPlayerController::ControllerInteraction()
 				//check if the unit on tile is not on your team
 				if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() != PlayerStateRef->PlayerTeam)
 				{
-					TowerRef->PreprareAttack(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile);
+					TowerRef->PrepareAttack(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile);
 					AllPlayerActions.Add(FStructActiveActions(TowerRef, EDC_ActionType::TowerAttack, EDC_TargetType::Unit, PlayerPositionInGrid));
 					PlayerAction = EDC_ActionPlayer::None;
 					PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 1);
@@ -271,7 +270,7 @@ void ACustomPlayerController::ControllerInteraction()
 		case EDC_ActionPlayer::AttackUnit:
 			if (UnitRef)
 			{
-				if (!UnitRef->HasActed && UnitRef->GetIndexPosition() != PlayerPositionInGrid){
+				if (!UnitRef->bHasActed && UnitRef->GetIndexPosition() != PlayerPositionInGrid){
 					// Are we attacking a Unit?
 					if(Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile)
 					{
@@ -310,17 +309,17 @@ void ACustomPlayerController::ControllerInteraction()
 					}
 					PathReachable.Empty();
 					UnitRef->SetIsSelected(false);
-					UnitRef->HasActed = true;
+					UnitRef->bHasActed = true;
 					PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 1);
 					CameraPlayerRef->IsAttacking = false;
 					PlayerAction = EDC_ActionPlayer::None;
 		
 					RemoveAttackWidget();
-					if (!UnitRef->HasActed || !UnitRef)
+					if (!UnitRef->bHasActed || !UnitRef)
 						DisplayWidget();
 				}
 				Grid->GridVisual->RemoveStateFromTile(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection), EDC_TileState::Hovered);
-				if (!UnitRef->HasMoved)
+				if (!UnitRef->bHasMoved)
 				{
 					CameraPlayerRef->FullMoveDirection.X = UnitRef->GetActorLocation().X;
 					CameraPlayerRef->FullMoveDirection.Y = UnitRef->GetActorLocation().Y;
@@ -331,7 +330,7 @@ void ACustomPlayerController::ControllerInteraction()
 					CameraPlayerRef->FullMoveDirection.Y = UnitRef->GetFinalGhostMesh()->GetComponentLocation().Y;
 					CameraPlayerRef->FullMoveDirection.Z = (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
 				}
-				Grid->GridVisual->addStateToTile(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection), EDC_TileState::Hovered);
+				Grid->GridVisual->AddStateToTile(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection), EDC_TileState::Hovered);
 				RemoveAttackWidget();
 			}
 			break;
@@ -339,7 +338,7 @@ void ACustomPlayerController::ControllerInteraction()
 			//Unit Move 
 			if (UnitRef)
 			{
-				if (!UnitRef->HasMoved)
+				if (!UnitRef->bHasMoved)
 				{
 					for(FIntPoint Index : PathReachable)
 					{
@@ -350,10 +349,10 @@ void ACustomPlayerController::ControllerInteraction()
 						Grid->GridVisual->RemoveStateFromTile(Index, EDC_TileState::Pathfinding);
 					}
 					
-					if (UnitRef->HasActed)
-						UnitRef->FirstActionIsMove = false;
+					if (UnitRef->bHasActed)
+						UnitRef->bFirstActionIsMove = false;
 					else
-						UnitRef->FirstActionIsMove = true;
+						UnitRef->bFirstActionIsMove = true;
 					
 
 					if (CameraPlayerRef->Path.Num() > 1)
@@ -369,7 +368,7 @@ void ACustomPlayerController::ControllerInteraction()
 						//	UnitRef->InitGhosts_Implementation();
 						
 						AllPlayerActions.Add(FStructActiveActions(UnitRef, EDC_ActionType::UnitMove, EDC_TargetType::None, PlayerPositionInGrid));
-						UnitRef->HasMoved = true;
+						UnitRef->bHasMoved = true;
 						PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 1);
 					}
 					PathReachable.Empty();
@@ -377,7 +376,7 @@ void ACustomPlayerController::ControllerInteraction()
 					CameraPlayerRef->Path.Empty();
 					
 					PlayerAction = EDC_ActionPlayer::None;
-					if (!UnitRef->HasActed || !UnitRef)
+					if (!UnitRef->bHasActed || !UnitRef)
 					DisplayWidget();
 				}
 			}
@@ -386,7 +385,7 @@ void ACustomPlayerController::ControllerInteraction()
 		case EDC_ActionPlayer::SelectBuilding:
 			//select position for spawn unit
 			AllPossibleSpawns = PrepareSpawnArea(BuildingRef->AllSpawnLoc, BuildingRef->SpawnLocRef[0]);
-			BuildingRef->BuildingSpawnLocationRef->DeSpawnGridColors(BuildingRef->AllSpawnLoc);
+			BuildingRef->BuildingSpawnLocationRef->DespawnGridColors(BuildingRef->AllSpawnLoc);
 			AllCurrentSpawnPoints.Empty();
 			CameraPlayerRef->IsSpawningUnit = false;
 			CameraPlayerRef->FirstMove = true;
@@ -552,7 +551,7 @@ void ACustomPlayerController::SelectModeMovement()
 		if (Cast<AUnit_Child_Warrior>(UnitRef))
 		{
 			// if use a Special action
-			if (UnitRef->HasActed &&  UnitRef->GetFinalGhostMesh()->IsVisible())
+			if (UnitRef->bHasActed &&  UnitRef->GetFinalGhostMesh()->IsVisible())
 			{
 				CameraPlayerRef->Path.Add(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()));
 				CameraPlayerRef->FullMoveDirection.X = UnitRef->GetFinalGhostMesh()->GetComponentLocation().X;
@@ -578,7 +577,7 @@ void ACustomPlayerController::SelectModeAttack()
 	CameraPlayerRef->IsAttacking = true;
 
 	//si unit has moved
-	if (UnitRef->HasMoved)
+	if (UnitRef->bHasMoved)
 	{
 		PathReachable = Grid->GridPath->FindPath(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()),FIntPoint(-999,-999),true,2,false, true);
 		Grid->GridVisual->RemoveStateFromTile(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection), EDC_TileState::Hovered);
@@ -592,7 +591,7 @@ void ACustomPlayerController::SelectModeAttack()
 	//set color on grid
 	for(FIntPoint Index : PathReachable)
     {
-        Grid->GridVisual->addStateToTile(Index, EDC_TileState::Attacked);
+        Grid->GridVisual->AddStateToTile(Index, EDC_TileState::Attacked);
     }
 	PathReachable.Add(UnitRef->GetIndexPosition());
 }
@@ -606,7 +605,7 @@ void ACustomPlayerController::SelectModeAttackBuilding()
 	PathReachable = Grid->GridPath->FindPath(TowerRef->GetGridPosition(),FIntPoint(-999,-999),true,3,false, false);
 	for(FIntPoint Index : PathReachable)
 	{
-		Grid->GridVisual->addStateToTile(Index, EDC_TileState::Attacked);
+		Grid->GridVisual->AddStateToTile(Index, EDC_TileState::Attacked);
 	}
 	CameraPlayerRef->IsTowering = true;
 }
@@ -960,11 +959,6 @@ void ACustomPlayerController::Server_SpecialUnit_Implementation(AUnit* UnitSpeci
 	}
 	*/
 }
-
-void ACustomPlayerController::Server_ActivateSpecial_Implementation(AUnit* Unit, FIntPoint NewPos)
-{
-	Cast<AUnit_Child_Warrior>(Unit)->Server_SpecialMove(NewPos);
-}
 	
 	// ----------------------------
 	// Actions - Passive
@@ -975,7 +969,7 @@ TArray<FIntPoint> ACustomPlayerController::PrepareSpawnArea(TArray<FIntPoint> Al
 	TArray<FIntPoint> TrueSpawnArea;
 	for (FIntPoint Index : AllSpawnArea)
 	{
-		if (Grid->GridPath->IsValidHeigh(Grid->GetGridData()->Find(Index), Grid->GetGridData()->Find(BaseTile)))
+		if (Grid->GridPath->IsValidHeight(Grid->GetGridData()->Find(Index), Grid->GetGridData()->Find(BaseTile)))
 		{
 			TrueSpawnArea.Add(Index);
 		}
@@ -1168,7 +1162,7 @@ void ACustomPlayerController::SpawnGhostUnit(EUnitType UnitToSpawn, FIntPoint Sp
 			AllPlayerPassive.Add(FStructPassive( BaseRef,UnitToSpawn,SpawnChosen,GhostUnit));
 		if(BuildingRef)
 			AllPlayerPassive.Add(FStructPassive( BuildingRef,UnitToSpawn,SpawnChosen,GhostUnit));
-		Grid->GridVisual->addStateToTile(SpawnChosen, EDC_TileState::Spawned);
+		Grid->GridVisual->AddStateToTile(SpawnChosen, EDC_TileState::Spawned);
 	}
 	Grid->GridVisual->RemoveStateFromTile(SpawnChosen, EDC_TileState::Spawnable);
 }
@@ -1237,8 +1231,8 @@ void ACustomPlayerController::Multi_CancelLastAction_Implementation()
 				RemoveLastActionMemory();
 				ActorThatStops->Multi_CancelMove();
 				PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 1);
-				if (UnitRef->FirstActionIsMove)
-					UnitRef->FirstActionIsMove = false;
+				if (UnitRef->bFirstActionIsMove)
+					UnitRef->bFirstActionIsMove = false;
 				break;
 			case EDC_ActionType::UnitAttack:
 				RemoveLastActionMemory();
@@ -1410,7 +1404,7 @@ void ACustomPlayerController::Multi_ActionActiveTurnRedo_Implementation()
 						if(const TObjectPtr<AUnit> TurnUnitRef = Cast<AUnit>(AllPlayerActions[0].ActorRef))
 						{
 							ServerMoveUnit(TurnUnitRef);
-							TurnUnitRef->HasMoved = false;
+							TurnUnitRef->bHasMoved = false;
 						}
 						break;
 					case EDC_ActionType::UnitAttack: // Is the action this turn an attack initiated by a unit?
@@ -1434,7 +1428,7 @@ void ACustomPlayerController::Multi_ActionActiveTurnRedo_Implementation()
 								break;
 							default:; // Nothing ever happens
 							}
-							TurnUnitRef->HasActed = false;
+							TurnUnitRef->bHasActed = false;
 						}
 						// Restart the action manager in 1 second
 						GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurnRedo, 1.f, false);
@@ -1545,7 +1539,7 @@ void ACustomPlayerController::FindReachableTiles()
 		if(UnitRef)
 		{
 			AUnit_Child_Warrior* TempWarriorRef = Cast<AUnit_Child_Warrior>(UnitRef);
-			if (UnitRef->HasActed && TempWarriorRef && UnitRef->GetFinalGhostMesh()->IsVisible())
+			if (UnitRef->bHasActed && TempWarriorRef && UnitRef->GetFinalGhostMesh()->IsVisible())
 			{
 				PathReachable = Grid->GridPath->NewFindPath(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()), this);
 			}
@@ -1553,15 +1547,13 @@ void ACustomPlayerController::FindReachableTiles()
 			{
 				if (UnitRef->GetBuildingRef())
 					PathReachable = UnitRef->GetBuildingRef()->MovementOptions;
-				else if (UnitRef->GetTowerRef())
-					PathReachable = Grid->GridPath->NewFindPath(Grid->ConvertLocationToIndex(UnitRef->GetActorLocation()), this);
 			}
 			else
 				PathReachable = Grid->GridPath->NewFindPath(Grid->ConvertLocationToIndex(UnitRef->GetActorLocation()), this);
 
 			for(FIntPoint Index : PathReachable)
 			{
-				Grid->GridVisual->addStateToTile(Index, EDC_TileState::Reachable);
+				Grid->GridVisual->AddStateToTile(Index, EDC_TileState::Reachable);
 			}
 		}
 	

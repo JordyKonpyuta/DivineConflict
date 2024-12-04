@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "GridInfo.generated.h"
 
+class AUpwall;
 class ATower;
 class AGrid;
 class AUnit;
@@ -24,13 +25,15 @@ public:
 
 protected:
 	// ----------------------------
-	// References
+	// --        References      --
+	// ----------------------------
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	TObjectPtr<AGrid> Grid;
-
+	TObjectPtr<AGrid> Grid = nullptr;
+	
 	// ----------------------------
-	// All Objects in Grid
+	// --   All Objects in Grid  --
+	// ----------------------------
 	
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
 	TArray<TObjectPtr<AUnit>> UnitsCombat;
@@ -51,44 +54,49 @@ protected:
 	// UFUNCTIONS
 public:	
 	// ----------------------------
-	// Constructor
+	// --       Constructor      --
+	// ----------------------------
 
 	UGridInfo();
 	
 	// ----------------------------
-	// Overrides
+	// --        Overrides       --
+	// ----------------------------
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	// ----------------------------
-	// Unit on Grid
+	// --      Unit On Grid      --
+	// ----------------------------
 	
 	UFUNCTION( Category = "GridElement",CallInEditor)
 	void AddUnitInGrid(FIntPoint GridPosition, AUnit* Unit);
 
 	UFUNCTION(NetMulticast,Reliable, Category = "GridElement",CallInEditor)
-	void Multi_setUnitIndexOnGrid(const FIntPoint GridPosition, const AUnit* Unit);
+	void Multi_SetUnitIndexOnGrid(const FIntPoint GridPosition, const AUnit* Unit);
 
 	UFUNCTION(Server,Reliable, Category = "GridElement")
-	void Server_setUnitIndexOnGrid(const FIntPoint GridPosition, const AUnit* Unit);
+	void Server_SetUnitIndexOnGrid(const FIntPoint GridPosition, const AUnit* Unit);
 
 	UFUNCTION( Category = "GridElement",CallInEditor)
 	void RemoveUnitInGrid(AUnit* Unit);
-
+	
 	// ----------------------------
-	// Building On Grid
+	// --    Building On Grid    --
+	// ----------------------------
 	
 	UFUNCTION(	Category = "GridElement",CallInEditor)
-	void addBuildingOnGrid(FIntPoint GridPosition, ABuilding* Building);
+	void AddBuildingOnGrid(FIntPoint GridPosition, ABuilding* Building);
 
 	UFUNCTION( Category = "GridElement",CallInEditor)
 	void SetBuildingOnGrid(FIntPoint GridPosition, ABuilding* Building);
 
 	// ----------------------------
-	// Base on Grid
+	// --      Base On Grid      --
+	// ----------------------------
 	
 	UFUNCTION( Category = "GridElement",CallInEditor)
-	void addBaseOnGrid(FIntPoint GridPosition, ABase* Base);
+	void AddBaseOnGrid(FIntPoint GridPosition, ABase* Base);
 
 	UFUNCTION(	Category = "GridElement",CallInEditor)
 	void SetBaseOnGrid(FIntPoint GridPosition, ABase* Base);
@@ -97,16 +105,18 @@ public:
 	void Multi_SetBaseOnGrid(const FIntPoint GridPosition,const ABase* Base);
 	
 	// ----------------------------
-	// Tower on Grid
+	// --      Tower On Grid     --
+	// ----------------------------
 	
 	UFUNCTION( Category = "GridElement",CallInEditor)
-	void addTowerOnGrid(FIntPoint GridPosition, ATower* Tower);
+	void AddTowerOnGrid(FIntPoint GridPosition, ATower* Tower);
 
 	UFUNCTION(	Category = "GridElement",CallInEditor)
 	void SetTowerOnGrid(FIntPoint GridPosition, ATower* Tower);
 	
 	// ----------------------------
-	// Climbable Area on Grid
+	// -- Climbable Area On Grid --
+	// ----------------------------
 	
 	UFUNCTION( Category = "GridElement",CallInEditor)
 	void AddClimbableOnGrid(FIntPoint GridPosition, AUpwall* Upwall);
@@ -114,14 +124,17 @@ public:
 	UFUNCTION(	Category = "GridElement",CallInEditor)
 	void SetClimbableOnGrid(FIntPoint GridPosition, AUpwall* Upwall);
 	
-	// ----------------------------
-	// SETTERS
-	
+	// ---------------------------- //
+	// --         SETTERS        -- //
+	// ---------------------------- //
+
+	UFUNCTION()
 	void SetGrid(AGrid* GridRef);
 
 protected:
 	// ----------------------------
-	// Overrides
+	// --        Overrides       --
+	// ----------------------------
 	
 	virtual void BeginPlay() override;
 	

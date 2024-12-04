@@ -2,14 +2,11 @@
 
 
 #include "Unit_Child_Tank.h"
-
-#include "CustomGameState.h"
 #include "Grid.h"
 #include "CustomPlayerState.h"
 #include "GridPath.h"
 #include "GridVisual.h"
 #include "TutorialGameMode.h"
-#include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
 
 	// ----------------------------
@@ -55,20 +52,6 @@ AUnit_Child_Tank::AUnit_Child_Tank()
 
 }
 
-void AUnit_Child_Tank::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProps) const{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(AUnit_Child_Tank, bIsUsingSpecial);
-}
-
-
-
-
-void AUnit_Child_Tank::SetTimer()
-{
-	
-}
-
 // ----------------------------
 	// Overrides
 
@@ -86,8 +69,6 @@ void AUnit_Child_Tank::BeginPlay()
 		SetPM(4);
 	if (CurrentHealth == 0 or CurrentHealth > MaxHealth)
 		SetCurrentHealth(MaxHealth);
-	
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AUnit_Child_Tank::SetTimer, 1.0f, true);
 
 	UnitName = EUnitName::Tank;
 	
@@ -108,45 +89,11 @@ void AUnit_Child_Tank::BeginPlay()
 
 }
 
-void AUnit_Child_Tank::Special()
-{
-	Super::Special();
-	//Special ability
-
-	TArray<FIntPoint> PathBuff =  Grid->GridPath->FindTileNeighbors(GetIndexPosition());
-	for(FIntPoint Tile : PathBuff)
-	{
-		if(Grid->GetGridData()->Find(Tile)->UnitOnTile && Grid->GetGridData()->Find(Tile)->UnitOnTile != this && Grid->GetGridData()->Find(Tile)->UnitOnTile->GetPlayerOwner() == GetPlayerOwner())
-		{
-			Grid->GetGridData()->Find(Tile)->UnitOnTile->SetBuffTank(true);
-			SetIsUsingSpecial(true);
-			Grid->GetGridData()->Find(Tile)->UnitOnTile->Server_GetBuffs();
-		}
-	}
-}
-
 void AUnit_Child_Tank::DisplayWidgetTutorial()
 {
 	Super::DisplayWidgetTutorial();
 
 	Grid->GridVisual->RemoveStateFromTile(Grid->ConvertLocationToIndex(this->GetActorLocation()), EDC_TileState::Selected);
-	if (!GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead)
+	if (!GetWorld()->GetAuthGameMode<ATutorialGameMode>()->bIsDead)
 		GetWorld()->GetAuthGameMode<ATutorialGameMode>()->DisplayTutorialWidget(1);
-}
-
-
-// ----------------------------
-	// GETTERS
-
-bool AUnit_Child_Tank::GetIsUsingSpecial()
-{
-	return bIsUsingSpecial;
-}
-
-	// ----------------------------
-	// SETTERS
-
-void AUnit_Child_Tank::SetIsUsingSpecial(bool bIsBoosting)
-{
-	bIsUsingSpecial = bIsBoosting;
 }

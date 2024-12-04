@@ -20,28 +20,32 @@ public:
 
 protected:
 	// ----------------------------
-	// References
+	// --       References       --
+	// ----------------------------
 	
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	TObjectPtr<AGrid> Grid;	
+	TObjectPtr<AGrid> Grid = nullptr;	
 
 	// UFUNCTIONS
 public:	
 	// ----------------------------
-	// Constructor
+	// --       Constructor      --
+	// ----------------------------
 	
 	UGridVisual();
 	
 	// ----------------------------
-	// Overrides
+	// --        Overrides       --
+	// ----------------------------
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	// ----------------------------
-	// State Modifier
+	// --     State Modifier     --
+	// ----------------------------
 	
 	UFUNCTION(BlueprintCallable, Blueprintable)
-	void addStateToTile(FIntPoint Index, EDC_TileState TileState);
+	void AddStateToTile(FIntPoint Index, EDC_TileState TileState);
 	
 	UFUNCTION(BlueprintCallable)
 	void RemoveStateFromTile(FIntPoint Index, EDC_TileState TileState);
@@ -49,26 +53,30 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RemoveAllStateFromTile(FIntPoint Index);
 	
-	// ----------------------------
-	// SETTER
-	
+	// ---------------------------- //
+	// --        SETTERS         -- //
+	// ---------------------------- //
+
+	UFUNCTION()
 	void SetGrid(AGrid* GridRef);
 
-	
 protected:
 	// ----------------------------
-	// Overrides
+	// --        Overrides       --
+	// ----------------------------
 	
 	virtual void BeginPlay() override;
-
+	
 	// ----------------------------
-	// Get Colors
+	// --       Get Colors       --
+	// ----------------------------
 	
 	UFUNCTION()
 	FLinearColor GetColorFromState(TArray<EDC_TileState> TileState);
 	
 	// ----------------------------
-	// Update Colors
+	// --      Update Colors     --
+	// ----------------------------
 
 	UFUNCTION(BlueprintCallable	)
 	void UpdateVisuals(FIntPoint Index);

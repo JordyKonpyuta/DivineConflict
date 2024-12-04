@@ -2,17 +2,10 @@
 
 
 #include "Unit_Child_Warrior.h"
-
-#include "CameraPlayer.h"
-#include "Upwall.h"
-#include "CustomGameState.h"
 #include "CustomPlayerController.h"
 #include "Grid.h"
 #include "GridVisual.h"
 #include "TutorialGameMode.h"
-#include "GameFramework/CharacterMovementReplication.h"
-#include "Kismet/KismetSystemLibrary.h"
-#include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
 
 	// ----------------------------
@@ -56,13 +49,6 @@ AUnit_Child_Warrior::AUnit_Child_Warrior()
 		HeavenIconDead = IconTexObjHeavenDead.Object;
 	if (IconTexObjHellDead.Object != NULL)
 		HellIconDead = IconTexObjHellDead.Object;
-	
-
-}
-void AUnit_Child_Warrior::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProps) const{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(AUnit_Child_Warrior, WallToClimb);
 }
 
 	// ----------------------------
@@ -107,105 +93,8 @@ void AUnit_Child_Warrior::DisplayWidgetTutorial()
 	Super::DisplayWidgetTutorial();
 
 	Grid->GridVisual->RemoveStateFromTile(Grid->ConvertLocationToIndex(this->GetActorLocation()), EDC_TileState::Selected);
-	if (GetWorld()->GetAuthGameMode<ATutorialGameMode>()->Warrior1 == this && !GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead)
+	if (GetWorld()->GetAuthGameMode<ATutorialGameMode>()->Warrior1 == this && !GetWorld()->GetAuthGameMode<ATutorialGameMode>()->bIsDead)
 		GetWorld()->GetAuthGameMode<ATutorialGameMode>()->DisplayTutorialWidget(3);
-	else if (GetWorld()->GetAuthGameMode<ATutorialGameMode>()->Warrior2 == this && !GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead)
+	else if (GetWorld()->GetAuthGameMode<ATutorialGameMode>()->Warrior2 == this && !GetWorld()->GetAuthGameMode<ATutorialGameMode>()->bIsDead)
 		GetWorld()->GetAuthGameMode<ATutorialGameMode>()->DisplayTutorialWidget(6);
 }
-
-
-
-void AUnit_Child_Warrior::Special()
-{
-
-	//Special ability
-	if (HasMoved)
-	{
-		WallToClimb = Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(GetFinalGhostMesh()->GetComponentLocation()))->UpwallOnTile;
-		if (WallToClimb)
-		{
-			if (WallToClimb->GetClimbLocation() != FIntPoint(-999, -999))
-			{
-				FutureMovementWithSpecial.AddUnique(WallToClimb->GetClimbLocation());
-				Server_SpecialMove(WallToClimb->GetClimbLocation());
-				GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(WallToClimb->GetClimbLocation()));
-				WallToClimb = nullptr;
-				InitGhosts();
-			}
-		}
-	}
-	else
-	{
-		WallToClimb = Grid->GetGridData()->Find(GetIndexPosition())->UpwallOnTile;
-		if (WallToClimb)
-		{
-			if (WallToClimb->GetClimbLocation() != FIntPoint(-999, -999)){
-				const TArray<FIntPoint> NewMove;
-				
-				FutureMovementWithSpecial.AddUnique(WallToClimb->GetClimbLocation());
-				Server_SpecialMove(WallToClimb->GetClimbLocation());
-				PlayerControllerRef->Server_ActivateSpecial(this, WallToClimb->GetClimbLocation());
-				SetIsSelected(false);
-				//PlayerControllerRef->Server_PrepareMoveUnit(NewMove, this);
-				//FutureMovement.Add(WallToClimb->GetClimbLocation());
-				GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(WallToClimb->GetClimbLocation()));
-				InitGhosts();
-			}
-		}
-	}
-}
-
-void AUnit_Child_Warrior::Server_SpecialMove_Implementation(FIntPoint NewPos)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("1")));
-		
-	Multi_SpecialMove(NewPos);
-}
-
-void AUnit_Child_Warrior::Multi_SpecialMove_Implementation(FIntPoint NewPos)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("2")));
-	FutureMovementWithSpecial.AddUnique(NewPos);
-	if(HasMoved)
-		FirstActionIsMove = true;
-}
-
-void AUnit_Child_Warrior::Server_MoveToClimb_Implementation()
-{
-	Multi_MoveToClimb();
-}
-
-void AUnit_Child_Warrior::Multi_MoveToClimb_Implementation()
-{
-
-	if (FirstActionIsMove)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("FirstActionIsMove = %d"), FirstActionIsMove));
-		if(!FutureMovementWithSpecial.IsEmpty())
-		{
-			if(FutureMovementWithSpecial.Last() == IndexPosition)
-			{
-				if(Grid->GetGridData()->Find(FutureMovementWithSpecial.Last())->UpwallOnTile)
-				{
-					FutureMovementWithSpecial.AddUnique(Grid->GetGridData()->Find(FutureMovementWithSpecial.Last())->UpwallOnTile->GetClimbLocation());
-				}
-			}
-			InitializeFullMove(TArray<FIntPoint>{FutureMovementWithSpecial.Last()});
-			FutureMovementWithSpecial.Empty();
-			Server_GetBuffs();
-		}
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("FirstActionIsMove = %d"), FirstActionIsMove));
-		TArray<FIntPoint> TempFullMoveSave = FutureMovement;
-		FutureMovement = FutureMovementWithSpecial;
-		InitializeFullMove(TArray<FIntPoint> {FutureMovement[0]});
-		FutureMovementWithSpecial.Empty();
-		FutureMovement = TempFullMoveSave;
-		Server_GetBuffs();
-	}
-		
-	
-}
-

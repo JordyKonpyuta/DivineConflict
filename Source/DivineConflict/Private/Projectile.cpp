@@ -217,7 +217,7 @@ void AProjectile::Multi_RemoveProjectile_Implementation()
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FireBallComp_NS.GetName());
 	
 	if (TowerOwner)
-		TowerOwner->CannonBall = nullptr;
+		TowerOwner->Projectile = nullptr;
 	if (UnitOwner)
 		UnitOwner->FireBall = nullptr;
 	

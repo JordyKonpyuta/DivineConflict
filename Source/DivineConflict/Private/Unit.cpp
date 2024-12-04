@@ -42,6 +42,7 @@ AUnit::AUnit()
 	UnitMesh->SetIsReplicated(true);
 	
 	UnitMeshDistinction = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Unit Mesh Distinction"));
+	AllMaterials.Empty();
 	
 	// Materials
 	if (Cast<AUnit_Child_Leader>(this))
@@ -75,19 +76,19 @@ AUnit::AUnit()
 		AllMaterials.Add(ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Core/Texture_DEBUG/Mi_HellPlayer.Mi_HellPlayer'")).Object);
 	}
 	
-	MaterialToGhosts = ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture/M_Ghosts.M_Ghosts'")).Object;
+	MaterialForGhosts = ConstructorHelpers::FObjectFinder<UMaterialInterface>(TEXT("/Script/Engine.Material'/Game/Core/Texture/M_Ghosts.M_Ghosts'")).Object;
 
 	// Ghosts Meshes
 	
 	GhostsMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ghosts Mesh"));
 	GhostsMesh->SetStaticMesh(UnitMesh->GetStaticMesh());
-	GhostsMesh->SetMaterial(0, MaterialToGhosts);
+	GhostsMesh->SetMaterial(0, MaterialForGhosts);
 	GhostsMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	GhostsMesh->SetVisibility(false);
 
 	GhostsFinaleLocationMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ghosts Finale Location Mesh"));
 	GhostsFinaleLocationMesh->SetStaticMesh(UnitMesh->GetStaticMesh());
-	GhostsFinaleLocationMesh->SetMaterial(0, MaterialToGhosts);
+	GhostsFinaleLocationMesh->SetMaterial(0, MaterialForGhosts);
 	GhostsFinaleLocationMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	GhostsFinaleLocationMesh->SetVisibility(false);
 
@@ -133,7 +134,6 @@ void AUnit::BeginPlay()
 			break;
 		}
 		FTimerHandle timerTestOnTower;
-		GetWorld()->GetTimerManager().SetTimer(timerTestOnTower, this, &AUnit::testOnTower, 1.0f, false);
 	}
 	else 
     {
@@ -171,19 +171,13 @@ void AUnit::BeginPlay()
 
 	BuffTankComp_NS->Deactivate();
 
-	if (IsGarrison)
+	if (GetIsGarrison())
 	{
 		if (Grid->GetGridData()->Find(IndexPosition)->BuildingOnTile)
 		{
 			BuildingRef = Grid->GetGridData()->Find(IndexPosition)->BuildingOnTile;
 			BuildingRef->GarrisonFull = true;
 			BuildingRef->UnitRef = this;
-		}
-		if (Grid->GetGridData()->Find(IndexPosition)->TowerOnTile)
-		{
-			TowerRef = Grid->GetGridData()->Find(IndexPosition)->TowerOnTile;
-			TowerRef->IsGarrisoned = true;
-			TowerRef->UnitInGarrison = this;
 		}
 	}
 }
@@ -216,18 +210,17 @@ void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProp
 
 	DOREPLIFETIME(AUnit, bJustBecameGarrison);
 	DOREPLIFETIME(AUnit, bBuffTank);
+	DOREPLIFETIME(AUnit, bFirstActionIsMove);
+	DOREPLIFETIME(AUnit, bHasActed);
 	DOREPLIFETIME(AUnit, bHasClimbed);
+	DOREPLIFETIME(AUnit, bHasMoved);
 	DOREPLIFETIME(AUnit, bIsClimbing);
 	DOREPLIFETIME(AUnit, bIsCommandeerBuffed);
+	DOREPLIFETIME(AUnit, bIsGarrison);
 	DOREPLIFETIME(AUnit, bIsGhosts);
 	DOREPLIFETIME(AUnit, BuffTankSys_NS);
 	DOREPLIFETIME(AUnit, CurrentHealth);
-	DOREPLIFETIME(AUnit, FirstActionIsMove);
 	DOREPLIFETIME(AUnit, FutureMovement);
-	DOREPLIFETIME(AUnit, FutureMovementWithSpecial);
-	DOREPLIFETIME(AUnit, HasActed);
-	DOREPLIFETIME(AUnit, HasMoved);
-	DOREPLIFETIME(AUnit, IsGarrison);
 	DOREPLIFETIME(AUnit, MoveSequencePos);
 	DOREPLIFETIME(AUnit, PathToCross);
 	DOREPLIFETIME(AUnit, PathToCrossPosition);
@@ -242,25 +235,6 @@ void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProp
 // ----------------------------
 // Initial Tests
 
-
-void AUnit::testOnTower()
-{
-	if(Grid)
-	{
-		if(Grid->GetGridData()->Find(IndexPosition) != nullptr)
-		{
-			if ( Grid->GetGridData()->Find(IndexPosition)->TowerOnTile)
-			{
-				Grid->GetGridData()->Find(IndexPosition)->TowerOnTile->UnitInGarrison = this;
-				Grid->GetGridData()->Find(IndexPosition)->TowerOnTile->IsGarrisoned = true;
-				TowerRef = Grid->GetGridData()->Find(IndexPosition)->TowerOnTile;
-				IsGarrison = true;
-			}
-
-		}
-	}
-}
-
 void AUnit::SetGrid()
 {
 	//get the grid
@@ -269,7 +243,6 @@ void AUnit::SetGrid()
 	{
 		Grid = Cast<AGrid>(FoundActors);
 		Grid->GridInfo->AddUnitInGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
-		testOnTower();
 	}
 	else
 	{
@@ -373,9 +346,6 @@ void AUnit::NewTurn()
 		{
 			CurrentHealth = UKismetMathLibrary::Clamp(CurrentHealth + 2, 0, MaxHealth +2);
 		}
-	
-	if (TObjectPtr<AUnit_Child_Tank> TempSelf = Cast<AUnit_Child_Tank>(this))
-		TempSelf->SetIsUsingSpecial(false);
 
 	Multi_NewTurn();
 }
@@ -412,23 +382,10 @@ void AUnit::SetGrid(AGrid* NewGrid)
 
 void AUnit::Multi_PrepareMove_Implementation(const TArray<FIntPoint>& NewPos)
 {
-	if (bHasClimbed)
-	{
-		FutureMovement = NewPos;
-		FutureMovementWithSpecial += FutureMovement;
-	}
-	else
-	{
-		FutureMovement = NewPos;
-		FutureMovementWithSpecial = FutureMovement;
-	}
-	GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovementWithSpecial.Last()));
+	FutureMovement = NewPos;
+	GhostsFinaleLocationMesh->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovement.Last()));
 	
-
-
-
-	
-	HasMoved = true;
+	bHasMoved = true;
 }
 
 // ----------------------------
@@ -451,9 +408,9 @@ void AUnit::InitializeFullMove(TArray<FIntPoint> FullMove)
 	PathToCrossPosition = 0;
 	bIsMoving = true;
 
-	if (IsGarrison)
+	if (GetIsGarrison())
 	{
-		Multi_REmoveGarison();
+		Multi_RemoveGarrison();
 	}
 
 	while (!PathToCross.IsEmpty())
@@ -515,7 +472,7 @@ void AUnit::UnitMoveAnim_Implementation()
 	// Déplacement
 	else if (MoveSequencePos == 1 && PathToCrossPosition < PathToCross.Num() && PathToCrossPosition >= 0 )
 	{
-		WillMove = true;
+		SetWillMove(true);
 		Grid->GridVisual->RemoveStateFromTile(PathToCross[PathToCrossPosition], EDC_TileState::Pathfinding);
 		// If you cross a building
 		if (Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->BuildingOnTile)
@@ -567,26 +524,10 @@ void AUnit::UnitMoveAnim_Implementation()
 			PathToCross.Empty();
 			PathToCross.Add(EarlyLastPath);
 			PathToCrossPosition = 0;
-			WillMove = false;
-		}
-
-		// If you cross a tower
-		else if (Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->TowerOnTile)
-		{
-			if (Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->TowerOnTile->IsGarrisoned == false)
-			{
-				UnitNewLocation = (Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->TowerOnTile->GetActorLocation());
-				Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->TowerOnTile->UnitInGarrison = this;
-				Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->TowerOnTile->IsGarrisoned = true;
-				TowerRef = Grid->GetGridData()->Find(PathToCross[PathToCrossPosition])->TowerOnTile;
-
-				Grid->GridVisual->RemoveStateFromTile(PathToCross[PathToCrossPosition], EDC_TileState::Pathfinding);
-				SetIsGarrison(true);
-				bJustBecameGarrison = true;
-			}
+			SetWillMove(false);
 		}
 		
-		if (WillMove)
+		if (GetWillMove())
 		{
 			UnitNewLocation = (Grid->ConvertIndexToLocation(PathToCross[PathToCrossPosition]) + FVector(0,0,50));
 			
@@ -618,7 +559,7 @@ void AUnit::UnitMoveAnim_Implementation()
 		// If is last move
 		if (PathToCross[PathToCrossPosition] == PathToCross.Last())
 		{
-			Grid->GridInfo->Multi_setUnitIndexOnGrid(PathToCross.Last(), this);
+			Grid->GridInfo->Multi_SetUnitIndexOnGrid(PathToCross.Last(), this);
 			PathToCross.Empty();
 			PathToCrossPosition = 0;
 			MoveSequencePos = 2;
@@ -640,7 +581,7 @@ void AUnit::UnitMoveAnim_Implementation()
 		{
 			GetWorldTimerManager().ClearTimer(MoveTimerHandle);
 			Multi_HiddeGhosts();
-			Grid->GridInfo->Multi_setUnitIndexOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
+			Grid->GridInfo->Multi_SetUnitIndexOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
 
 			bIsMoving = false;
 			
@@ -657,22 +598,15 @@ void AUnit::UnitMoveAnim_Implementation()
 					BuildingRef->GarrisonFull = true;
 					BuildingRef->UnitRef = this;
 				}
-				else if (Grid->GetGridData()->Find(IndexPosition)->TowerOnTile)
-				{
-					TowerRef = Grid->GetGridData()->Find(IndexPosition)->TowerOnTile;
-					TowerRef->IsGarrisoned = true;
-					TowerRef->UnitInGarrison = this;
-					SetIsGarrison(true);
-				}
 			}
 			
 			// EndTurn
 			if(PlayerControllerRef != nullptr)
 			{
-				if (FirstActionIsMove)
+				if (bFirstActionIsMove)
 					FutureMovement.Empty();
 				else
-					FirstActionIsMove = true;
+					bFirstActionIsMove = true;
 				if(HasAuthority())
 				{
 					PlayerControllerRef->Server_ActionActiveTurn();
@@ -744,8 +678,8 @@ void AUnit::InitGhosts_Implementation()
 
 void AUnit::MoveGhosts(float DeltaTime)
 {
-	if(HasMoved)
-		MoveGhostsAction(DeltaTime, FutureMovementWithSpecial);
+	if(bHasMoved)
+		MoveGhostsAction(DeltaTime, FutureMovement);
 
 }
 
@@ -837,8 +771,8 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 		return;
 	}
 	
-	if (Grid->GridPath->FindTileNeighbors(GetIndexPosition()).Contains(UnitToAttack->GetIndexPosition())
-		|| UnitToAttack->IsGarrison)
+	if (Grid->GridPath->FindTileNeighbours(GetIndexPosition()).Contains(UnitToAttack->GetIndexPosition())
+		|| UnitToAttack->GetIsGarrison())
 	{
 		int DamageCaused = 0;
 		int DamageTaken = 0;
@@ -874,7 +808,7 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 			{
 				UnitToAttack->BuildingRef->UnitRef = nullptr;
 				UnitToAttack->BuildingRef->GarrisonFull = false;
-				UnitToAttack->IsGarrison = false;
+				UnitToAttack->SetIsGarrison(false);
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("UnitToAttack->IndexPosition : %s"), *UnitToAttack->IndexPosition.ToString()));
 
 				if (GetCurrentHealth() >= 1)
@@ -889,7 +823,7 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 		else if (UnitToAttack->GetCurrentHealth() > 0 && PlayerControllerRef->PlayerStateRef->bIsInTutorial)
 		{
 			PlayerControllerRef->FailedTutorial();
-			GetWorld()->GetAuthGameMode<ATutorialGameMode>()->isDead = true;
+			GetWorld()->GetAuthGameMode<ATutorialGameMode>()->bIsDead = true;
 		}
 		
 		//if (PlayerControllerRef)
@@ -975,24 +909,6 @@ void AUnit::AnimAttack(AActor* ThingToAttack)
 }
 
 // ----------------------------
-// Specials
-
-void AUnit::Special_Implementation()
-{
-	
-}
-
-void AUnit::SpecialUnit(AUnit* UnitToAttack)
-{
-}
-
-void AUnit::SpecialBase(ABase* BaseToAttack)
-{
-}
-
-
-
-// ----------------------------
 // Get Buffs
 
 void AUnit::Server_GetBuffs_Implementation()
@@ -1019,28 +935,6 @@ void AUnit::Multi_GetBuffs_Implementation()
 			{
 				bIsCommandeerBuffed = true;
 				UnitToBuff = nullptr;
-			}
-		}
-	}
-	for (FIntPoint CurrentPos : Grid->GridPath->FindTileNeighbors(GetIndexPosition()))
-	{
-		if (CurrentPos != FIntPoint(-999,-999)){
-			if (Grid->GetGridData()->Find(CurrentPos)){
-				if (Grid->GetGridData()->Find(CurrentPos)->UnitOnTile)
-				{
-					if (Grid->GetGridData()->Find(CurrentPos)->UnitOnTile != this)
-					{
-						AUnit_Child_Tank* TankToCheck = Cast<AUnit_Child_Tank>(Grid->GetGridData()->Find(CurrentPos)->UnitOnTile);
-						if (TankToCheck)
-						{
-							if (TankToCheck->GetIsUsingSpecial() && TankToCheck->GetPlayerOwner() == GetPlayerOwner())
-							{
-								bBuffTank = true;
-								Server_GetBuffsVisual();
-							}
-						}
-					}
-				}
 			}
 		}
 	}
@@ -1077,34 +971,16 @@ void AUnit::Multi_GetBuffsVisual_Implementation()
 
 void AUnit::Multi_CancelMove_Implementation()
 {
-	HasMoved = false;
-	if (FirstActionIsMove)
-		FirstActionIsMove = false;
+	bHasMoved = false;
+	if (bFirstActionIsMove)
+		bFirstActionIsMove = false;
 	Multi_HiddeGhosts();
 	FutureMovement.Empty();
 }
 
 void AUnit::Multi_CancelAttack_Implementation()
 {
-	HasActed = false;
-}
-
-void AUnit::Multi_CancelSpecial_Implementation()
-{
-	HasActed = false;
-
-	if (Cast<AUnit_Child_Warrior>(this))
-	{
-		FutureMovementWithSpecial.RemoveAt(FutureMovementWithSpecial.Num() - 1);
-		GetFinalGhostMesh()->SetWorldLocation(Grid->ConvertIndexToLocation(FutureMovementWithSpecial.Last()));
-	}
-
-	if (FutureMovementWithSpecial.Last() == IndexPosition)
-	{
-		FutureMovementWithSpecial.Empty();
-		Multi_HiddeGhosts();
-	}
-
+	bHasActed = false;
 }
 
 	// ----------------------------
@@ -1186,21 +1062,15 @@ void AUnit::Server_DestroyUnit_Implementation()
 	// ----------------------------
 	// GETTERS
 
-void AUnit::Multi_REmoveGarison_Implementation()
+void AUnit::Multi_RemoveGarrison_Implementation()
 {
 	if(BuildingRef)
 	{
 		BuildingRef->UnitRef = nullptr;
 		BuildingRef->GarrisonFull = false;
 	}
-	if(TowerRef)
-	{
-		TowerRef->UnitInGarrison = nullptr;
-		TowerRef->IsGarrisoned = false;
-	}
-	IsGarrison = false;
+	SetIsGarrison(false);
 	BuildingRef = nullptr;
-	TowerRef = nullptr;
 }
 
 // Static Meshes
@@ -1213,11 +1083,6 @@ UStaticMeshComponent* AUnit::GetStaticMesh()
 ABuilding* AUnit::GetBuildingRef()
 {
 	return BuildingRef;
-}
-
-ATower* AUnit::GetTowerRef()
-{
-	return TowerRef;
 }
 
 // Int
@@ -1249,7 +1114,7 @@ int AUnit::GetDefense()
 // Bool
 bool AUnit::GetIsSelected()
 {
-	return IsSelected;
+	return bIsSelected;
 }
 
 bool AUnit::GetIsClimbing()
@@ -1264,12 +1129,17 @@ bool AUnit::GetBuffTank()
 
 bool AUnit::GetIsGarrison()
 {
-	return IsGarrison;
+	return bIsGarrison;
 }
 
 bool AUnit::GetIsCommandeerBuffed()
 {
 	return bIsCommandeerBuffed;
+}
+
+bool AUnit::GetWillMove()
+{
+	return bWillMove;
 }
 
 // Enums
@@ -1329,12 +1199,12 @@ void AUnit::SetDefense(int d)
 // Bool
 void AUnit::SetIsSelected(bool s)
 {
-	IsSelected = s;
+	bIsSelected = s;
 }
 
 void AUnit::SetIsGarrison(bool bG)
 {
-	IsGarrison = bG;
+	bIsGarrison = bG;
 }
 
 void AUnit::SetIsClimbing(bool ic)
@@ -1350,6 +1220,11 @@ void AUnit::SetBuffTank(bool bt)
 void AUnit::SetIsCommandeerBuffed(bool bC)
 {
 	bIsCommandeerBuffed = bC;
+}
+
+void AUnit::SetWillMove(bool bWM)
+{
+	bWillMove = bWM;
 }
 
 // Enums

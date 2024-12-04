@@ -47,10 +47,10 @@ void UGridInfo::AddUnitInGrid(FIntPoint GridPosition, AUnit* Unit)
 	UnitsCombat.Add(Unit);
 
 	//Server_setUnitIndexOnGrid(GridPosition, Unit);
-	Multi_setUnitIndexOnGrid(GridPosition, Unit);
+	Multi_SetUnitIndexOnGrid(GridPosition, Unit);
 }
 
-void UGridInfo::Multi_setUnitIndexOnGrid_Implementation(const FIntPoint GridPosition, const AUnit* Unit)
+void UGridInfo::Multi_SetUnitIndexOnGrid_Implementation(const FIntPoint GridPosition, const AUnit* Unit)
 {
 	if(Grid == nullptr)
 	{
@@ -90,21 +90,21 @@ void UGridInfo::Multi_setUnitIndexOnGrid_Implementation(const FIntPoint GridPosi
 	}
 }
 
-void UGridInfo::Server_setUnitIndexOnGrid_Implementation(const FIntPoint GridPosition, const AUnit* Unit)
+void UGridInfo::Server_SetUnitIndexOnGrid_Implementation(const FIntPoint GridPosition, const AUnit* Unit)
 {
-	Multi_setUnitIndexOnGrid(GridPosition, Unit);
+	Multi_SetUnitIndexOnGrid(GridPosition, Unit);
 }
 
 void UGridInfo::RemoveUnitInGrid(AUnit* Unit)
 {
 	UnitsCombat.Remove(Unit);
-	Server_setUnitIndexOnGrid(FIntPoint(-999,-999), Unit);
+	Server_SetUnitIndexOnGrid(FIntPoint(-999,-999), Unit);
 }
 
 	// ----------------------------
 	// Building on Grid
 
-void UGridInfo::addBuildingOnGrid(FIntPoint GridPosition, ABuilding* Building)
+void UGridInfo::AddBuildingOnGrid(FIntPoint GridPosition, ABuilding* Building)
 {
 	BuildingGrid.Add(Building);
 	SetBuildingOnGrid(GridPosition, Building);
@@ -137,7 +137,7 @@ void UGridInfo::SetBuildingOnGrid(FIntPoint GridPosition, ABuilding* Building)
 	// ----------------------------
 	// Base on Grid
 
-void UGridInfo::addBaseOnGrid(FIntPoint GridPosition, ABase* Base)
+void UGridInfo::AddBaseOnGrid(FIntPoint GridPosition, ABase* Base)
 {
 	BasesGrid.Add(Base);
 	Multi_SetBaseOnGrid(GridPosition, Base);
@@ -204,7 +204,7 @@ void UGridInfo::Multi_SetBaseOnGrid_Implementation(const FIntPoint GridPosition,
 	// ----------------------------
 	// Tower on Grid
 
-void UGridInfo::addTowerOnGrid(FIntPoint GridPosition, ATower* Tower)
+void UGridInfo::AddTowerOnGrid(FIntPoint GridPosition, ATower* Tower)
 {
 	TowerGrid.Add(Tower);
 	SetTowerOnGrid(GridPosition, Tower);
@@ -218,7 +218,7 @@ void UGridInfo::SetTowerOnGrid(FIntPoint GridPosition, ATower* Tower)
 	}
 	if(GridPosition != Tower->GetGridPosition())
 	{
-		FDC_TileData* PerviousIndex = Grid->GetGridData()->Find(Tower->GetGridPosition());
+		FDC_TileData* PreviousIndex = Grid->GetGridData()->Find(Tower->GetGridPosition());
 		Tower->SetGridPosition(GridPosition);
 		if(Tower->GetGridPosition() != FIntPoint(-999,-999))
 		{

@@ -15,8 +15,10 @@ class DIVINECONFLICT_API AObstacle : public AActor
 
 	//UPROPERTIES
 public:	
+	
 	// ----------------------------
-	// Appearance
+	// --         Meshes         --
+	// ----------------------------
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Unit", Replicated, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USceneComponent> Scene;
@@ -25,7 +27,8 @@ public:
 	TObjectPtr<UStaticMeshComponent> Plane;
 	
 	// ----------------------------
-	// References
+	// --       References       --
+	// ----------------------------
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	TObjectPtr<AGrid> GridRef;
@@ -34,19 +37,24 @@ protected:
 
 	// UFUNCTIONS
 public:
+	
 	// ----------------------------
-	// Constructor
+	// --       Constructor      --
+	// ----------------------------
 	
 	AObstacle();
 	
 	// ----------------------------
-	// Overwrites
+	// --       Overrides        --
+	// ----------------------------
 	
 	virtual void Tick(float DeltaTime) override;
 
 protected:
+	
 	// ----------------------------
-	// Overwrites
+	// --       Overrides        --
+	// ----------------------------
 	
 	virtual void BeginPlay() override;
 };

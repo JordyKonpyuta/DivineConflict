@@ -17,13 +17,13 @@ void ATutorialGameMode::BeginPlay()
 	Grid = Cast<AGrid>(FoundActor);
 }
 
-void ATutorialGameMode::HilightUnit(AUnit* UnitToHilight)
+void ATutorialGameMode::HighlightUnit(AUnit* UnitToHighlight)
 {
-	if (UnitToHilight == nullptr)
+	if (UnitToHighlight == nullptr)
     {
         return;
     }
-	Grid->GridVisual->addStateToTile(Grid->ConvertLocationToIndex(UnitToHilight->GetActorLocation()), EDC_TileState::Selected);
+	Grid->GridVisual->AddStateToTile(Grid->ConvertLocationToIndex(UnitToHighlight->GetActorLocation()), EDC_TileState::Selected);
 }
 
 void ATutorialGameMode::DisplayTutorialWidget_Implementation(int index)

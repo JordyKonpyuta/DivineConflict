@@ -17,26 +17,29 @@ class DIVINECONFLICT_API AUpwall : public AActor
 	// UPROPERTIES
 public:
 	// ----------------------------
-	// Appearance
+	// --       Appearance       --
+	// ----------------------------
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Unit", Replicated, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<USceneComponent> Scene;
+	TObjectPtr<USceneComponent> Scene = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit", Replicated, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UStaticMeshComponent> Plane1;
+	TObjectPtr<UStaticMeshComponent> Plane1 = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Unit", Replicated, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UStaticMeshComponent> Plane2;
+	TObjectPtr<UStaticMeshComponent> Plane2 = nullptr;
 	
 	// ----------------------------
-	// References
+	// --       References       --
+	// ----------------------------
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-	TObjectPtr<AGrid> GridRef;
+	TObjectPtr<AGrid> GridRef = nullptr;
 	
 protected:
 	// ----------------------------
-	// Positions
+	// --        Positions       --
+	// ----------------------------
 	
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Grid")
 	FIntPoint GridPosition = FIntPoint(-999, -999);
@@ -47,17 +50,19 @@ protected:
 	// UFUNCTIONS
 public:	
 	// ----------------------------
-	// Constructor
+	// --      Constructor       --
+	// ----------------------------
 	
 	AUpwall();
-	
 	// ----------------------------
-	// Overrides
+	// --        Overrides       --
+	// ----------------------------
 	
 	virtual void Tick(float DeltaTime) override;
 	
-	// ----------------------------
-	// GETTERS
+	// ---------------------------- //
+	// --        GETTERS         -- //
+	// ---------------------------- //
 
 	UFUNCTION()
 	FIntPoint GetGridPosition();
@@ -65,8 +70,9 @@ public:
 	UFUNCTION()
 	FIntPoint GetClimbLocation();
 	
-	// ----------------------------
-	// SETTERS
+	// ---------------------------- //
+	// --        SETTERS         -- //
+	// ---------------------------- //
 
 	UFUNCTION()
 	void SetGridPosition(FIntPoint NewGridPosition);
@@ -76,7 +82,8 @@ public:
 	
 protected:
 	// ----------------------------
-	// Overrides
+	// --        Overrides       --
+	// ----------------------------
 	
 	virtual void BeginPlay() override;
 };

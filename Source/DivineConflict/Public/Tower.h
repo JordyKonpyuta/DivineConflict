@@ -19,54 +19,46 @@ class DIVINECONFLICT_API ATower : public AActor
 
 	// UPROPERTIES
 public:	
-
 	// ----------------------------
-	// Component
+	// --       Components       --
+	// ----------------------------
+	
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Mesh")
-	TObjectPtr<UStaticMeshComponent> Mesh;
+	TObjectPtr<UStaticMeshComponent> Mesh = nullptr;
 	
 	// ----------------------------
-	// References
-	
-	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Unit")
-	TObjectPtr<AUnit> UnitInGarrison = nullptr;
+	// --       References       --
+	// ----------------------------
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-	TObjectPtr<AGrid> Grid;
+	TObjectPtr<AGrid> Grid = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controller")
-	TObjectPtr<ACustomPlayerController> PlayerController;
+	TObjectPtr<ACustomPlayerController> PlayerController = nullptr;
 	
 	UPROPERTY(Replicated)
 	TObjectPtr<AUnit> UnitToAttack = nullptr;
-
-	
-	// ----------------------------
-	// Garrison
-	
-	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Bool")
-	bool IsGarrisoned = false;
 
 	// ----------------------------
 	// Can Attack
 	
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadOnly, Category = "Bool")
-	bool CanAttack = true;
+	bool bCanAttack = true;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bool")
-	bool IsSelected = false;
+	bool bIsSelected = false;
 	
 	// ----------------------------
 	// Attack
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-	TArray<FIntPoint> TilesInRange;
+	TArray<FIntPoint> TilesInRange = {FIntPoint(-999,-999)};
 
 	UPROPERTY(Replicated)
 	FIntPoint UnitToAttackPosition = FIntPoint(-999, -999);
 	
 	UPROPERTY()
-	TObjectPtr<AProjectile> CannonBall;
+	TObjectPtr<AProjectile> Projectile;
 	
 	// ----------------------------
 	// Tower Upgrade
@@ -126,7 +118,7 @@ public:
 	// Attack
 
 	UFUNCTION()
-	void PreprareAttack(AUnit* UnitAttack);
+	void PrepareAttack(AUnit* UnitAttack);
 
 	UFUNCTION(BlueprintCallable)
 	void AttackUnit(AUnit* UnitAttacking, ACustomPlayerController* PlayerControllerAttacking);
