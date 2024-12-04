@@ -71,27 +71,28 @@ public:
 	// ----------------------------
 	// Tower Upgrade
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int Level = 0;
 
-	UPROPERTY()
-	bool bCanAttack = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int MaxLevel = 3;
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int WoodUpgradePrice = -1000000;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int StoneUpgradePrice = -1000000;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int GoldUpgradePrice = -1000000;
 
 protected:
+
 	// ----------------------------
 	// Stat
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "Stats")
 	int Attack = 0;
-
+	
 	// ----------------------------
 	// Owner
 	UPROPERTY(EditAnywhere, Replicated, BlueprintReadOnly, Category = "Enum")
@@ -139,7 +140,7 @@ public:
 	// ----------------------------
 	// Tower Upgrade
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void UpgradeTower();
 	
 	// ----------------------------

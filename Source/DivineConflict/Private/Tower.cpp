@@ -85,7 +85,7 @@ void ATower::PreprareAttack(AUnit* UnitAttack)
 
 void ATower::AttackUnit(AUnit* UnitToAttacking, ACustomPlayerController* PlayerControllerAttacking)
 {
-	if (bCanAttack)
+	if (CanAttack)
 	{
 		CannonBall = GetWorld()->SpawnActor<AProjectile>(AProjectile::StaticClass(), GetActorLocation(), GetActorRotation());
 		CannonBall->TowerOwner = this;
@@ -132,7 +132,7 @@ void ATower::UpgradeTower()
 	if (	PlayerController->PlayerStateRef->GetWoodPoints() >= WoodUpgradePrice
 		&&	PlayerController->PlayerStateRef->GetStonePoints() >= StoneUpgradePrice
 		&&	PlayerController->PlayerStateRef->GetGoldPoints() >= GoldUpgradePrice
-		&& Level < 3)
+		&& Level < MaxLevel)
 	{
 		PlayerController->PlayerStateRef->ChangeWoodPoints(WoodUpgradePrice, false);
 		PlayerController->PlayerStateRef->ChangeStonePoints(StoneUpgradePrice, false);
@@ -146,7 +146,7 @@ void ATower::UpgradeTower()
 		switch(Level)
 		{
 		case 1:
-			bCanAttack = true;
+			CanAttack = true;
 			SetAttack(2);
 			break;
 		case 2:
