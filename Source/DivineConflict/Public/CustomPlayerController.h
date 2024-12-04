@@ -40,19 +40,46 @@ enum class EDC_ActionPlayer : uint8
 	SelectBuilding UMETA(DisplayNmae = "SelectBuilding"),
 };
 
+UENUM(Blueprintable)
+enum class EDC_ActionType : uint8
+{
+	None				UMETA(DisplayName = "None"),
+	UnitMove			UMETA(DisplayName = "Unit Move"),
+	UnitAttack			UMETA(DisplayName = "Unit Attack"),
+	TowerAttack			UMETA(DisplayName = "Tower Attack"),
+	DivineAssistance	UMETA(DisplayName = "Divine Assistance"),
+	SpawnUnit			UMETA(DisplayName = "Spawn Unit")
+};
+
+UENUM(Blueprintable)
+enum class EDC_TargetType : uint8
+{
+	None		UMETA(DisplayName = "None"),
+	Unit		UMETA(DisplayName = "Unit Move"),
+	Base		UMETA(DisplayName = "Unit Attack"),
+	Building	UMETA(DisplayName = "Tower Attack")
+};
+
 USTRUCT(Blueprintable)
-struct FStructActions
+struct FStructActiveActions
 {
 	GENERATED_BODY()
 
+	// Actor that DOES the action
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<AActor> ActorRef;
 
+	// Action that IS DONE; depends on the ActorRef
 	UPROPERTY(BlueprintReadWrite)
-	EDC_ActionPlayer UnitAction;
+	EDC_ActionType UnitAction;
 
+	// WHAT the target (if there is one) ended up being ; use "None" if there are no targets (like if you were moving, for example)
 	UPROPERTY(BlueprintReadWrite)
-	TObjectPtr<AUnit> UnitAttacking;
+	EDC_TargetType TargetType;
+
+	// WHERE the action that happens will happen
+	UPROPERTY(BlueprintReadWrite)
+	FIntPoint TargetLocation;
 };
 
 USTRUCT(Blueprintable)
@@ -140,7 +167,7 @@ public:
 	// Actions at Turn End
 
 	UPROPERTY(Replicated, BlueprintReadWrite)
-	TArray<FStructActions> AllPlayerActions;
+	TArray<FStructActiveActions> AllPlayerActions;
 
 	UPROPERTY(Replicated, BlueprintReadWrite)
 	TArray<FStructPassive> AllPlayerPassive;
@@ -202,19 +229,16 @@ protected:
 	// Turns
 
 	UPROPERTY()
-	bool IsInActiveTurn = false;
+	bool bIsInActiveTurn = false;
 
 	UPROPERTY()
-	bool IsReady = false;
+	bool bIsReady = false;
 	
 	// ----------------------------
 	// Actions
 
 	UPROPERTY()
 	EDC_ActionPlayer PlayerAction = EDC_ActionPlayer::None;
-
-	UPROPERTY()
-	bool IsSelectingUnitFromBuilding;
 	
 	// ----------------------------
 	// Pathfinding
@@ -393,6 +417,9 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multi_ActionActiveTurn();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multi_ActionActiveTurnRedo();
+
 	UFUNCTION(Server, Reliable)
 	void Server_CheckPlayerActionPassive();
 
@@ -425,7 +452,7 @@ public:
 	void UpdateWidget3D(int Index, bool bVisibility);
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void ActionMemory(EDC_ActionPlayer Action);
+	void ActionMemory(EDC_ActionType Action);
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void RemoveLastActionMemory();
@@ -471,7 +498,7 @@ public:
 
 		// Hide
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void HiddeWidget();
+	void HideWidget();
 	
 	// ----------------------------
 	// GETTERS
