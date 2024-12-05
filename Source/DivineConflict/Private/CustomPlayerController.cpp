@@ -570,6 +570,13 @@ void ACustomPlayerController::SelectModeMovement()
 
 void ACustomPlayerController::SelectModeAttack()
 {
+	if (!UnitRef)
+		return;
+
+	bool bIsMage = false;
+	if (Cast<AUnit_Child_Mage>(UnitRef))
+		bIsMage = true;
+	
 	bHoveringOverUnit = false;
 	DisplayWidgetHovering();
 	
@@ -579,14 +586,14 @@ void ACustomPlayerController::SelectModeAttack()
 	//si unit has moved
 	if (UnitRef->bHasMoved)
 	{
-		PathReachable = Grid->GridPath->FindPath(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()),FIntPoint(-999,-999),true,2,false, true);
+		PathReachable = Grid->GridPath->FindPath(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()),FIntPoint(-999,-999),true,2 + bIsMage,false, true);
 		Grid->GridVisual->RemoveStateFromTile(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection), EDC_TileState::Hovered);
 		CameraPlayerRef->FullMoveDirection.X = UnitRef->GetFinalGhostMesh()->GetComponentLocation().X;
 		CameraPlayerRef->FullMoveDirection.Y = UnitRef->GetFinalGhostMesh()->GetComponentLocation().Y;
 		CameraPlayerRef->FullMoveDirection.Z = (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
 	} else
 	{
-		PathReachable = Grid->GridPath->FindPath(UnitRef->GetIndexPosition(),FIntPoint(-999,-999),true,2,false, true);
+		PathReachable = Grid->GridPath->FindPath(UnitRef->GetIndexPosition(),FIntPoint(-999,-999),true,2 + bIsMage,false, true);
 	}
 	//set color on grid
 	for(FIntPoint Index : PathReachable)
@@ -917,7 +924,7 @@ void ACustomPlayerController::ServerAttackUnit_Implementation(AUnit* UnitToAttac
 	if(UnitToAttack && UnitAttacking)
 	{
 		UnitAttacking->UnitToAttackRef = UnitToAttack;
-		UnitToAttack->AnimAttack(UnitAttacking);
+		UnitAttacking->AttackUnit(UnitToAttack, true);
 	}
 }
 

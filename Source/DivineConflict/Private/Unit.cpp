@@ -764,18 +764,20 @@ float AUnit::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEve
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
-void AUnit::AttackUnit(AUnit* UnitToAttack)
+void AUnit::AttackUnit(AUnit* UnitToAttack, bool bInitiateAttack)
 {
 	if(UnitToAttack == nullptr || Grid == nullptr || UnitToAttack == this || UnitToAttack->GetCurrentHealth() < 1)
 	{
 		return;
 	}
+
+	if (bInitiateAttack)
+		UnitToAttack->AttackUnit(this, false);
 	
 	if (Grid->GridPath->FindTileNeighbours(GetIndexPosition()).Contains(UnitToAttack->GetIndexPosition())
-		|| UnitToAttack->GetIsGarrison())
+			|| UnitToAttack->GetIsGarrison())
 	{
 		int DamageCaused = 0;
-		int DamageTaken = 0;
 		
 		// Calculate Damage Inflicted
 		if (!Cast<AUnit_Child_Leader>(this))
@@ -786,43 +788,36 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 		if (PlayerOwner == EPlayer::P_Hell && bIsCommandeerBuffed)
 			DamageCaused++;
 
-		// Calculate Damage Taken
-		if (!Cast<AUnit_Child_Leader>(UnitToAttack))
-			DamageTaken = UnitToAttack->GetAttack();
-		else
-			DamageTaken = UnitToAttack->GetAttack() + GetDefense();
-		
-		if (UnitToAttack->PlayerOwner == EPlayer::P_Hell && UnitToAttack->bIsCommandeerBuffed)
-			DamageTaken++;
-
 		// Apply Damage
 		FDamageEvent DamageEvent;
 
 		UnitToAttack->TakeDamage(DamageCaused, DamageEvent, GetInstigatorController(), this);
-		TakeDamage(DamageTaken, DamageEvent, GetInstigatorController(), UnitToAttack);
+
+		// Attack Animation
+		AnimAttack(UnitToAttack);
 		
-		// Check For Death before moving into building
-		if(UnitToAttack->GetCurrentHealth() < 1)
+		// IF YOU INITIATED ATTACK :
+		if (bInitiateAttack)
 		{
-			if (UnitToAttack->BuildingRef)
+			// Check For Death before moving into building
+			if(UnitToAttack->GetCurrentHealth() < 1)
 			{
-				UnitToAttack->BuildingRef->UnitRef = nullptr;
-				UnitToAttack->BuildingRef->GarrisonFull = false;
-				UnitToAttack->SetIsGarrison(false);
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("UnitToAttack->IndexPosition : %s"), *UnitToAttack->IndexPosition.ToString()));
-
-				if (GetCurrentHealth() >= 1)
+				if (UnitToAttack->BuildingRef)
 				{
-					TArray<FIntPoint> MoveInBuilding = {UnitToAttack->IndexPosition};
-					Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
-					InitializeFullMove(MoveInBuilding);
+					UnitToAttack->BuildingRef->UnitRef = nullptr;
+					UnitToAttack->BuildingRef->GarrisonFull = false;
+					UnitToAttack->SetIsGarrison(false);
+				
+					if (GetCurrentHealth() >= 1)
+					{
+						TArray<FIntPoint> MoveInBuilding = {UnitToAttack->IndexPosition};
+						Grid->GridInfo->RemoveUnitInGrid(UnitToAttack);
+						InitializeFullMove(MoveInBuilding);
+						GetWorld()->GetTimerManager().ClearTimer(PlayerControllerRef->TimerActiveEndTurn);
+					}
 				}
-
 			}
 		}
-		
-		//if (PlayerControllerRef)
-		//	PlayerControllerRef->VerifyBuildInteraction();
 	}
 }
 
@@ -854,7 +849,7 @@ void AUnit::AttackBuilding_Implementation(ABuilding* BuildingToAttack)
 	}
 	if (BuildingToAttack->UnitRef)
 		UnitToAttackRef = BuildingToAttack->UnitRef;
-	AnimAttack(UnitToAttackRef);
+	AttackUnit(UnitToAttackRef, true);
 	//if (PlayerControllerRef)
 	//	PlayerControllerRef->VerifyBuildInteraction();
 }
@@ -871,19 +866,13 @@ void AUnit::AnimAttack(AActor* ThingToAttack)
 		0.2,
 		false);
 		
-		if (Cast<AUnit>(ThingToAttack)){
-			AUnit* UnitToAttack = Cast<AUnit>(ThingToAttack);
+		if (AUnit* UnitToAttack = Cast<AUnit>(ThingToAttack))
+		{
 			SetActorLocation(FVector(
 				(UnitLocationInWorld.X + UnitToAttack->UnitMesh->GetComponentLocation().X) / 2,
 				(UnitLocationInWorld.Y + UnitToAttack->UnitMesh->GetComponentLocation().Y) / 2,
 				(UnitLocationInWorld.Z + UnitToAttack->UnitMesh->GetComponentLocation().Z) / 2)
 				);
-			UnitAttackAnimDelegate.BindUFunction(this, "AttackUnit", UnitToAttack);
-			GetWorld()->GetTimerManager().SetTimer(
-				UnitAttackAnimTimer,
-				UnitAttackAnimDelegate,
-				0.1,
-				false);
 		}
 		else
 		{

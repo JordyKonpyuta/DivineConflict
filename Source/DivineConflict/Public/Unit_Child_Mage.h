@@ -18,35 +18,49 @@ class DIVINECONFLICT_API AUnit_Child_Mage : public AUnit
 	// UPROPERTIES
 public:
 	// ----------------------------
-	// Component
+	// --        Component       --
+	// ----------------------------
 	
 	UPROPERTY()
 	TObjectPtr<AProjectile> FireBall;
 	
 protected:
-	
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Stats")
-	TObjectPtr<AUnit> UnitToAttack = nullptr;
-
-	UPROPERTY(Replicated)
-	TObjectPtr<ABase> BaseToAttack = nullptr;
 
 	// UFUNCTIONS
 public:
 	// ----------------------------
-	// Constructor
+	// --       Constructor      --
+	// ----------------------------
 	AUnit_Child_Mage();
 	
 	// ----------------------------
-	// Overrides
+	// --        Override        --
+	// ----------------------------
 
-	void SpecialMage(AActor* Target);
-
+	// Widget
+	
 	virtual void DisplayWidgetTutorial() override;
 
+	// Attacks
+	
+	virtual void AttackUnit(AUnit* UnitToAAttack, bool bInitiateAttack) override;
+
+	virtual void AttackBase(ABase* BaseToAAttack) override;
+
+	virtual void AttackBuilding(ABuilding* BuildingToAttack) override;
+
 protected:
+	
 	// ----------------------------
-	// Overrides
+	// --        Override        --
+	// ----------------------------
 	
 	virtual void BeginPlay() override;
+	
+	// ----------------------------
+	// --           FX           --
+	// ----------------------------
+
+	UFUNCTION()
+	void GenerateFX(AActor* Target);
 };
