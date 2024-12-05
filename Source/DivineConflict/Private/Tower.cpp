@@ -10,6 +10,7 @@
 #include "IMovieSceneTracksModule.h"
 #include "Projectile.h"
 #include "Unit.h"
+#include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
@@ -83,18 +84,15 @@ void ATower::PrepareAttack(AUnit* UnitAttack)
 
 void ATower::AttackUnit(AUnit* UnitToAttacking, ACustomPlayerController* PlayerControllerAttacking)
 {
+	Attack= 5;
+	bCanAttack = true;
 	if (bCanAttack)
 	{
 		Projectile = GetWorld()->SpawnActor<AProjectile>(AProjectile::StaticClass(), GetActorLocation(), GetActorRotation());
 		Projectile->TowerOwner = this;
 		Projectile->MoveProjectile(UnitToAttacking);
-
-		UnitToAttacking->SetCurrentHealth(UnitToAttacking->GetCurrentHealth() - Attack);
-		if(UnitToAttacking->GetCurrentHealth() < 1)
-		{
-			UnitToAttacking->Server_DestroyUnit();
-			UnitToAttacking = nullptr;
-		}
+		
+		UnitToAttacking->TakeDamage(UnitToAttacking->GetDefense() + Attack, FDamageEvent(), PlayerControllerAttacking, this);
 	}
 }
 

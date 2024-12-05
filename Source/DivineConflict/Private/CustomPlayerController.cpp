@@ -1405,53 +1405,57 @@ void ACustomPlayerController::Multi_ActionActiveTurnRedo_Implementation()
 			{
 				switch (AllPlayerActions[0].UnitAction)
 				{
-					case EDC_ActionType::None: // Did Nothing ; shouldn't ever happen
-						break;
-					case EDC_ActionType::UnitMove: // Is the action this turn a movement?
-						if(const TObjectPtr<AUnit> TurnUnitRef = Cast<AUnit>(AllPlayerActions[0].ActorRef))
+				case EDC_ActionType::None: // Did Nothing ; shouldn't ever happen
+					break;
+				case EDC_ActionType::UnitMove: // Is the action this turn a movement?
+					if(const TObjectPtr<AUnit> TurnUnitRef = Cast<AUnit>(AllPlayerActions[0].ActorRef))
+					{
+						ServerMoveUnit(TurnUnitRef);
+						TurnUnitRef->bHasMoved = false;
+					}
+					break;
+				case EDC_ActionType::UnitAttack: // Is the action this turn an attack initiated by a unit?
+					if(const TObjectPtr<AUnit> TurnUnitRef = Cast<AUnit>(AllPlayerActions[0].ActorRef))
+					{
+						switch (AllPlayerActions[0].TargetType)
 						{
-							ServerMoveUnit(TurnUnitRef);
-							TurnUnitRef->bHasMoved = false;
+						case EDC_TargetType::None: // Attacked nothing (Lol. Lmao even. L bozo. Territory Expansion: Ratio)
+							break;
+						case EDC_TargetType::Base: // Attacked the Enemy (hopefully) Base
+							if (ABase* Target = Grid->GetGridData()->Find(AllPlayerActions[0].TargetLocation)->BaseOnTile)
+								AttackBase(Target, TurnUnitRef);
+							break;
+						case EDC_TargetType::Building: // Attacked a Building
+							if (ABuilding* Target = Grid->GetGridData()->Find(AllPlayerActions[0].TargetLocation)->BuildingOnTile)
+								ServerAttackBuilding(Target, TurnUnitRef);
+							break;
+						case EDC_TargetType::Unit: // Attacked another Unit
+							if (AUnit* Target = Grid->GetGridData()->Find(AllPlayerActions[0].TargetLocation)->UnitOnTile)
+								ServerAttackUnit(Target, TurnUnitRef);
+							break;
+						default:; // Nothing ever happens
 						}
-						break;
-					case EDC_ActionType::UnitAttack: // Is the action this turn an attack initiated by a unit?
-						if(const TObjectPtr<AUnit> TurnUnitRef = Cast<AUnit>(AllPlayerActions[0].ActorRef))
-						{
-							switch (AllPlayerActions[0].TargetType)
-							{
-							case EDC_TargetType::None: // Attacked nothing (Lol. Lmao even. L bozo. Territory Expansion: Ratio)
-								break;
-							case EDC_TargetType::Base: // Attacked the Enemy (hopefully) Base
-								if (ABase* Target = Grid->GetGridData()->Find(AllPlayerActions[0].TargetLocation)->BaseOnTile)
-									AttackBase(Target, TurnUnitRef);
-								break;
-							case EDC_TargetType::Building: // Attacked a Building
-								if (ABuilding* Target = Grid->GetGridData()->Find(AllPlayerActions[0].TargetLocation)->BuildingOnTile)
-									ServerAttackBuilding(Target, TurnUnitRef);
-								break;
-							case EDC_TargetType::Unit: // Attacked another Unit
-								if (AUnit* Target = Grid->GetGridData()->Find(AllPlayerActions[0].TargetLocation)->UnitOnTile)
-									ServerAttackUnit(Target, TurnUnitRef);
-								break;
-							default:; // Nothing ever happens
-							}
-							TurnUnitRef->bHasActed = false;
-						}
-						// Restart the action manager in 1 second
-						GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurnRedo, 1.f, false);
+						TurnUnitRef->bHasActed = false;
+					}
+					// Restart the action manager in 1 second
+					GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurnRedo, 1.f, false);
 
-						break;
-					case EDC_ActionType::TowerAttack: // Is the action this turn an attack initiated by a tower?
-						// CODE ACTION : TOWER ATTACKING SOMEONE
-						// (different now that the tower's attack
-						// isn't from a unit that's stored there)
+					break;
+				case EDC_ActionType::TowerAttack: // Is the action this turn an attack initiated by a tower?
+					// CODE ACTION : TOWER ATTACKING SOMEONE
+					if (ATower* TowerAction = Cast<ATower>(AllPlayerActions[0].ActorRef))
+					{
+						if (AUnit* Target = Grid->GetGridData()->Find(AllPlayerActions[0].TargetLocation)->UnitOnTile)
+							ServerAttackTower(TowerAction, Target);
+					}			
+					GetWorld()->GetTimerManager().SetTimer(TimerActiveEndTurn, this, &ACustomPlayerController::Multi_ActionActiveTurnRedo, 1.f, false);
+						
+					break;
+				case EDC_ActionType::DivineAssistance: // Is the action this turn the activation of the Divine Assistance? (Unlikely :p)
+					// CODE ACTION : ACTIVATE DIVINE ASSISTANCE BUFF
 						
 						break;
-					case EDC_ActionType::DivineAssistance: // Is the action this turn the activation of the Divine Assistance? (Unlikely :p)
-						// CODE ACTION : ACTIVATE DIVINE ASSISTANCE BUFF
-						
-						break;
-					default: ;
+				default: ;
 				}
 				AllPlayerActions.RemoveAt(0);	
 			}
