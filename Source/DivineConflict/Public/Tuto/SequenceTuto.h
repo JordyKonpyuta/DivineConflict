@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "SequenceTuto.generated.h"
 
+class ABase;
 class ABuilding;
 class ATutorialGameMode;
 class ACustomGameState;
@@ -31,6 +32,9 @@ public:
 	TObjectPtr<AUnit> UnitKilled = nullptr;
 
 	UPROPERTY()
+	TObjectPtr<AUnit> UnitKilled2 = nullptr;
+
+	UPROPERTY()
 	TObjectPtr<AUnit> UnitPlaying1 = nullptr;
 
 	UPROPERTY()
@@ -45,20 +49,19 @@ public:
 	UPROPERTY()
 	TObjectPtr<ATutorialGameMode> TutorialGameModeRef = nullptr;
 
-	//Timer
-	FTimerHandle StartSequenceTimerHandle;
-
-	// ----------------------------
-	// Sequence 2
-
 	UPROPERTY()
-	int SpawnUnitSequence2 = 0;
-
-	// ----------------------------
-	// Sequence 4
+	int SpawnUnitSequence = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sequence")
-	TObjectPtr<ABuilding> BuildingSequence4 = nullptr;
+	TObjectPtr<ABuilding> BuildingSequence = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sequence")
+	TObjectPtr<ABase> BaseSequence = nullptr;
+
+	//Timer
+	FTimerHandle StartSequenceTimerHandle;
+	
+
 
 	
 public:

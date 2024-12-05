@@ -13,6 +13,8 @@
 // ----------------------------
 	// Overrides
 
+
+
 void ACustomGameState::BeginPlay()
 {
 	Super::BeginPlay();
@@ -248,13 +250,25 @@ void ACustomGameState::ServerDisplayWidget_Implementation()
 	MulticastDisplayWidget();
 }
 
+void ACustomGameState::DisplayEndTutorialWidget_Implementation()
+{
+}
+
 	// ----------------------------
 	// End Game
 
 void ACustomGameState::ServerVictoryScreen_Implementation(EPlayer Loser)
 {
-	MulticastVictoryScreen(Loser);
-	ServerDisplayWidget();
+	
+	if (!GetWorld()->GetMapName().Contains("LVL_Tutorial"))
+	{
+		MulticastVictoryScreen(Loser);
+		ServerDisplayWidget();
+	}
+	else
+	{
+		DisplayEndTutorialWidget();
+	}
 }
 
 void ACustomGameState::MulticastVictoryScreen_Implementation(EPlayer Loser)
