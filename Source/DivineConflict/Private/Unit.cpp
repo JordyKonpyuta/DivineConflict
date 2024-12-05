@@ -790,7 +790,7 @@ void AUnit::AttackUnit(AUnit* UnitToAttack, bool bInitiateAttack)
 			DamageCaused = UnitToAttack->GetDefense() + GetAttack();
 
 		if (PlayerOwner == EPlayer::P_Hell && bIsCommandeerBuffed)
-			DamageCaused++;
+			DamageCaused += 1;
 
 		// Apply Damage
 		FDamageEvent DamageEvent;
