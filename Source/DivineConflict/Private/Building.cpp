@@ -9,6 +9,7 @@
 #include "Grid.h"
 #include "GridInfo.h"
 #include "GridPath.h"
+#include "TutorialGameMode.h"
 #include "Unit_Child_Leader.h"
 #include "Unit_Child_Warrior.h"
 #include "Unit_Child_Mage.h"
@@ -357,6 +358,8 @@ void ABuilding::Multi_SwitchOwner_Implementation(ACustomPlayerState* NewOwner)
 	{
 	case EPlayer::P_Hell:
 		StaticMeshBuilding->SetMaterial(0, AllMaterials[2]);
+		if (NewOwner->bIsInTutorial == true && GarrisonFull)
+			GetWorld()->GetAuthGameMode<ATutorialGameMode>()->DisplayTutorialWidget(7);
 		break;
 	case EPlayer::P_Heaven:
 		StaticMeshBuilding->SetMaterial(0, AllMaterials[1]);

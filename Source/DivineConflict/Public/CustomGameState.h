@@ -143,9 +143,6 @@ public:
 	
 	UFUNCTION(Server, Reliable)
 	void ServerDisplayWidget();
-
-	UFUNCTION(BlueprintNativeEvent)
-	void DisplayEndTutorialWidget();
 	
 	// ----------------------------
 	// --        End Game        --
