@@ -8,6 +8,7 @@
 #include "CustomPlayerState.h"
 #include "Grid.h"
 #include "GridInfo.h"
+#include "GridPath.h"
 #include "Projectile.h"
 #include "TutorialGameMode.h"
 #include "Engine/DamageEvents.h"
@@ -56,16 +57,6 @@ AUnit_Child_Mage::AUnit_Child_Mage()
 }
 
 	// ----------------------------
-	// Replications
-
-void AUnit_Child_Mage::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AUnit_Child_Mage, UnitToAttack);
-	DOREPLIFETIME(AUnit_Child_Mage, BaseToAttack);
-}
-
-	// ----------------------------
 	// Overrides
 
 void AUnit_Child_Mage::BeginPlay()
@@ -101,43 +92,17 @@ void AUnit_Child_Mage::BeginPlay()
 	}
 }
 
-void AUnit_Child_Mage::SpecialMage(AActor* Target)
+void AUnit_Child_Mage::GenerateFX(AActor* Target)
 {
-	if (Target)
-	{
-		float NewRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Target->GetActorLocation()).Yaw;
-		NewRot = UKismetMathLibrary::GridSnap_Float(NewRot, 45) - 90;
-		UnitRotation = FRotator(0, NewRot, 0);
+	float NewRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Target->GetActorLocation()).Yaw;
+	NewRot = UKismetMathLibrary::GridSnap_Float(NewRot, 45) - 90;
+	UnitRotation = FRotator(0, NewRot, 0);
 		
-		FireBall = GetWorld()->SpawnActor<AProjectile>(AProjectile::StaticClass(), GetActorLocation(), GetActorRotation());
-		FireBall->UnitOwner = this;
-		FireBall->IsMageAttack = true;
-		FireBall->Server_CreateProjectile();
-		FireBall->MoveProjectile(Target);
-		if(ABase* BaseAttack = Cast<ABase>(Target))
-		{
-			FDamageEvent DamageEvent;
-			BaseAttack->TakeDamage(5.f, DamageEvent, nullptr, this);
-		}
-		if(AUnit* UnitAttack = Cast<AUnit>(Target))
-		{
-			FDamageEvent DamageEvent;
-			UnitAttack->TakeDamage(UnitAttack->GetDefense() + 5, DamageEvent, nullptr, this);
-
-			if(UnitAttack->GetCurrentHealth() <= 0)
-			{
-				if (UnitAttack->GetIsGarrison())
-				{
-					UnitAttack->GetBuildingRef()->UnitRef = nullptr;
-					UnitAttack->GetBuildingRef()->GarrisonFull = false;
-					UnitAttack->SetIsGarrison(false);
-				}
-				Grid->GridInfo->RemoveUnitInGrid(UnitAttack);
-				PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->SetUnits(PlayerControllerRef->GetPlayerState<ACustomPlayerState>()->GetUnits() - 1);
-				GetWorld()->DestroyActor(UnitAttack);
-			}
-		}
-	}
+	FireBall = GetWorld()->SpawnActor<AProjectile>(AProjectile::StaticClass(), GetActorLocation(), GetActorRotation());
+	FireBall->UnitOwner = this;
+	FireBall->IsMageAttack = true;
+	FireBall->Server_CreateProjectile();
+	FireBall->MoveProjectile(Target);
 }
 
 void AUnit_Child_Mage::DisplayWidgetTutorial()
@@ -145,4 +110,78 @@ void AUnit_Child_Mage::DisplayWidgetTutorial()
 	Super::DisplayWidgetTutorial();
 	if (!GetWorld()->GetAuthGameMode<ATutorialGameMode>()->bIsDead)
 		GetWorld()->GetAuthGameMode<ATutorialGameMode>()->DisplayTutorialWidget(4);
+}
+
+void AUnit_Child_Mage::AttackUnit(AUnit* UnitToAttack, bool bInitiateAttack)
+{
+	if(UnitToAttack == nullptr || Grid == nullptr || UnitToAttack == this || UnitToAttack->GetCurrentHealth() < 1)
+	{
+		return;
+	}
+
+	// If initiated attack: make sure the other attacks you
+	if (bInitiateAttack)
+		UnitToAttack->AttackUnit(this, false);
+	
+	// Fireball FX
+	GenerateFX(UnitToAttack);
+
+	// Damage Dealing
+	FDamageEvent DamageEvent;
+
+	// Damages Others
+	UnitToAttack->TakeDamage(UnitToAttack->GetDefense() + 5, DamageEvent, nullptr, this);
+	
+	// Check if Building is right next to Unit
+	bool bNextToYou = false;
+	for (const FIntPoint Index : Grid->GridPath->FindTileNeighbours(GetIndexPosition()))
+	{
+		if (Grid->GetGridData()->Find(Index)->BuildingOnTile)
+			bNextToYou = true;
+	}
+
+	if (	bInitiateAttack
+		&&	bNextToYou
+		&&	UnitToAttack->GetCurrentHealth() <= 0
+		&&	UnitToAttack->GetIsGarrison()
+			)
+	{
+		UnitToAttack->GetBuildingRef()->UnitRef = nullptr;
+		UnitToAttack->GetBuildingRef()->GarrisonFull = false;
+		UnitToAttack->SetIsGarrison(false);
+	}
+}
+
+void AUnit_Child_Mage::AttackBase(ABase* BaseToAttack)
+{
+	if (BaseToAttack == nullptr || Grid == nullptr)
+	{
+		return;
+	}
+	
+	// FireFall FX
+	float NewRot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), BaseToAttack->GetActorLocation()).Yaw;
+	NewRot = UKismetMathLibrary::GridSnap_Float(NewRot, 45) - 90;
+	UnitRotation = FRotator(0, NewRot, 0);
+		
+	FireBall = GetWorld()->SpawnActor<AProjectile>(AProjectile::StaticClass(), GetActorLocation(), GetActorRotation());
+	FireBall->UnitOwner = this;
+	FireBall->IsMageAttack = true;
+	FireBall->Server_CreateProjectile();
+	FireBall->MoveProjectile(BaseToAttack);
+
+	// Damage Dealing
+	const FDamageEvent DamageEvent;
+	BaseToAttack->TakeDamage(5.f, DamageEvent, nullptr, this);
+}
+
+void AUnit_Child_Mage::AttackBuilding(ABuilding* BuildingToAttack)
+{
+	if (BuildingToAttack == nullptr || Grid == nullptr)
+	{
+		return;
+	}
+	if (BuildingToAttack->UnitRef)
+		UnitToAttackRef = BuildingToAttack->UnitRef;
+	AttackUnit(UnitToAttackRef, true);
 }

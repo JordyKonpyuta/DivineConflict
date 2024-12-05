@@ -143,10 +143,10 @@ public:
 	FIntPoint FutureMovementPos = FIntPoint(-999, -999);
 	
 	UPROPERTY(Replicated)
-	TArray<FIntPoint> FutureMovement = {FIntPoint(-999,-999)};
+	TArray<FIntPoint> FutureMovement = {0};
 	
 	UPROPERTY(Replicated)
-	TArray<FIntPoint> PathToCross = {FIntPoint(-999,-999)};
+	TArray<FIntPoint> PathToCross = {0};
 
 	// ----------------------------
 	// --   Movements - General  --
@@ -285,7 +285,7 @@ protected:
 	FIntPoint IndexPosition = FIntPoint(-999, -999);
 
 	UPROPERTY()
-	TArray<FIntPoint> Path = {FIntPoint(-999,-999)};
+	TArray<FIntPoint> Path = {0};
 	
 	// ----------------------------
 	// --         Ghosts         --
@@ -392,13 +392,13 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	
 	UFUNCTION(BlueprintCallable)
-	void AttackUnit(AUnit* UnitToAttack);
+	virtual void AttackUnit(AUnit* UnitToAttack, bool bInitiateAttack);
 
 	UFUNCTION(BlueprintCallable,Server,Reliable)
-	void AttackBase(ABase* BaseToAttack);
+	virtual void AttackBase(ABase* BaseToAttack);
 
 	UFUNCTION(BlueprintCallable,Server,Reliable)
-	void AttackBuilding(ABuilding* BuildingToAttack);
+	virtual void AttackBuilding(ABuilding* BuildingToAttack);
 	
 	UFUNCTION()
 	void AnimAttack(AActor* ThingToAttack);

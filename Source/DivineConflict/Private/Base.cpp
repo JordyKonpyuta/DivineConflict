@@ -236,7 +236,14 @@ void ABase::MulticastCheckIfDead_Implementation(int H)
 {
 	if (H <= 0)
 	{
-		GetWorld()->GetGameState<ACustomGameState>()->ServerVictoryScreen(PlayerOwner);
+		if(!PlayerStateRef)
+			SetPlayerState();
+		
+		if(PlayerStateRef)
+		{
+			if (PlayerStateRef->bIsInTutorial) OnDeath();
+			else GetWorld()->GetGameState<ACustomGameState>()->ServerVictoryScreen(PlayerOwner);
+		}
 	}	
 }
 

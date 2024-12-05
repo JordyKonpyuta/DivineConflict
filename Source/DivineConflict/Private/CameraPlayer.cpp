@@ -10,6 +10,7 @@
 #include "GridVisual.h"
 #include "ScreenPass.h"
 #include "Unit.h"
+#include "Unit_Child_Mage.h"
 #include "Unit_Child_Warrior.h"
 #include "DSP/WaveTableOsc.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -247,42 +248,92 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 		}
 		else if (IsAttacking)
 		{
+			bool bIsMage = false;
+			if (Cast<AUnit_Child_Mage>(CustomPlayerController->UnitRef))
+				bIsMage = true;
+			
 			TArray<FIntPoint> AllReachable = CustomPlayerController->GetPathReachable();
-			if (!CustomPlayerController->UnitRef->bHasMoved)
-			{
-				if (AllReachable.Contains(CustomPlayerController->Grid->ConvertLocationToIndex(CustomPlayerController->UnitRef->GetActorLocation() + MoveDirection)))
+
+			if (!bIsMage){
+				if (!CustomPlayerController->UnitRef->bHasMoved)
 				{
-					CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection), EDC_TileState::Hovered);
-					if (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0)))->BuildingOnTile)
+					if (AllReachable.Contains(CustomPlayerController->Grid->ConvertLocationToIndex(CustomPlayerController->UnitRef->GetActorLocation() + MoveDirection)))
 					{
-						FullMoveDirection = CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0)))->BuildingOnTile->GetActorLocation();
-						FullMoveDirection.Z = (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 275;
+						CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection), EDC_TileState::Hovered);
+						if (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0)))->BuildingOnTile)
+						{
+							FullMoveDirection = CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0)))->BuildingOnTile->GetActorLocation();
+							FullMoveDirection.Z = (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 275;
+						}
+						else
+						{
+							FullMoveDirection = CustomPlayerController->UnitRef->GetActorLocation() + FVector(MoveDirection.X,MoveDirection.Y, 0);
+							FullMoveDirection.Z = (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
+							CustomPlayerController->Grid->GridVisual->AddStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection), EDC_TileState::Hovered);
+						}
 					}
-					else
+				}
+				else
+				{
+					if (AllReachable.Contains(CustomPlayerController->Grid->ConvertLocationToIndex(CustomPlayerController->UnitRef->GetFinalGhostMesh()->GetComponentLocation() + MoveDirection)))
 					{
-						FullMoveDirection = CustomPlayerController->UnitRef->GetActorLocation() + FVector(MoveDirection.X,MoveDirection.Y, 0);
-						FullMoveDirection.Z = (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
-						CustomPlayerController->Grid->GridVisual->AddStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection), EDC_TileState::Hovered);
-					}
+						CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection), EDC_TileState::Hovered);
+						if (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0)))->BuildingOnTile)
+						{
+							FullMoveDirection = CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0)))->BuildingOnTile->GetActorLocation();
+							FullMoveDirection.Z = (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 275;
+						}
+						else
+						{
+							FullMoveDirection = CustomPlayerController->UnitRef->GetFinalGhostMesh()->GetComponentLocation() + FVector(MoveDirection.X,MoveDirection.Y, 0);
+							FullMoveDirection.Z = (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
+							CustomPlayerController->Grid->GridVisual->AddStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection), EDC_TileState::Hovered);
+						}
+					}	
 				}
 			}
 			else
 			{
-				if (AllReachable.Contains(CustomPlayerController->Grid->ConvertLocationToIndex(CustomPlayerController->UnitRef->GetFinalGhostMesh()->GetComponentLocation() + MoveDirection)))
+				if (!CustomPlayerController->UnitRef->bHasMoved)
 				{
-					CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection), EDC_TileState::Hovered);
-					if (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0)))->BuildingOnTile)
+					if (AllReachable.Contains(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection)))
 					{
-						FullMoveDirection = CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0)))->BuildingOnTile->GetActorLocation();
-						FullMoveDirection.Z = (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 275;
+						CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection), EDC_TileState::Hovered);
+						if (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0)))->BuildingOnTile)
+						{
+							FullMoveDirection = CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0)))->BuildingOnTile->GetActorLocation();
+							FullMoveDirection.Z = (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 275;
+						}
+						else
+						{
+							FullMoveDirection = OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0);
+							if (FullMoveDirection.X == CustomPlayerController->UnitRef->GetActorLocation().X && FullMoveDirection.Y == CustomPlayerController->UnitRef->GetActorLocation().Y)
+								FullMoveDirection += FVector(MoveDirection.X,MoveDirection.Y, 0);
+							FullMoveDirection.Z = (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
+							CustomPlayerController->Grid->GridVisual->AddStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection), EDC_TileState::Hovered);
+						}
 					}
-					else
+				}
+				else
+				{
+					if (AllReachable.Contains(CustomPlayerController->Grid->ConvertLocationToIndex(CustomPlayerController->UnitRef->GetFinalGhostMesh()->GetComponentLocation() + MoveDirection)))
 					{
-						FullMoveDirection = CustomPlayerController->UnitRef->GetFinalGhostMesh()->GetComponentLocation() + FVector(MoveDirection.X,MoveDirection.Y, 0);
-						FullMoveDirection.Z = (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
-						CustomPlayerController->Grid->GridVisual->AddStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection), EDC_TileState::Hovered);
-					}
-				}	
+						CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection), EDC_TileState::Hovered);
+						if (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0)))->BuildingOnTile)
+						{
+							FullMoveDirection = CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0)))->BuildingOnTile->GetActorLocation();
+							FullMoveDirection.Z = (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 275;
+						}
+						else
+						{
+							FullMoveDirection = CustomPlayerController->UnitRef->GetFinalGhostMesh()->GetComponentLocation() + FVector(MoveDirection.X,MoveDirection.Y, 0);
+							if (FullMoveDirection.X == CustomPlayerController->UnitRef->GetActorLocation().X && FullMoveDirection.Y == CustomPlayerController->UnitRef->GetActorLocation().Y)
+								FullMoveDirection += FVector(MoveDirection.X,MoveDirection.Y, 0);
+							FullMoveDirection.Z = (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
+							CustomPlayerController->Grid->GridVisual->AddStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection), EDC_TileState::Hovered);
+						}
+					}	
+				}
 			}
 		}
 		else if (IsTowering || IsSpelling)
