@@ -820,11 +820,6 @@ void AUnit::AttackUnit(AUnit* UnitToAttack)
 
 			}
 		}
-		else if (UnitToAttack->GetCurrentHealth() > 0 && PlayerControllerRef->PlayerStateRef->bIsInTutorial)
-		{
-			PlayerControllerRef->FailedTutorial();
-			GetWorld()->GetAuthGameMode<ATutorialGameMode>()->bIsDead = true;
-		}
 		
 		//if (PlayerControllerRef)
 		//	PlayerControllerRef->VerifyBuildInteraction();
