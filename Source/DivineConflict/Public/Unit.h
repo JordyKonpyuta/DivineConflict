@@ -134,6 +134,10 @@ public:
 
 	UPROPERTY(Replicated)
 	int MoveSequencePos = 0;
+
+	// Theoretical Damage taken this turn
+	UPROPERTY(BlueprintReadWrite, Blueprintable, Replicated)
+	int TheoreticalDamage = 0;
 	
 	// ----------------------------
 	// -- Movements - FIntPoints --
