@@ -262,6 +262,9 @@ void ACustomPlayerController::ControllerInteraction()
 					PlayerAction = EDC_ActionPlayer::None;
 					PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() - 1);
 					TowerRef->SetCanAttack(false);
+
+					// Add Theoretical Damage to Unit
+					Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->AllDamageInflicted.Add(TowerRef->GetAttack());
 				}
 				CameraPlayerRef->IsTowering = false;
 			}
@@ -277,6 +280,9 @@ void ACustomPlayerController::ControllerInteraction()
 						if (Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetPlayerOwner() != PlayerStateRef->PlayerTeam)
 						{
 							AllPlayerActions.Add(FStructActiveActions(UnitRef, EDC_ActionType::UnitAttack, EDC_TargetType::Unit, PlayerPositionInGrid));
+							
+							// Add Theoretical Damage to Unit
+							Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->AllDamageInflicted.Add(UnitRef->GetAttack() - Grid->GetGridData()->Find(PlayerPositionInGrid)->UnitOnTile->GetDefense());
 						}
 					}
 					// Are we attacking a Building?
@@ -287,6 +293,9 @@ void ACustomPlayerController::ControllerInteraction()
 							if(Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->GetActorLocation()))->BuildingOnTile->GarrisonFull)
 							{
 								AllPlayerActions.Add(FStructActiveActions(UnitRef, EDC_ActionType::UnitAttack, EDC_TargetType::Building, PlayerPositionInGrid));
+
+								// Add Theoretical Damage to Unit
+								Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef->AllDamageInflicted.Add(UnitRef->GetAttack() - Grid->GetGridData()->Find(PlayerPositionInGrid)->BuildingOnTile->UnitRef->GetDefense());
 							}
 						}
 					}
@@ -1245,9 +1254,13 @@ void ACustomPlayerController::Multi_CancelLastAction_Implementation()
 				RemoveLastActionMemory();
 				ActorThatStops->Multi_CancelAttack();
 				PlayerStateRef->SetActionPoints(PlayerStateRef->GetActionPoints() + 1);
+				if (TObjectPtr<AUnit> UnitToActOn = Grid->GetGridData()->Find(AllPlayerActions.Last().TargetLocation)->UnitOnTile)
+					UnitToActOn->AllDamageInflicted.RemoveAt(UnitToActOn->AllDamageInflicted.Num() - 1);
 				break;
 			case EDC_ActionType::TowerAttack:
 				// CODE CANCEL FOR TOWER ATTACK
+				if (TObjectPtr<AUnit> UnitToActOn = Grid->GetGridData()->Find(AllPlayerActions.Last().TargetLocation)->UnitOnTile)
+					UnitToActOn->AllDamageInflicted.RemoveAt(UnitToActOn->AllDamageInflicted.Num() - 1);
 				break;
 			case EDC_ActionType::DivineAssistance:
 				// CODE CANCEL FOR DIVINE ASSISTANCE

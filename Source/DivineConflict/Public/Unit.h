@@ -88,7 +88,7 @@ public:
 	// --          Enums         --
 	// ----------------------------
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Blueprintable)
 	EUnitName UnitName = EUnitName::None;
 	
 	// ----------------------------
@@ -137,7 +137,7 @@ public:
 
 	// Theoretical Damage taken this turn
 	UPROPERTY(BlueprintReadWrite, Blueprintable, Replicated)
-	int TheoreticalDamage = 0;
+	TArray<int> AllDamageInflicted = {0};
 	
 	// ----------------------------
 	// -- Movements - FIntPoints --

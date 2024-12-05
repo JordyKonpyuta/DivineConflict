@@ -180,6 +180,8 @@ void AUnit::BeginPlay()
 			BuildingRef->UnitRef = this;
 		}
 	}
+
+	AllDamageInflicted.Empty();
 }
 
 void AUnit::Tick(float DeltaTime)
@@ -208,6 +210,7 @@ void AUnit::Tick(float DeltaTime)
 void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProps) const{
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(AUnit, AllDamageInflicted);
 	DOREPLIFETIME(AUnit, bJustBecameGarrison);
 	DOREPLIFETIME(AUnit, bBuffTank);
 	DOREPLIFETIME(AUnit, bFirstActionIsMove);
@@ -227,7 +230,6 @@ void AUnit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutLifetimeProp
 	DOREPLIFETIME(AUnit, PlayerControllerRef);
 	DOREPLIFETIME(AUnit, PlayerOwner);
 	DOREPLIFETIME(AUnit, PM);
-	DOREPLIFETIME(AUnit, TheoreticalDamage);
 	DOREPLIFETIME(AUnit, UnitMesh);
 	DOREPLIFETIME(AUnit, UnitRotation);
 
@@ -341,7 +343,7 @@ void AUnit::NewTurn()
 	SetIsSelected(false);
 	bIsClimbing = false;
 	SetBuffTank(false);
-	TheoreticalDamage = 0;
+	AllDamageInflicted.Empty();
 
 	if (PlayerControllerRef)
 		if (GetPlayerOwner() == EPlayer::P_Heaven && bIsCommandeerBuffed && PlayerControllerRef->PlayerStateRef->bIsActiveTurn)
