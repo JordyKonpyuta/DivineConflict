@@ -150,7 +150,7 @@ public:
 	 * @return 
 	 */
 	UFUNCTION()
-	TArray<FIntPoint> FindPath(FIntPoint Start, FIntPoint End = FIntPoint(-999,-999) , bool bReachable, int PathLenght, bool bSpellMage, bool bCanAttacked, bool bMoveWarrior);
+	TArray<FIntPoint> FindPath(FIntPoint Start, FIntPoint End = FIntPoint(-999,-999) , bool bReachable = true, int PathLenght = 0, bool bSpellMage = false, bool bCanAttacked = false, bool bMoveWarrior = false);
 
 
 	TArray<FIntPoint> NewFindPath(FIntPoint Start, ACustomPlayerController* CPC);
