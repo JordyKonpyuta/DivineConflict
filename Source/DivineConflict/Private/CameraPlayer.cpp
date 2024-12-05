@@ -316,7 +316,7 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 				}
 				else
 				{
-					if (AllReachable.Contains(CustomPlayerController->Grid->ConvertLocationToIndex(CustomPlayerController->UnitRef->GetFinalGhostMesh()->GetComponentLocation() + MoveDirection)))
+					if (AllReachable.Contains(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + MoveDirection)))
 					{
 						CustomPlayerController->Grid->GridVisual->RemoveStateFromTile(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection), EDC_TileState::Hovered);
 						if (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0)))->BuildingOnTile)
@@ -326,8 +326,8 @@ void ACameraPlayer::MoveCamera( /*/const FInputActionValue& Value*/)
 						}
 						else
 						{
-							FullMoveDirection = CustomPlayerController->UnitRef->GetFinalGhostMesh()->GetComponentLocation() + FVector(MoveDirection.X,MoveDirection.Y, 0);
-							if (FullMoveDirection.X == CustomPlayerController->UnitRef->GetActorLocation().X && FullMoveDirection.Y == CustomPlayerController->UnitRef->GetActorLocation().Y)
+							FullMoveDirection = OldMoveDirection + FVector(MoveDirection.X,MoveDirection.Y, 0);
+							if (FullMoveDirection.X == CustomPlayerController->UnitRef->GetFinalGhostMesh()->GetComponentLocation().X && FullMoveDirection.Y == CustomPlayerController->UnitRef->GetFinalGhostMesh()->GetComponentLocation().Y)
 								FullMoveDirection += FVector(MoveDirection.X,MoveDirection.Y, 0);
 							FullMoveDirection.Z = (CustomPlayerController->Grid->GetGridData()->Find(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
 							CustomPlayerController->Grid->GridVisual->AddStateToTile(CustomPlayerController->Grid->ConvertLocationToIndex(FullMoveDirection), EDC_TileState::Hovered);
