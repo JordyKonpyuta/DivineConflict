@@ -176,14 +176,14 @@ bool AGrid::IsTileWalkable(FIntPoint Index,bool Attacking)
 
 bool AGrid::IsTileTypeWalkable(EDC_TileType Type)
 {
-	TArray<EDC_TileType> WalkableTypes = { EDC_TileType::None, EDC_TileType::Obstacle, EDC_TileType::Gate };
+	TArray<EDC_TileType> WalkableTypes = { EDC_TileType::None, EDC_TileType::Obstacle, EDC_TileType::Gate, EDC_TileType::Tower };
 
 	return !WalkableTypes.Contains(Type);
 }
 
 bool AGrid::CanAttackTileType(EDC_TileType Type)
 {
-	TArray<EDC_TileType> WalkableTypes = { EDC_TileType::None, EDC_TileType::Obstacle};
+	TArray<EDC_TileType> WalkableTypes = { EDC_TileType::None, EDC_TileType::Obstacle , EDC_TileType::Tower};
 
 	return !WalkableTypes.Contains(Type);
 }

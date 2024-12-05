@@ -122,12 +122,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AttackUnit(AUnit* UnitAttacking, ACustomPlayerController* PlayerControllerAttacking);
-
-	// ----------------------------
-	// Visuals
-
-	UFUNCTION(BlueprintCallable)
-	void UpdateVisuals();
 	
 	// ----------------------------
 	// Tower Upgrade

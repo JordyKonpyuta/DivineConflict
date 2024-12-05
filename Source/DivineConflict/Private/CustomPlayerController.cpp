@@ -595,14 +595,14 @@ void ACustomPlayerController::SelectModeAttack()
 	//si unit has moved
 	if (UnitRef->bHasMoved)
 	{
-		PathReachable = Grid->GridPath->FindPath(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()),FIntPoint(-999,-999),true,2 + bIsMage,false, true);
+		PathReachable = Grid->GridPath->FindPath(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()),FIntPoint(-999,-999),true,2 + bIsMage,bIsMage, true,false);
 		Grid->GridVisual->RemoveStateFromTile(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection), EDC_TileState::Hovered);
 		CameraPlayerRef->FullMoveDirection.X = UnitRef->GetFinalGhostMesh()->GetComponentLocation().X;
 		CameraPlayerRef->FullMoveDirection.Y = UnitRef->GetFinalGhostMesh()->GetComponentLocation().Y;
 		CameraPlayerRef->FullMoveDirection.Z = (Grid->GetGridData()->Find(Grid->ConvertLocationToIndex(CameraPlayerRef->FullMoveDirection))->TileTransform.GetLocation().Z * 0.8) + 175;
 	} else
 	{
-		PathReachable = Grid->GridPath->FindPath(UnitRef->GetIndexPosition(),FIntPoint(-999,-999),true,2 + bIsMage,false, true);
+		PathReachable = Grid->GridPath->FindPath(UnitRef->GetIndexPosition(),FIntPoint(-999,-999),true,2 + bIsMage,bIsMage, true,false);
 	}
 	//set color on grid
 	for(FIntPoint Index : PathReachable)
@@ -618,7 +618,7 @@ void ACustomPlayerController::SelectModeAttackBuilding()
 	DisplayWidgetHovering();
 	
 	PlayerAction = EDC_ActionPlayer::AttackBuilding;
-	PathReachable = Grid->GridPath->FindPath(TowerRef->GetGridPosition(),FIntPoint(-999,-999),true,3,false, false);
+	PathReachable = Grid->GridPath->FindPath(TowerRef->GetGridPosition(),FIntPoint(-999,-999),true,4,true, false, false);
 	for(FIntPoint Index : PathReachable)
 	{
 		Grid->GridVisual->AddStateToTile(Index, EDC_TileState::Attacked);
@@ -1562,18 +1562,21 @@ void ACustomPlayerController::FindReachableTiles()
 	if(Grid)
 		if(UnitRef)
 		{
-			AUnit_Child_Warrior* TempWarriorRef = Cast<AUnit_Child_Warrior>(UnitRef);
-			if (UnitRef->bHasActed && TempWarriorRef && UnitRef->GetFinalGhostMesh()->IsVisible())
-			{
-				PathReachable = Grid->GridPath->NewFindPath(Grid->ConvertLocationToIndex(UnitRef->GetFinalGhostMesh()->GetComponentLocation()), this);
-			}
-			else if(UnitRef->GetIsGarrison())
+			bool bIsWarrior = false;
+			if (Cast<AUnit_Child_Warrior>(UnitRef))
+				bIsWarrior = true;
+
+			if (UnitRef->GetIsGarrison())
 			{
 				if (UnitRef->GetBuildingRef())
 					PathReachable = UnitRef->GetBuildingRef()->MovementOptions;
 			}
 			else
-				PathReachable = Grid->GridPath->NewFindPath(Grid->ConvertLocationToIndex(UnitRef->GetActorLocation()), this);
+			{
+				PathReachable = Grid->GridPath->FindPath(Grid->ConvertLocationToIndex(UnitRef->GetActorLocation()), FIntPoint(-999,-999),
+					true, UnitRef->GetPM(), false, false, bIsWarrior);
+			}
+			
 
 			for(FIntPoint Index : PathReachable)
 			{

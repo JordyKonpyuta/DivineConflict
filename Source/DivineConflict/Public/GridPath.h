@@ -62,10 +62,13 @@ protected:
 	bool bIsReachable = false;
 	
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
-	bool bIsEscalation = false;
+	bool bIsSpellMage = false;
 
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
 	bool bCanBeAttacked = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Grid", meta = (AllowPrivate = "true"))
+	bool bIsMoveWarrior = false;
 	
 	// ----------------------------
 	// --     Movement Output    --
@@ -136,23 +139,21 @@ public:
 	// --  Generate Pathfinding  --
 	// ----------------------------
 
-	//Pathfinding and Path Reachable
+	/**
+	 * @param Start Starting Position
+	 * @param End Ending Position
+	 * @param bReachable if we don't need to reach the end
+	 * @param PathLenght Lenght of the Path
+	 * @param bSpellMage if is a spell mage
+	 * @param bCanAttacked if it can be attacked
+	 * @param bMoveWarrior if is a warrior movement
+	 * @return 
+	 */
 	UFUNCTION()
-	TArray<FIntPoint> FindPath(FIntPoint Start, FIntPoint End , bool bReachable, int PathLenght, bool bEscalation, bool bAttackable);
-	
-	// ----------------------------
-	// --      Path Reachable    --
-	// ----------------------------
+	TArray<FIntPoint> FindPath(FIntPoint Start, FIntPoint End = FIntPoint(-999,-999) , bool bReachable, int PathLenght, bool bSpellMage, bool bCanAttacked, bool bMoveWarrior);
 
-	UFUNCTION()
-	TArray<FIntPoint> NewFindPath(FIntPoint Start, ACustomPlayerController* CustomPlayerController);
-	
-	// ----------------------------
-	// --  Path Reachable - Mage --
-	// ----------------------------
 
-	UFUNCTION()
-	TArray<FIntPoint> NewFindPathSpMage(FIntPoint Start, ACustomPlayerController* CustomPlayerController);
+	TArray<FIntPoint> NewFindPath(FIntPoint Start, ACustomPlayerController* CPC);
 	
 	// ---------------------------- //
 	// --         SETTERS        -- //

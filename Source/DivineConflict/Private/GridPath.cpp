@@ -160,10 +160,7 @@ bool UGridPath::IsValidHeight(FDC_TileData* IndexTestData, FDC_TileData* Current
 
 bool UGridPath::IsValidHeightWarrior(FDC_TileData* IndexTestData, FDC_TileData* CurrentIndexData)
 {
-	if (IndexTestData->TileTransform.GetLocation().Z - CurrentIndexData->TileTransform.GetLocation().Z >= -100/0.9 && IndexTestData->TileTransform.GetLocation().Z - CurrentIndexData->TileTransform.GetLocation().Z <= 100/0.9)
-		return true;
-	
-	return false;
+	return FMath::Abs(IndexTestData->TileTransform.GetLocation().Z - CurrentIndexData->TileTransform.GetLocation().Z) <= (100/0.9);
 }
 
 	// ----------------------------
@@ -244,14 +241,21 @@ TArray<FPathData> UGridPath::GetValidTileNeighbours(FIntPoint Index)
 				continue;
 			}
 		}
+		
+		//check if the heigh is valid
 
-		if(NeighborTileData->TileType == EDC_TileType::Climbable && bIsEscalation)
+		if (bIsSpellMage)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Climbable"));
 			Ret.Add(FPathData(NeighborTileData->TilePosition,1,99999,99999));
 		}
-		//check if the heigh is valid
-		if (IsValidHeight(NeighborTileData, TileData))
+		else if (bIsMoveWarrior)
+		{
+			if (IsValidHeightWarrior(NeighborTileData, TileData))
+			{
+				Ret.Add(FPathData(NeighborTileData->TilePosition,1,99999,99999));
+			}
+		}
+		else if (IsValidHeight(NeighborTileData, TileData))
 		{
 			Ret.Add(FPathData(NeighborTileData->TilePosition,1,99999,99999));
 		}
@@ -300,16 +304,17 @@ void UGridPath::ClearGeneratedPath()
 	// ----------------------------
 	// Movement
 
-TArray<FIntPoint> UGridPath::FindPath(FIntPoint Start, FIntPoint End, bool bReachable, int PathLenght,	bool bEscalation, bool bAttackable)
+TArray<FIntPoint> UGridPath::FindPath(FIntPoint Start, FIntPoint End, bool bReachable, int PathLenght,	bool bSpellMage, bool bAttackable, bool bMoveWarrior)
 {
 	//initialize the path
 	StartPoint = Start;
 	EndPoint = End;
 	bIsReachable = bReachable;
 	MaxLenght = PathLenght;
-	bIsEscalation = bEscalation;
+	bIsSpellMage = bSpellMage;
 	bCanBeAttacked = bAttackable;
-
+	bIsMoveWarrior = bMoveWarrior;
+	
 	ClearGeneratedPath();
 
 	//check if the input data is valid
@@ -427,45 +432,6 @@ TArray<FIntPoint> UGridPath::NewFindPath(FIntPoint Start, ACustomPlayerControlle
 		}
 	}
 	
-	AllMoveCases += NewCases;
-	return AllMoveCases;
-}
-
-TArray<FIntPoint> UGridPath::NewFindPathSpMage(FIntPoint Start, ACustomPlayerController* CustomPlayerController)
-{
-	TArray<FIntPoint> AllMoveCases = {Start};
-	TArray<FIntPoint> NewCases = {Start};
-
-	TArray<FIntPoint> NewNewCases;
-	int AllMovement = 2;
-
-
-	for (int i = 0; i < AllMovement; i++)
-	{
-		for (FIntPoint CaseToCheck : NewCases)
-		{
-			for (FIntPoint NeighbourToCheck : Grid->GridPath->FindTileNeighbours(CaseToCheck))
-			{
-				if (AllMoveCases.Find(NeighbourToCheck)
-					&& Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile)
-				{
-					AllMoveCases += CustomPlayerController->Grid->GetGridData()->Find(NeighbourToCheck)->BuildingOnTile->SpawnLocRef;
-				}
-				else if (AllMoveCases.Find(NeighbourToCheck)
-					&& Grid->IsTileWalkable(NeighbourToCheck,true))
-				{
-					NewNewCases.Add(NeighbourToCheck);
-				}
-				else
-				{
-				}
-			}
-		}
-		AllMoveCases += NewCases;
-		NewCases = NewNewCases;
-		NewNewCases.Empty();
-	}
-
 	AllMoveCases += NewCases;
 	return AllMoveCases;
 }

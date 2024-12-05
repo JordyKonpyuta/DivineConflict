@@ -38,7 +38,6 @@ void ATower::BeginPlay()
 	{
 		Grid->GridInfo->AddTowerOnGrid(Grid->ConvertLocationToIndex(GetActorLocation()), this);
 		// Set Reachable Tiles for Attack
-		TilesInRange = Grid->GridPath->FindPath(GridPosition,FIntPoint(-999,-999),true,4,false,false);
 	}
 
 }
@@ -79,7 +78,6 @@ void ATower::PrepareAttack(AUnit* UnitAttack)
 	UnitToAttack = UnitAttack;
 	UnitToAttackPosition = UnitAttack->GetIndexPosition();
 	bIsSelected = false;
-	UpdateVisuals();
 }
 
 void ATower::AttackUnit(AUnit* UnitToAttacking, ACustomPlayerController* PlayerControllerAttacking)
@@ -96,30 +94,6 @@ void ATower::AttackUnit(AUnit* UnitToAttacking, ACustomPlayerController* PlayerC
 	}
 }
 
-	// ----------------------------
-	// Visuals
-
-void ATower::UpdateVisuals()
-{
-	if (bIsSelected)
-	{
-		PlayerController->SetPathReachable(TilesInRange);
-		for (FIntPoint Tile : TilesInRange)
-		{
-			// Highlight Tiles
-			Grid->GridVisual->AddStateToTile(Tile, EDC_TileState::Attacked);
-		}
-	}
-	else
-	{
-		for (FIntPoint Tile : TilesInRange)
-		{
-			// Remove Highlight
-			Grid->GridVisual->RemoveStateFromTile(Tile, EDC_TileState::Attacked);
-		}
-	}
-}
-	
 // ----------------------------
 // Tower Upgrade
 

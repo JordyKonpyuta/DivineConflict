@@ -93,9 +93,9 @@ void AUnit_Child_Leader::Multi_PushBuff_Implementation()
 	TArray<AUnit*> OldUnitsSave = AllUnitsToBuff;
 
 	// Check all units two cases around
-	if (Grid)
+	if (Grid && Grid->GridPath)
 	{
-		for (FIntPoint CurrentLoc : Grid->GridPath->FindPath(Grid->ConvertLocationToIndex(GetActorLocation()), FIntPoint(-999,-999), true, 3, false, false))
+		for (FIntPoint CurrentLoc : Grid->GridPath->FindPath(Grid->ConvertLocationToIndex(GetActorLocation()), FIntPoint(-999,-999), true, 3, true, false,false))
 		{
 			if(Grid->GetGridData()->Find(CurrentLoc)->UnitOnTile)
 			{
